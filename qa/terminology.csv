@@ -1,0 +1,26 @@
+term_en,preferred_zh,scope,avoid,notes
+medical imaging,医学影像,领域与体系,医学成像（除非强调成像过程）,
+medical image,医学图像,具体数据与任务,医学影像图像,
+annotation-efficient learning,标注高效学习,第三章,高效监督学习,
+weakly supervised segmentation,弱监督医学图像分割,第三章,弱标注分割（可作解释但非首选）,
+scribble supervision,涂鸦监督,第三章,草图监督/划线监督,
+supervision augmentation,监督增强,第三章,监督增广（避免混用）,
+global consistency,全局一致性,第三章,整体一致性（避免混用）,
+class mixture ratio,类别混合比例,第三章,类别占比先验（首次说明后可简称比例先验）,
+spatial prior,空间先验,第三章,,
+shape regularization,形状正则化,第三章,,
+continual learning,持续学习,第四至六章,连续学习（避免混用）,
+catastrophic forgetting,灾难性遗忘,第四至六章,,
+stability-plasticity trade-off,稳定性—可塑性权衡,第四至六章,稳定塑性平衡（避免混用）,
+forward transfer,前向迁移,第四章,,
+forward generalization,前向泛化,第四至五章,未来泛化（可作解释）,
+experience replay,经验回放,第四至五章,样本重放（避免混用）,
+replay-free,无回放,第六章,免回放（避免混用）,
+federated continual learning,联邦持续学习,第六章,,
+principal gradient subspace,主梯度子空间,第六章,主要梯度子空间,
+subspace merging,子空间融合,第六章,子空间合并（避免混用）,
+sharpness-aware minimization,锐度感知最小化,第五章,锐度感知优化（可用作上位描述）,
+meta-continual learning,元持续学习,第五章,,
+medical image classification,医学图像分类,全文,医学影像分类（具体任务中避免混用）,领域总称可写医学影像智能分析
+medical image segmentation,医学图像分割,全文,医学影像分割（具体任务中避免混用）,用于具体图像和算法任务
+medical image registration,医学图像配准,全文,医学影像配准（具体任务中避免混用）,用于具体图像和算法任务

@@ -1,0 +1,18 @@
+claim_id,chapter,section,claim,source_file,locator,citation_keys,evidence_type,confidence,status,notes
+C3-001,3,3.1,医学图像分割的密集像素级标注具有较高人工与专业成本,sources/zscribble/main_clean_new.tex,Introduction lines 158-165,zhuang2019multivariate,literature,confirmed,source_extracted,引用原论文已有文献；V2 保留为第三章后续证据，未写入正文
+C3-002,3,3.1,涂鸦标注适合描述嵌套结构且比密集标注更易获得,sources/zscribble/main_clean_new.tex,Introduction lines 161-165,han2024dmsps;liu2022weakly;khoreva2017simple,literature,confirmed,source_extracted,V2 保留为第三章后续证据，未写入正文
+C3-003,3,3.1,现有涂鸦方法常通过标签扩展或多预测融合生成伪标签,sources/zscribble/main_clean_new.tex,Introduction lines 173-175,ji2019scribble;luo2022scribble,literature,confirmed,source_extracted,V2 保留为第三章后续证据，未写入正文
+C3-004,3,3.1,伪标签方案可能受到不准确分割提议和标签噪声影响,sources/zscribble/main_clean_new.tex,Introduction lines 173-177,ji2019scribble;luo2022scribble;obukhov2019gated,literature,confirmed,source_extracted,V2 保留为第三章后续证据，未写入正文
+C3-005,3,3.1,监督不足与标注类别不平衡会导致目标结构欠分割,sources/zscribble/main_clean_new.tex,Introduction lines 179-194,,author_observation,confirmed,source_extracted,后续问题分析与实验支撑；V2 保留为第三章后续证据，未写入正文
+C3-006,3,3.1,高效涂鸦形式与标注像素比例和空间分布随机性相关,sources/zscribble/main_clean_new.tex,Introduction lines 181-185 and Method lines 321 onward,,empirical_design,confirmed,source_extracted,详细证据在 3.3.3 与实验节展开；V2 保留为第三章后续证据，未写入正文
+C3-007,3,3.1,监督增强由混合与遮挡操作构成并配合一致性约束,sources/zscribble/main_clean_new.tex,Introduction lines 181-185 and Method Overview lines 308-319,,method,confirmed,source_extracted,V2 保留为第三章后续证据，未写入正文
+C3-008,3,3.1,类别混合比例通过 EM 估计并用于构建空间先验正则,sources/zscribble/main_clean_new.tex,Introduction lines 187-194 and Method Overview lines 308-319,,method,confirmed,source_extracted,V2 保留为第三章后续证据，未写入正文
+C3-009,3,3.1,形状正则化用于缓解稀疏监督下的碎片化预测,sources/zscribble/main_clean_new.tex,Method Overview lines 308-319,,method,confirmed,source_extracted,V2 保留为第三章后续证据，未写入正文
+C3-010,3,3.1,ZScribbleSeg 在多种结构与病理分割任务中进行验证,sources/zscribble/main_clean_new.tex,Abstract lines 136-139 and Introduction lines 196-211,,experiment_scope,confirmed,source_extracted,具体任务与结果放在实验节；V2 保留为第三章后续证据，未写入正文
+C1-001,1,1.1.1,深度学习已用于医学影像分类检测分割配准等多类任务,DOI:10.1016/j.media.2017.07.005,Abstract and task survey,litjens2017survey,literature,confirmed,drafted,用于建立任务范围
+C1-002,1,1.1.1,端到端卷积神经网络可用于细粒度皮肤病变分类,DOI:10.1038/nature21056,Abstract and experimental design,esteva2017dermatologist,primary_experiment,confirmed,drafted,仅作为图像分类代表性实例
+C1-003,1,1.1.1,U-Net 通过编码路径提取上下文并通过对称解码路径恢复定位,DOI:10.1007/978-3-319-24574-4_28,Abstract and architecture description,ronneberger2015unet,method,confirmed,drafted,不扩展为所有分割模型结论
+C1-004,1,1.1.1,VoxelMorph 将图像对到形变场的映射参数化为神经网络,DOI:10.1109/TMI.2019.2897538,Abstract and formulation,balakrishnan2019voxelmorph,method,confirmed,drafted,作为学习式配准代表
+C1-005,1,1.1.1,医学影像机器学习依赖规模充分经过整理且具有代表性的训练数据和专家标注,DOI:10.1148/radiol.2020192224,Abstract,willemink2020preparing,literature,confirmed,drafted,用于引出训练信息限制
+C1-006,1,1.1.1,医疗机构外部数据上的模型表现可能低于原机构内部测试且模型可能利用机构相关混杂信息,DOI:10.1371/journal.pmed.1002683,Abstract and author summary,zech2018variable,primary_experiment,confirmed,drafted,结论限于该多机构胸片研究并采用审慎表述
+C1-007,1,1.1.1,分类分割和配准分别提供图像级判断空间级描述和图像间对应关系,author synthesis based on cited task definitions,Section synthesis,litjens2017survey;ronneberger2015unet;balakrishnan2019voxelmorph,author_analysis,confirmed,drafted,属于任务功能层面的综合概括

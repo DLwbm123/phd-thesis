@@ -1,0 +1,59 @@
+% Clean PhD thesis project based only on the fduthesis template implementation.
+% No prose, figures, bibliography, metadata, or research content from the
+% reference thesis has been copied into this file.
+\documentclass[type=doctor]{fduthesis}
+
+\input{config/thesis_info}
+\input{config/build_flags}
+
+\usepackage[ruled,noline]{algorithm2e}
+\usepackage{threeparttable}
+\usepackage{multirow}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{graphicx}
+\usepackage{enumitem}
+\graphicspath{{figures/}}
+
+\SetKwFor{For}{for }{\textbf{do}}{\textbf{end for}}
+\SetKwFor{If}{if }{\textbf{then}}{\textbf{end if}}
+\renewcommand{\algorithmcfname}{算法}
+
+\begin{document}
+
+\frontmatter
+\tableofcontents
+\listoffigures
+\listoftables
+
+\begin{abstract}
+\mbox{}
+% 中文摘要在第七章完成后定稿。
+\end{abstract}
+
+\begin{abstract*}
+\mbox{}
+% English abstract will be finalized after the main chapters are complete.
+\end{abstract*}
+
+\mainmatter
+\include{chapters/ch01_introduction}
+\include{chapters/ch02_foundations}
+\include{chapters/ch03_zscribble}
+\include{chapters/ch04_benchmark}
+\include{chapters/ch05_samcl}
+\include{chapters/ch06_fedsubmerge}
+\include{chapters/ch07_conclusion}
+
+\backmatter
+\ifthesisbibliography
+\printbibliography
+\fi
+
+\chapter{攻读博士学位期间取得的研究成果}
+% 按学校要求填写论文、专利、项目和奖励。只列真实成果。
+
+\chapter{致谢}
+% 致谢由作者本人完成。
+
+\end{document}

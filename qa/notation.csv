@@ -1,0 +1,10 @@
+symbol,meaning,scope,first_definition,source,status,notes
+L_pce,部分交叉熵损失,第三章,,ZScribbleSeg,pending,LaTeX 具体形式由正文确定
+L_global,全局一致性损失,第三章,,ZScribbleSeg,pending,
+pi,类别混合比例向量,第三章,,ZScribbleSeg,pending,向量格式需统一
+L_spatial,空间先验损失,第三章,,ZScribbleSeg,pending,
+L_shape,形状正则化损失,第三章,,ZScribbleSeg,pending,
+theta,模型参数,跨章节,,all,pending,各章可带上下标但含义需一致
+rho,SAM 邻域半径,第五章,,SAMCL,pending,
+U,子空间正交基,第六章,,FedSubMerge,pending,需区分客户端与层索引
+Sigma,奇异值对角矩阵,第六章,,FedSubMerge,pending,
