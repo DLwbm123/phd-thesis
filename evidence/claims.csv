@@ -68,3 +68,18 @@ C1-056,1,1.2.2,腹部多器官与肿瘤持续分割可结合器官特定输出�
 C1-057,1,1.2.2,持续医学分割基准定义Domain-CL Class-CL Organ-CL并开展多维评价,arXiv:2605.06160,Abstract,wang2026benchmark,benchmark,confirmed,drafted,Organ-CL为该研究命名场景而非领域统一标准
 C1-058,1,1.2.2,持续医学分割评价可同时考虑总体性能遗忘可塑性前向泛化参数效率和回放负担,arXiv:2605.06160,Abstract and evaluation framework,wang2026benchmark,benchmark,confirmed,drafted,具体指标公式留待第四章
 C1-059,1,1.2.2,SAMCL结合有限经验回放元持续学习和锐度感知优化处理顺序三维配准任务,DOI:10.1007/978-3-031-72069-7_69,Abstract and method,wang2024samcl,method,confirmed,drafted,配准任务不机械归为类增量
+C1-060,1,1.2.3,联邦学习通过本地训练和服务器聚合支持不集中原始数据的协同建模,primary federated learning paper,Algorithm and setting,mcmahan2017fedavg,method,confirmed,drafted,数据流描述不等于形式化隐私保证
+C1-061,1,1.2.3,联邦持续学习结合客户端私有任务序列和跨客户端知识融合,DOI:10.1109/TKDE.2024.3363240,Abstract and framework,yang2024fclsurvey,literature,confirmed,drafted,用于定义通用FCL框架
+C1-062,1,1.2.3,同步与异步FCL由客户端任务顺序和更新进度关系区分,DOI:10.1109/TKDE.2024.3363240,Framework taxonomy,yang2024fclsurvey,literature,confirmed,drafted,仍需另行说明标签和数据访问条件
+C1-063,1,1.2.3,空间灾难性遗忘是Yang等在其综述中提出的跨客户端聚合类比概念,DOI:10.1109/TKDE.2024.3363240,Introduction and problem definition,yang2024fclsurvey,author_attributed_term,confirmed,drafted,本文自身优先使用跨客户端全局灾难性遗忘
+C1-064,1,1.2.3,FedWeIT分解全局参数和任务特定参数并选择性转移其他客户端知识,primary paper,Abstract and method,yoon2021fedweit,method,confirmed,drafted,用于参数分解与选择传输路线
+C1-065,1,1.2.3,CFeD在客户端和服务器两侧使用无标签代理数据进行知识蒸馏,DOI:10.24963/ijcai.2022/303,Abstract and method,ma2022cfed,method,confirmed,drafted,明确记录代理数据依赖
+C1-066,1,1.2.3,GLFC结合类别梯度补偿关系蒸馏代理服务器和原型梯度通信处理联邦类增量遗忘,primary paper,Abstract and method,dong2022glfc,method,confirmed,drafted,结论限于其类别增量设定
+C1-067,1,1.2.3,FCL知识融合方法可按回放聚类正则参数隔离动态结构原型和蒸馏等载体组织,DOI:10.1109/TKDE.2024.3363240,Knowledge fusion taxonomy,yang2024fclsurvey,literature,confirmed,drafted,分类不代表统一性能排序
+C1-068,1,1.2.3,原始数据留在本地不代表梯度参数特征或原型交换自动获得形式化隐私,DOI:10.1038/s41746-020-00323-1;DOI:10.1109/TKDE.2024.3363240,Security discussion,rieke2020future;yang2024fclsurvey,literature,confirmed,drafted,用于限制隐私表述
+C1-069,1,1.2.3,DynBC使用公共参考数据评价更新连续性以联合处理客户端漂移和时间遗忘,primary paper,Abstract and method,babendererde2025dynbc,method,confirmed,drafted,依赖公共参考数据代表性
+C1-070,1,1.2.3,公开胸部X射线与CT研究比较多种模型和持续学习算法的联邦组合,DOI:10.1038/s41598-025-06077-8,Abstract and experimental design,zhou2025thoracicfcl,primary_experiment,confirmed,drafted,模拟客户端结果不等同真实医院部署
+C1-071,1,1.2.3,DP-FedEPC结合EWC潜在原型和客户端DP-SGD处理胸片FCL,DOI:10.1038/s41598-026-55211-7,Abstract,sinhal2026dpfedepc,method,confirmed,drafted,形式化差分隐私来自DP机制而非联邦聚合
+C1-072,1,1.2.3,潜在原型属于历史信息的压缩保存而不等同完全无回放,author scope definition,Section distinction,sinhal2026dpfedepc,author_definition,confirmed,drafted,用于统一回放边界
+C1-073,1,1.2.3,GPM保存旧任务重要梯度子空间并将新梯度投影到正交补空间,primary paper,Method formulation,saha2021gpm,method,confirmed,drafted,原始方法面向单一学习器
+C1-074,1,1.2.3,无回放医学FCL仍需跨客户端汇集历史保护并控制统一保护对新任务可塑性的约束,author synthesis based on section sources,Section synthesis,yoon2021fedweit;saha2021gpm;yang2024fclsurvey,author_analysis,confirmed,drafted,用于过渡至1.3.4且不提前展开FedSubMerge

@@ -15,10 +15,10 @@ stability-plasticity trade-off,稳定性—可塑性权衡,第一章与第四至
 forward transfer,前向迁移,第一章与第四至六章,,
 forward generalization,前向泛化,第一章与第四至六章,未来泛化（可作解释）,
 experience replay,经验回放,第一章与第四至五章,样本重放（避免混用）,
-replay-free,无回放,第六章,免回放（避免混用）,
-federated continual learning,联邦持续学习,第六章,,
-principal gradient subspace,主梯度子空间,第六章,主要梯度子空间,
-subspace merging,子空间融合,第六章,子空间合并（避免混用）,
+replay-free,无回放,第一章与第六章,免回放（避免混用）,
+federated continual learning,联邦持续学习,第一章与第六章,,
+principal gradient subspace,主梯度子空间,第一章与第六章,主要梯度子空间,
+subspace merging,子空间融合,第一章与第六章,子空间合并（避免混用）,
 sharpness-aware minimization,锐度感知最小化,第一章与第五章,锐度感知优化（可用作上位描述）,
 meta-continual learning,元持续学习,第一章与第五章,,
 medical image classification,医学图像分类,全文,医学影像分类（具体任务中避免混用）,领域总称可写医学影像智能分析
@@ -54,3 +54,11 @@ Class-CL,类别持续学习场景,第一章与第四章,类增量学习（两者
 Organ-CL,器官持续学习场景,第一章与第四章,器官增量学习（避免视为统一标准术语）,第四章基准中面向跨器官分割任务的场景名
 replay burden,回放负担,第一章与第四至六章,回放开销（可作解释）,由保存或生成历史信息带来的存储计算与治理成本
 global performance,总体性能,第一章与第四至六章,全局性能（在联邦语境中含义不同）,对已学习任务整体能力的汇总评价
+synchronous federated continual learning,同步联邦持续学习,第一章与第六章,同步持续联邦学习（避免混用）,客户端按照共同任务顺序或共同阶段推进
+asynchronous federated continual learning,异步联邦持续学习,第一章与第六章,异步持续联邦学习（避免混用）,客户端任务顺序进度或上传时刻可以不同
+cross-client global catastrophic forgetting,跨客户端全局灾难性遗忘,第一章与第六章,空间灾难性遗忘（仅在归因Yang等术语时使用）,聚合和后续训练导致分散于不同客户端的历史任务能力下降
+client drift,客户端漂移,第一章与第六章,客户漂移（避免混用）,本地异质更新偏离共享优化目标的现象
+knowledge fusion,知识融合,第一章与第六章,知识聚合（机制不同不得等同）,对样本参数特征原型或输出关系进行跨阶段或跨客户端整合
+surrogate dataset,代理数据集,第一章与第六章,公共数据集（不一定等同）,用于蒸馏评估或重建知识的附加数据
+prototype communication,原型通信,第一章与第六章,原型共享（按具体协议使用）,客户端与服务器交换类别或特征原型
+differential privacy,差分隐私,第一章与第六章,隐私保护（范围更宽）,只有明确机制参数与核算时才表述形式化保证
