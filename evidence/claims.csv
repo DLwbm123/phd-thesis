@@ -38,3 +38,16 @@ C1-026,1,1.1.3,模型首次面对未学习外部域时表现较差属于泛化�
 C1-027,1,1.1.3,持续学习需协调旧知识保持与新任务学习形成稳定性可塑性权衡,DOI:10.1016/j.tics.2020.09.004;DOI:10.1109/TPAMI.2021.3057446,Review discussion and survey taxonomy,hadsell2020embracing;delange2022continual,literature,confirmed,drafted,不将目标简化为参数完全不变
 C1-028,1,1.1.3,持续医学影像学习评价应同时考虑知识保持当前任务学习前向迁移前向泛化及资源条件,author synthesis based on continual-learning requirements,Section evaluation synthesis,vandeven2022three;delange2022continual,author_analysis,confirmed,drafted,具体指标定义和公式留待后续章节
 C1-029,1,1.1.3,数据任务演化可与有限回放无回放及跨中心协同条件叠加但这些条件不能单独定义演化,author synthesis based on access and collaboration settings,Section synthesis,delange2022continual;rieke2020future,author_analysis,confirmed,drafted,用于形成集中式与联邦式持续学习的共同背景且不声称形式化隐私
+C1-030,1,1.2.1,弱监督医学图像分割使用图像级点框涂鸦和部分切片等不同信息粒度的标注,DOI:10.1016/j.media.2020.101693,Review taxonomy,tajbakhsh2020imperfect,literature,confirmed,drafted,用于界定标注形式差异而不主张彼此等价
+C1-031,1,1.2.1,ScribbleSup通过图模型联合进行涂鸦标签传播和网络参数学习,DOI:10.1109/CVPR.2016.344,Abstract and method overview,lin2016scribblesup,method,confirmed,drafted,自然图像语义分割原始工作
+C1-032,1,1.2.1,医学图像分割网络可以仅利用涂鸦像素上的监督进行训练,DOI:10.1007/978-3-030-00889-5_27,Abstract and training strategies,can2018scribble,primary_experiment,confirmed,drafted,结论限于该心脏与前列腺分割研究
+C1-033,1,1.2.1,结构正则项可直接写入弱监督分割损失以利用未标注区域信息,DOI:10.1007/978-3-030-01270-0_31,Method formulation,tang2018regularized,method,confirmed,drafted,不声称所有结构约束均适用于医学目标
+C1-034,1,1.2.1,全局不等式约束可通过可微惩罚项限制弱监督医学分割输出,DOI:10.1016/j.media.2019.02.009,Abstract and formulation,kervadec2019constrained,method,confirmed,drafted,目标大小仅为原文示例之一
+C1-035,1,1.2.1,双分支预测可动态混合形成涂鸦监督医学分割的辅助伪标签,DOI:10.1007/978-3-031-16431-6_50,Abstract and method overview,luo2022scribble,method,confirmed,drafted,用于归纳伪标签扩展路线
+C1-036,1,1.2.1,DMSPS使用动态混合软伪标签并按低不确定性预测扩展涂鸦,DOI:10.1016/j.media.2024.103274,Abstract,han2024dmsps,method,confirmed,drafted,不写入实验数值
+C1-037,1,1.2.1,Scribble2D5结合相邻切片信息标签传播和边界预测处理体数据涂鸦监督,DOI:10.1007/978-3-031-16452-1_23,Abstract and method overview,chen2022scribble2d5,method,confirmed,drafted,用于说明体数据结构利用
+C1-038,1,1.2.1,超像素引导涂鸦传播和类别级对比正则可联合利用图像结构与表示关系,DOI:10.1007/978-3-031-43895-0_13,Abstract and method overview,zhou2023scribblewalking,method,confirmed,drafted,不扩展为所有超像素方法结论
+C1-039,1,1.2.1,伪标签扩大监督范围的同时可能继承并强化模型早期预测误差,author synthesis based on pseudo-label methods,Section synthesis,luo2022scribble;han2024dmsps,author_analysis,confirmed,drafted,采用审慎表述
+C1-040,1,1.2.1,有效涂鸦监督与标注像素比例空间覆盖和随机性有关,DOI:10.1016/j.media.2026.104074,Abstract introduction and efficient-scribble analysis,zhang2026zscribbleseg,method,confirmed,drafted,属于ZScribbleSeg对标注形式的研究范围
+C1-041,1,1.2.1,ZScribbleSeg通过监督增强全局一致性类别混合比例空间先验和形状正则利用稀疏监督,DOI:10.1016/j.media.2026.104074,Abstract and framework overview,zhang2026zscribbleseg,method,confirmed,drafted,仅概括机制不写公式或结果
+C1-042,1,1.2.1,涂鸦监督现有不足集中于监督覆盖伪标签噪声类别比例偏差及边界形状缺失,author synthesis based on section sources,Section synthesis,tajbakhsh2020imperfect;luo2022scribble;han2024dmsps;zhang2026zscribbleseg,author_analysis,confirmed,drafted,用于过渡至1.3.1且不解释为持续学习

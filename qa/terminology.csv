@@ -1,14 +1,14 @@
 term_en,preferred_zh,scope,avoid,notes
 medical imaging,医学影像,领域与体系,医学成像（除非强调成像过程）,
 medical image,医学图像,具体数据与任务,医学影像图像,
-annotation-efficient learning,标注高效学习,第三章,高效监督学习,
-weakly supervised segmentation,弱监督医学图像分割,第三章,弱标注分割（可作解释但非首选）,
-scribble supervision,涂鸦监督,第三章,草图监督/划线监督,
-supervision augmentation,监督增强,第三章,监督增广（避免混用）,
-global consistency,全局一致性,第三章,整体一致性（避免混用）,
-class mixture ratio,类别混合比例,第三章,类别占比先验（首次说明后可简称比例先验）,
-spatial prior,空间先验,第三章,,
-shape regularization,形状正则化,第三章,,
+annotation-efficient learning,标注高效学习,第一章与第三章,高效监督学习,
+weakly supervised segmentation,弱监督医学图像分割,第一章与第三章,弱标注分割（可作解释但非首选）,
+scribble supervision,涂鸦监督,第一章与第三章,草图监督/划线监督,
+supervision augmentation,监督增强,第一章与第三章,监督增广（避免混用）,
+global consistency,全局一致性,第一章与第三章,整体一致性（避免混用）,
+class mixture ratio,类别混合比例,第一章与第三章,类别占比先验（首次说明后可简称比例先验）,
+spatial prior,空间先验,第一章与第三章,,
+shape regularization,形状正则化,第一章与第三章,,
 continual learning,持续学习,第一章与第四至六章,连续学习（避免混用）,
 catastrophic forgetting,灾难性遗忘,第一章与第四至六章,,
 stability-plasticity trade-off,稳定性—可塑性权衡,第一章与第四至六章,稳定塑性平衡（避免混用）,
@@ -38,3 +38,10 @@ task-incremental learning,任务增量学习,第一章与第四至六章,任务�
 domain-incremental learning,域增量学习,第一章与第四至六章,领域增量学习（避免混用）,输出语义保持而输入域或上下文按顺序变化
 class-incremental learning,类增量学习,第一章与第四至六章,类别增量学习（避免混用）,标签空间随阶段扩展且通常要求统一判别
 context identity,上下文身份,第一章与第四至六章,任务标签（两者不总等同）,指模型在训练或测试时是否获知样本所属域或任务上下文
+partial cross-entropy,部分交叉熵,第一章与第三章,局部交叉熵（避免混用）,只在有标注像素上计算监督误差
+label propagation,标签传播,第一章与第三章,标注传播（避免混用）,依据图像或特征关系将稀疏标签扩展至未标注区域
+pseudo label,伪标签,第一章与第三章,伪真值（避免作为首选）,由模型或辅助过程产生的训练目标
+soft pseudo-label,软伪标签,第一章与第三章,软标签（范围更宽）,保留类别概率而非仅使用硬类别的伪标签
+consistency regularization,一致性正则化,第一章与第三章,一致性损失（仅指具体损失时使用）,约束相关输入变换或预测分支的输出保持对应
+annotation expansion,标注扩展,第一章与第三章,标签扩充（避免混用）,依据可靠预测增加可用于监督的位置
+efficient scribble,高效涂鸦,第一章与第三章,高效标注（范围更宽）,指在有限标注努力下提高监督覆盖与空间随机性的涂鸦形式
