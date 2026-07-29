@@ -4,8 +4,14 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 
+quiet=0
+if [[ $# -gt 0 && "$1" == "--quiet" ]]; then
+  quiet=1
+  shift
+fi
+
 if [[ $# -ne 1 ]]; then
-  echo "Usage: $0 chapters/chXX_name.tex" >&2
+  echo "Usage: $0 [--quiet] chapters/chXX_name.tex" >&2
   exit 2
 fi
 
@@ -57,13 +63,18 @@ python3 scripts/reference_overlap_audit.py \
   --reference sources/reference_thesis \
   --output "$tmp_root/overlap.md"
 
-latexmk -xelatex -interaction=nonstopmode -file-line-error main.tex
+if ! latexmk -xelatex -interaction=nonstopmode -file-line-error main.tex \
+  >"$tmp_root/latexmk.log" 2>&1; then
+  tail -n 160 "$tmp_root/latexmk.log" >&2
+  exit 6
+fi
 
 if grep -Eqi \
   'LaTeX Error|Emergency stop|Undefined control sequence|Citation .* undefined|Reference .* undefined|There were undefined references|multiply defined' \
   main.log; then
   echo "Build log contains an unresolved LaTeX, citation, reference, or duplicate-label error." >&2
-  exit 6
+  tail -n 160 "$tmp_root/latexmk.log" >&2
+  exit 7
 fi
 
 python3 - <<'PY'
@@ -110,8 +121,14 @@ for filename, width, unique_column in [
 print(f"Fast metadata checks passed: {len(keys)} BibTeX keys; {len(values)} terminology keys.")
 PY
 
-echo "--- Added-text style audit ---"
-cat "$tmp_root/style.md"
-echo "--- Added-text reference-overlap audit ---"
-cat "$tmp_root/overlap.md"
-echo "Fast section verification passed for $target."
+fingerprint="$(python3 scripts/latex_input_fingerprint.py)"
+marker="/tmp/phd-thesis-local-build.$fingerprint.ok"
+date +%s >"$marker"
+
+if [[ "$quiet" -eq 0 ]]; then
+  echo "--- Added-text style audit ---"
+  cat "$tmp_root/style.md"
+  echo "--- Added-text reference-overlap audit ---"
+  cat "$tmp_root/overlap.md"
+fi
+echo "Fast section verification passed for $target; local-build fingerprint=$fingerprint."

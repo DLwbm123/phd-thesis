@@ -39,7 +39,7 @@
 2. 检查任务范围、工作区、分支和远端同步状态；
 3. 只修改目标章节、必要的引用库、证据表、状态文件和工程文件；
 4. 完整编译一次，并检查未定义引用、重复标签、缺失图片、TODO/TBD/?? 与本轮新增警告；
-5. 在快速模式运行 `scripts/verify_fast_section.sh`，在里程碑模式运行完整的风格与参考论文重合审查；
+5. 在快速模式运行 `scripts/verify_fast_section.sh --quiet`，在里程碑模式运行完整的风格与参考论文重合审查；纯文本小节的 PDF 巡检可递延至里程碑；
 6. 更新 `STATE.md`、`qa/chapter_status.csv` 和 handoff 报告；
 7. 报告修改文件、编译结果、证据问题和下一步。
 
@@ -60,4 +60,4 @@
 - 已按 `WORKFLOW_MODES.md` 完成快速差异审查，或在里程碑节点完成全量风格与文本重合审查；
 - Git diff 不含无关修改；
 - `handoff/LATEST_CODEX_REPORT.md` 已更新。
-- 已完成 `origin/main` 推送；若本轮修改了 Overleaf 编译输入，也已完成 Overleaf 同步并回读核验。
+- 已完成 `origin/main` 推送；若本轮修改了 Overleaf 编译输入，也已完成 Overleaf 同步并回读核验。快速模式不为部署回执额外创建 Git 提交，除非用户要求长期 handoff 记录。

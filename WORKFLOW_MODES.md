@@ -12,15 +12,21 @@
 2. 读取 `AGENTS.md`、`STATE.md`、相关章节卡及本轮任务。总契约、作者协议、作者声音和项目配置在本会话首次任务或其文件变更后重读即可。
 3. 精确写入批准稿；核对本轮引文、BibTeX key/DOI/归一化题名、CSV 结构及新增 ID/术语唯一性。
 4. 以 `git diff` 核对只触及任务允许的文件；在会话首尾核对 `sources/` 指纹，且每轮确认 `sources/` 不在 diff 中。
-5. 运行一次完整 `latexmk` 构建，并检查本轮日志中的 LaTeX 错误、未定义引文/引用、重复标签、缺失文件、TODO/TBD/?? 和新增版面警告。
+5. 运行一次完整 `latexmk` 构建，并检查本轮日志中的 LaTeX 错误、未定义引文/引用、重复标签、缺失文件、TODO/TBD/?? 和新增版面警告。为减少终端往返，使用静默摘要命令：
 6. 对新增正文执行差异范围的作者表达与参考论文重合检查：
 
    ```bash
-   bash scripts/verify_fast_section.sh chapters/chXX_name.tex
+   bash scripts/verify_fast_section.sh --quiet chapters/chXX_name.tex
    ```
 
-7. 仅视觉检查受影响的小节页面及因新增引用而变化的参考文献页面。
-8. 更新简明 `STATE.md`、`qa/chapter_status.csv` 与 `handoff/LATEST_CODEX_REPORT.md`，提交并推送 GitHub；若修改了 Overleaf 编译输入，随后同步 Overleaf。
+7. 纯文本小节不做本地人工 PDF 巡检；表格、图、浮动体、公式、分页或章节结构变化时才检查受影响页面。全章视觉巡检仍在 B 模式强制执行。
+8. 在内容提交中更新极简 `STATE.md`、`qa/chapter_status.csv` 与 `handoff/LATEST_CODEX_REPORT.md`（变更、构建结果、下一节）。提交并推送 GitHub；若修改了 Overleaf 编译输入，在 30 分钟内用刚验证的构建指纹同步：
+
+   ```bash
+   bash scripts/sync_latex_to_overleaf.sh --skip-local-build "Sync Chapter X Section Y"
+   ```
+
+   该选项只跳过临时部署副本的重复本地构建，仍会执行路径白名单、非强制推送与远端回读；Overleaf 服务端会照常编译。同步 SHA 在终端最终报告中给出，并于下一个章节里程碑写入长期 handoff，避免每节为部署回执额外创建一次 Git 提交。
 
 `handoff/CONTEXT_PACKET_FOR_GPT.md` 只在 GPT Pro 明确需要新上下文包、完成一个章节或进入新章节时重建；日常小节集成只在 `LATEST_CODEX_REPORT.md` 写清下一节即可。
 
@@ -36,4 +42,4 @@ bash scripts/build_and_audit.sh
 
 ## 覆盖规则
 
-具体 `CODEX_TASK_*.md` 明确要求的检查优先于本文件。其要求未更新前，历史任务仍可能采用全量流程；后续 GPT Pro 任务应引用本文件的 A 模式，除非本轮属于 B 模式。
+用户明确指定快速模式时，本文件优先于历史任务文件中的重复全量审查、每节全 PDF 巡检和部署回执二次提交要求。涉及科学边界、来源、批准稿、数据、方法、模板、图表或章节完成的具体任务要求仍不得跳过。

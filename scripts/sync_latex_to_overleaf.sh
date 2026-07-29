@@ -4,6 +4,12 @@ set -euo pipefail
 project_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 overleaf_url="${OVERLEAF_REMOTE_URL:-https://git@git.overleaf.com/6a69ac75d6170c19b9e2711a}"
 overleaf_branch="${OVERLEAF_BRANCH:-main}"
+skip_local_build=0
+
+if [[ $# -gt 0 && "$1" == "--skip-local-build" ]]; then
+  skip_local_build=1
+  shift
+fi
 
 if ! git -C "$project_root" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
   echo "The thesis workspace is not a Git repository." >&2
@@ -77,16 +83,32 @@ if git -C "$deploy_repo" diff --cached --quiet; then
   exit 0
 fi
 
-(
-  cd "$deploy_repo"
-  latexmk -xelatex -interaction=nonstopmode -file-line-error main.tex
-)
+if [[ "$skip_local_build" -eq 1 ]]; then
+  fingerprint="$(python3 "$project_root/scripts/latex_input_fingerprint.py")"
+  marker="/tmp/phd-thesis-local-build.$fingerprint.ok"
+  if [[ ! -f "$marker" ]]; then
+    echo "No matching verified local-build fingerprint; refusing to skip deployment build." >&2
+    exit 5
+  fi
+  now="$(date +%s)"
+  verified_at="$(cat "$marker")"
+  if ! [[ "$verified_at" =~ ^[0-9]+$ ]] || (( now - verified_at > 1800 )); then
+    echo "Matching local-build fingerprint is older than 30 minutes; refusing to skip deployment build." >&2
+    exit 5
+  fi
+  echo "Reusing local build verified at $verified_at; Overleaf will compile after the non-force push."
+else
+  (
+    cd "$deploy_repo"
+    latexmk -xelatex -interaction=nonstopmode -file-line-error main.tex
+  )
 
-if grep -Eqi \
-  'undefined citations?|undefined references?|Citation .* undefined|Reference .* undefined|multiply defined|LaTeX Error' \
-  "$deploy_repo/main.log"; then
-  echo "The deployment build contains unresolved LaTeX errors or references; refusing to push." >&2
-  exit 5
+  if grep -Eqi \
+    'undefined citations?|undefined references?|Citation .* undefined|Reference .* undefined|multiply defined|LaTeX Error' \
+    "$deploy_repo/main.log"; then
+    echo "The deployment build contains unresolved LaTeX errors or references; refusing to push." >&2
+    exit 6
+  fi
 fi
 
 git -C "$deploy_repo" commit --no-gpg-sign -m "$commit_message"
@@ -97,7 +119,7 @@ remote_head="$(GIT_TERMINAL_PROMPT=0 GCM_INTERACTIVE=never \
   git -C "$deploy_repo" ls-remote origin "refs/heads/${overleaf_branch}" | awk '{print $1}')"
 if [[ "$local_head" != "$remote_head" ]]; then
   echo "Overleaf push completed but remote verification failed." >&2
-  exit 6
+  exit 7
 fi
 
 echo "Overleaf synchronized at ${remote_head} from GitHub commit ${github_commit}."
