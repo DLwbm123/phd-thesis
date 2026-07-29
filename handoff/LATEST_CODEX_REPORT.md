@@ -53,6 +53,7 @@ latexmk -xelatex -interaction=nonstopmode -file-line-error main.tex
 
 ## 部署记录
 
-- GitHub 内容提交 SHA：待本报告与受控源文件提交并推送后回填。
-- Overleaf 部署提交 SHA：待 GitHub 内容提交已推送、工作区干净后执行 `bash scripts/sync_latex_to_overleaf.sh "Sync Chapter 1 Section 1.1.2"` 并回填。
+- GitHub 内容提交 SHA：`9ad3683babc99c64032eb9464040436150af1bf8`，已在本地创建。
+- GitHub 推送：未完成。已执行普通非强制命令 `GIT_TERMINAL_PROMPT=0 git push origin main`；桌面 Git 进程未输出诊断，但随后公开 GitHub commits API 回读的 `main` 仍为 `2aba5cb16cc571b168c3fbdb60d7e514aab77dd2`，未包含内容提交。因此按验证结果视为当前凭据无推送权限或推送未成功。
+- Overleaf 部署：未执行，部署提交 SHA 不存在。任务要求 GitHub 内容提交先成功推送且工作区干净；在 GitHub 推送失败时不得同步 Overleaf。没有强制推送或绕过权限。
 - 下一小节：1.1.3“数据分布与医学任务的持续演化”；本任务在 1.1.2 验证完成处停止。
