@@ -16,3 +16,12 @@ C1-004,1,1.1.1,VoxelMorph 将图像对到形变场的映射参数化为神经网
 C1-005,1,1.1.1,医学影像机器学习依赖规模充分经过整理且具有代表性的训练数据和专家标注,DOI:10.1148/radiol.2020192224,Abstract,willemink2020preparing,literature,confirmed,drafted,用于引出训练信息限制
 C1-006,1,1.1.1,医疗机构外部数据上的模型表现可能低于原机构内部测试且模型可能利用机构相关混杂信息,DOI:10.1371/journal.pmed.1002683,Abstract and author summary,zech2018variable,primary_experiment,confirmed,drafted,结论限于该多机构胸片研究并采用审慎表述
 C1-007,1,1.1.1,分类分割和配准分别提供图像级判断空间级描述和图像间对应关系,author synthesis based on cited task definitions,Section synthesis,litjens2017survey;ronneberger2015unet;balakrishnan2019voxelmorph,author_analysis,confirmed,drafted,属于任务功能层面的综合概括
+C1-008,1,1.1.2,医学影像训练信息包括特定训练阶段可实际调用的图像标签历史样本及跨机构协作条件,author synthesis based on cited section sources,Section definition,willemink2020preparing;rieke2020future,author_analysis,confirmed,drafted,用于界定训练信息而非仅指客观存在的数据量
+C1-009,1,1.1.2,医学图像分割中的不完备数据可区分为标注稀缺与弱标注且弱标注可表现为稀疏噪声或图像级标签,DOI:10.1016/j.media.2020.101693,Abstract and dataset limitation taxonomy,tajbakhsh2020imperfect,literature,confirmed,drafted,仅用于概括监督信息形式
+C1-010,1,1.1.2,图像级点框涂鸦和部分切片等弱标注可降低标注负担但不等价于密集空间监督,DOI:10.1016/j.media.2020.101693,Review taxonomy and weak annotation discussion,tajbakhsh2020imperfect,author_analysis,confirmed,drafted,不声称所有弱标注形式具有相同信息量
+C1-011,1,1.1.2,联合训练有限回放和无回放方法对应不同的历史数据访问与记忆条件,DOI:10.1109/TPAMI.2021.3057446,Survey scope method taxonomy and memory comparison,delange2022continual,literature,confirmed,drafted,该综述重点为分类任务故正文只用于概念设定
+C1-012,1,1.1.2,本节所称历史数据不可访问是训练阶段不能完整调用旧样本而非声称机构必须删除全部历史影像,author scope definition,Section scope statement,delange2022continual;rieke2020future,author_definition,confirmed,drafted,用于限制论断范围并避免法律化绝对表述
+C1-013,1,1.1.2,医疗数据常位于相互隔离的数据孤岛且隐私与治理条件会限制集中访问,DOI:10.1038/s41746-020-00323-1,Abstract and data reliance sections,rieke2020future,literature,confirmed,drafted,不扩展为原始数据绝对不能共享
+C1-014,1,1.1.2,联邦学习可通过局部训练和更新聚合支持不交换原始患者数据的多机构医学影像协同训练,DOI:10.1038/s41598-020-69250-1,Abstract and experimental design,sheller2020federated,primary_experiment,confirmed,drafted,验证范围限于该多机构脑肿瘤影像研究
+C1-015,1,1.1.2,数据不出中心不等于形式化隐私保证且共享参数或梯度仍可能暴露训练数据相关信息,DOI:10.1038/s41746-020-00323-1;DOI:10.1038/s41598-020-69250-1,Technical considerations and security privacy discussion,rieke2020future;sheller2020federated,literature,confirmed,drafted,用于明确本文不声称联邦聚合提供形式化隐私
+C1-016,1,1.1.2,标注历史访问和机构共享三类限制可独立存在或叠加且方法设定应明确监督回放和通信条件,author synthesis based on section sources,Section synthesis,tajbakhsh2020imperfect;delange2022continual;rieke2020future;sheller2020federated,author_analysis,confirmed,drafted,用于形成全文统一问题背景
