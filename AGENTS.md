@@ -31,16 +31,17 @@
 
 # Required workflow
 
-1. 阅读总契约、作者表达协议、当前状态和相关章任务卡；
-2. 检查本轮原始来源与证据账本；
-3. 修改前确认任务范围；
-4. 只修改目标章节、必要的引用库、证据表、状态文件和工程文件；
-5. 完整编译；
-6. 运行 `scripts/style_audit.py`；
-7. 若参考论文源码存在，运行 `scripts/reference_overlap_audit.py`；
-8. 检查未定义引用、重复标签、缺失图片、TODO/TBD/??；
-9. 更新 `STATE.md`、`qa/chapter_status.csv` 和 handoff 报告；
-10. 报告修改文件、编译结果、证据问题和下一步。
+按 `WORKFLOW_MODES.md` 选择流程。默认是单小节的快速集成模式；章节完成、对外发送或用户明确要求时使用章节里程碑审查。
+
+每轮至少应：
+
+1. 阅读 `AGENTS.md`、当前状态、相关章节卡和本轮任务；总契约、作者协议、作者声音与项目配置在会话首次任务或这些文件发生变化后重读；
+2. 检查任务范围、工作区、分支和远端同步状态；
+3. 只修改目标章节、必要的引用库、证据表、状态文件和工程文件；
+4. 完整编译一次，并检查未定义引用、重复标签、缺失图片、TODO/TBD/?? 与本轮新增警告；
+5. 在快速模式运行 `scripts/verify_fast_section.sh`，在里程碑模式运行完整的风格与参考论文重合审查；
+6. 更新 `STATE.md`、`qa/chapter_status.csv` 和 handoff 报告；
+7. 报告修改文件、编译结果、证据问题和下一步。
 
 # Remote synchronization policy
 
@@ -56,7 +57,7 @@
 - 全文编译成功，或明确区分既有错误和本次新增错误；
 - 没有引入新的 undefined citation/reference、重复 label 或缺失文件；
 - 新事实有来源，新数字与原始结果一致；
-- 风格审查和文本重合审查已运行并报告；
+- 已按 `WORKFLOW_MODES.md` 完成快速差异审查，或在里程碑节点完成全量风格与文本重合审查；
 - Git diff 不含无关修改；
 - `handoff/LATEST_CODEX_REPORT.md` 已更新。
 - 已完成 `origin/main` 推送；若本轮修改了 Overleaf 编译输入，也已完成 Overleaf 同步并回读核验。

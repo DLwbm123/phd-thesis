@@ -104,7 +104,7 @@ GPT Pro 每轮输出：
 [NEXT]
 ```
 
-只复制第三个区块到 Codex。Codex 成功后，在 GPT 对话中回复：
+只复制第三个区块到 Codex。日常小节默认采用“快速小节集成”：一次完整编译、差异范围审查和目标页视觉检查；全仓审查与全 PDF 巡检只在章节完成、对外发送或你明确要求时运行。细则见 `WORKFLOW_MODES.md`。Codex 成功后，在 GPT 对话中回复：
 
 ```text
 继续，Codex 已成功
@@ -156,4 +156,10 @@ make clean
 
 ```bash
 bash scripts/run_codex_task.sh
+```
+
+已批准的单小节写入后，也可运行：
+
+```bash
+bash scripts/verify_fast_section.sh chapters/ch01_introduction.tex
 ```

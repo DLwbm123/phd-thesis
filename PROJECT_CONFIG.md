@@ -9,6 +9,7 @@
 - Bibliography backend: `bibtex`
 - Full build command: `latexmk -xelatex -interaction=nonstopmode -file-line-error main.tex`
 - Fast build command: `xelatex -interaction=nonstopmode -file-line-error main.tex`
+- Fast section verification: `bash scripts/verify_fast_section.sh chapters/chXX_name.tex`（一次完整构建、差异范围审查与元数据检查；完整流程见 `WORKFLOW_MODES.md`）
 - Clean command: `latexmk -C main.tex`
 - Git repository: 是；GitHub 私有仓库 `https://github.com/DLwbm123/phd-thesis`
 - Git default branch: `main`
