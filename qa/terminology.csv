@@ -14,13 +14,13 @@ catastrophic forgetting,灾难性遗忘,第一章与第四至六章,,
 stability-plasticity trade-off,稳定性—可塑性权衡,第一章与第四至六章,稳定塑性平衡（避免混用）,
 forward transfer,前向迁移,第一章与第四至六章,,
 forward generalization,前向泛化,第一章与第四至六章,未来泛化（可作解释）,
-experience replay,经验回放,第四至五章,样本重放（避免混用）,
+experience replay,经验回放,第一章与第四至五章,样本重放（避免混用）,
 replay-free,无回放,第六章,免回放（避免混用）,
 federated continual learning,联邦持续学习,第六章,,
 principal gradient subspace,主梯度子空间,第六章,主要梯度子空间,
 subspace merging,子空间融合,第六章,子空间合并（避免混用）,
-sharpness-aware minimization,锐度感知最小化,第五章,锐度感知优化（可用作上位描述）,
-meta-continual learning,元持续学习,第五章,,
+sharpness-aware minimization,锐度感知最小化,第一章与第五章,锐度感知优化（可用作上位描述）,
+meta-continual learning,元持续学习,第一章与第五章,,
 medical image classification,医学图像分类,全文,医学影像分类（具体任务中避免混用）,领域总称可写医学影像智能分析
 medical image segmentation,医学图像分割,全文,医学影像分割（具体任务中避免混用）,用于具体图像和算法任务
 medical image registration,医学图像配准,全文,医学影像配准（具体任务中避免混用）,用于具体图像和算法任务
@@ -45,3 +45,12 @@ soft pseudo-label,软伪标签,第一章与第三章,软标签（范围更宽）
 consistency regularization,一致性正则化,第一章与第三章,一致性损失（仅指具体损失时使用）,约束相关输入变换或预测分支的输出保持对应
 annotation expansion,标注扩展,第一章与第三章,标签扩充（避免混用）,依据可靠预测增加可用于监督的位置
 efficient scribble,高效涂鸦,第一章与第三章,高效标注（范围更宽）,指在有限标注努力下提高监督覆盖与空间随机性的涂鸦形式
+rehearsal-based continual learning,回放式持续学习,第一章与第四至六章,重放式持续学习（避免混用）,通过旧样本特征或生成信息近似历史分布
+regularization-based continual learning,正则化持续学习,第一章与第四至六章,正则式持续学习（避免混用）,通过参数函数或表示约束保护已有知识
+parameter isolation,参数隔离,第一章与第四至六章,参数分离（避免混用）,为不同任务保留独立或部分独立参数
+background semantic drift,背景语义漂移,第一章与第四章,背景漂移（首次定义后可简称）,当前标注协议使背景包含旧类未来类与真实背景的语义变化
+Domain-CL,域持续学习场景,第一章与第四章,域增量学习（两者按具体定义区分）,第四章基准中面向顺序跨中心域变化的场景名
+Class-CL,类别持续学习场景,第一章与第四章,类增量学习（两者按具体定义区分）,第四章基准中面向顺序新增分割结构的场景名
+Organ-CL,器官持续学习场景,第一章与第四章,器官增量学习（避免视为统一标准术语）,第四章基准中面向跨器官分割任务的场景名
+replay burden,回放负担,第一章与第四至六章,回放开销（可作解释）,由保存或生成历史信息带来的存储计算与治理成本
+global performance,总体性能,第一章与第四至六章,全局性能（在联邦语境中含义不同）,对已学习任务整体能力的汇总评价

@@ -51,3 +51,20 @@ C1-039,1,1.2.1,伪标签扩大监督范围的同时可能继承并强化模型�
 C1-040,1,1.2.1,有效涂鸦监督与标注像素比例空间覆盖和随机性有关,DOI:10.1016/j.media.2026.104074,Abstract introduction and efficient-scribble analysis,zhang2026zscribbleseg,method,confirmed,drafted,属于ZScribbleSeg对标注形式的研究范围
 C1-041,1,1.2.1,ZScribbleSeg通过监督增强全局一致性类别混合比例空间先验和形状正则利用稀疏监督,DOI:10.1016/j.media.2026.104074,Abstract and framework overview,zhang2026zscribbleseg,method,confirmed,drafted,仅概括机制不写公式或结果
 C1-042,1,1.2.1,涂鸦监督现有不足集中于监督覆盖伪标签噪声类别比例偏差及边界形状缺失,author synthesis based on section sources,Section synthesis,tajbakhsh2020imperfect;luo2022scribble;han2024dmsps;zhang2026zscribbleseg,author_analysis,confirmed,drafted,用于过渡至1.3.1且不解释为持续学习
+C1-043,1,1.2.2,持续学习研究要求顺序累积知识并协调稳定性和可塑性,DOI:10.1109/TPAMI.2021.3057446,Abstract introduction and scope,delange2022continual,literature,confirmed,drafted,该综述重点为任务增量分类
+C1-044,1,1.2.2,持续学习总体目标还包括任务内任务间泛化和资源效率,DOI:10.1109/TPAMI.2024.3367329,Abstract and conceptual framework,wang2024continualsurvey,literature,confirmed,drafted,用于扩展评价视角
+C1-045,1,1.2.2,医学影像持续学习文献包含实例类任务域及混合增量场景,DOI:10.1016/j.media.2025.103730,Scenario taxonomy,kumari2025medicalcl,literature,confirmed,drafted,不将分类视为互斥且穷尽
+C1-046,1,1.2.2,回放正则化参数隔离优化和表示方法保存不同形式的历史信息,DOI:10.1109/TPAMI.2024.3367329,Method taxonomy,wang2024continualsurvey,literature,confirmed,drafted,用于研究路线概括
+C1-047,1,1.2.2,iCaRL使用类别样本记忆与表示学习支持类别增量分类,primary paper,Method and evaluation,rebuffi2017icarl,method,confirmed,drafted,不直接扩展为分割效果结论
+C1-048,1,1.2.2,EWC依据参数对旧任务的重要性限制后续参数变化,DOI:10.1073/pnas.1611835114,Method formulation,kirkpatrick2017ewc,method,confirmed,drafted,作为参数正则代表
+C1-049,1,1.2.2,LwF通过旧模型在当前数据上的输出实施知识蒸馏,DOI:10.1109/TPAMI.2017.2773081,Method formulation,li2018lwf,method,confirmed,drafted,作为函数正则代表
+C1-050,1,1.2.2,脑MR持续分割可使用共享卷积参数和域特定批归一化适应新扫描仪与协议,DOI:10.1007/978-3-030-00928-1_54,Abstract and method,karani2018lifelong,method,confirmed,drafted,依赖域特定状态
+C1-051,1,1.2.2,S3R利用形状和语义信息估计跨中心持续分割中的参数重要性,DOI:10.1109/TMI.2023.3260974,Abstract and method,zhang2023s3r,method,confirmed,drafted,用于说明医学结构正则
+C1-052,1,1.2.2,Lifelong nnU-Net在统一管线中比较多种持续分割策略并报告方法差异,DOI:10.1038/s41598-023-34484-2,Abstract experiments and discussion,gonzalez2023lifelong,primary_experiment,confirmed,drafted,结论严格限定于该框架和三个用例
+C1-053,1,1.2.2,类别增量语义分割中旧类像素可能被并入背景形成背景语义变化,primary paper,Abstract and formulation,cermelli2020mib,method,confirmed,drafted,不扩展至完整标注域增量场景
+C1-054,1,1.2.2,PLOP通过多尺度特征蒸馏和背景伪标签保护旧类别信息,primary paper,Abstract and method,douillard2021plop,method,confirmed,drafted,作为持续语义分割代表方法
+C1-055,1,1.2.2,持续语义分割具有灾难性遗忘与背景语义漂移等密集预测特有问题,DOI:10.1109/TPAMI.2024.3446949,Abstract and challenge taxonomy,yuan2024continualseg,literature,confirmed,drafted,背景漂移需结合标签协议判断
+C1-056,1,1.2.2,腹部多器官与肿瘤持续分割可结合器官特定输出头和旧模型伪标签,DOI:10.1007/978-3-031-43895-0_4,Abstract and method,zhang2023continualorgan,method,confirmed,drafted,新增器官的场景类型仍取决于协议
+C1-057,1,1.2.2,持续医学分割基准定义Domain-CL Class-CL Organ-CL并开展多维评价,arXiv:2605.06160,Abstract,wang2026benchmark,benchmark,confirmed,drafted,Organ-CL为该研究命名场景而非领域统一标准
+C1-058,1,1.2.2,持续医学分割评价可同时考虑总体性能遗忘可塑性前向泛化参数效率和回放负担,arXiv:2605.06160,Abstract and evaluation framework,wang2026benchmark,benchmark,confirmed,drafted,具体指标公式留待第四章
+C1-059,1,1.2.2,SAMCL结合有限经验回放元持续学习和锐度感知优化处理顺序三维配准任务,DOI:10.1007/978-3-031-72069-7_69,Abstract and method,wang2024samcl,method,confirmed,drafted,配准任务不机械归为类增量
