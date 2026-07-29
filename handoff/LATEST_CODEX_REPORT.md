@@ -2,7 +2,7 @@
 
 - 执行任务：`CODEX_TASK_ch01_1_2_2.md`
 - 执行时间：2026-07-29 22:32 CST
-- 结论：1.2.2“医学影像持续学习研究现状”已按批准稿逐字集成并完成本地构建、审查与视觉检查；1.1 与 1.2.1 未改变，1.2.3 与 1.3 未起草。本报告将在 GitHub 与 Overleaf 部署完成后写入精确提交号。
+- 结论：1.2.2“医学影像持续学习研究现状”已按批准稿逐字集成并完成本地构建、审查、视觉检查、GitHub 非强制推送与 Overleaf 同步；1.1 与 1.2.1 未改变，1.2.3 与 1.3 未起草。
 
 ## 预检与受控范围
 
@@ -15,7 +15,7 @@
 - 批准的 12 段 1.2.2 正文已插入既有标题和 `subsec:intro-continual-learning` 标签之后。任务文件与正文的非空行逐字一致；仅保留 LaTeX 段落间空行。
 - 新增且实际引用的 BibTeX 条目：`wang2024continualsurvey`、`kumari2025medicalcl`、`yuan2024continualseg`、`rebuffi2017icarl`、`kirkpatrick2017ewc`、`li2018lwf`、`karani2018lifelong`、`zhang2023s3r`、`gonzalez2023lifelong`、`cermelli2020mib`、`douillard2021plop`、`zhang2023continualorgan`、`wang2026benchmark`、`wang2024samcl`。与既有 `delange2022continual` 一同构成该节 15 个引文键；BibTeX 库共 36 条，key、大小写无关 DOI 和归一化题名均无重复。
 - `evidence/claims.csv` 仅追加 `C1-043`--`C1-059`，每个恰好一次；Python CSV 解析器确认全部 69 条数据行均为 11 列，新增记录引文键均存在于活动文献库。
-- `qa/terminology.csv` 新增 9 条任务指定术语，并仅按要求更新 4 个既有术语 scope；未重命名或重复 `forward transfer` 与 `forward generalization`。Python CSV 解析器确认全部 55 条数据行均为 5 列，英文 key 唯一。
+- `qa/terminology.csv` 新增 9 条任务指定术语，并核验及按需更新 4 个既有术语 scope；未重命名或重复 `forward transfer` 与 `forward generalization`。Python CSV 解析器确认全部 55 条数据行均为 5 列，英文 key 唯一。
 - `qa/chapter_status.csv`：1.2 为 `in_progress`；1.2.1 与 1.2.2 均为 `drafted_and_verified`；1.2.3 为 `queued`，产物按要求登记。
 
 ## 构建、审查与视觉检查
@@ -40,6 +40,6 @@ latexmk -xelatex -interaction=nonstopmode -file-line-error main.tex
 
 ## 部署记录与下一步
 
-- GitHub 内容提交：待创建并非强制推送。
-- Overleaf 部署提交：待 GitHub 推送成功、工作区干净后执行 `bash scripts/sync_latex_to_overleaf.sh "Sync Chapter 1 Section 1.2.2"`。
+- GitHub 内容提交：`c030a6515e708555ccd2360477974654c2b2dba9`（`Draft Chapter 1 Section 1.2.2`）已通过代理与 HTTP/1.1 非强制推送至 `origin/main`，并由 `fetch` 与 `ls-remote` 回读确认。
+- Overleaf 部署提交：`43f6340ab0d0209266e8777e9385091e99e21a60`（`Sync Chapter 1 Section 1.2.2`）。在 GitHub 内容推送完成且工作区干净后执行 `bash scripts/sync_latex_to_overleaf.sh "Sync Chapter 1 Section 1.2.2"`；脚本在临时部署副本完成 XeLaTeX/BibTeX 构建和最终检查，以非强制方式推送并回读远端。该提交对应 GitHub 内容提交 `c030a6515e708555ccd2360477974654c2b2dba9`。
 - 本轮到 1.2.2 完成并验证为止。
