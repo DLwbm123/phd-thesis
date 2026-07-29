@@ -2,7 +2,7 @@
 
 - 执行任务：`CODEX_TASK_ch01_1_2_1.md`
 - 执行时间：2026-07-29 22:16 CST
-- 结论：1.2.1“标注高效与弱监督医学图像分割研究现状”已按批准稿逐字集成并完成本地构建、审查与视觉检查；1.1 未改变，1.2.2、1.2.3 与 1.3 未起草。本报告将在 GitHub 与 Overleaf 部署完成后写入精确提交号。
+- 结论：1.2.1“标注高效与弱监督医学图像分割研究现状”已按批准稿逐字集成，完成本地构建、审查、视觉检查、GitHub 非强制推送与 Overleaf 同步；1.1 未改变，1.2.2、1.2.3 与 1.3 未起草。
 
 ## 预检与受控范围
 
@@ -39,6 +39,6 @@ latexmk -xelatex -interaction=nonstopmode -file-line-error main.tex
 
 ## 部署记录与下一步
 
-- GitHub 内容提交：待创建并非强制推送。
-- Overleaf 部署提交：待 GitHub 推送成功、工作区干净后执行 `bash scripts/sync_latex_to_overleaf.sh "Sync Chapter 1 Section 1.2.1"`。
+- GitHub 内容提交：`05a937a1eb686fce17ceb1b3a2dbede2a868483a`（`Draft Chapter 1 Section 1.2.1`）已通过临时 HTTP 代理和 HTTP/1.1 非强制推送至 `origin/main`；随后 `git fetch origin` 与 `git ls-remote origin refs/heads/main` 回读一致。
+- Overleaf 部署：在 GitHub 内容推送后、工作区干净时执行 `bash scripts/sync_latex_to_overleaf.sh "Sync Chapter 1 Section 1.2.1"`。临时部署副本完成 XeLaTeX/BibTeX 构建和未定义引用/引用/标签检查后，非强制推送至 Overleaf `main`；部署提交为 `b93e34a7821281266550b81f42e96371391e8814`，脚本的远端回读确认其对应 GitHub 提交 `05a937a1eb68`。
 - 下一小节为 1.2.2“医学影像持续学习研究现状”；本轮到 1.2.1 完成并验证为止。
