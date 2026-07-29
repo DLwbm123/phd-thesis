@@ -16,6 +16,12 @@
 *.nav
 *.snm
 *.vrb
+*.thm
+/main.pdf
+
+# Local-only source corpus and export archives
+/sources/
+*.zip
 
 # OS / editor
 .DS_Store
