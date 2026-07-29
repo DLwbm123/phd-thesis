@@ -39,6 +39,6 @@
 
 ## 部署与下一步
 
- GitHub 内容提交：2540f9d7ff517658a02799eb3ae2f71aee06aa69（Draft Chapter 1 Section 1.2.3）已经非强制推送至 origin/main，并由 fetch 与 ls-remote 回读确认。
- Overleaf 部署提交：未产生。GitHub 内容推送后，执行 bash scripts/sync_latex_to_overleaf.sh "Sync Chapter 1 Section 1.2.3"；临时部署副本的 clone 在连接 git.overleaf.com:443 时失败。随后 DNS 可解析为 35.229.82.106，但 TCP 检查返回 connection refused，git ls-remote overleaf 亦失败。未执行第二次同步、未改动 Overleaf、未使用强制推送。
+- GitHub 内容提交：2540f9d7ff517658a02799eb3ae2f71aee06aa69（Draft Chapter 1 Section 1.2.3）已经非强制推送至 origin/main，并由 fetch 与 ls-remote 回读确认。
+- Overleaf 部署提交：未产生。GitHub 内容推送后，执行 bash scripts/sync_latex_to_overleaf.sh "Sync Chapter 1 Section 1.2.3"；临时部署副本的 clone 在连接 git.overleaf.com:443 时失败。随后 DNS 可解析为 35.229.82.106，但 TCP 检查返回 connection refused，git ls-remote overleaf 亦失败。未执行第二次同步、未改动 Overleaf、未使用强制推送。
 - 1.2 已完成当前草稿阶段；下一目标是 1.3.1“稀疏标注下监督不足与结构信息缺失”。本轮不开始 1.3。
