@@ -41,6 +41,6 @@ latexmk -xelatex -interaction=nonstopmode -file-line-error main.tex
 
 ## 部署记录与下一步
 
-- GitHub 内容提交 SHA：待本报告与受控源文件提交、推送并回读后回填。
-- Overleaf 部署提交 SHA：待上述 GitHub 内容提交成功推送且工作区干净后，执行 `bash scripts/sync_latex_to_overleaf.sh "Sync Chapter 1 Section 1.1.3"` 并回填。
+- GitHub 内容提交 SHA：`70766df3c1d79103c75db39486a17abb3fce82c5`，已在本地 `main` 创建，但尚未进入 `origin/main`。普通非强制 `git -c http.version=HTTP/1.1 push origin main` 多次未完成；最后一次 `GIT_TRACE=1 GIT_TERMINAL_PROMPT=0` 显示 Git 已启动 `git-remote-https`，却在建立 HTTPS 远端会话前停止返回，未提供认证拒绝或其他 Git 错误。GitHub API 回读的远端仍为 `6377b0b5a25cc72cd1c661f40bdcacb11f628500`。
+- Overleaf 部署：未执行，部署提交 SHA 不存在。任务要求 GitHub 内容提交先成功推送且工作区干净；GitHub push 未成功时不得同步 Overleaf。未使用 API 绕过 Git 传输、未强制推送。
 - Section 1.1 已在当前草稿阶段完成；下一写作目标为 1.2.1“标注高效与弱监督医学图像分割研究现状”。本任务未起草任何 1.2 正文。
