@@ -3,7 +3,7 @@
 - 执行任务：CODEX_TASK_ch01_1_2_3.md
 - 执行时间：2026-07-29 22:55 CST
 - 流程：按用户指示采用快速小节集成流程；保留一次完整构建、差异范围风格/重合审查、目标 PDF 页检查、GitHub 推送与 Overleaf 同步，未重复全仓审查和全 PDF 巡检。
- 结论：1.2.3“联邦持续医学影像学习研究现状”已按批准稿逐字集成并完成本地验证和 GitHub 推送；1.1、1.2.1 与 1.2.2 未改变，1.3 未起草。Overleaf 同步因远端端口拒绝连接而未完成，未产生部署提交。
+- 结论：1.2.3“联邦持续医学影像学习研究现状”已按批准稿逐字集成并完成本地验证、GitHub 推送和 Overleaf 同步；1.1、1.2.1 与 1.2.2 未改变，1.3 未起草。
 
 ## 预检与受控范围
 
@@ -40,5 +40,5 @@
 ## 部署与下一步
 
 - GitHub 内容提交：2540f9d7ff517658a02799eb3ae2f71aee06aa69（Draft Chapter 1 Section 1.2.3）已经非强制推送至 origin/main，并由 fetch 与 ls-remote 回读确认。
-- Overleaf 部署提交：未产生。GitHub 内容推送后，执行 bash scripts/sync_latex_to_overleaf.sh "Sync Chapter 1 Section 1.2.3"；临时部署副本的 clone 在连接 git.overleaf.com:443 时失败。随后 DNS 可解析为 35.229.82.106，但 TCP 检查返回 connection refused，git ls-remote overleaf 亦失败。未执行第二次同步、未改动 Overleaf、未使用强制推送。
+- Overleaf 部署提交：e8cde64970843c80a88578f9d6735f7d8c76fbcf（Sync Chapter 1 Section 1.2.3）。首次克隆曾遇到短暂的 connection refused；远端恢复可读后，脚本在临时部署副本完成 XeLaTeX/BibTeX 构建、最终检查、非强制推送和远端回读。该部署对应同步时的 GitHub HEAD `7dc68a68c6ecbf495f8eda66e64cd17debb48f6d`，其 LaTeX 内容包含 `2540f9d7ff517658a02799eb3ae2f71aee06aa69` 的 1.2.3 集成。
 - 1.2 已完成当前草稿阶段；下一目标是 1.3.1“稀疏标注下监督不足与结构信息缺失”。本轮不开始 1.3。

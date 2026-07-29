@@ -10,7 +10,7 @@
  当前编译状态：`latexmk -xelatex -interaction=nonstopmode -file-line-error main.tex` 成功，BibTeX 已实际运行，生成 49 页、634,559 字节的 `main.pdf`（SHA-256：`a915f3940f78b20f5880085e6f71eeaa696074776de11ffd30c99397658bd420`）；45 个活动引文全部解析，未发现未定义引文或交叉引用、重复标签或缺失输入文件。
  当前审查状态：快速小节审查验证 `evidence/claims.csv` 全部 84 条数据行均为 11 列、`qa/terminology.csv` 全部 63 条数据行均为 5 列；新增 1.2.3 文本的规则型作者表达审查和参考论文重合审查均无命中；PDFKit 渲染检查 1.2.3 正文物理页 24--26 和新增参考文献物理页 43--44，未见乱码、裁切、重叠或异常分页。既有全章作者表达审查仍记录“同时”16次（其中批准的 1.2.2 有4次），本轮未重跑全仓审查。
 - 当前模板：已核实为干净 `fduthesis` 工程；本轮没有修改 `sources/`，也没有导入参考论文内容
- 当前部署状态：1.1.3 内容提交 `70766df3c1d79103c75db39486a17abb3fce82c5` 与部署记录提交 `8396bdce2821200c9619a7bcc6f7de440f92ed27` 已推送至 `origin/main`；1.2.1 内容提交 `05a937a1eb686fce17ceb1b3a2dbede2a868483a` 已部署至 Overleaf `b93e34a7821281266550b81f42e96371391e8814`；1.2.2 内容提交 `c030a6515e708555ccd2360477974654c2b2dba9` 已部署至 Overleaf `43f6340ab0d0209266e8777e9385091e99e21a60`；1.2.3 内容提交 `2540f9d7ff517658a02799eb3ae2f71aee06aa69` 已非强制推送并回读确认。Overleaf 同步在克隆阶段失败：DNS 解析正常，但 `git.overleaf.com:443` 返回 connection refused，`git ls-remote overleaf` 同样失败；未产生部署提交，也未重试或强制推送。
+ 当前部署状态：1.1.3 内容提交 `70766df3c1d79103c75db39486a17abb3fce82c5` 与部署记录提交 `8396bdce2821200c9619a7bcc6f7de440f92ed27` 已推送至 `origin/main`；1.2.1 内容提交 `05a937a1eb686fce17ceb1b3a2dbede2a868483a` 已部署至 Overleaf `b93e34a7821281266550b81f42e96371391e8814`；1.2.2 内容提交 `c030a6515e708555ccd2360477974654c2b2dba9` 已部署至 Overleaf `43f6340ab0d0209266e8777e9385091e99e21a60`；1.2.3 内容提交 `2540f9d7ff517658a02799eb3ae2f71aee06aa69` 已非强制推送并回读确认。首次同步出现短暂的 git.overleaf.com:443 connection refused；远端恢复可读后，以同一内容在临时部署副本完成 XeLaTeX/BibTeX 构建、非强制推送和回读，Overleaf 部署提交为 `e8cde64970843c80a88578f9d6735f7d8c76fbcf`。
 - 待核查问题：
   - 作者、导师、院系、学号和提交日期；
   - 第一章研究现状的文献时间范围和最终引用集；
