@@ -1,5 +1,16 @@
 # Codex 最新报告
 
+## GitHub 与 Overleaf 同步配置（2026-07-29 15:46 CST）
+
+- 已将本地工程初始化为 Git 仓库，默认分支为 `main`。
+- 已创建并推送 GitHub 私有仓库 `https://github.com/DLwbm123/phd-thesis`；首次完整写作工程提交为 `a084f02fbfe273a822288e0e939b82aeee5615a1`。
+- GitHub 保存 GPT Pro/Codex 写作所需的契约、提示词、章节卡、handoff、证据、QA、脚本和 LaTeX 源文件；`sources/`、构建产物、缓存和导出压缩包均被排除。
+- Overleaf 查看项目为 `https://www.overleaf.com/project/6a69ac75d6170c19b9e2711a`；首次自动同步提交为 `629848eebd1659f06bea6457534a360c645e4e8d`。
+- 已新增并实测 `scripts/sync_latex_to_overleaf.sh`：要求 GitHub 工作树先保持干净，随后只复制 22 个可编译 LaTeX 文件，在临时克隆中完整构建，检查未定义引文/引用和 LaTeX 错误，再执行非强制推送及远端回读。
+- `AGENTS.md` 和 `PROJECT_CONFIG.md` 已登记长期规则：GitHub `origin/main` 是写作工程远端版本源；每次修改 Overleaf 编译输入并完成本地审查后，先推送 GitHub，再运行 Overleaf 同步脚本；Overleaf 只用于作者查看。
+
+---
+
 - 执行时间：2026-07-29 15:19 CST
 - 执行任务：`CODEX_TASK_ch01_1_1_1.md`
 - 总体结论：1.1.1“医学影像智能分析及其临床价值”的批准稿已逐字集成；六条已核实参考文献、七条证据记录和三条术语记录已去重登记。全文 XeLaTeX/BibTeX 构建、引文与结构完整性检查、作者表达审查、参考论文文本重合审查和 PDF 视觉检查均已完成。当前停在 1.1.2 写作之前。
