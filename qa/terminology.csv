@@ -84,3 +84,8 @@ over-constraint,过度约束,第一章与第六章,过保护（避免混用）,�
 layer-wise relatedness,逐层相关性,第一章与第六章,层相关性（避免混用）,客户端历史子空间在不同网络层上的相关程度
 subspace distance,子空间距离,第一章与第六章,空间距离（避免混用）,衡量两个线性子空间关系的距离量
 compact gradient summary,紧凑梯度摘要,第一章与第六章,梯度压缩（机制不同）,由低秩基或相关统计概括历史梯度方向的信息
+spatial randomness,空间随机性,第一章与第三章,空间分布随机性（可作解释）,稀疏涂鸦在目标区域内分散覆盖而非集中于少量位置的程度
+restricted modeling ability,受限建模能力,第一章与第四章,受限学习能力（避免混用）,RMA；比较持续约束下当前任务表现与独立训练参考以衡量可塑性
+extended forward transfer,扩展前向迁移,第一章与第四章,扩展前向泛化（不是指标原名）,E-FWT；在Domain-CL中汇总多个尚未训练域上的直接表现并用于评价前向泛化
+orthogonal-complement projection,正交补投影,第一章与第六章,正交投影（范围不完全等同）,移除梯度在保护子空间内的分量并保留其正交补分量
+first-order interference,一阶干扰,第一章与第六章,一级干扰（错误）,一阶近似下当前参数更新对历史任务损失的影响
