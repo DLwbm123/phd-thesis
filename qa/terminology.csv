@@ -67,3 +67,8 @@ annotation class-proportion bias,标注类别比例偏差,第一章与第三章,
 label-noise amplification,标签噪声放大,第一章与第三章,噪声累积（可作解释）,错误伪标签在后续迭代中被重复作为监督
 under-segmentation,欠分割,第一章与第三章,分割不足（避免混用）,预测区域系统性遗漏目标的一部分
 structural fragmentation,结构碎片化,第一章与第三章,预测碎片化（可作解释）,同一目标被预测为不合理的离散或断裂区域
+scenario completeness,场景完备性,第一章与第四章,场景完整性（避免混用）,场景定义是否明确覆盖变化对象顺序标签和测试条件
+stage-task performance matrix,阶段—任务性能矩阵,第一章与第四章,准确率矩阵（任务指标不一定为准确率）,以训练阶段为行测试任务为列记录基础性能
+current-task plasticity,当前任务可塑性,第一章与第四至六章,新任务性能（仅作观测量时使用）,模型在当前阶段吸收新知识的能力
+resource-aware evaluation,资源约束评价,第一章与第四至六章,资源效率评价（范围较窄）,在数据存储参数计算通信等条件下解释模型表现
+protocol-aware comparison,协议感知比较,第一章与第四至六章,公平比较（范围更宽）,比较时显式核对任务身份历史访问输出空间和资源条件

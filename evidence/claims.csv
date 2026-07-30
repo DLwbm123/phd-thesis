@@ -90,3 +90,12 @@ C1-078,1,1.3.1,伪标签扩大监督范围时可能继承并强化模型或分�
 C1-079,1,1.3.1,有效涂鸦监督受到标注像素比例空间随机性和类别覆盖差异影响,DOI:10.1016/j.media.2026.104074,Introduction and efficient-scribble analysis,zhang2026zscribbleseg,method,confirmed,drafted,用于说明标注分布代表性
 C1-080,1,1.3.1,类别标注比例偏差和结构信息缺失可能表现为欠分割及碎片化预测,DOI:10.1016/j.media.2026.104074,Problem formulation and framework motivation,zhang2026zscribbleseg,author_analysis,confirmed,drafted,不扩展为所有弱监督方法必然现象
 C1-081,1,1.3.1,稀疏标注挑战需要联合处理可靠监督扩展类别空间偏差和结构恢复,author synthesis based on section sources,Section synthesis,tajbakhsh2020imperfect;luo2022scribble;han2024dmsps;kervadec2019constrained;zhang2026zscribbleseg,author_analysis,confirmed,drafted,用于形成第三章问题入口且不提前展开具体解法
+C1-082,1,1.3.2,持续学习场景名称取决于输入分布标签空间任务身份和评价协议,DOI:10.1109/TPAMI.2024.3367329;DOI:10.1016/j.media.2025.103730,Scenario taxonomies,wang2024continualsurvey;kumari2025medicalcl,author_synthesis,confirmed,drafted,用于说明相同数据序列可能因协议不同被归入不同场景
+C1-083,1,1.3.2,Domain-CL Class-CL和Organ-CL是第四章基准组织医学持续分割的三个命名场景,arXiv:2605.06160,Abstract and scenario definitions,wang2026benchmark,benchmark,confirmed,drafted,不得表述为领域统一且穷尽的标准分类
+C1-084,1,1.3.2,背景语义漂移是否出现取决于当前阶段对旧类和未来类的标注协议,DOI:10.1109/TPAMI.2024.3446949,Problem definition and protocols,yuan2024continualseg,author_analysis,confirmed,drafted,完整标注域增量场景不机械套用该结论
+C1-085,1,1.3.2,任意静态数据切分不足以定义可解释的持续医学分割场景,author scope definition,Section challenge analysis,kumari2025medicalcl;wang2026benchmark,author_definition,confirmed,drafted,需要交代顺序变化输出空间和测试条件
+C1-086,1,1.3.2,最终平均性能或遗忘单一指标不能同时反映知识保持和新任务学习,DOI:10.1038/s41598-023-34484-2;arXiv:2605.06160,Comparative evaluation and benchmark framework,gonzalez2023lifelong;wang2026benchmark,author_synthesis,confirmed,drafted,用于提出多维评价要求
+C1-087,1,1.3.2,阶段任务性能矩阵能够分别支撑稳定性可塑性和前向泛化评价,arXiv:2605.06160,Evaluation framework,wang2026benchmark,benchmark,confirmed,drafted,具体公式留待第四章
+C1-088,1,1.3.2,前向泛化指未适应任务上的直接表现而前向迁移关注已有知识对后续学习过程的影响,author terminology distinction,Section definition,wang2024continualsurvey;wang2026benchmark,author_definition,confirmed,drafted,遵守本论文术语边界
+C1-089,1,1.3.2,历史访问参数增长计算开销和任务身份条件影响持续分割结果的可比性,DOI:10.1109/TPAMI.2024.3367329;arXiv:2605.06160,Resource-efficiency framework and benchmark design,wang2024continualsurvey;wang2026benchmark,author_synthesis,confirmed,drafted,不能忽略资源条件直接排序
+C1-090,1,1.3.2,持续医学分割基准需联合解决场景定义与稳定性可塑性泛化资源多维评价,author synthesis based on section sources,Section synthesis,kumari2025medicalcl;yuan2024continualseg;gonzalez2023lifelong;wang2026benchmark,author_analysis,confirmed,drafted,用于形成第四章问题入口而非算法贡献
