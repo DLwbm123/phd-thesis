@@ -2,7 +2,67 @@
 \label{chap:foundations}
 
 \section{医学影像智能分析任务基础}
+\label{sec:foundations-tasks}
+
+医学影像智能分析的基本任务可以按照输出空间区分为分割、配准和分类。分割在图像网格上预测结构标签，配准估计图像之间的空间变换，分类则在图像、检查或病例层面输出类别或类别概率\cite{litjens2017survey}。三类任务可以共享特征提取思想，但其预测对象、监督单位和评价尺度不同，因而需要分别定义数学映射和性能指标。本节建立后续章节共同使用的任务记号，不展开弱监督、持续学习或联邦学习机制。
+
 \subsection{医学图像分割}
+\label{subsec:foundations-segmentation}
+
+医学图像分割旨在为图像域中的每个像素或体素赋予解剖结构、病灶或背景标签，从而得到与输入图像空间对应的标签图\cite{litjens2017survey,ronneberger2015unet}。本文后续研究主要采用语义分割设定，即同一类别的所有位置共享类别语义，而不额外区分同类目标的实例身份。根据标签空间大小，语义分割可以表现为前景与背景的二值分割，也可以表现为多个解剖结构或病理区域的多类分割。
+
+设图像域为 $\Omega\subset\mathbb{Z}^{d}$，其中 $d=2$ 表示二维图像，$d=3$ 表示三维体数据。输入医学图像记为 $\mathbf{I}:\Omega\rightarrow\mathbb{R}^{C}$，$C$ 为图像通道数；参考标签图记为 $\mathbf{Y}:\Omega\rightarrow\{0,\ldots,K-1\}$，$K$ 为类别数。参数为 $\theta$ 的分割模型 $f_{\theta}$ 在每个位置 $\mathbf{u}\in\Omega$ 输出类别概率向量 $\mathbf{p}_{\theta}(\mathbf{u})$，满足 $\sum_{k=0}^{K-1}p_{\theta,k}(\mathbf{u})=1$。多类预测由最大概率类别确定：
+\begin{equation}
+\mathbf{p}_{\theta}(\mathbf{u})=f_{\theta}(\mathbf{I})(\mathbf{u}),\qquad
+\widehat{\mathbf{Y}}(\mathbf{u})
+=\operatorname*{arg\,max}_{0\leq k<K}p_{\theta,k}(\mathbf{u}).
+\label{eq:foundations-seg-prediction}
+\end{equation}
+对于二值分割，也可以只输出前景概率，并通过给定阈值得到前景区域。
+
+二维分割通常以单幅图像或切片为计算单位，三维分割则在体素网格上联合建模空间信息。二者的数组表示可以采用相同的离散域记号，但距离和体积的物理含义取决于像素或体素间距。尤其在各向异性的三维数据中，相邻切片之间的物理距离可能明显大于层内像素间距，因此以毫米为单位的边界距离不能直接由未校正的数组索引代替。
+
+在完整监督条件下，可以把每个空间位置视为一个多类分类单元。令 $Y_k(\mathbf{u})$ 为参考标签在位置 $\mathbf{u}$ 属于类别 $k$ 的独热编码，则平均交叉熵写为
+\begin{equation}
+\mathcal{L}_{\mathrm{CE}}(\theta)
+=-\frac{1}{|\Omega|}
+\sum_{\mathbf{u}\in\Omega}\sum_{k=0}^{K-1}
+Y_k(\mathbf{u})\log p_{\theta,k}(\mathbf{u}).
+\label{eq:foundations-seg-ce}
+\end{equation}
+该目标直接约束位置级类别概率，但分割训练还可以根据类别不平衡、边界关注或区域重叠需求采用其他损失。训练损失用于构造优化信号，评价指标用于描述预测结果的性质，两者即使形式相近也不应被视为同一概念。
+
+区域重叠是分割评价的基础。对类别 $k$，令预测区域和参考区域分别为
+$P_k=\{\mathbf{u}\in\Omega:\widehat{\mathbf{Y}}(\mathbf{u})=k\}$ 和
+$G_k=\{\mathbf{u}\in\Omega:\mathbf{Y}(\mathbf{u})=k\}$。Dice 相似系数和交并比分别定义为\cite{taha2015metrics}
+\begin{equation}
+\mathrm{DSC}_k=\frac{2|P_k\cap G_k|}{|P_k|+|G_k|},\qquad
+\mathrm{IoU}_k=\frac{|P_k\cap G_k|}{|P_k\cup G_k|}.
+\label{eq:foundations-seg-overlap}
+\end{equation}
+二者均衡量区域重叠，但数值尺度不同。若预测区域和参考区域同时为空，分母可能为零，因而实现中必须明确空类别的计分与汇总规则。
+
+重叠指标不能完整描述边界误差。令 $\partial P_k$ 和 $\partial G_k$ 表示两个区域的边界点集，点到集合的距离定义为
+$d(\mathbf{a},B)=\min_{\mathbf{b}\in B}\|\mathbf{a}-\mathbf{b}\|_2$，$Q_q$ 表示分位数算子，则 95\% 豪斯多夫距离和平均对称表面距离可以写为\cite{taha2015metrics}
+\begin{align}
+\mathrm{HD95}_k
+&=\max\left\{
+Q_{0.95}\!\left(\{d(\mathbf{a},\partial G_k):\mathbf{a}\in\partial P_k\}\right),
+Q_{0.95}\!\left(\{d(\mathbf{b},\partial P_k):\mathbf{b}\in\partial G_k\}\right)
+\right\}, \\
+\mathrm{ASSD}_k
+&=\frac{
+\sum_{\mathbf{a}\in\partial P_k}d(\mathbf{a},\partial G_k)
++\sum_{\mathbf{b}\in\partial G_k}d(\mathbf{b},\partial P_k)}
+{|\partial P_k|+|\partial G_k|}.
+\label{eq:foundations-seg-boundary}
+\end{align}
+距离指标应在物理坐标中计算，并注明单位、分位数定义和空边界处理方式。
+
+不同指标对目标大小、边界离群点和局部结构错误的敏感性不同\cite{taha2015metrics}。DSC 和 IoU 适合描述总体重叠，却可能弱化局部边界偏差；HD95 强调较大边界误差，但其数值受分位数和空间分辨率影响；ASSD 描述平均边界偏差，却可能掩盖少量严重错误。多类任务还需说明采用逐类平均、按样本平均还是全数据聚合。因而，医学图像分割评价通常需要根据目标结构、任务用途和数据尺度组合区域与边界指标，而不是只报告单一数值。
+
+分割在一个既定坐标系中描述区域和边界。若需要比较不同时间、不同模态或不同个体的图像，首先还需建立图像之间的空间对应关系。下一小节据此介绍医学图像配准的基本表述。
+
 \subsection{医学图像配准}
 \subsection{医学图像分类}
 
