@@ -99,3 +99,11 @@ C1-087,1,1.3.2,阶段任务性能矩阵能够分别支撑稳定性可塑性和�
 C1-088,1,1.3.2,前向泛化指未适应任务上的直接表现而前向迁移关注已有知识对后续学习过程的影响,author terminology distinction,Section definition,wang2024continualsurvey;wang2026benchmark,author_definition,confirmed,drafted,遵守本论文术语边界
 C1-089,1,1.3.2,历史访问参数增长计算开销和任务身份条件影响持续分割结果的可比性,DOI:10.1109/TPAMI.2024.3367329;arXiv:2605.06160,Resource-efficiency framework and benchmark design,wang2024continualsurvey;wang2026benchmark,author_synthesis,confirmed,drafted,不能忽略资源条件直接排序
 C1-090,1,1.3.2,持续医学分割基准需联合解决场景定义与稳定性可塑性泛化资源多维评价,author synthesis based on section sources,Section synthesis,kumari2025medicalcl;yuan2024continualseg;gonzalez2023lifelong;wang2026benchmark,author_analysis,confirmed,drafted,用于形成第四章问题入口而非算法贡献
+C1-091,1,1.3.3,持续医学图像配准任务由图像域解剖对象模态组合和空间映射共同定义而非离散类别扩展,DOI:10.1007/978-3-031-72069-7_69,Problem setting and task construction,wang2024samcl,author_synthesis,confirmed,drafted,用于限制类增量术语的机械套用
+C1-092,1,1.3.3,有限经验回放只能以受限样本近似旧任务分布而不等同完整联合训练,DOI:10.1109/TPAMI.2021.3057446;DOI:10.1109/TPAMI.2024.3367329,Replay taxonomy and resource analysis,delange2022continual;wang2024continualsurvey,author_synthesis,confirmed,drafted,不作法律或机构政策的一般断言
+C1-093,1,1.3.3,过强历史保护可能限制当前配准任务学习而自由更新可能破坏旧任务能力,DOI:10.1016/j.tics.2020.09.004;DOI:10.1109/TPAMI.2021.3057446,Stability-plasticity discussion,hadsell2020embracing;delange2022continual,literature,confirmed,drafted,用于界定稳定性可塑性张力
+C1-094,1,1.3.3,配准任务差异会改变共享参数更新中的任务干扰和知识迁移关系,DOI:10.1109/TPAMI.2024.3367329,Inter-task generalizability analysis,wang2024continualsurvey,author_analysis,confirmed,drafted,不声称任务相似性影响方向始终一致
+C1-095,1,1.3.3,跨任务泛化关注模型在未参与持续优化的配准任务上的直接适应基础,DOI:10.1007/978-3-031-72069-7_69,Abstract motivation and evaluation scope,wang2024samcl,author_definition,confirmed,drafted,与前向迁移术语区分
+C1-096,1,1.3.3,元持续学习需要在任务内适应任务间积累和历史保持之间协调更新,DOI:10.1007/978-3-031-72069-7_69,Method motivation,wang2024samcl,author_analysis,confirmed,drafted,不提前写入具体内外层公式
+C1-097,1,1.3.3,较平坦损失区域通常对参数扰动和任务分布差异更不敏感但平坦性本身不保证全部目标,DOI:10.1109/TPAMI.2024.3367329;DOI:10.1007/978-3-031-72069-7_69,Generalizability analysis and SAMCL motivation,wang2024continualsurvey;wang2024samcl,author_synthesis,confirmed,drafted,采用审慎表述
+C1-098,1,1.3.3,持续配准需联合优化有限回放知识保持当前任务可塑性和未见任务跨任务泛化,author synthesis based on section sources,Section synthesis,delange2022continual;wang2024continualsurvey;wang2024samcl,author_analysis,confirmed,drafted,用于形成第五章问题入口
