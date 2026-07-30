@@ -62,3 +62,8 @@ knowledge fusion,知识融合,第一章与第六章,知识聚合（机制不同�
 surrogate dataset,代理数据集,第一章与第六章,公共数据集（不一定等同）,用于蒸馏评估或重建知识的附加数据
 prototype communication,原型通信,第一章与第六章,原型共享（按具体协议使用）,客户端与服务器交换类别或特征原型
 differential privacy,差分隐私,第一章与第六章,隐私保护（范围更宽）,只有明确机制参数与核算时才表述形式化保证
+supervision coverage,监督覆盖,第一章与第三章,监督范围（可作解释）,有直接或可靠间接训练信号约束的图像区域
+annotation class-proportion bias,标注类别比例偏差,第一章与第三章,类别不平衡（范围不完全等同）,稀疏标注中的类别比例偏离完整图像类别构成
+label-noise amplification,标签噪声放大,第一章与第三章,噪声累积（可作解释）,错误伪标签在后续迭代中被重复作为监督
+under-segmentation,欠分割,第一章与第三章,分割不足（避免混用）,预测区域系统性遗漏目标的一部分
+structural fragmentation,结构碎片化,第一章与第三章,预测碎片化（可作解释）,同一目标被预测为不合理的离散或断裂区域
