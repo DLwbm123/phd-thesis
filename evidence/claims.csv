@@ -107,3 +107,12 @@ C1-095,1,1.3.3,跨任务泛化关注模型在未参与持续优化的配准任�
 C1-096,1,1.3.3,元持续学习需要在任务内适应任务间积累和历史保持之间协调更新,DOI:10.1007/978-3-031-72069-7_69,Method motivation,wang2024samcl,author_analysis,confirmed,drafted,不提前写入具体内外层公式
 C1-097,1,1.3.3,较平坦损失区域通常对参数扰动和任务分布差异更不敏感但平坦性本身不保证全部目标,DOI:10.1109/TPAMI.2024.3367329;DOI:10.1007/978-3-031-72069-7_69,Generalizability analysis and SAMCL motivation,wang2024continualsurvey;wang2024samcl,author_synthesis,confirmed,drafted,采用审慎表述
 C1-098,1,1.3.3,持续配准需联合优化有限回放知识保持当前任务可塑性和未见任务跨任务泛化,author synthesis based on section sources,Section synthesis,delange2022continual;wang2024continualsurvey;wang2024samcl,author_analysis,confirmed,drafted,用于形成第五章问题入口
+C1-099,1,1.3.4,联邦持续学习同时面临客户端顺序学习和服务器跨客户端融合中的知识损失,DOI:10.1109/TKDE.2024.3363240,Problem definition and framework,yang2024fclsurvey,literature,confirmed,drafted,本文使用更具体的跨客户端全局灾难性遗忘表述
+C1-100,1,1.3.4,只利用客户端本地历史的保护机制不能直接覆盖仅在其他客户端出现的任务知识,primary FCL methods and author synthesis,Section challenge analysis,yoon2021fedweit;dong2022glfc,author_analysis,confirmed,drafted,用于区分本地遗忘与全局知识保护
+C1-101,1,1.3.4,本文无回放设定指后续任务不重新调用历史原始样本而非禁止所有压缩统计,author scope definition,Section definition,yang2024fclsurvey;saha2021gpm,author_definition,confirmed,drafted,不作机构删除义务或形式化隐私断言
+C1-102,1,1.3.4,GPM保存单一学习器的旧任务重要梯度子空间并在正交补中更新,primary paper,Method formulation,saha2021gpm,method,confirmed,drafted,原始方法未覆盖跨客户端历史融合
+C1-103,1,1.3.4,联邦无回放保护需要在服务器端形成代表跨客户端任务历史的紧凑信息,author synthesis based on FCL and GPM,Section challenge analysis,yang2024fclsurvey;saha2021gpm,author_analysis,confirmed,drafted,不提前指定FedSubMerge实现
+C1-104,1,1.3.4,无差别保护全部客户端历史方向可能收缩可行更新空间并降低当前任务可塑性,author analysis based on gradient-subspace constraints,Section challenge analysis,saha2021gpm,author_analysis,confirmed,drafted,采用条件性机制分析
+C1-105,1,1.3.4,跨中心保护需考虑不同客户端和网络层对历史方向的相关性差异,author synthesis based on client heterogeneity,Section challenge synthesis,yang2024fclsurvey,author_analysis,confirmed,drafted,用于提出客户端特定保护需求而不提前给出算法
+C1-106,1,1.3.4,交换参数梯度原型或压缩子空间不自动构成形式化隐私保证,DOI:10.1038/s41746-020-00323-1;DOI:10.1109/TKDE.2024.3363240,Security and privacy discussion,rieke2020future;yang2024fclsurvey,literature,confirmed,drafted,仅描述原始数据未直接传输
+C1-107,1,1.3.4,无回放医学FCL需协调跨客户端全局稳定性本地可塑性通信代价和信息暴露边界,author synthesis based on section sources,Section synthesis,yang2024fclsurvey;yoon2021fedweit;dong2022glfc;saha2021gpm;rieke2020future,author_analysis,confirmed,drafted,用于形成第六章问题入口
