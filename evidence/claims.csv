@@ -141,3 +141,12 @@ C1-129,1,1.5,第四章研究持续医学图像分割场景定义多维评价和�
 C1-130,1,1.5,第五章研究有限回放条件下的锐度感知元持续医学图像配准,chapter_cards/ch05.md;chapters/ch05_samcl.tex,Chapter 5 card and chapter title,,author_structure,confirmed,drafted,保持集中式有限回放边界
 C1-131,1,1.5,第六章研究无回放联邦持续医学图像分类中的梯度子空间融合与跨中心知识保护,chapter_cards/ch06.md;chapters/ch06_fedsubmerge.tex,Chapter 6 card and chapter title,,author_structure,confirmed,drafted,不声称形式化隐私保证
 C1-132,1,1.5,第七章总结主要结论适用条件局限性并讨论未来研究方向,chapter_cards/ch07.md;chapters/ch07_conclusion.tex,Chapter 7 card and chapter title,,author_structure,confirmed,drafted,未来方向不得写成已完成贡献
+C2-001,2,2.1,医学影像智能分析的分割配准和分类任务具有不同输出空间监督单位和评价尺度,DOI:10.1016/j.media.2017.07.005,Task taxonomy and section synthesis,litjens2017survey,author_synthesis,confirmed,drafted,用于建立2.1统一任务入口
+C2-002,2,2.1.1,医学图像语义分割在像素或体素网格上预测结构病灶或背景标签,DOI:10.1016/j.media.2017.07.005;DOI:10.1007/978-3-319-24574-4_28,Task definition and dense prediction formulation,litjens2017survey;ronneberger2015unet,literature,confirmed,drafted,本文主要范围为语义分割而非实例分割
+C2-003,2,2.1.1,二维和三维分割可统一写在离散图像域上但距离解释必须考虑物理像素体素间距,DOI:10.1186/s12880-015-0068-x,Metric definitions and 3D evaluation conditions,taha2015metrics,author_synthesis,confirmed,drafted,各向异性数据不得直接以数组索引解释毫米距离
+C2-004,2,2.1.1,分割模型在每个空间位置输出类别概率并通过最大概率得到多类标签图,author mathematical definition,Equation eq:foundations-seg-prediction,,author_definition,confirmed,drafted,二值情形允许单前景概率与阈值
+C2-005,2,2.1.1,完整监督下平均交叉熵对所有有参考标签的空间位置计算类别概率损失,author mathematical definition,Equation eq:foundations-seg-ce,,author_definition,confirmed,drafted,训练损失不等同评价指标
+C2-006,2,2.1.1,Dice相似系数和交并比分别基于预测区域与参考区域的交集和集合大小衡量重叠,DOI:10.1186/s12880-015-0068-x,Overlap metric definitions,taha2015metrics,metric,confirmed,drafted,空类别处理规则必须显式说明
+C2-007,2,2.1.1,HD95和ASSD基于预测与参考边界之间的双向点集距离衡量边界误差,DOI:10.1186/s12880-015-0068-x,Distance metric definitions,taha2015metrics,metric,confirmed,drafted,距离应在物理坐标中计算
+C2-008,2,2.1.1,区域重叠指标和边界距离指标对目标大小局部误差及离群点具有不同敏感性,DOI:10.1186/s12880-015-0068-x,Metric analysis and selection guidelines,taha2015metrics,literature,confirmed,drafted,不以单一指标覆盖全部任务需求
+C2-009,2,2.1.1,多类医学图像分割评价需要说明逐类逐样本或全局聚合方式,author evaluation definition,Section metric interpretation,taha2015metrics,author_analysis,confirmed,drafted,用于保证不同实验结果可解释

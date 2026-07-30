@@ -78,6 +78,15 @@ cross-task generalization,跨任务泛化,第一章与第五章,跨域泛化（�
 meta-initialization,元初始化,第一章与第五章,元模型（不完全等同）,通过元学习获得并可经少量更新适应新任务的初始参数
 loss-landscape flatness,损失景观平坦性,第一章与第五章,平坦最小值（仅指具体解时使用）,模型损失对邻域参数扰动的敏感程度
 local-history protection,本地历史知识保护,第一章与第六章,本地知识保护（范围更宽）,仅基于单个客户端已观察任务形成的保护
+semantic segmentation,语义分割,第二至四章,语义图像分割（避免混用）,为每个空间位置赋予类别语义且不区分同类实例身份
+binary segmentation,二值分割,第二至四章,二分类分割（避免混用）,前景与背景两类的空间预测任务
+multiclass segmentation,多类分割,第二至四章,多类别分割（统一用多类分割）,在同一标签空间中预测多个互斥结构类别
+label map,标签图,第二至四章,标签掩膜（按语境使用）,与图像网格对应的离散类别标记
+probability map,概率图,第二至四章,概率掩膜（避免混用）,模型在图像网格上输出的逐类概率
+Dice similarity coefficient,Dice相似系数,第二至四章,Dice系数（首次定义后可简称）,衡量预测区域与参考区域重叠
+intersection over union,交并比,第二至四章,Jaccard系数（首次可说明同义）,预测与参考区域交集占并集的比例
+95th-percentile Hausdorff distance,95%豪斯多夫距离,第二至四章,HD95（首次定义后可用缩写）,双向边界距离的95%分位数最大值
+average symmetric surface distance,平均对称表面距离,第二至四章,平均表面距离（范围可能不同）,两个边界点集双向最近距离的平均值
 cross-client history,跨客户端历史知识,第一章与第六章,全局历史（可能包含服务器历史）,分散在不同客户端任务序列中的既有知识
 global protective subspace,全局保护子空间,第一章与第六章,共享子空间（用途不明确）,用于约束后续更新以保护跨客户端历史的梯度子空间
 over-constraint,过度约束,第一章与第六章,过保护（避免混用）,保护条件过强导致当前任务可行更新空间过度收缩

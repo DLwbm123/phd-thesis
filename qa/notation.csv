@@ -4,7 +4,19 @@ L_global,全局一致性损失,第三章,,ZScribbleSeg,pending,
 pi,类别混合比例向量,第三章,,ZScribbleSeg,pending,向量格式需统一
 L_spatial,空间先验损失,第三章,,ZScribbleSeg,pending,
 L_shape,形状正则化损失,第三章,,ZScribbleSeg,pending,
-theta,模型参数,跨章节,,all,pending,各章可带上下标但含义需一致
+theta,模型参数,跨章节,2.1.1,all,defined,各章可带上下标但含义需一致
 rho,SAM 邻域半径,第五章,,SAMCL,pending,
 U,子空间正交基,第六章,,FedSubMerge,pending,需区分客户端与层索引
 Sigma,奇异值对角矩阵,第六章,,FedSubMerge,pending,
+Omega,离散图像域,第二至六章,2.1.1,author_definition,defined,d取2或3分别表示二维或三维
+I,输入医学图像,第二至四章,2.1.1,author_definition,defined,配准小节使用带F和M下标的图像记号
+Y,参考标签图,第二至四章,2.1.1,author_definition,defined,空间位置取0至K减1的离散类别
+K,类别数,第二至六章,2.1.1,author_definition,defined,按具体任务说明是否包含背景
+f_theta,参数化预测模型,第二至六章,2.1.1,author_definition,defined,不同章节的输入输出空间由任务定义
+p_theta_k,位置u属于类别k的预测概率,第二至四章,2.1.1,author_definition,defined,多类情形对k求和为1
+Y_hat,预测标签图,第二至四章,2.1.1,author_definition,defined,由逐位置最大类别概率得到
+L_CE,交叉熵损失,第二至六章,2.1.1,author_definition,defined,按任务可采用多类或二元形式
+P_k,类别k的预测区域,第二至四章,2.1.1,author_definition,defined,由预测标签图定义
+G_k,类别k的参考区域,第二至四章,2.1.1,author_definition,defined,由参考标签图定义
+d_a_B,点a到集合B的最近欧氏距离,第二至五章,2.1.1,author_definition,defined,边界评价时应使用物理坐标
+Q_q,q分位数算子,第二至五章,2.1.1,author_definition,defined,HD95中q取0.95

@@ -14,7 +14,11 @@ section_id,title,status,artifact
 1.3.4,无回放联邦环境中的跨中心知识保护,drafted_and_verified,chapters/ch01_introduction.tex
 1.4,本文主要研究内容与创新点,drafted_and_verified,chapters/ch01_introduction.tex
 1.5,论文组织结构,drafted_and_verified,chapters/ch01_introduction.tex
-2,相关理论与关键技术,queued,
+2,相关理论与关键技术,in_progress,chapters/ch02_foundations.tex
+2.1,医学影像智能分析任务基础,in_progress,chapters/ch02_foundations.tex
+2.1.1,医学图像分割,drafted_and_verified,chapters/ch02_foundations.tex
+2.1.2,医学图像配准,queued,
+2.1.3,医学图像分类,not_started,
 3,ZScribbleSeg,not_started,
 4,持续分割场景与综合评测,not_started,
 5,SAMCL,not_started,
