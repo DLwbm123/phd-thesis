@@ -133,3 +133,11 @@ C1-121,1,1.4,FedSubMerge在本地训练中执行正交补梯度投影以降低�
 C1-122,1,1.4,FedSubMerge-AD依据逐层子空间距离选择相关客户端并构建客户端特定保护子空间,sources/fedsubmerge/ Subspace Merging for Replay-Free Federated Continual Medical Image Classification 720/FedSubMerge_main_no_appendix.tex,Adaptive layer-wise merging method,,method,confirmed,drafted,用于降低无差别全局保护造成的过度约束
 C1-123,1,1.4,FedSubMerge从一阶近似分析保护强度与可塑性并在标签分布样本数量和多中心特征异质性条件下验证,sources/fedsubmerge/ Subspace Merging for Replay-Free Federated Continual Medical Image Classification 720/FedSubMerge_main_no_appendix.tex,Theory experiments and discussion,,author_synthesis,confirmed,drafted,当前实证范围限于医学图像分类
 C1-124,1,1.4,FedSubMerge不调用历史原始样本但低秩梯度子空间交换不构成形式化隐私保证,sources/fedsubmerge/ Subspace Merging for Replay-Free Federated Continual Medical Image Classification 720/FedSubMerge_main_no_appendix.tex,Replay-free setting and privacy scope,,author_definition,confirmed,drafted,区分原始数据不传输与形式化隐私保护
+C1-125,1,1.5,全文按照绪论理论基础四项研究章节和总结展望组织为七章,THESIS_CONTRACT.md;main.tex,Seven-chapter structure and include order,,author_structure,confirmed,drafted,用于说明论文整体结构而不引入新的科学结论
+C1-126,1,1.5,第一章依次完成研究背景研究现状关键挑战主要内容创新点和论文组织结构,chapter_cards/ch01.md;chapters/ch01_introduction.tex,Chapter 1 structure and completed headings,,author_structure,confirmed,drafted,概括绪论功能
+C1-127,1,1.5,第二章提供医学影像任务弱监督持续学习联邦学习及关键优化方法的理论基础,chapter_cards/ch02.md;chapters/ch02_foundations.tex,Chapter 2 card and heading skeleton,,author_structure,confirmed,drafted,不重复第一章研究现状且不提前泄露方法创新
+C1-128,1,1.5,第三章研究监督增强与先验正则化的涂鸦监督医学图像分割,chapter_cards/ch03.md;chapters/ch03_zscribble.tex,Chapter 3 card and chapter title,,author_structure,confirmed,drafted,第三章不属于持续学习
+C1-129,1,1.5,第四章研究持续医学图像分割场景定义多维评价和系统性实证比较,chapter_cards/ch04.md;chapters/ch04_benchmark.tex,Chapter 4 card and chapter title,,author_structure,confirmed,drafted,第四章不是单一抗遗忘算法
+C1-130,1,1.5,第五章研究有限回放条件下的锐度感知元持续医学图像配准,chapter_cards/ch05.md;chapters/ch05_samcl.tex,Chapter 5 card and chapter title,,author_structure,confirmed,drafted,保持集中式有限回放边界
+C1-131,1,1.5,第六章研究无回放联邦持续医学图像分类中的梯度子空间融合与跨中心知识保护,chapter_cards/ch06.md;chapters/ch06_fedsubmerge.tex,Chapter 6 card and chapter title,,author_structure,confirmed,drafted,不声称形式化隐私保证
+C1-132,1,1.5,第七章总结主要结论适用条件局限性并讨论未来研究方向,chapter_cards/ch07.md;chapters/ch07_conclusion.tex,Chapter 7 card and chapter title,,author_structure,confirmed,drafted,未来方向不得写成已完成贡献
