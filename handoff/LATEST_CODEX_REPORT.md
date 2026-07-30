@@ -39,5 +39,7 @@
 
 ## 部署与下一步
 
-- GitHub 内容提交与 Overleaf 部署提交：待本报告随内容提交推送、完成 `bash scripts/sync_latex_to_overleaf.sh "Sync completed Chapter 1"` 后补记；若因此产生仅报告修改，将按任务要求单独提交并推送，且不再次同步 Overleaf。
+- GitHub 内容提交：`b97a221f10745d40fc03ef6a72c1619cf68842f2`（`Complete Chapter 1 milestone`），已非强制推送并以 `origin/main` 回读确认。
+- Overleaf 部署提交：`7bb2fb2c4cef5296947b2b36cc42e9e7534eb306`（`Sync completed Chapter 1`）。部署脚本在临时副本完整执行 XeLaTeX/BibTeX 后，非强制推送至 `main` 并回读确认；该部署对应上述 GitHub 内容提交。
+- 本报告、状态与上下文包的部署标识将以一次报告专用 GitHub 提交保存；按任务要求不将该专用提交再次同步到 Overleaf。
 - 下一目标：2.1.1“医学图像分割”。第一章已完成并验证；不得提前撰写 2.1.2 或其他第二章正文。
