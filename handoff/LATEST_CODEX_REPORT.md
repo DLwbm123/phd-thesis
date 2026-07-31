@@ -4,7 +4,8 @@
 
 - 分支：`framework/supervisor-2026-07-31`；迁移基线：`c74d0b2`。未切换或合并 `main`，未执行 reset、clean 或 checkout 丢弃工作。
 - 未提交工作开始前已保存可恢复补丁：`/Users/bominwang/Downloads/phd-thesis-framework-migration-20260731-162417.patch`，SHA-256 `38f301511f65a5bef35b4c254dd1eb12662d22dc292a05c051f3736015593d5a`。该补丁未加入仓库。
-- 本报告所在提交即迁移最终提交；GitHub 与 Overleaf 回执见本报告的提交后同步更新。
+- GitHub 迁移提交：`0a839010742f85bde98fc2e167d836cf5bea8316`，已推送至 `origin/framework/supervisor-2026-07-31`；未合并或覆盖 `main`。
+- Overleaf 已在完整部署构建后同步，远端提交：`9b394141049b58fda5379cd868378ad73a5c4ac5`，部署来源为上述 GitHub 迁移提交。
 
 ## 结构与内容迁移
 
