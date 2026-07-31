@@ -16,7 +16,7 @@ C1-004,1,1.1.1,VoxelMorph 将图像对到形变场的映射参数化为神经网
 C1-005,1,1.1.1,医学影像机器学习依赖规模充分经过整理且具有代表性的训练数据和专家标注,DOI:10.1148/radiol.2020192224,Abstract,willemink2020preparing,literature,confirmed,drafted,用于引出训练信息限制
 C1-006,1,1.1.1,医疗机构外部数据上的模型表现可能低于原机构内部测试且模型可能利用机构相关混杂信息,DOI:10.1371/journal.pmed.1002683,Abstract and author summary,zech2018variable,primary_experiment,confirmed,drafted,结论限于该多机构胸片研究并采用审慎表述
 C1-007,1,1.1.1,分类分割和配准分别提供图像级判断空间级描述和图像间对应关系,author synthesis based on cited task definitions,Section synthesis,litjens2017survey;ronneberger2015unet;balakrishnan2019voxelmorph,author_analysis,confirmed,drafted,属于任务功能层面的综合概括
-C1-008,1,1.1.2,医学影像训练信息包括特定训练阶段可实际调用的图像标签历史样本及跨机构协作条件,author synthesis based on cited section sources,Section definition,willemink2020preparing;rieke2020future,author_analysis,confirmed,drafted,用于界定训练信息而非仅指客观存在的数据量
+C1-008,1,1.1.2,训练信息受限指特定训练阶段无法完整调用潜在可用的图像监督历史样本及跨机构原始信息,author synthesis based on cited section sources,Section definition,willemink2020preparing;rieke2020future,author_analysis,confirmed,drafted,严格技术术语；数据不全仅作背景概括且不指随机缺失值或物理删除
 C1-009,1,1.1.3,医学图像分割中的不完备数据可区分为标注稀缺与弱标注且弱标注可表现为稀疏噪声或图像级标签,DOI:10.1016/j.media.2020.101693,Abstract and dataset limitation taxonomy,tajbakhsh2020imperfect,literature,confirmed,drafted,仅用于概括监督信息形式
 C1-010,1,1.1.3,图像级点框涂鸦和部分切片等弱标注可降低标注负担但不等价于密集空间监督,DOI:10.1016/j.media.2020.101693,Review taxonomy and weak annotation discussion,tajbakhsh2020imperfect,author_analysis,confirmed,drafted,不声称所有弱标注形式具有相同信息量
 C1-011,1,1.1.3,联合训练有限回放和无回放方法对应不同的历史数据访问与记忆条件,DOI:10.1109/TPAMI.2021.3057446,Survey scope method taxonomy and memory comparison,delange2022continual,literature,confirmed,drafted,该综述重点为分类任务故正文只用于概念设定
@@ -50,7 +50,7 @@ C1-038,1,1.2.3,超像素引导涂鸦传播和类别级对比正则可联合利�
 C1-039,1,1.2.3,伪标签扩大监督范围的同时可能继承并强化模型早期预测误差,author synthesis based on pseudo-label methods,Section synthesis,luo2022scribble;han2024dmsps,author_analysis,confirmed,drafted,采用审慎表述
 C1-040,1,1.2.3,有效涂鸦监督与标注像素比例空间覆盖和随机性有关,DOI:10.1016/j.media.2026.104074,Abstract introduction and efficient-scribble analysis,zhang2026zscribbleseg,method,confirmed,drafted,属于ZScribbleSeg对标注形式的研究范围
 C1-041,1,1.2.3,ZScribbleSeg通过监督增强全局一致性类别混合比例空间先验和形状正则利用稀疏监督,DOI:10.1016/j.media.2026.104074,Abstract and framework overview,zhang2026zscribbleseg,method,confirmed,drafted,仅概括机制不写公式或结果
-C1-042,1,1.2.3,涂鸦监督现有不足集中于监督覆盖伪标签噪声类别比例偏差及边界形状缺失,author synthesis based on section sources,Section synthesis,tajbakhsh2020imperfect;luo2022scribble;han2024dmsps;zhang2026zscribbleseg,author_analysis,confirmed,drafted,用于过渡至1.3.1且不解释为持续学习
+C1-042,1,1.2.3,涂鸦监督现有不足集中于监督覆盖伪标签噪声类别比例偏差及边界形状缺失,author synthesis based on section sources,Section synthesis,tajbakhsh2020imperfect;luo2022scribble;han2024dmsps;zhang2026zscribbleseg,author_analysis,confirmed,drafted,用于过渡至1.3.2且不解释为持续学习
 C1-043,1,1.2.1,持续学习研究要求顺序累积知识并协调稳定性和可塑性,DOI:10.1109/TPAMI.2021.3057446,Abstract introduction and scope,delange2022continual,literature,confirmed,drafted,该综述重点为任务增量分类
 C1-044,1,1.2.1,持续学习总体目标还包括任务内任务间泛化和资源效率,DOI:10.1109/TPAMI.2024.3367329,Abstract and conceptual framework,wang2024continualsurvey,literature,confirmed,drafted,用于扩展评价视角
 C1-045,1,1.2.1,医学影像持续学习文献包含实例类任务域及混合增量场景,DOI:10.1016/j.media.2025.103730,Scenario taxonomy,kumari2025medicalcl,literature,confirmed,drafted,不将分类视为互斥且穷尽
