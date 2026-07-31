@@ -1,4 +1,4 @@
-\chapter{医学影像学习相关理论与关键技术}
+\chapter{医学影像深度学习相关理论与关键技术}
 \label{chap:foundations}
 
 \section{医学影像智能分析任务基础}
@@ -64,28 +64,36 @@ Q_{0.95}\!\left(\{d(\mathbf{b},\partial P_k):\mathbf{b}\in\partial G_k\}\right)
 分割在一个既定坐标系中描述区域和边界。若需要比较不同时间、不同模态或不同个体的图像，首先还需建立图像之间的空间对应关系。下一小节据此介绍医学图像配准的基本表述。
 
 \subsection{医学图像配准}
+\label{subsec:foundations-registration}
+% 保留为下一写作起点。迁移任务不得改写已经完成并验证的 2.1.1。
+
 \subsection{医学图像分类}
+\label{subsec:foundations-classification}
 
-\section{弱监督与标注高效医学影像学习}
-\subsection{弱监督标注形式}
-\subsection{涂鸦监督医学图像分割}
-\subsection{一致性正则化与先验约束}
+\section{数据不全场景下的学习问题}
+\label{sec:foundations-incomplete-data}
 
-\section{持续学习基础}
-\subsection{持续学习问题定义}
-\subsection{灾难性遗忘与稳定性—可塑性权衡}
-\subsection{正则化、回放与参数隔离策略}
-\subsection{前向迁移与跨任务泛化}
+\subsection{历史数据不可访问与无回放学习}
+\label{subsec:foundations-replay-free}
 
-\section{联邦学习与联邦持续学习}
-\subsection{联邦学习基本范式}
-\subsection{非独立同分布数据与客户端异质性}
-\subsection{联邦持续学习问题定义}
-\subsection{本地与全局灾难性遗忘}
+\subsection{多中心分布式数据与隐私约束}
+\label{subsec:foundations-distributed-data}
 
-\section{相关关键优化与表示方法}
-\subsection{元学习}
-\subsection{锐度感知最小化}
-\subsection{梯度子空间建模与正交投影}
+\subsection{部分监督与稀疏标注}
+\label{subsec:foundations-partial-supervision}
+
+\section{医学影像持续学习方法}
+\label{sec:foundations-continual-learning}
+
+\subsection{持续学习的问题定义与基本场景}
+\label{subsec:foundations-cl-definition}
+
+\subsection{灾难性遗忘与稳定性--可塑性权衡}
+\label{subsec:foundations-forgetting-plasticity}
+
+\subsection{正则化、回放、参数隔离与梯度投影方法}
+\label{subsec:foundations-cl-methods}
+% 本节可在不提前泄露方法章创新的前提下，简要介绍元学习、锐度感知优化和梯度子空间的通用基础。
 
 \section{本章小结}
+\label{sec:foundations-summary}

@@ -1,0 +1,52 @@
+\chapter{面向弱监督分割与配准的医学影像持续学习研究}
+\label{chap:task-level-continual-learning}
+
+\section{引言}
+\label{sec:task-cl-introduction}
+
+\section{问题定义与研究动机}
+\label{sec:task-cl-formulation}
+% 分别说明分割与配准任务序列、监督形式、历史访问、任务身份和评价维度；不得用一个统一公式掩盖两类任务差异。
+
+\section{ScribbleCL：涂鸦监督医学图像分割方法及其持续学习}
+\label{sec:scribblecl}
+
+\subsection{监督增强、类别分布校正与结构先验正则化}
+\label{subsec:scribblecl-zscribbleseg}
+% 准确整合原始 ZScribbleSeg 的问题设定、方法、原始离线实验和证据，不追溯性改写为持续学习算法。
+
+\subsection{弱监督持续学习实验}
+\label{subsec:scribblecl-experiments}
+
+\subsubsection{Class-CL 与 Organ-CL 下的涂鸦监督持续分割}
+\label{subsubsec:scribblecl-protocol}
+% TODO-EXPERIMENT：补齐任务序列、涂鸦生成、标签覆盖、历史访问、基线、种子和实现细节。
+
+\subsubsection{标注效率、知识保持、遗忘与前向能力分析}
+\label{subsubsec:scribblecl-analysis}
+% TODO-EXPERIMENT：只写入经日志、表格和 evidence/experiments.csv 支持的结果。
+
+\section{SAMCL：锐度感知元持续医学图像配准方法}
+\label{sec:samcl}
+
+\subsection{面向配准任务序列的元持续学习}
+\label{subsec:samcl-meta-continual}
+
+\subsection{锐度感知优化与当前任务--历史任务联合更新}
+\label{subsec:samcl-sharpness-update}
+
+\subsection{配准持续学习实验}
+\label{subsec:samcl-experiments}
+
+\subsubsection{跨器官与跨模态持续配准任务序列}
+\label{subsubsec:samcl-protocol}
+
+\subsubsection{配准精度、知识保持、遗忘与泛化分析}
+\label{subsubsec:samcl-analysis}
+
+\section{综合讨论}
+\label{sec:task-cl-discussion}
+% 比较两类任务的监督形式、输出空间、历史访问和评价差异，不声称共享同一算法。
+
+\section{本章小结}
+\label{sec:task-cl-summary}
