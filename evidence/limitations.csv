@@ -1,4 +1,4 @@
 limitation_id,work,limitation,evidence_source,thesis_section,status,notes
-LIM-ZS-001,ZScribbleSeg,原始工作为静态弱监督分割而非持续学习,problem setting,7.3,confirmed,全文不得改写为持续学习
-LIM-SAM-001,SAMCL,依赖有限历史样本回放,method setting,5.6/7.3,confirmed,
-LIM-FSM-001,FedSubMerge,不等同于形式化隐私机制,problem setting,6.6/7.3,confirmed,
+LIM-ZS-001,ZScribbleSeg,原始工作为静态弱监督分割而非持续学习,problem setting,6.3,confirmed,全文不得改写为持续学习
+LIM-SAM-001,SAMCL,依赖有限历史样本回放,method setting,5.6/6.3,confirmed,
+LIM-FSM-001,FedSubMerge,不等同于形式化隐私机制,problem setting,4.7/6.3,confirmed,

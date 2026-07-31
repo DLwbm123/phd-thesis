@@ -1,27 +1,36 @@
-# 原始材料映射
+# 原始材料映射（导师讨论后 V3）
 
-| 材料 | 已核实工程根目录 | 主 TeX / 参考文献 | 用途 | 内容写作权限 |
+| 材料 | 已核实工程根目录 | 主 TeX / 参考文献 | 新章节用途 | 内容写作权限 |
 |---|---|---|---|---|
-| 参考毕业论文 | `sources/reference_thesis/Thesis reference/` | `main.tex`；`main.bib`、`strings.bib` | 模板核对、文本重合审查 | 禁止作为正文来源；主文件、文献库和章节均不得导入 |
-| ZScribbleSeg | `sources/zscribble/Zscribble_MEDIA_arxiv/` | `main_clean_new.tex`；`cas-refs.bib` | 第三章事实、公式、实验、图和原始引用；第一章弱监督问题背景 | 允许，需证据定位 |
-| Benchmark | `sources/benchmark/Benchmark_pa/` | `main.tex`；文献表内嵌于该文件第 1073 行起的 `thebibliography` 环境 | 第四章场景、指标、实验与讨论；第一章持续学习问题背景 | 允许，需证据定位 |
-| SAMCL | `sources/samcl/MICCAI 2024: Toward Universal Medical Image Registration/` | `Paper-0150.tex`；`Paper-0150.bib` | 第五章方法与实验；第一章持续配准问题背景 | 允许，需证据定位 |
-| FedSubMerge | `sources/fedsubmerge/ Subspace Merging for Replay-Free Federated Continual Medical Image Classification 720/` | `FedSubMerge_main_no_appendix.tex`；`references.bib` | 第六章方法与实验；第一章联邦持续学习问题背景 | 允许，需证据定位 |
+| 参考毕业论文 | `sources/reference_thesis/Thesis reference/` | `main.tex`；`main.bib`、`strings.bib` | 仅模板核对、版面检查和文本重合审查 | 禁止作为正文来源；不得导入正文、标题、图表、元数据或文献库 |
+| Benchmark | `sources/benchmark/Benchmark_pa/` | `main.tex`；文献表内嵌于主文件 | 第三章场景定义、数据组织、统一协议、指标、实验和局限；第一章持续学习现状与挑战 | 允许，需证据定位；本章不是单一算法 |
+| FedSubMerge | `sources/fedsubmerge/ Subspace Merging for Replay-Free Federated Continual Medical Image Classification 720/` | 以本地最新且能正确匹配图表资源的主 TeX 为准；`references.bib` | 第四章问题建模、方法、理论、实验和讨论；第一章联邦持续学习现状与挑战 | 允许，需证据定位；不得声称形式化隐私 |
+| ZScribbleSeg | `sources/zscribble/Zscribble_MEDIA_arxiv/` | `main_clean_new.tex`；`cas-refs.bib`；补充材料与补充文献 | 第五章 5.3.1 原始弱监督方法与离线实验；第一章弱/部分监督现状与挑战 | 允许，需证据定位；不得追溯性写成持续学习算法 |
+| ScribbleCL 新增实验 | 由作者在仓库外或 `sources/scribblecl/` 建立只读事实源 | 代码版本、配置、数据划分、日志、表格、图、随机种子和实验说明 | 第五章 5.3.2 弱监督持续分割；第一章只写研究计划与经验证结论 | 在事实源建立前仅允许写 `TODO-EXPERIMENT`；不得推断结果 |
+| SAMCL | `sources/samcl/MICCAI 2024: Toward Universal Medical Image Registration/` | `Paper-0150.tex`；`Paper-0150.bib` | 第五章 5.4 方法与实验；第一章持续配准现状与挑战 | 允许，需证据定位；明确有限回放 |
+
+## 新章节到事实源的映射
+
+```text
+第三章  ← Benchmark
+第四章  ← FedSubMerge
+第五章 5.3.1 ← ZScribbleSeg
+第五章 5.3.2 ← 新增 ScribbleCL 实验
+第五章 5.4   ← SAMCL
+```
 
 ## 原始工程构建入口核验
 
-- ZScribbleSeg：主文件声明 `elsarticle` 与 `\bibliography{cas-refs}`；对应流程为 `pdflatex main_clean_new.tex`、`bibtex main_clean_new`、再运行两次 `pdflatex`。
-- Benchmark：主文件使用本地 `IEEEtran.cls`，参考文献已内嵌；对应流程为至少运行两次 `pdflatex main.tex`。
-- SAMCL：主文件使用本地 `llncs.cls`，并声明 `\bibliography{Paper-0150}`；对应流程为 `pdflatex Paper-0150.tex`、`bibtex Paper-0150`、再运行两次 `pdflatex`。
-- FedSubMerge：主文件使用本地 `ieeecolor.cls`，并声明 `\bibliography{references}`；对应流程为 `pdflatex FedSubMerge_main_no_appendix.tex`、`bibtex FedSubMerge_main_no_appendix`、再运行两次 `pdflatex`。
-- 上述命令依据实际入口和参考文献声明核对，但本轮未编译原始工程，也未修改 `sources/`。本机现已具备 `pdflatex` 和 `bibtex`；这些命令可在后续需要时执行。
-- FedSubMerge 同目录另有 `FedSubMerge_main_no_appendix_tense_checked.tex`；它请求当前不存在的 `Figs/fig0_method_overview_1.pdf`，因此本轮将资源匹配的 `FedSubMerge_main_no_appendix.tex` 记为主入口。
-- 当前论文根目录及四项用户工作均不是 Git 工作区。参考毕业论文子目录是独立 Git 工作区，核实分支为 `main`、提交为 `a315ed5`；该信息只用于来源状态记录。
+- 迁移任务不得修改 `sources/`；原始入口以本地实际文件为准。
+- ZScribbleSeg、Benchmark、SAMCL 和 FedSubMerge 的入口及构建方式沿用迁移前已核实记录，但 FedSubMerge 应优先核对作者最近更新的主文件与图表资源是否一致。
+- ScribbleCL 在形成正文前必须建立单独的实验清单与可回溯结果，不得把临时终端输出当作最终证据。
 
 ## 使用规则
 
 1. 原始论文是事实源，不是可直接粘贴的博士论文正文；
 2. 英文论文内容必须按中文博士论文论证重新组织，不逐句翻译；
-3. 第一章研究现状中新增的外部文献必须核实原始论文元数据和具体结论；
-4. 参考毕业论文正文不得被 GPT 或 Codex 用作语言示例；
-5. 图可复用时必须确认来源和版权，并重写中文图注；参考毕业论文的图不得复用。
+3. 第一章研究现状中新增外部文献必须核实原始论文元数据和具体结论；
+4. Benchmark、FedSubMerge、ZScribbleSeg 和 SAMCL 的结果必须分别标明来源；
+5. ZScribbleSeg 原始结果与 ScribbleCL 新增结果不得混写；
+6. 图可复用时须确认来源与版权，并重写中文图注；参考毕业论文的图不得复用；
+7. 章节编号迁移后，所有证据记录的 `section_id` 和 `chapter` 字段必须同步更新。

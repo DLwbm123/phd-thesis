@@ -1,35 +1,34 @@
-# Codex 最新报告：第二章 2.1.1
+# Codex 最新报告：导师框架迁移（2026-07-31）
 
-- 执行任务：`CODEX_TASK_ch02_2_1_1.md`
-- 执行时间：2026-07-30 CST
-- 基线提交：`235bcfa05463f96fef8e5410a63a4b3ec12c1974`；预检时 `main` 与 `origin/main` 同步，工作区仅有允许的任务文件 `CODEX_TASK_ch02_2_1_1.md`。
+## 分支、保护与范围
 
-## 集成范围
+- 分支：`framework/supervisor-2026-07-31`；迁移基线：`c74d0b2`。未切换或合并 `main`，未执行 reset、clean 或 checkout 丢弃工作。
+- 未提交工作开始前已保存可恢复补丁：`/Users/bominwang/Downloads/phd-thesis-framework-migration-20260731-162417.patch`，SHA-256 `38f301511f65a5bef35b4c254dd1eb12662d22dc292a05c051f3736015593d5a`。该补丁未加入仓库。
+- 本报告所在提交即迁移最终提交；GitHub 与 Overleaf 回执见本报告的提交后同步更新。
 
-- 在 `chapters/ch02_foundations.tex` 中加入 2.1 标签及批准的 2.1 引言，并在 2.1.1 中加入批准的医学图像分割正文、四个显示公式和四个唯一公式标签：预测、交叉熵、区域重叠、边界距离。
-- 2.1.1 正文在标签之后与任务文件批准稿逐字一致；没有写入 2.1.2 或其他第二章正文。2.1.2、2.1.3 及后续章节小节仍为空骨架。
-- 第一章文件内容哈希保持不变：`chapters/ch01_introduction.tex` SHA-256 `0cbe6694a5d833ef17cf418f5790ec4cef79c5990b2c6e87dacb7d9e57662378`。
-- 实际修改/新增文件：`CODEX_TASK_ch02_2_1_1.md`、`chapters/ch02_foundations.tex`、`bibliography/references.bib`、`evidence/claims.csv`、`qa/terminology.csv`、`qa/notation.csv`、`qa/chapter_status.csv`、`STATE.md`、`handoff/LATEST_CODEX_REPORT.md`。`qa/style_audit_report.md` 和 `qa/reference_overlap_report.md` 本轮未产生新差异。
+## 结构与内容迁移
 
-## 参考文献、证据与 QA 登记
+- 正文入口已改为连续六章：Benchmark（旧第4章）→ 第3章；FedSubMerge（旧第6章）→ 第4章；ZScribbleSeg（旧第3章）与 SAMCL（旧第5章）→ 第5章的5.3.1与5.4；总结（旧第7章）→ 第6章。旧章节文件不再被 `main.tex` 引用，`chapter_cards/ch07.md` 已退役。
+- 第一章按 1.1.1--1.1.4、1.2.1--1.2.3、1.3.1--1.3.4 和 1.4 重构；原 1.5 已并入 1.4 末尾。保留已核实引用与审慎边界，并首次定义“数据不全”不等于缺失值或物理删除。
+- 第一章贡献顺序为 Benchmark → FedSubMerge → ZScribbleSeg/ScribbleCL → SAMCL。原始 ZScribbleSeg 仍为静态弱监督方法；ScribbleCL 保持 `TODO-EXPERIMENT`。SAMCL 明确有限回放；FedSubMerge 不声称形式化隐私。
+- 第二章 2.1.1 保持迁移前已验证正文和公式；只调整章名和2.1.2后的骨架。2.1.2 状态仍为 `queued`。
 
-- 新增唯一 BibTeX 条目 `taha2015metrics`（DOI `10.1186/s12880-015-0068-x`）；`litjens2017survey` 和 `ronneberger2015unet` 复用既有条目。共 46 个 BibTeX key，无重复 key、DOI 或归一化题名。
-- `evidence/claims.csv` 新增 `C2-001`--`C2-009`，每个恰好一次；全表保持 11 列，Python CSV 解析通过。
-- `qa/terminology.csv` 新增 9 个语义分割、二值/多类分割、标签/概率图、Dice、IoU、HD95 和 ASSD 术语；保持 5 列和全局英文键唯一。
-- `qa/notation.csv` 将 `theta` 首次定义更新为 2.1.1，并新增 `Omega`、`I`、`Y`、`K`、`f_theta`、`p_theta_k`、`Y_hat`、`L_CE`、`P_k`、`G_k`、`d_a_B`、`Q_q`；保持 7 列和符号唯一。
-- `qa/chapter_status.csv` 更新为：`2=in_progress`、`2.1=in_progress`、`2.1.1=drafted_and_verified`、`2.1.2=queued`、`2.1.3=not_started`；第一章状态保持完成。
+## 账本与状态
 
-## 验证结果
+- `evidence/claims.csv`：151 条记录均保留；10 条 ZScribbleSeg 记录人工映射至 5.3.1；旧 1.2/1.3 记录按语义重映射，8 条旧 1.5 结构记录并入 1.4 并改写为六章说明。
+- `evidence/experiments.csv` 与 `evidence/equations.csv` 为空，未虚构实验或公式；`evidence/limitations.csv` 已重映射至 4.7、5.6 和 6.3。
+- `qa/chapter_status.csv` 标记第一章为 `drafted_pending_review` / `drafted_pending_reverification`，2.1.1 为 `drafted_and_verified`，2.1.2 为 `queued`。
 
-- 命令：`bash scripts/verify_fast_section.sh --quiet chapters/ch02_foundations.tex`；退出码 0，快速元数据和完整本地构建均通过。PDF 为 59 页、725,025 字节、SHA-256 `00809254b3c157d1016a3720ab5fa679a97b91c69008f657b63e99f059ab52af`。
-- 活动引文均可解析；无未定义引文、未定义交叉引用、重复标签、缺失输入、缺失类/参考文献/图表、`TODO`/`TBD`/`??` 或重复公式标签。`sources/` 未出现在 diff 中。
-- 通过 `git diff --check`；保留 Chapter 2 骨架中 2.1.2、2.1.3 与后续小节的空正文。`config/build_flags.tex` 仍为 `\thesisbibliographytrue`。
-- 定向视觉检查使用 macOS Quartz：实体 PDF 页 35--36（2.1 引言和 2.1.1 全部内容）以及实体参考文献页 54（条目 [46] `taha2015metrics`）。公式未发生越界或异常断行，中文、标题、页码和引用均可读，无裁切、重叠或异常分页。
-- `sources/` 任务前后均为 243 个文件，确定性指纹均为 `cfb7d9ae63df5465365eceb494bd4258041636c4a83574197de8c470dc0d0058`；未修改或导入 `sources/reference_thesis/` 内容。
+## 构建与 QA
 
-## 未解决事项与下一目标
+- 执行：`latexmk -C main.tex`，随后 `latexmk -xelatex -interaction=nonstopmode -file-line-error main.tex`；退出码均为 0。
+- PDF：55 页，730,359 字节，SHA-256 `c56578652aed221e1a8cb23e0cd1de07740e180f7433b367948cfff167527e64`。
+- 静态检查：46 个活动引用键全部存在；84 个活动标签无重复；无 undefined citation/reference、missing file、duplicate label 或 overfull/underfull 警告。
+- 已运行 `style_audit.py` 与 `reference_overlap_audit.py`。前者只提示第一章“同时”30 次，需作者结合文意复审；后者未发现达到 28 个规范化字符阈值的参考论文长文本重合。
+- PDF 视觉核验覆盖封面、目录/前置部分、第一章页、第二章 2.1.1 页、第三至第六章首页与参考文献首页；Quick Look 正常渲染中文封面和新暂定题目。基于 Poppler 的临时渲染器未显示正文 CJK 字形，故以 XeLaTeX 构建日志、Quick Look 和无版面警告共同核验；未观察到裁切或异常空白。
 
-- 保留既有样式弃用、`ctexpatch` 兼容性和其他章节 `Overfull \\vbox` 警告；本轮目标页面未发现版面异常。
-- `evidence/claims.csv` 的既有混合行尾未规范化；不影响 Python CSV 解析。
-- 下一目标为 2.1.2“医学图像配准”。本轮没有撰写 2.1.2 或任何后续第二章正文。
-- GitHub 内容提交和 Overleaf 部署将在本报告提交后完成；本轮不创建仅用于部署回执的第二个 GitHub 提交。
+## 作者待审与下一动作
+
+- `AUTHOR-DECISION-REQUIRED`：暂定题目是否采用候选一；是否正式采用连续六章；“数据不全”定义与第一章 1.1.2--1.1.4、1.2.3、1.3.2、1.4 的表述强度。
+- ScribbleCL 仍缺任务协议、代码版本、数据划分、种子、逐阶段日志、性能矩阵、表格与可复现证据；在这些材料齐备前不得写结果或称为新算法。
+- 下一步只能是作者复审第一章、题目与六章目录；不得直接继续 2.1.2。

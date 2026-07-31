@@ -1,22 +1,26 @@
 # 当前写作状态
 
-- 当前阶段：第二章正文写作与证据集成。
-- 当前章节：第二章“医学影像学习相关理论与关键技术”。
-- 当前小节：2.1“医学影像智能分析任务基础”已进入进行中；2.1.1“医学图像分割”已完成并验证。
-- 当前正文状态：第一章 1.1--1.5 保持 `drafted_and_verified` 且未修改；2.1 引言和 2.1.1 已集成。2.1.2 及其后所有第二章正文仍未起草。
-- 最新 Codex 报告：`handoff/LATEST_CODEX_REPORT.md`
-- GPT 上下文包：`handoff/CONTEXT_PACKET_FOR_GPT.md`（本轮按任务要求未重建）
-- 论文主入口：`main.tex`
-- 当前编译状态：2026-07-30 执行 `bash scripts/verify_fast_section.sh --quiet chapters/ch02_foundations.tex` 成功；`main.pdf` 为 59 页、725,025 字节、SHA-256 `00809254b3c157d1016a3720ab5fa679a97b91c69008f657b63e99f059ab52af`。
-- 当前审查状态：2.1/2.1.1 正文逐字校验、引文与 BibTeX、四个公式标签、证据/术语/符号 CSV、未定义引用与交叉引用、定向 PDF 视觉检查均通过。检查了实体页 35--36 及新增参考文献实体页 54。
-- 当前模板：`config/build_flags.tex` 继续使用 `\thesisbibliographytrue`；本轮未修改模板、构建脚本、图表或 `sources/`。
-- 当前部署状态：待本轮内容提交推送 GitHub 后，按任务命令使用 `bash scripts/sync_latex_to_overleaf.sh --skip-local-build "Sync Chapter 2 Section 2.1.1"` 同步并记录 Overleaf 提交号。
+## 框架版本
 
-## 待核查问题
+- 当前框架：导师讨论后 V3，生效日期 2026-07-31。
+- 当前首选题目：面向数据不全与任务持续演化的医学影像持续学习方法研究（`AUTHOR-DECISION-REQUIRED`，尚未定稿）。
+- 正文章节：连续六章；不得保留空白第六章。
+- 总契约：`THESIS_CONTRACT.md`。
 
-- 既有非致命构建警告仍包括 `gbt7714-numerical` 样式名弃用和 `ctexpatch`/`\NAT@citexnum` 兼容性提示；本轮未修改模板或样式。
-- 作者表达和参考论文重合报告沿用既有结果：第一章规则命中 `同时` 29 次、`首先` 7 次；未发现达到阈值的长文本精确重合。
-- `evidence/claims.csv` 保留既有混合 CRLF/LF 行尾；Python CSV 解析通过，未改写既有行。
-- 全文其他章节既有 106.4171 pt `Overfull \vbox` 警告仍需后续模板/版面阶段处理；本轮目标页未见裁切或重叠。
+## 当前阶段
 
-下一动作：完成 2.1.1 的 GitHub 推送和 Overleaf 同步后，等待经批准的 2.1.2“医学图像配准”正文；不得提前撰写 2.1.2。
+- 当前阶段：导师框架迁移、第一章重构与全仓一致性核验。
+- 第一章已按新框架重构，状态为 `drafted_pending_review`；作者复审前不得标为已核验。
+- 第二章 2.1.1“医学图像分割”保留迁移前已经完成并验证的正文；2.1.2 及之后保持 `queued`，不得继续撰写。
+- ScribbleCL 持续学习实验尚未完成；任务、基线、指标和结论均为 `TODO-EXPERIMENT`。
+
+## 当前分支与验证
+
+- 迁移分支：`framework/supervisor-2026-07-31`。
+- 迁移基线：`c74d0b2`。
+- 未提交迁移补丁已保存于仓库外：`/Users/bominwang/Downloads/phd-thesis-framework-migration-20260731-162417.patch`，SHA-256 `38f301511f65a5bef35b4c254dd1eb12662d22dc292a05c051f3736015593d5a`。
+- 完整构建、PDF、引用、标签、风格与文本重合审查结果见 `handoff/LATEST_CODEX_REPORT.md`。
+
+## 下一动作
+
+仅允许作者复审第一章、题目和六章结构；复审通过后才可继续第二章 2.1.2。

@@ -6,8 +6,7 @@
 
 | 文件 | 类别 | 模式 | 次数 | 原因 |
 |---|---|---:|---:|---|
-| `chapters/ch01_introduction.tex` | transition | `同时` | 29 | 过度依赖统一连接词 |
-| `chapters/ch01_introduction.tex` | sequence | `首先` | 7 | 避免所有段落都采用固定枚举结构 |
+| `chapters/ch01_introduction.tex` | transition | `同时` | 30 | 过度依赖统一连接词 |
 
 ## 重复段落开头
 
