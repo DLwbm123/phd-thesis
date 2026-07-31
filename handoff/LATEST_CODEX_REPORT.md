@@ -1,5 +1,12 @@
 # Codex 最新报告：第一章作者复审定向精修（2026-07-31）
 
+## GPT Pro 学术复审批准与合并前核验
+
+- 题目、第一章和连续六章框架已于 2026-07-31 通过 GPT Pro 学术复审。第一章现可标记为 `drafted_and_verified`；本轮未修改任何学术正文、引用或 LaTeX 配置。
+- 合并 `main` 前的核验已确认当前分支为 `framework/supervisor-2026-07-31`，工作树起始时干净，并包含 `4afd1353f5b3f35dcb1027573c436ce3ef08d4fe` 和 `898a828650aec8d88eba2c6aaa21dfe8a064309c`。
+- `git fetch origin` 后，`origin/main...HEAD` 为 `0 4`：`origin/main` 没有新的并发提交，因此未执行 rebase、merge 或强制推送。本轮下一步是合并 `main`；合并后才由 Codex 准备 2.1.2“医学图像配准”的证据上下文。
+- 2.1.2 仍为 `queued`，本轮未撰写正文。ScribbleCL 仍为 `TODO-EXPERIMENT` / `blocked_by_experiments`，须先具备任务协议、代码版本、数据划分、随机种子、逐阶段日志、性能矩阵、表格和可复现证据。
+
 ## 本轮范围与分支保护
 
 - 分支始终为 `framework/supervisor-2026-07-31`，以已完成迁移的 `abee962cccaf9a29fa5b72f43fbf643ce0cc1ca0` 为起点；未重建分支、未合并或覆盖 `main`，也未执行 reset、clean 或 checkout 丢弃本地工作。
