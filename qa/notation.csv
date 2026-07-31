@@ -20,3 +20,16 @@ P_k,类别k的预测区域,第二至四章,2.1.1,author_definition,defined,由�
 G_k,类别k的参考区域,第二至四章,2.1.1,author_definition,defined,由参考标签图定义
 d_a_B,点a到集合B的最近欧氏距离,第二至五章,2.1.1,author_definition,defined,边界评价时应使用物理坐标
 Q_q,q分位数算子,第二至五章,2.1.1,author_definition,defined,HD95中q取0.95
+I_F,固定图像,第二章,2.1.2,author_definition,defined,配准图像对中的固定图像
+I_M,移动图像,第二章,2.1.2,author_definition,defined,配准图像对中的移动图像
+Omega_F,固定图像空间域,第二章,2.1.2,author_definition,defined,与Omega_M区分图像对空间域
+Omega_M,移动图像空间域,第二章,2.1.2,author_definition,defined,与Omega_F区分图像对空间域
+phi,空间变换,第二章,2.1.2,SAMCL;author_definition,defined,方向为Omega_F到Omega_M；配准后移动图像为I_M circ phi
+x,固定图像域中的空间坐标,第二章,2.1.2,author_definition,defined,涉及距离时需映射至物理坐标
+u,位移场,第二章,2.1.2,author_definition,defined,phi(x)=x+u(x)
+W,图像重采样算子,第二章,2.1.2,author_definition,defined,对非网格采样位置采用插值
+g_theta,配准网络,第二章,2.1.2,author_definition,defined,输入I_F与I_M并预测phi_theta
+D,图像匹配项,第二章,2.1.2,author_definition,defined,衡量固定图像与配准后移动图像的匹配程度
+mathcal_R,变换正则项,第二章,2.1.2,author_definition,defined,约束变换空间性质
+lambda,正则化权重,第二章,2.1.2,author_definition,defined,控制匹配项与正则项的相对权重
+mathcal_D_reg,训练图像对分布,第二章,2.1.2,author_definition,defined,学习式配准的训练图像对分布

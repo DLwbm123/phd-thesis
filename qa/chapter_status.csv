@@ -18,7 +18,7 @@ section_id,title,status,artifact
 2,医学影像深度学习相关理论与关键技术,in_progress,chapters/ch02_foundations.tex
 2.1,医学影像智能分析任务基础,in_progress,chapters/ch02_foundations.tex
 2.1.1,医学图像分割,drafted_and_verified,chapters/ch02_foundations.tex
-2.1.2,医学图像配准,queued,chapters/ch02_foundations.tex
+2.1.2,医学图像配准,drafted_and_verified,chapters/ch02_foundations.tex
 2.1.3,医学图像分类,not_started,chapters/ch02_foundations.tex
 2.2,数据不全场景下的学习问题,not_started,chapters/ch02_foundations.tex
 2.3,医学影像持续学习方法,not_started,chapters/ch02_foundations.tex

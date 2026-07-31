@@ -1,1 +1,5 @@
 equation_id,chapter,section,name,source_file,source_equation,thesis_label,status,notes
+E2-001,2,2.1.2,"固定坐标到移动坐标的变换与图像重采样","sources/samcl/MICCAI 2024: Toward Universal Medical Image Registration/Paper-0150.tex;author notation","Section 3 lines 149--158; context formula F1","eq:foundations-reg-warp","drafted","采用phi:Omega_F到Omega_M的backward-warp约定"
+E2-002,2,2.1.2,"位移场形式的可变形变换","author mathematical definition","Context formula F2","eq:foundations-reg-displacement","drafted","仅在两幅图像采用同维物理坐标表示时使用"
+E2-003,2,2.1.2,"图像匹配项与变换正则项组成的经典配准目标","DOI:10.1109/42.796284;sources/samcl/MICCAI 2024: Toward Universal Medical Image Registration/Paper-0150.tex","Rueckert 1999 objective composition; context formula F3","eq:foundations-reg-objective","drafted","一般基础公式，不归为SAMCL创新"
+E2-004,2,2.1.2,"学习式配准映射及训练目标","DOI:10.1109/TMI.2019.2897538;sources/samcl/MICCAI 2024: Toward Universal Medical Image Registration/Paper-0150.tex","VoxelMorph learning formulation; context formula F4","eq:foundations-reg-learning","drafted","训练图像对分布记为mathcal D_reg，不包含持续学习目标"

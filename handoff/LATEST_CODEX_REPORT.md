@@ -1,5 +1,14 @@
 # Codex 最新报告：第一章作者复审定向精修（2026-07-31）
 
+## 2.1.2 医学图像配准正文集成（2026-07-31）
+
+- 已在 `chapters/ch02_foundations.tex` 的 `\subsection{医学图像配准}` 标签后、`\subsection{医学图像分类}` 前精确集成批准正文；2.1.1 与 2.1.3 正文经差异核验未修改。
+- 实际复用 `balakrishnan2019voxelmorph` 和 `wang2024samcl`；新增并经 DOI/原始元数据核验的条目为 `sotiras2013deformable`、`rueckert1999ffd`、`pluim2003mi`、`avants2008syn`、`jaderberg2015stn`、`klein2009evaluation` 与 `rohlfing2012surrogates`。Klein 条目采用已核验的完整作者表。
+- 已追加 C2-010--C2-020 和 E2-001--E2-004，并登记 $I_F$、$I_M$、$\Omega_F$、$\Omega_M$、$\phi$、$\mathbf{x}$、$\mathbf{u}$、$W$、$g_\theta$、$D$、$\mathcal{R}$、$\lambda$ 与 $\mathcal{D}_{\mathrm{reg}}$；$\theta$ 复用既有登记。变换方向统一为 $\phi:\Omega_F\to\Omega_M$，配准后移动图像为 $I_M\circ\phi$。
+- `TODO-EVIDENCE-REG-001`（TRE 通用数学定义）和 `TODO-EVIDENCE-REG-002`（非正 Jacobian 比例统计形式）保持未闭合；它们均未写入正文或 `evidence/equations.csv`。
+- 已完成 `latexmk -xelatex -interaction=nonstopmode -file-line-error main.tex`（59 页，PDF SHA-256 `1eff2d692448ff17108cf0741a4bf8b05262d5ec72caced1da1b1ffbf703d765`）及 `bash scripts/verify_fast_section.sh --quiet chapters/ch02_foundations.tex`（53 个 BibTeX 键、99 个术语键）。最终日志无未解析引用或交叉引用警告；CSV 账本无重复 ID，四个新公式标签各出现一次，活动引用键均存在，`git diff --check` 通过。
+- 已视觉核验 2.1.1 末页至 2.1.2 起始、2.1.2 的连续公式页及 2.1.3 起始页，未见裁切、重叠或空白异常；参考文献页也已检查。Poppler 临时渲染器缺少 Adobe-GB1 映射而不能显示 CJK 正文，因此以 XeLaTeX 成功构建、无版面警告和 macOS 本地 PDF 渲染共同确认中文排版。`sources/` 保持只读且不在 Git diff 中。下一步只允许准备 2.1.3“医学图像分类”的证据上下文，不得直接自由撰写。
+
 ## 2.1.2 医学图像配准证据上下文准备（2026-07-31）
 
 - 本轮只更新 `handoff/CONTEXT_PACKET_FOR_GPT.md` 与 `STATE.md`，未修改任何正式学术正文、2.1.1、2.1.3、文献库、LaTeX 输入或 `sources/`。
