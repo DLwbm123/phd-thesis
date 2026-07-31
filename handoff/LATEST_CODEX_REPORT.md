@@ -1,5 +1,13 @@
 # Codex 最新报告：第一章作者复审定向精修（2026-07-31）
 
+## 2.1.2 医学图像配准证据上下文准备（2026-07-31）
+
+- 本轮只更新 `handoff/CONTEXT_PACKET_FOR_GPT.md` 与 `STATE.md`，未修改任何正式学术正文、2.1.1、2.1.3、文献库、LaTeX 输入或 `sources/`。
+- 已只读核查本地 SAMCL 源：`sources/samcl/MICCAI 2024: Toward Universal Medical Image Registration/Paper-0150.tex` 第 3 节给出固定图像、移动图像、$\phi:\Omega_F\to\Omega_M$、$m\circ\phi_\theta$ 和 $D+R$ 的一般配准写法；其顺序任务、有限回放、元学习、锐度感知、网络配置和实验设置均明确留在第五章 5.4，不进入 2.1.2。
+- 已核验的外部原始文献最小候选集合：Sotiras et al. (2013, DOI `10.1109/TMI.2013.2265603`)、Rueckert et al. (1999, DOI `10.1109/42.796284`)、Pluim et al. (2003, DOI `10.1109/TMI.2003.815867`)、Avants et al. (2008, DOI `10.1016/j.media.2007.06.004`)、现有 VoxelMorph 条目 (2019, DOI `10.1109/TMI.2019.2897538`)、Jaderberg et al. (2015, NeurIPS)、Klein et al. (2009, DOI `10.1016/j.neuroimage.2008.12.037`) 与 Rohlfing (2012, DOI `10.1109/TMI.2011.2163944`)。
+- 统一候选方向为 $\phi:\Omega_F\to\Omega_M$，在固定坐标 $\mathbf{x}$ 上重采样移动图像 $I_M\circ\phi$；候选公式包括重采样、位移场、经典/学习式目标、TRE 和非正 Jacobian 比例。TRE 通用公式和非正 Jacobian 统计形式各保留一项 `TODO-EVIDENCE`，尚不能作为已核实正文内容。
+- `qa/chapter_status.csv` 保持 2.1.2=`queued`，因现有状态体系没有“上下文已准备”枚举；`STATE.md` 记录 `context_ready`。下一步推荐提示词：**开始撰写 2.1.2 医学图像配准**。
+
 ## GPT Pro 学术复审批准与合并前核验
 
 - 题目、第一章和连续六章框架已于 2026-07-31 通过 GPT Pro 学术复审。第一章现可标记为 `drafted_and_verified`；本轮未修改任何学术正文、引用或 LaTeX 配置。

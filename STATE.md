@@ -12,7 +12,7 @@
 
 - 导师框架迁移与题目、第一章作者复审已于 2026-07-31 完成，连续六章结构已批准。
 - 第一章状态为 `drafted_and_verified`。
-- 当前阶段：第二章正文写作准备。第二章 2.1.1“医学图像分割”保留已完成并验证的正文；2.1.2 此时仍为 `queued`，本轮未撰写正文。
+- 当前阶段：2.1.2“医学图像配准”上下文准备完成（`context_ready`），等待 GPT Pro 起草。第二章 2.1.1“医学图像分割”保留已完成并验证的正文且本轮未修改；2.1.2 仍为 `queued`，尚未形成正文。
 - ScribbleCL 持续学习实验仍为 `TODO-EXPERIMENT` / `blocked_by_experiments`；任务、基线、指标、日志和结论均不得虚构。
 
 ## 当前分支与验证
@@ -24,4 +24,4 @@
 
 ## 下一动作
 
-合并 `main` 后，由 Codex 准备 2.1.2“医学图像配准”的证据上下文包；在核查 `sources/samcl` 与外部原始文献前，不得生成其完整学术正文。
+将新的 `handoff/CONTEXT_PACKET_FOR_GPT.md` 交给 GPT Pro 起草 2.1.2“医学图像配准”；在 GPT Pro 输出前，TRE 与非正 Jacobian 比例的候选公式仍受 `TODO-EVIDENCE` 约束。
