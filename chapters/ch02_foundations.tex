@@ -65,7 +65,68 @@ Q_{0.95}\!\left(\{d(\mathbf{b},\partial P_k):\mathbf{b}\in\partial G_k\}\right)
 
 \subsection{医学图像配准}
 \label{subsec:foundations-registration}
-% 保留为下一写作起点。迁移任务不得改写已经完成并验证的 2.1.1。
+
+医学图像配准旨在估计两幅或多幅图像之间的空间变换，使其中相同或对应的解剖位置在统一坐标系下建立对应关系。根据图像来源，配准可以用于同一患者不同时间点影像的纵向比较、不同成像模态的信息融合、不同个体之间的结构比较，以及个体图像与标准模板之间的映射\cite{sotiras2013deformable}。配准的输出不是离散类别或像素级语义标签，而是描述图像坐标之间关系的变换或形变场。
+
+设固定图像和移动图像分别为
+$I_F:\Omega_F\rightarrow\mathbb{R}^{C}$ 和
+$I_M:\Omega_M\rightarrow\mathbb{R}^{C}$，其中 $\Omega_F$ 与 $\Omega_M$ 表示两幅图像的空间域。本文统一采用从固定图像坐标查询移动图像的变换方向，即
+$\phi:\Omega_F\rightarrow\Omega_M$。对于固定图像域中的位置
+$\mathbf{x}\in\Omega_F$，配准后的移动图像定义为
+\begin{equation}
+\begin{aligned}
+I_M^{\phi}(\mathbf{x})
+&=W(I_M,\phi)(\mathbf{x}) \\
+&=I_M\!\left(\phi(\mathbf{x})\right),
+\qquad \mathbf{x}\in\Omega_F ,
+\end{aligned}
+\label{eq:foundations-reg-warp}
+\end{equation}
+其中，$W$ 表示图像重采样算子。当 $\phi(\mathbf{x})$ 不位于移动图像的离散网格点上时，需要通过插值获得对应的图像值。图像数组的索引与实际物理坐标并不等价，因此涉及空间距离的计算还需结合像素或体素间距。
+
+配准变换可以按照空间自由度分为刚性、仿射和可变形变换。刚性变换通过旋转和平移描述整体位置差异，并保持结构间的距离和角度；仿射变换进一步允许全局尺度变化和剪切；可变形变换则允许不同空间位置具有不同的局部位移。B 样条自由形变是可变形配准中具有代表性的参数化方式之一\cite{rueckert1999ffd,sotiras2013deformable}。当固定图像与移动图像采用同维物理坐标表示时，可将可变形变换统一写为
+\begin{equation}
+\phi(\mathbf{x})
+=
+\mathbf{x}+\mathbf{u}(\mathbf{x}),
+\label{eq:foundations-reg-displacement}
+\end{equation}
+其中，$\mathbf{u}(\mathbf{x})$ 为位置 $\mathbf{x}$ 处的位移向量。更高的变换自由度可以描述复杂的局部形变，但也增加了得到不规则或不符合任务假设的变换的可能性。
+
+经典配准方法通常针对每一组图像独立求解变换参数。其目标可以统一表示为图像匹配项与变换正则项之和：
+\begin{equation}
+\widehat{\phi}
+=
+\operatorname*{arg\,min}_{\phi}
+\left[
+D\!\left(I_F,I_M^{\phi}\right)
++\lambda\mathcal{R}(\phi)
+\right],
+\label{eq:foundations-reg-objective}
+\end{equation}
+其中，$D$ 衡量固定图像与配准后移动图像的匹配程度，$\mathcal{R}$ 用于约束变换的空间性质，$\lambda$ 控制二者的相对权重。同模态配准可以使用强度差或相关性度量；当两种模态之间不存在直接的强度对应关系时，互信息是一类常用选择\cite{rueckert1999ffd,pluim2003mi}。正则项可以限制位移的剧烈变化，并体现对形变平滑性或几何性质的假设。若任务要求变换具有可逆性和拓扑保持性质，可以进一步将优化限制在微分同胚变换空间中\cite{avants2008syn}。但是，单独采用平滑正则并不能自动保证变换可逆，也不能说明所得形变具有唯一的物理解释。
+
+学习式配准将图像对到空间变换的映射表示为参数化模型。设 $g_{\theta}$ 为参数为 $\theta$ 的配准网络，则其预测变换及一般训练目标可写为
+\begin{equation}
+\begin{aligned}
+\phi_{\theta}
+&=g_{\theta}(I_F,I_M),\\
+\widehat{\theta}
+&=
+\operatorname*{arg\,min}_{\theta}
+\mathbb{E}_{(I_F,I_M)\sim\mathcal{D}_{\mathrm{reg}}}
+\left[
+D\!\left(I_F,W(I_M,\phi_{\theta})\right)
++\lambda\mathcal{R}(\phi_{\theta})
+\right],
+\end{aligned}
+\label{eq:foundations-reg-learning}
+\end{equation}
+其中，$\mathcal{D}_{\mathrm{reg}}$ 表示训练图像对的分布。与逐图像对迭代优化不同，学习式方法在训练阶段估计共享模型参数，并在推理阶段直接为新的图像对预测变换\cite{balakrishnan2019voxelmorph}。可微空间采样使配准后图像上的匹配误差能够沿重采样过程反向传播，从而支持端到端训练\cite{jaderberg2015stn}。不使用真值形变场并不表示训练过程没有监督信号：图像匹配项和形变正则项仍然提供优化依据；若训练数据包含对应结构标签，也可以将标签一致性作为附加约束\cite{balakrishnan2019voxelmorph}。
+
+配准评价需要同时考虑空间对应精度、形变合理性和计算代价。若具有对应解剖标签，可以将移动图像标签重采样至固定坐标，并使用式\eqref{eq:foundations-seg-overlap}中的 Dice 相似系数及边界距离评价结构对齐；若具有对应标志点，则可在物理坐标中报告标志点之间的距离误差。图像相似性、形变规则性和运行时间也可以从不同角度描述配准结果\cite{klein2009evaluation,wang2024samcl}。这些指标所反映的性质并不相同。尤其是较高的图像相似性或整体标签重叠不能单独证明局部解剖位置已经准确对应\cite{rohlfing2012surrogates}。因此，评价方案应根据可获得的参考信息和具体应用目标组合多种指标，并明确距离单位、空间分辨率和汇总方式。
+
+医学图像配准以图像对为输入并输出空间变换，从而为跨时间、跨模态或跨个体的图像比较提供统一坐标。与之不同，医学图像分类通常在整幅图像、一次检查或病例层面输出类别或风险概率。下一小节据此介绍医学图像分类的基本建模与评价方式。
 
 \subsection{医学图像分类}
 \label{subsec:foundations-classification}
