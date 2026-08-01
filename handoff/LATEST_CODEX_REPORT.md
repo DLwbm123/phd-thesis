@@ -1,5 +1,13 @@
 # Codex 最新报告：第一章作者复审定向精修（2026-07-31）
 
+## 第三章 Benchmark 整章证据上下文准备（2026-08-01）
+
+- 已创建 `handoff/CH03_BENCHMARK_CONTEXT_FOR_GPT.md`：覆盖第三章 3.1--3.8 的论证链、段落级提纲、三类场景、数据/任务序列、统一协议、八个候选公式、完整结果表账本、图像账本、文献最小集合、证据候选和 GPT 整章写作清单；未生成正式学术正文。
+- 实际采用 Benchmark 主入口为 `sources/benchmark/Benchmark_pa/main.tex`（1,431 行），补充材料为同目录 `supplementary.tex`（119 行），引用为主文件内嵌 `thebibliography`。已核查所有活动表和图的源定位，并实际视觉检查基准概览、任务顺序 A-Dice 和缓存规模图。
+- 在仓库外临时副本编译原始主稿受本机 TinyTeX 缺少 `makecell.sty` 与 Palatino 字体度量阻塞；未修改 `sources/`，也未报告虚假的 PDF 页数。原始目录亦无实验脚本、指标实现、配置、代码版本、种子、硬件或运行日志；RMA/E-FWT 完成公式—表格与最小索引核验，但不能完成公式—代码一致性核验，已作为 `BLOCKER` 明示。
+- 主要阻塞项为 2 个（代码不可得、原稿本机无法编译）；另有 3 个 HIGH（样本/种子/硬件缺失、Class-CL 访问协议不完整、统计重复数缺失）、2 个 MEDIUM 和 1 个 LOW。第三章状态保持 `not_started`；第二章状态和 ScribbleCL `TODO-EXPERIMENT` / `blocked_by_experiments` 均未变。
+- 本轮只允许修改上下文、状态和 handoff 报告；没有修改 `chapters/ch03_benchmark.tex`、任何正式证据 CSV、术语/符号表、文献库或其他 LaTeX 输入，也不执行 Overleaf 同步。下一步是将本上下文和本报告交给 GPT Pro 一次性撰写第三章全文。
+
 ## 2.1.2 医学图像配准正文集成（2026-07-31）
 
 - 已在 `chapters/ch02_foundations.tex` 的 `\subsection{医学图像配准}` 标签后、`\subsection{医学图像分类}` 前精确集成批准正文；2.1.1 与 2.1.3 正文经差异核验未修改。
