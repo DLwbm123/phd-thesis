@@ -1,4 +1,18 @@
-# Codex 最新报告：第三章 Benchmark 整章工程集成（2026-08-01）
+# Codex 最新报告：第二章剩余内容整章证据上下文准备（2026-08-01）
+
+## 第二章剩余内容整章证据上下文准备
+
+- 已创建 `handoff/CH02_REMAINING_CONTEXT_FOR_GPT.md`，其范围为 2.1.3、2.2、2.3 与 2.4 的一次性证据化写作蓝图：章节论证链、去重映射、十个部分的段落级提纲、分类/访问条件/持续学习候选公式、两张候选比较表、临时论断与限制、最小文献集以及 GPT Pro 交付清单均已给出；它不是正式博士论文正文。
+- 上下文严格保留 2.1.1 和 2.1.2 的既有符号、标签和过渡；不复用第三章的三类具体基准、A-Dice、BWTR、RMA、E-FWT 或实验结果；不提前给出 FedSubMerge、ZScribbleSeg、ScribbleCL 或 SAMCL 的特有机制和实验结论。FedSubMerge 的事实边界为历史原始图像无回放，SAMCL 的事实边界为有限经验回放，ZScribbleSeg 的事实边界为静态涂鸦弱监督。
+- 2.2 标题建议暂保留，并在首段将“数据不全”严格限定为训练信息受限的概括；若作者需要标题完全术语一致，再决定是否改为“训练信息受限场景下的学习问题”。本轮未改正式标题、正文或 `qa/chapter_status.csv`。
+- 已记录待正式集成前处理的限制：分类 CE/BCE 和分类指标的原始公式来源补核、多标签阈值/汇总与临床效用不可外推、安全聚合/差分隐私不能被写成 FedAvg 自带属性。没有阻止 GPT Pro 输出受限草稿的 BLOCKER；2.1.2 的 TRE/Jacobian 两项既有 TODO 保持开放且与本轮无关。
+- 只读事实源在开始时的排序 SHA-256 清单指纹为：`sources/fedsubmerge/`（18 文件）`e52bbd5c257bfed343a6092c4d22f0c1232d12051b2b7cfeecd6c7eccf4d9ef5`，`sources/zscribble/`（26 文件）`48367f5b56a12cffe357ea9c6f5c26a9947781467c7b9b7f61ef53de6bd8ff9d`，`sources/samcl/`（12 文件）`d043158cf22668283643da294d40dba5505279ee41b7bfe567f65a733750a4a6`，`sources/benchmark/`（31 文件）`b9a529ada136e552fcd183df573d98c32048b0db53d3b0169a8490af879e8cad`。结束前必须复核一致。
+- 已以 `latexmk -g -xelatex -interaction=nonstopmode -file-line-error main.tex` 强制完整构建：退出码 0，`main.pdf` 为 77 页、1,547,689 字节、SHA-256 `41725ece9b69873440cf5e0cf246f222527224890744a0b1db1047f31d379439`；最终日志无未解析引用或交叉引用。由于本轮没有 LaTeX 输入改动，视觉检查复核现有第二章 PDF 页，并未发现本轮可能引入的版式变化；Poppler 对 CJK 正文仍受字形映射限制。未运行会读取 `sources/reference_thesis/` 的重合审查，也未进行 Overleaf 同步。
+- 上下文包为 192 行、26,716 字节；含 16 条临时论断、16 条候选公式与 2 张候选表。限制台账计数为：无实际 BLOCKER（表中用 1 条“无 BLOCKER”汇总项），HIGH 3、MEDIUM 4、LOW 4；正式集成时须逐项关闭或维持严格限定。
+- 结束复核的四个源清单指纹与开始值完全一致。`git diff --check` 通过；受保护的 `chapters/ch02_foundations.tex`、`chapters/ch03_benchmark.tex`、所有其他 `.tex`、文献库、`evidence/*.csv`、术语/符号表和 `qa/chapter_status.csv` 均无差异。仅 `STATE.md`、本报告和新的上下文包待提交。
+- 下一步：将上下文交给 GPT Pro 一次性写作第二章剩余内容；之后才可进行全章 LaTeX 集成。第三章继续 `drafted_pending_review`；ScribbleCL 继续 `TODO-EXPERIMENT` / `blocked_by_experiments`。
+
+# 历史报告：第三章 Benchmark 整章工程集成（2026-08-01）
 
 ## 第三章 Benchmark 整章工程集成
 
