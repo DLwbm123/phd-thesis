@@ -3,3 +3,12 @@ E2-001,2,2.1.2,"固定坐标到移动坐标的变换与图像重采样","sources
 E2-002,2,2.1.2,"位移场形式的可变形变换","author mathematical definition","Context formula F2","eq:foundations-reg-displacement","drafted","仅在两幅图像采用同维物理坐标表示时使用"
 E2-003,2,2.1.2,"图像匹配项与变换正则项组成的经典配准目标","DOI:10.1109/42.796284;sources/samcl/MICCAI 2024: Toward Universal Medical Image Registration/Paper-0150.tex","Rueckert 1999 objective composition; context formula F3","eq:foundations-reg-objective","drafted","一般基础公式，不归为SAMCL创新"
 E2-004,2,2.1.2,"学习式配准映射及训练目标","DOI:10.1109/TMI.2019.2897538;sources/samcl/MICCAI 2024: Toward Universal Medical Image Registration/Paper-0150.tex","VoxelMorph learning formulation; context formula F4","eq:foundations-reg-learning","drafted","训练图像对分布记为mathcal D_reg，不包含持续学习目标"
+
+E3B-001,3,3.2,持续任务数据集与联合分布,sources/benchmark/Benchmark_pa/main.tex,Definitions lines 367--373,eq:benchmark-task-distribution,drafted,将同段定义合并为统一公式
+E3B-002,3,3.5,最终平均Dice,sources/benchmark/Benchmark_pa/main.tex,A-Dice formula lines 524--526,eq:benchmark-adice,drafted,越大越好
+E3B-003,3,3.5,后向迁移率,sources/benchmark/Benchmark_pa/main.tex,BWTR formula lines 529--531,eq:benchmark-bwtr,drafted,要求d_i_i大于0
+E3B-004,3,3.5,受限建模能力,sources/benchmark/Benchmark_pa/main.tex,RMA formula lines 535--540,eq:benchmark-rma,drafted,以Non-CL独立训练为参考
+E3B-005,3,3.5,扩展前向迁移,sources/benchmark/Benchmark_pa/main.tex,E-FWT formula lines 545--549,eq:benchmark-efwt,drafted,仅Domain-CL
+E3B-006,3,3.5,全类别Dice,sources/benchmark/Benchmark_pa/main.tex,WCD definition lines 551--553,eq:benchmark-wcd,drafted,仅Class-CL
+E3B-007,3,3.5,模型参数扩展率,sources/benchmark/Benchmark_pa/main.tex,MPE formula lines 560--565,eq:benchmark-mpe,drafted,初始主干一致时比较
+E3B-008,3,3.5,数据回放率,sources/benchmark/Benchmark_pa/main.tex,DRR formula lines 571--575,eq:benchmark-drr,drafted,星号另标原始图像回放

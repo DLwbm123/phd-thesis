@@ -161,3 +161,19 @@ C2-017,2,2.1.2,"不依赖真值形变场的学习式配准仍由图像匹配和�
 C2-018,2,2.1.2,"可微空间重采样使配准后图像上的损失能够对变换和网络参数反向传播","NeurIPS 2015 Spatial Transformer Networks","Abstract and differentiable sampling formulation","jaderberg2015stn","method","confirmed","drafted","作为一般计算机制，不称为医学配准方法创新"
 C2-019,2,2.1.2,"配准评价应根据可用参考信息组合结构重叠、边界距离、标志点误差、图像相似性、形变规则性和效率指标","DOI:10.1016/j.neuroimage.2008.12.037;sources/samcl/MICCAI 2024: Toward Universal Medical Image Registration/Paper-0150.tex","Klein 2009 evaluation protocol; Paper-0150.tex evaluation lines 303--319","klein2009evaluation;wang2024samcl","author_synthesis","confirmed","drafted","Dice只交叉引用2.1.1，不重复公式；TRE不写通用数学式"
 C2-020,2,2.1.2,"图像相似性或整体组织标签重叠不能单独作为局部配准准确性的充分证据","DOI:10.1109/TMI.2011.2163944","Abstract and surrogate-measure analysis","rohlfing2012surrogates","literature","confirmed","drafted","用于限定单一指标的解释范围"
+
+C3B-001,3,3.1,持续医学图像分割中的中心、类别和器官变化对应不同的数据分布、标签空间与输出组织，不能仅由单一场景概括,sources/benchmark/Benchmark_pa/main.tex,Introduction and tab:CL_settings,general_survey;medcl_survey;clseg_survey,author_synthesis,confirmed,drafted,三类场景服务于本基准，不宣称穷尽
+C3B-002,3,3.1,最终平均性能和遗忘不能完整反映当前任务学习、未来域能力及资源开销,sources/benchmark/Benchmark_pa/main.tex,Desiderata and metrics lines 435--578,,author_synthesis,confirmed,drafted,用于引出多维评价
+C3B-003,3,3.2,持续分割任务可由顺序数据集、联合分布、训练阶段模型和阶段任务性能矩阵统一描述,sources/benchmark/Benchmark_pa/main.tex,Definitions lines 329--434,,author_definition,confirmed,drafted,性能矩阵为作者重组记号
+C3B-004,3,3.3.1,Domain-CL 保持标签语义不变而改变输入域，并允许在共享输出语义下评价未来未训练域,sources/benchmark/Benchmark_pa/main.tex,Domain-CL definition and E-FWT definition,,benchmark_definition,confirmed,drafted,E-FWT 仅用于 Domain-CL
+C3B-005,3,3.3.2,Class-CL 逐步扩展统一分割标签空间，并受到旧类或未来类并入背景造成的背景语义变化影响,sources/benchmark/Benchmark_pa/main.tex,Class-CL definition and background-shift discussion,method_seg_mib;method_seg_plop,benchmark_definition,confirmed,drafted,旧类标签访问细节未完整形式化
+C3B-006,3,3.3.3,Organ-CL 同时改变图像分布和互不重叠的分割目标，采用任务特定输出头且不使用 E-FWT,sources/benchmark/Benchmark_pa/main.tex,Organ-CL definition and metrics scope,,benchmark_definition,confirmed,drafted,不把跨任务 Dice 解释为前向泛化
+C3B-007,3,3.4,基准采用 ResUNet32、统一训练轮数和基础优化设置，并为回放方法设置容量为32的缓存,sources/benchmark/Benchmark_pa/supplementary.tex,lines 14--40,,experiment_protocol,confirmed,drafted,种子硬件代码版本未报告
+C3B-008,3,3.5,RMA 以当前任务性能相对于独立训练参考的比例衡量持续约束下的建模能力,sources/benchmark/Benchmark_pa/main.tex,RMA formula lines 535--540,,metric,confirmed,drafted,接近1不表示历史任务保持良好
+C3B-009,3,3.5,E-FWT 在 Domain-CL 中汇总每个已训练阶段对所有未来域相对于随机初始化的直接表现,sources/benchmark/Benchmark_pa/main.tex,E-FWT formula lines 545--549,,metric,confirmed,drafted,不同于只比较相邻任务的一般FWT
+C3B-010,3,3.6,Domain-CL 中参数隔离方法获得零BWTR和较高A-Dice，但伴随非零参数扩展,sources/benchmark/Benchmark_pa/main.tex,tab:domain-cl,,experiment_observation,confirmed,drafted,限于当前网络任务序列和预算
+C3B-011,3,3.6,Class-CL 中 MiB 和 PLOP 在A-Dice、BWTR和WCD之间呈现不同取舍,sources/benchmark/Benchmark_pa/main.tex,tab:class-cl,method_seg_mib;method_seg_plop,experiment_observation,confirmed,drafted,不声称适用于所有标签协议
+C3B-012,3,3.6,Organ-CL 中参数隔离方法获得较高A-Dice和零BWTR，但MPE显示容量增长,sources/benchmark/Benchmark_pa/main.tex,tab:Organ-CL,,experiment_observation,confirmed,drafted,JointTrain访问条件不同
+C3B-013,3,3.6,十种Domain-CL任务顺序会改变A-Dice和BWTR，Repl-GSS在原分析中的两项顺序标准差为0.0134和0.0123,sources/benchmark/Benchmark_pa/main.tex,fig:task_order_robustness and lines 845--895,,experiment_observation,confirmed,drafted,缺少十种顺序完整数值表
+C3B-014,3,3.6,回放方法的A-Dice随缓存增加总体提高并逐渐趋于饱和,sources/benchmark/Benchmark_pa/main.tex,fig:memory_a and lines 921--925,,experiment_observation,confirmed,drafted,不确定跨数据集固定最优容量
+C3B-015,3,3.7,三类场景的结果支持稳定性、可塑性、前向能力与资源条件可能给出不同方法排序,sources/benchmark/Benchmark_pa/main.tex,tab:domain-cl;tab:class-cl;tab:Organ-CL,,author_analysis,confirmed,drafted,不形成脱离协议的统一方法排名

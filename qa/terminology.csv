@@ -98,3 +98,12 @@ restricted modeling ability,受限建模能力,第一章与第四章,受限学�
 extended forward transfer,扩展前向迁移,第一章与第四章,扩展前向泛化（不是指标原名）,E-FWT；在Domain-CL中汇总多个尚未训练域上的直接表现并用于评价前向泛化
 orthogonal-complement projection,正交补投影,第一章与第六章,正交投影（范围不完全等同）,移除梯度在保护子空间内的分量并保留其正交补分量
 first-order interference,一阶干扰,第一章与第六章,一级干扰（错误）,一阶近似下当前参数更新对历史任务损失的影响
+domain-incremental continual learning,域增量持续学习,第三章,无,第三章 Benchmark,统一术语
+class-incremental continual learning,类别增量持续学习,第三章,无,第三章 Benchmark,统一术语
+organ-level continual learning,跨器官任务持续学习,第三章,无,第三章 Benchmark,统一术语
+average Dice,平均 Dice（A-Dice）,第三章,无,第三章 Benchmark,统一术语
+backward transfer rate,后向迁移率（BWTR）,第三章,无,第三章 Benchmark,统一术语
+whole-class Dice,全类别 Dice（WCD）,第三章,无,第三章 Benchmark,统一术语
+model parameter expansion,模型参数扩展率（MPE）,第三章,无,第三章 Benchmark,统一术语
+data replay ratio,数据回放率（DRR）,第三章,无,第三章 Benchmark,统一术语
+background shift,背景语义变化,第三章,无,第三章 Benchmark,统一术语

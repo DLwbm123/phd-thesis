@@ -12,7 +12,7 @@
 
 - 导师框架迁移与题目、第一章作者复审已于 2026-07-31 完成，连续六章结构已批准。
 - 第一章状态为 `drafted_and_verified`。
-- 当前优先任务：第三章 Benchmark 整章证据上下文准备；第三章正文仍为 `not_started`，不得在本轮生成正式正文。第二章 2.1.2“医学图像配准”已完成并验证（`drafted_and_verified`）；第二章 2.1.1 保留已完成并验证的正文且本轮未修改，2.1.3 尚未撰写。
+- 第三章 Benchmark 全章已完成工程集成，状态为 `drafted_pending_review`，尚未通过作者/GPT Pro 的整章复审。第二章 2.1.2“医学图像配准”已完成并验证（`drafted_and_verified`）；第二章 2.1.1 保留已完成并验证的正文且本轮未修改，2.1.3 尚未撰写。
 - TRE 通用数学定义（`TODO-EVIDENCE-REG-001`）与非正 Jacobian 比例具体统计形式（`TODO-EVIDENCE-REG-002`）尚未闭合，但二者均未作为公式写入 2.1.2 正文。
 - ScribbleCL 持续学习实验仍为 `TODO-EXPERIMENT` / `blocked_by_experiments`；任务、基线、指标、日志和结论均不得虚构。
 
@@ -25,4 +25,4 @@
 
 ## 下一动作
 
-将 `handoff/CH03_BENCHMARK_CONTEXT_FOR_GPT.md` 与 `handoff/LATEST_CODEX_REPORT.md` 交给 GPT Pro，由 GPT Pro 一次性撰写第三章全文；不得由 Codex 直接自由撰写正文。
+由作者/GPT Pro 复审第三章全文、指标公式、结果分析和图表；复审前不得继续第四章正式正文。

@@ -33,3 +33,22 @@ D,图像匹配项,第二章,2.1.2,author_definition,defined,衡量固定图像�
 mathcal_R,变换正则项,第二章,2.1.2,author_definition,defined,约束变换空间性质
 lambda,正则化权重,第二章,2.1.2,author_definition,defined,控制匹配项与正则项的相对权重
 mathcal_D_reg,训练图像对分布,第二章,2.1.2,author_definition,defined,学习式配准的训练图像对分布
+mathcal{T},任务集合,第三章,3.2,Benchmark,defined,顺序到达任务的索引集合
+T,任务总数,第三章,3.2,Benchmark,defined,正整数
+t,任务或训练阶段索引,第三章,3.2,Benchmark,defined,取值属于mathcal{T}
+mathcal{D}_t,第t阶段训练集,第三章,3.2,Benchmark,defined,由图像标签对构成
+N_t,第t阶段训练样本数,第三章,3.2,Benchmark,defined,源稿未报告具体数值
+x_i^t,第t阶段第i个医学图像,第三章,3.2,Benchmark,defined,
+y_i^t,第t阶段第i个分割标签,第三章,3.2,Benchmark,defined,
+mathbb{D}_t,第t任务图像标签联合分布,第三章,3.2,Benchmark,defined,等于P(mathcal{X}_t mathcal{Y}_t)
+mathcal{X}_t,第t任务图像空间随机变量,第三章,3.2,Benchmark,defined,
+mathcal{Y}_t,第t任务标签空间随机变量,第三章,3.2,Benchmark,defined,
+Y_t,第t任务标签类别集合,第三章,3.2,Benchmark,defined,是否含背景随场景协议解释
+theta_t,完成第t阶段训练后的模型参数,第三章,3.2,Benchmark,defined,theta的阶段化记号
+"d_{t,i}",完成阶段t后在任务i测试集的平均Dice,第三章,3.2,Benchmark,defined,与正文 LaTeX 记号一致
+d_i^{NC},任务i独立训练参考的Dice,第三章,3.5,Benchmark,defined,RMA分母
+"d_{0,i}",随机初始化模型在任务i上的Dice,第三章,3.5,Benchmark,defined,E-FWT基线
+"d_{\mathrm{all}}",全部已见类别的Dice,第三章,3.5,Benchmark,defined,WCD
+"\\mathrm{Param}(\\theta_t)",模型theta_t的参数量,第三章,3.5,Benchmark,defined,模型参数量
+"N_t^{\mathrm{replay}}",回放数据量,第三章,3.5,Benchmark,defined,DRR分子
+"N_t^{\mathrm{train}}",训练数据量,第三章,3.5,Benchmark,defined,DRR分母

@@ -7,10 +7,13 @@
 | 文件 | 类别 | 模式 | 次数 | 原因 |
 |---|---|---:|---:|---|
 | `chapters/ch01_introduction.tex` | transition | `同时` | 22 | 过度依赖统一连接词 |
+| `chapters/ch03_benchmark.tex` | transition | `同时` | 12 | 过度依赖统一连接词 |
 
 ## 重复段落开头
 
-未发现出现三次及以上的相同段落开头。
+| 归一化开头 | 次数 |
+|---|---:|
+| `figure[htbp]` | 4 |
 
 ## 解释原则
 

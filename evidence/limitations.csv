@@ -2,3 +2,12 @@ limitation_id,work,limitation,evidence_source,thesis_section,status,notes
 LIM-ZS-001,ZScribbleSeg,原始工作为静态弱监督分割而非持续学习,problem setting,6.3,confirmed,全文不得改写为持续学习
 LIM-SAM-001,SAMCL,依赖有限历史样本回放,method setting,5.6/6.3,confirmed,
 LIM-FSM-001,FedSubMerge,不等同于形式化隐私机制,problem setting,4.7/6.3,confirmed,
+
+LIM-BM-001,Benchmark,三类场景不覆盖任务边界未知、连续漂移、中心重访、开放世界类别或多种变化因素同时发生的条件,sources/benchmark/Benchmark_pa/main.tex;author scope analysis,3.7,confirmed,不得宣称穷尽持续医学影像问题
+LIM-BM-002,Benchmark,全部实验采用ResUNet32和固定训练预算，结果不能直接外推到其他网络、三维模型或医学基础模型,sources/benchmark/Benchmark_pa/supplementary.tex,3.7,confirmed,方法排序限于当前设置
+LIM-BM-003,Benchmark,当前材料未报告完整样本数、随机种子、重复次数、硬件、早停和代码版本,sources/benchmark/Benchmark_pa/main.tex;sources/benchmark/Benchmark_pa/supplementary.tex,3.4/3.7,confirmed,不得补写或声称完整复现
+LIM-BM-004,Benchmark,Class-CL旧类标签访问、背景处理细节和任务身份供给未完整形式化,sources/benchmark/Benchmark_pa/main.tex,3.3.2/3.7,confirmed,限制与其他标签协议的严格比较
+LIM-BM-005,Benchmark,结果表给出均值和标准差但未报告重复数与统计检验,sources/benchmark/Benchmark_pa/main.tex,3.4/3.7,confirmed,不得使用统计显著表述
+LIM-BM-006,Benchmark,当前归档没有指标实现代码或逐运行日志，RMA和E-FWT等只能完成公式与表格核对,handoff/CH03_BENCHMARK_CONTEXT_FOR_GPT.md,3.5/3.7,confirmed,不得声称公式代码一致性已复现
+LIM-BM-007,Benchmark,MPE和DRR未覆盖训练时间、显存、能耗和通信成本,sources/benchmark/Benchmark_pa/main.tex;author metric analysis,3.5/3.7,confirmed,资源评价仍不完整
+LIM-BM-008,Benchmark,JointTrain可访问全部历史数据，与受限持续学习方法的访问条件不同,sources/benchmark/Benchmark_pa/main.tex,3.2/3.6/3.7,confirmed,仅作为参照而非同条件基线

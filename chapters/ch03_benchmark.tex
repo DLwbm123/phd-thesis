@@ -1,37 +1,542 @@
+
+```latex
+
 \chapter{持续医学图像分割的场景定义与综合评测研究}
 \label{chap:benchmark}
+\setlength{\emergencystretch}{1em}
 
 \section{引言}
 \label{sec:benchmark-introduction}
-% 真实场景中数据和任务无法一次性完整获得；说明本章是场景、协议、指标与系统实证研究。
+
+医学图像分割模型在实际使用过程中面对的数据条件并非始终保持固定。新的医疗中心、扫描设备和采集协议会改变图像外观与统计分布，新增的解剖结构或病灶类别会扩展输出空间，不同器官和成像模态也可能以任务序列的形式逐步进入训练流程。若每次变化都重新汇集全部历史数据并从头训练模型，既有模型无法持续积累能力，也忽略了历史样本受存储、治理或实验协议限制而不能被完整访问的条件。因此，医学图像分割中的持续学习需要同时说明任务如何变化、模型在每个阶段能够访问哪些数据，以及训练完成后应保留哪些既有能力。
+
+现有持续学习研究通常从域增量、类增量或任务增量等角度描述顺序学习问题，但不同医学分割工作在场景命名、标签协议、输出头、历史数据访问和测试方式上并不一致\cite{wang2024continualsurvey,kumari2025medicalcl,yuan2024continualseg,gonzalez2023lifelong,whatwrong}。相同的“跨中心分割”可能被组织为顺序域学习，也可能在训练阶段同时使用多个中心；新增器官既可能被视为类别扩展，也可能采用任务特定输出头。若这些条件没有被明确区分，方法间的结果即使使用相同指标，也未必具有可比性。
+
+评价维度的不完整会进一步影响结论。最终阶段的平均 Dice 可以反映模型结束训练后的总体分割能力，却不能区分该结果来自历史任务保持还是当前任务学习。遗忘量能够描述旧任务性能下降，但过强的历史保护也可能压低当前任务性能。参数隔离方法可以获得较小遗忘，却以模型容量增长为代价；回放方法利用旧样本缓解知识损失，但引入额外存储与数据访问。对于尚未参与训练的未来域，模型是否已经形成可直接迁移的表征，也不能由最终平均性能和遗忘单独刻画。
+
+基于上述问题，本章构建持续医学图像分割的场景定义与综合评测框架。首先，从输入分布、标签空间和分割对象的变化出发，组织 Domain-CL、Class-CL 和 Organ-CL 三类基准场景。随后，在统一网络、训练预算和数据划分下比较正则化、回放和参数隔离等代表性方法，并建立覆盖最终性能、后向能力、当前任务学习、前向泛化和资源开销的指标体系。其中，受限建模能力（restricted modeling ability，RMA）用于衡量持续约束下的当前任务性能相对于独立训练参考的比例；扩展前向迁移（extended forward transfer，E-FWT）用于汇总 Domain-CL 中模型对多个尚未参与优化域的直接表现。最后，本章依据完整的阶段—任务性能关系分析不同方法的能力取舍，并限定这些观察所适用的数据、网络和任务协议。
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{ch03/benchmark_overview_new.pdf}
+\caption{持续医学图像分割基准的整体构成。基准围绕 Domain-CL、Class-CL 和 Organ-CL 构建任务序列，在统一协议下比较正则化、回放和参数隔离等方法，并从总体性能、知识保持、当前任务学习、前向能力和资源开销等维度开展评价。}
+\label{fig:benchmark-overview}
+\end{figure}
+
 
 \section{持续医学图像分割的问题定义}
 \label{sec:benchmark-problem-definition}
 
+设持续学习过程包含按顺序到达的任务集合
+$\mathcal{T}=\{1,\ldots,T\}$。第 $t$ 个阶段获得训练集
+$\mathcal{D}_t=\{(x_i^t,y_i^t)\}_{i=1}^{N_t}$，其中 $x_i^t$ 为医学图像，$y_i^t$ 为对应分割标签，$N_t$ 为该阶段的训练样本数。任务数据可由图像空间 $\mathcal{X}_t$ 与标签空间 $\mathcal{Y}_t$ 上的联合分布 $\mathbb{D}_t$ 描述：
+\begin{equation}
+\mathcal{D}_t=\{(x_i^t,y_i^t)\}_{i=1}^{N_t},
+\qquad
+(x_i^t,y_i^t)\overset{\mathrm{i.i.d.}}{\sim}
+\mathbb{D}_t=P(\mathcal{X}_t,\mathcal{Y}_t).
+\label{eq:benchmark-task-distribution}
+\end{equation}
+不同场景由 $\mathbb{D}_t$、标签集合 $Y_t$ 以及输出组织方式随阶段的变化共同决定。这里的任务划分不是对静态数据集的任意切片，而应对应中心、类别、器官或模态等具有实际含义的变化。
+
+完成第 $t$ 个任务训练后，模型参数记为 $\theta_t$。令 $d_{t,i}$ 表示模型 $\theta_t$ 在第 $i$ 个任务测试集上的平均 Dice，则全部可评测结果可以组织为阶段—任务性能矩阵
+$\mathbf{D}=[d_{t,i}]_{t,i=1}^{T}$。矩阵的第 $t$ 行描述模型完成第 $t$ 阶段训练后的能力，第 $i$ 列描述任务 $i$ 的性能随后续更新的变化。历史任务条目用于分析知识保持，主对角线 $d_{t,t}$ 用于分析当前任务学习；在输出语义保持一致的 Domain-CL 中，位于主对角线上方的未来域条目还可用于分析前向能力。
+
+持续学习方法对历史信息的使用方式并不相同。正则化方法不直接保存旧图像，而是约束参数或旧模型输出的变化；回放方法保存旧样本或其他历史表示，在后续阶段重新参与训练；参数隔离方法为不同任务保留独立或部分独立的模型容量。为了区分算法能力与访问条件，本章还设置两类参照：Non-CL 按任务顺序直接更新模型，不使用专门的抗遗忘机制；JointTrain 将全部任务数据集中训练。JointTrain 能够同时访问完整历史数据，因此只作为不同访问条件下的性能参照，不作为与受限持续学习方法完全同条件的比较对象。
+
+测试协议还需结合输出空间解释。Domain-CL 保持标签语义不变，使用共享输出头；Class-CL 逐步扩展统一标签空间，并要求最终模型预测全部已见类别；Organ-CL 的任务目标、成像模态和输出语义均可改变，因而采用任务特定输出头。当前归档实验未将训练或测试时的任务身份作为独立实验变量，也未提供 task-free 路由协议。因此，本章只依据实际输出头和任务序列解释结果，不将其外推为任务边界未知或开放世界条件下的性能。
+
+
 \section{持续医学图像分割基准场景}
 \label{sec:benchmark-scenarios}
+
+三类场景共享顺序训练和历史能力保持这一基本要求，但输入分布、标签空间和输出组织方式不同。Domain-CL 关注相同分割语义在不同中心或设备域之间的持续适应；Class-CL 关注同一图像域内分割类别的逐步扩展；Organ-CL 则面向器官、病灶和模态均可能改变的任务序列。表\ref{tab:benchmark-scenarios}概括了三类场景的主要区别。
+
+\begin{table}[htbp]
+\centering
+\caption{持续医学图像分割三类基准场景的定义与协议差异}
+\label{tab:benchmark-scenarios}
+\small
+\renewcommand{\arraystretch}{1.18}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{p{2.0cm}p{2.8cm}p{2.8cm}p{3.0cm}p{3.2cm}}
+\toprule
+场景 & 输入分布与标签空间 & 输出组织 & 任务序列实例 & 主要评价重点 \\
+\midrule
+Domain-CL &
+$P(\mathcal{X}_{t_1})\neq P(\mathcal{X}_{t_2})$，$Y_{t_1}=Y_{t_2}$ &
+共享二通道输出头，分割语义保持不变 &
+六个前列腺 MRI 中心按顺序到达 &
+跨域知识保持、当前域学习、E-FWT 与资源开销 \\
+\addlinespace
+Class-CL &
+图像域相对稳定，$Y_{t_1}\neq Y_{t_2}$，统一标签空间逐步扩展 &
+共享八通道输出头，最终预测全部已见结构 &
+七个心脏结构分三阶段加入 &
+背景语义变化、旧类保持、新类学习、WCD 与资源开销 \\
+\addlinespace
+Organ-CL &
+$P(\mathcal{X}_{t_1})\neq P(\mathcal{X}_{t_2})$，且 $Y_{t_1}\cap Y_{t_2}=\varnothing$ &
+每个任务使用二通道任务特定输出头 &
+左心房 MRI、前列腺 MRI、肝 CT、脑肿瘤 FLAIR MRI &
+跨任务知识保持、当前任务学习与参数扩展 \\
+\bottomrule
+\end{tabular}
+}
+\end{table}
 
 \subsection{Domain-CL：跨中心与设备域增量分割}
 \label{subsec:benchmark-domain-cl}
 
+Domain-CL 描述分割目标保持不变，而图像分布随中心、设备或采集协议发生变化的情况。对任意两个任务 $t_1$ 和 $t_2$，其标签集合满足 $Y_{t_1}=Y_{t_2}$，但输入分布通常满足
+$P(\mathcal{X}_{t_1})\neq P(\mathcal{X}_{t_2})$。本章使用六个中心的前列腺 T2 加权 MRI 构建任务序列，所有阶段均预测前列腺与背景，因此网络使用共享的二通道输出头。
+
+该场景与静态多域训练的区别在于，不同中心的数据不是同时进入训练过程。模型在学习后续中心时仍需保持此前中心的分割能力。它也不同于只在目标域适配的域适应问题，因为评价不仅关注当前中心，还跟踪完整历史域的性能。由于不同域具有相同输出语义，模型在尚未训练域上的直接 Dice 具有可比较性，因此 Domain-CL 还可以评价前向泛化。
+
+跨中心差异可能来自扫描仪、采集参数、人群构成和数据预处理。基准并不假设这些变化能够被单一域标签完全解释，而是把中心序列作为可复现的域增量协议。三类场景也不意味着所有医学域变化都可归入该设定；连续漂移、中心重访或多个变化因素同时发生的情况仍超出当前实验范围。
+
 \subsection{Class-CL：类别增量分割}
 \label{subsec:benchmark-class-cl}
+
+Class-CL 保持成像区域和图像分布相对稳定，但分割类别随阶段扩展。设第 $t$ 阶段提供标签集合 $Y_t$，则不同阶段满足 $Y_{t_1}\neq Y_{t_2}$，最终模型需要在统一输出空间中预测全部已见类别。本章使用心脏 CT 数据，将七个解剖结构依次组织为三个阶段：第一阶段学习左心室、左心房和心肌，第二阶段加入右心室和右心房，第三阶段加入升主动脉和肺动脉。
+
+类别增量分割不仅涉及输出维度扩展，还受到背景语义变化影响。当前阶段只对新增类别提供监督时，旧类别或未来类别像素可能被并入背景，导致“背景”在不同阶段不再表示相同语义。普通知识蒸馏或参数约束若忽略这一变化，可能把当前新增结构误当作旧背景，或使旧类别在后续阶段被覆盖。基准因此引入 MiB 和 PLOP 等面向持续语义分割的专项方法作为对照\cite{cermelli2020mib,douillard2021plop}。
+
+Class-CL 采用共享八通道输出头，最终阶段使用全类别 Dice 评价统一分割能力。当前归档材料未完整形式化旧类别标签在每一阶段的可访问范围，也未把任务身份作为独立变量。由此，本章只依据原始标签阶段和输出头设置分析背景漂移与类别保持，不将结果扩展到所有类别增量标注协议。
 
 \subsection{Organ-CL：跨器官任务持续学习}
 \label{subsec:benchmark-organ-cl}
 
+Organ-CL 进一步改变分割对象、图像分布和成像模态。不同任务的标签集合互不重叠，即
+$Y_{t_1}\cap Y_{t_2}=\varnothing$，输入分布也通常满足
+$P(\mathcal{X}_{t_1})\neq P(\mathcal{X}_{t_2})$。本章构建四阶段任务序列：左心房 LGE MRI、前列腺 MRI、肝脏 CT 和脑肿瘤 FLAIR MRI。每个任务均使用独立二通道输出头，主干网络在任务之间共享。
+
+该场景与 Class-CL 的差别不只是标签集合是否重叠。不同器官和模态对应不同图像外观、空间结构及分割目标，直接在尚未训练任务上计算跨任务 Dice 缺少统一语义基础。因此，E-FWT 不用于 Organ-CL。评价主要关注模型完成全部顺序任务后的平均性能、旧任务保持、当前任务建模能力和参数增长。
+
+Organ-CL 也不同于静态多任务学习。静态多任务训练可以同时使用全部任务数据并共同优化共享表示，而本章按顺序提供任务，模型在学习新器官时不能默认完整访问旧任务训练集。多头结构减少了输出类别之间的直接竞争，但共享主干仍可能发生表征覆盖；同时，为每个任务扩展网络也会带来额外参数开销。
+
+
 \section{数据组织与统一实验协议}
 \label{sec:benchmark-protocol}
 
+\subsection*{数据集与任务划分}
+
+Domain-CL 使用 NCI-ISBI 2013、I2CVB 和 PROMISE12 前列腺 MRI 数据构造六个中心域，其中 NCI-ISBI 2013 对应中心 A 和 B，I2CVB 对应中心 C，PROMISE12 对应中心 D、E 和 F\cite{dataset_prostate2,dataset_prostate,dataset_prostate3,dataset_domaincl}。中心 C 的图像先进行裁剪和空间对齐，所有中心的轴位切片统一为 $256\times256$，并依据非零体素计算均值和标准差完成归一化。六个中心按照固定顺序形成持续任务。
+
+Class-CL 使用 MMWHS 心脏 CT 数据\cite{care25ASA1,discussion_inter_seg3,care25ASA2}。图像被重采样至 $0.78\times0.78$ mm 的平面分辨率，平均层厚为 1.60 mm，并调整为 $256\times256$。七个心脏结构分为三个阶段：左心室、左心房和心肌首先进入训练，随后加入右心室和右心房，最后加入升主动脉和肺动脉。
+
+Organ-CL 依次使用 LAScarQS 左心房 LGE MRI、PROMISE12 前列腺 MRI、LiTS 肝脏 CT 和 FeTS 2021 脑肿瘤 FLAIR MRI\cite{dataset_lascars,dataset_lascars2,dataset_prostate3,dataset_taskcl,dataset_taskcl2}。各图像采用零均值和单位方差归一化，并将切片统一为 $256\times256$。每个分割任务随机划分为 60\% 训练集、15\% 验证集和 25\% 测试集。当前材料未报告各数据集或中心的具体样本数，因此本章不补写样本规模。
+
+\begin{table}[htbp]
+\centering
+\caption{三类场景的数据组织与任务序列}
+\label{tab:benchmark-datasets}
+\small
+\renewcommand{\arraystretch}{1.16}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{p{1.8cm}p{3.2cm}p{2.1cm}p{4.0cm}p{3.1cm}}
+\toprule
+场景 & 数据与模态 & 阶段数 & 任务顺序 & 输出与预处理 \\
+\midrule
+Domain-CL &
+NCI-ISBI 2013、I2CVB、PROMISE12 前列腺 T2 MRI &
+6 &
+中心 A$\rightarrow$B$\rightarrow$C$\rightarrow$D$\rightarrow$E$\rightarrow$F &
+共享二通道头；轴位 $256\times256$；非零体素归一化 \\
+\addlinespace
+Class-CL &
+MMWHS 心脏 CT &
+3 &
+LV/LA/MYO $\rightarrow$ RV/RA $\rightarrow$ AA/PA &
+共享八通道头；$0.78\times0.78$ mm 平面分辨率；$256\times256$ \\
+\addlinespace
+Organ-CL &
+LAScarQS、PROMISE12、LiTS、FeTS 2021 &
+4 &
+左心房 MRI $\rightarrow$ 前列腺 MRI $\rightarrow$ 肝 CT $\rightarrow$ 脑肿瘤 FLAIR MRI &
+每任务二通道头；零均值单位方差归一化；$256\times256$ \\
+\bottomrule
+\end{tabular}
+}
+\end{table}
+
+\subsection*{网络与训练设置}
+
+为减少基础网络差异对比较的影响，所有方法采用 ResUNet32 主干。Domain-CL 使用二通道输出头，Class-CL 使用统一八通道输出头，Organ-CL 为每个任务配置二通道输出头。每个任务训练 150 个 epoch，优化器为随机梯度下降，初始学习率为 0.008，在第 80 个 epoch 后乘以 0.5，batch size 为 8。Domain-CL 和 Organ-CL 使用交叉熵损失；Class-CL 使用 MiB 中用于缓解背景语义变化的无偏交叉熵。
+
+回放方法的默认缓存容量为 32，回放 batch size 为 8，样本更新采用 reservoir sampling。GSS 的梯度比较 batch size 为 8，GEM 的 margin 为 0.5，GPM 的子空间阈值为 0.97，DER 与 FDR 的惩罚权重分别为 0.4 和 0.5。EWC 使用 $\lambda=1$ 和 $\gamma=0.1$，SI 使用 $c=5$ 和 $\xi=1$，LwF 的惩罚权重、温度和权重衰减分别为 3、2 和 0.0005。PLOP 的池化输出蒸馏权重和不确定性阈值分别为 0.01 和 0.001；MiB 的蒸馏权重为 10，$\alpha=1.0$。
+
+当前归档材料没有给出随机种子、重复实验次数、硬件、代码版本、模型选择或早停规则。结果表提供均值和标准差，但不能据此恢复具体重复次数，也不能在缺少统计检验的情况下声称方法差异具有统计显著性。Class-CL 回放的标签处理被描述为进行了轻微调整，但没有进一步给出实现细节。上述缺失不影响对现有表格的事实性分析，却限制了完整复现和更细粒度机制判断。
+
+\subsection*{对比方法}
+
+本章比较三类通用持续学习策略。正则化方法包括 EWC、SI 和 LwF，分别通过参数重要性或旧模型输出约束后续更新\cite{kirkpatrick2017ewc,method_regu_si,li2018lwf}。回放类包括 ER、GSS、GEM、GPM、AGEM、DER、DER++ 和 FDR，它们保存原始样本、梯度方向、模型输出或子空间信息以近似历史约束\cite{method_replay_er,method_replay_gss,method_replay_gem,saha2021gpm,method_replay_agem,method_replay_der,method_replay_xder,method_replay_fdr}。参数隔离类包括 PNN 和 DAN，通过扩展或组合任务相关参数降低新旧任务之间的直接覆盖\cite{method_dyn_pnn,method_dyn_dan}。Class-CL 还加入 PLOP 和 MiB 作为面向持续语义分割的专项方法。
+
+\begin{table}[htbp]
+\centering
+\caption{基准中比较的方法类别及其主要历史信息载体}
+\label{tab:benchmark-methods}
+\small
+\renewcommand{\arraystretch}{1.15}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{p{2.0cm}p{4.0cm}p{4.0cm}p{3.6cm}}
+\toprule
+类别 & 代表方法 & 历史知识载体或约束方式 & 主要附加代价 \\
+\midrule
+正则化 &
+Regu-EWC、Regu-SI、Regu-LwF &
+参数重要性、路径积分或旧模型输出 &
+不保存原始样本，固定参数规模；保护过强可能限制当前任务学习 \\
+\addlinespace
+回放 &
+Repl-ER、GSS、GEM、GPM、AGEM、DER、DER++、FDR &
+原始样本、梯度约束、旧模型输出或低维子空间 &
+缓存、历史统计和附加优化开销；不同方法的回放对象不同 \\
+\addlinespace
+参数隔离 &
+ParIso-PNN、ParIso-DAN &
+任务特定网络分支或适配参数 &
+遗忘较小，但模型参数随任务增加 \\
+\addlinespace
+类别增量专项 &
+ClassCL-PLOP、ClassCL-MiB &
+背景修正、蒸馏和伪标签 &
+依赖 Class-CL 标签协议，不能直接外推至其他场景 \\
+\addlinespace
+参照 &
+Non-CL、JointTrain &
+无专门保护；完整联合访问 &
+JointTrain 使用完整历史数据，访问条件不同 \\
+\bottomrule
+\end{tabular}
+}
+\end{table}
+
+
 \section{综合评价指标}
 \label{sec:benchmark-metrics}
-% 准确给出平均性能、遗忘、RMA、E-FWT 及原论文实际采用的其他指标；不得根据 PPT 简写遗漏定义条件。
+
+设 $d_{t,i}$ 为完成第 $t$ 个任务训练后的模型在任务 $i$ 测试集上的平均 Dice。传统评价通常只报告最终模型在所有任务上的平均性能或遗忘量。本章保留这两类指标，并进一步引入当前任务建模、前向能力和资源开销指标。不同指标对应性能矩阵中的不同位置，不能相互替代。
+
+\subsection*{最终平均性能}
+
+最终平均 Dice（average Dice，A-Dice）计算模型完成全部 $T$ 个任务后在所有任务上的平均性能：
+\begin{equation}
+\mathrm{A\mbox{-}Dice}
+=
+\frac{1}{T}\sum_{i=1}^{T}d_{T,i}.
+\label{eq:benchmark-adice}
+\end{equation}
+A-Dice 越大，表示最终模型在全部任务上的总体分割性能越高。该指标会把不同任务压缩为一个平均值，无法区分历史保持和当前任务学习，也可能受到某些高分任务的影响。
+
+\subsection*{后向迁移与遗忘}
+
+后向迁移率（backward transfer rate，BWTR）比较最终模型在旧任务上的性能与刚完成该任务训练时的性能：
+\begin{equation}
+\mathrm{BWTR}
+=
+\frac{1}{T-1}
+\sum_{i=1}^{T-1}
+\frac{d_{T,i}-d_{i,i}}{d_{i,i}}.
+\label{eq:benchmark-bwtr}
+\end{equation}
+当 $d_{i,i}>0$ 时，BWTR 为 0 表示任务 $i$ 的最终性能与初学完成时相同；负值表示性能下降，数值越小通常对应更强遗忘；正值则表示后续任务学习改善了旧任务性能。该指标使用相对变化，因而不同任务的初始 Dice 会影响归一化结果。
+
+\subsection*{受限建模能力}
+
+仅限制遗忘可能使模型过度保护旧参数，而无法充分学习当前任务。为此，本章提出受限建模能力 RMA。令 $d_i^{NC}$ 表示只在任务 $i$ 上独立训练的 Non-CL 模型性能，则
+\begin{equation}
+\mathrm{RMA}
+=
+\frac{1}{T-1}
+\sum_{i=2}^{T}
+\frac{d_{i,i}}{d_i^{NC}}.
+\label{eq:benchmark-rma}
+\end{equation}
+RMA 排除第一个任务，因为此时尚未受到历史任务约束。RMA 接近 1 表示持续模型在当前任务上的性能接近独立训练参考；小于 1 表示历史保护或顺序训练限制了当前任务建模；大于 1 则表示在该任务上共享历史表征带来了高于独立训练的结果。RMA 只评价当前任务学习，不能说明旧任务是否被保持。
+
+\subsection*{扩展前向迁移}
+
+一般前向迁移常比较学习先前任务是否改善后续任务训练。本章关注模型在尚未参与优化的未来域上的直接表现。令 $d_{0,i}$ 表示随机初始化模型在任务 $i$ 上的 Dice，则 Domain-CL 的扩展前向迁移定义为
+\begin{equation}
+\mathrm{E\mbox{-}FWT}
+=
+\frac{2}{T(T-1)}
+\sum_{t=1}^{T-1}
+\sum_{i=t+1}^{T}
+\left(d_{t,i}-d_{0,i}\right).
+\label{eq:benchmark-efwt}
+\end{equation}
+该指标汇总每个已完成阶段对所有未来域的直接表现，而不是只比较相邻任务。E-FWT 越大，说明当前模型对尚未训练域的直接分割能力相对于随机初始化越强。由于 Class-CL 的未来类别尚未进入输出语义，Organ-CL 的任务输出互不相同，E-FWT 仅用于 Domain-CL。其数值反映当前基准下的前向泛化，不应被解释为未知临床数据上的通用保证。
+
+\subsection*{全类别分割性能}
+
+Class-CL 最终需要在统一标签空间中预测所有已见结构。本章使用全类别 Dice（whole-class Dice，WCD）记录最终模型对全部类别的分割结果：
+\begin{equation}
+\mathrm{WCD}=d_{\mathrm{all}}.
+\label{eq:benchmark-wcd}
+\end{equation}
+WCD 越大，表示最终统一输出空间中的全类别分割性能越高。它与 A-Dice 的汇总对象不同，因此两者可能给出不同方法排序。
+
+\subsection*{模型与数据资源}
+
+模型参数扩展率（model parameter expansion，MPE）描述任务到达后新增参数相对于初始模型参数量的平均比例：
+\begin{equation}
+\mathrm{MPE}
+=
+\frac{1}{T-1}
+\sum_{t=2}^{T}
+\frac{
+\mathrm{Param}(\theta_t)-\mathrm{Param}(\theta_{t-1})
+}{
+\mathrm{Param}(\theta_1)
+}.
+\label{eq:benchmark-mpe}
+\end{equation}
+MPE 越小，表示模型容量随任务增长越少。只有初始主干和参数统计口径一致时，该指标才适合横向比较。
+
+数据回放率（data replay ratio，DRR）衡量持续训练中回放数据相对于当前训练数据的平均比例：
+\begin{equation}
+\mathrm{DRR}
+=
+\frac{1}{T-1}
+\sum_{t=1}^{T-1}
+\frac{
+N_t^{\mathrm{replay}}
+}{
+N_t^{\mathrm{train}}
+}.
+\label{eq:benchmark-drr}
+\end{equation}
+其中，$N_t^{\mathrm{replay}}$ 和 $N_t^{\mathrm{train}}$ 分别表示回放数据量和当前训练数据量。DRR 越小，表示对历史数据回访的依赖越低。表中带星号的 DRR 表示回放原始图像；不带星号的非零值可对应其他历史表示。MPE 和 DRR 只描述部分资源条件，不能替代计算时间、显存和通信开销的完整核算。
+
+上述指标从最终总体性能、历史保持、当前任务学习、未来域能力和资源使用等方面观察持续模型。评价时应联合报告，而不能只选择对某一方法有利的单一指标。当前归档材料包含公式和结果表，但没有指标实现代码，因此本章不声称已经完成公式与代码的一致性复现。
+
 
 \section{实验结果与分析}
 \label{sec:benchmark-results}
 
+\subsection*{Domain-CL 结果}
+
+表\ref{tab:benchmark-domain-results}给出了六中心前列腺分割序列上的综合结果。JointTrain 的 A-Dice 为 $0.830\pm0.040$，高于所有持续学习方法，但该参照可以同时访问全部中心数据，不能视为相同历史访问条件下的比较结果。参数隔离方法 ParIso-PNN 和 ParIso-DAN 的 A-Dice 分别为 $0.789\pm0.002$ 和 $0.786\pm0.008$，BWTR 均为 0，说明在当前输出组织下任务特定参数能够避免最终旧域性能下降。其代价体现在 MPE：PNN 为 1.112，DAN 为 0.111。
+
+在固定参数规模的方法中，Repl-ER 的 A-Dice 为 $0.750\pm0.021$，是表中回放类方法的较高结果；Repl-AGEM 为 $0.740\pm0.015$，其 BWTR 为 $-0.093\pm0.023$。正则化方法 EWC 和 SI 的 RMA 均高于 1，说明当前任务性能可以达到或超过独立训练参考，但其 BWTR 分别为 $-0.242\pm0.039$ 和 $-0.236\pm0.042$。这一组合表明，当前任务学习较强并不自动意味着历史知识保持良好。相反，Regu-LwF 的 BWTR 退化较小，但 RMA 仅为 $0.894\pm0.021$，说明较强的旧模型约束可能影响当前域学习。
+
+E-FWT 进一步揭示未来域能力。Non-CL 的 E-FWT 为 $0.260\pm0.151$，多数正则化和回放方法位于 0.212 至 0.259 之间，没有形成稳定一致的提升。ParIso-DAN 的 E-FWT 为 $0.312\pm0.210$，是表内较高结果，但标准差也较大；ParIso-PNN 的 E-FWT 为 $0.235\pm0.148$。因此，在该中心序列中，降低遗忘与提高未来域直接性能不是同一目标。
+
+\begin{table}[htbp]
+\centering
+\caption{Domain-CL 场景下不同持续学习方法的综合结果}
+\label{tab:benchmark-domain-results}
+\scriptsize
+\setlength{\tabcolsep}{3.8pt}
+\renewcommand{\arraystretch}{1.12}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lcccccc}
+\toprule
+方法 & A-Dice & BWTR & RMA & E-FWT & MPE & DRR \\
+\midrule
+\multicolumn{7}{l}{\textit{正则化方法}} \\
+Regu-EWC & $.672\pm.021$ & $-.242\pm.039$ & $1.086\pm.014$ & $.255\pm.152$ & $0$ & $0$ \\
+Regu-SI & $.676\pm.024$ & $-.236\pm.042$ & $1.084\pm.008$ & $.259\pm.151$ & $0$ & $0$ \\
+Regu-LwF & $.663\pm.029$ & $-.090\pm.027$ & $.894\pm.021$ & $.224\pm.153$ & $0$ & $0$ \\
+\addlinespace[2pt]
+\multicolumn{7}{l}{\textit{回放方法}} \\
+Repl-ER & $.750\pm.021$ & $-.100\pm.027$ & $1.054\pm.014$ & $.256\pm.150$ & $0$ & $.027^{*}$ \\
+Repl-GSS & $.726\pm.026$ & $-.140\pm.040$ & $1.059\pm.010$ & $.255\pm.150$ & $0$ & $.036^{*}$ \\
+Repl-GEM & $.718\pm.018$ & $-.095\pm.022$ & $.994\pm.024$ & $.251\pm.154$ & $0$ & $.042^{*}$ \\
+Repl-GPM & $.661\pm.010$ & $-.188\pm.010$ & $1.013\pm.022$ & $.212\pm.080$ & $0$ & $.113$ \\
+Repl-AGEM & $.740\pm.015$ & $-.093\pm.023$ & $1.023\pm.027$ & $.253\pm.155$ & $0$ & $.042^{*}$ \\
+Repl-DER & $.715\pm.011$ & $-.126\pm.015$ & $1.018\pm.016$ & $.249\pm.148$ & $0$ & $.027^{*}$ \\
+Repl-DER++ & $.725\pm.013$ & $-.105\pm.018$ & $1.012\pm.013$ & $.251\pm.149$ & $0$ & $.027^{*}$ \\
+Repl-FDR & $.728\pm.015$ & $-.111\pm.028$ & $1.025\pm.033$ & $.252\pm.136$ & $0$ & $.042^{*}$ \\
+\addlinespace[2pt]
+\multicolumn{7}{l}{\textit{参数隔离方法}} \\
+ParIso-PNN & $.789\pm.002$ & $0\pm0$ & $1.003\pm.014$ & $.235\pm.148$ & $1.112$ & $0$ \\
+ParIso-DAN & $.786\pm.008$ & $0\pm0$ & $1.016\pm.021$ & $.312\pm.210$ & $.111$ & $0$ \\
+\addlinespace[2pt]
+\multicolumn{7}{l}{\textit{参照方法}} \\
+Non-CL & $.676\pm.021$ & $-.237\pm.038$ & $1.086\pm.008$ & $.260\pm.151$ & $0$ & $0$ \\
+JointTrain & $.830\pm.040$ & -- & -- & -- & $0$ & $0$ \\
+\bottomrule
+\end{tabular}%
+}
+\vspace{2pt}
+\begin{minipage}{0.98\textwidth}
+\footnotesize 注：数值为均值$\pm$标准差；“--”表示不适用或未报告；DRR 中带“$^{*}$”的数值表示回放原始图像。JointTrain 可访问全部任务数据，其结果仅作为不同访问条件下的参照。
+\end{minipage}
+\end{table}
+
+\subsection*{Class-CL 结果}
+
+表\ref{tab:benchmark-class-results}展示了心脏结构逐步扩展时的结果。JointTrain 的 A-Dice 为 $0.810\pm0.023$。ParIso-PNN 的 A-Dice 为 $0.770\pm0.012$，BWTR 为 0，但 MPE 达到 1.056。ParIso-DAN 同样实现零 BWTR，其 A-Dice 为 $0.729\pm0.009$，MPE 为 0.111。参数隔离可以避免共享参数被后续类别覆盖，但不同扩展方式在性能与容量之间仍有差异。
+
+面向背景语义变化的专项方法表现出与通用方法不同的取舍。ClassCL-MiB 的 A-Dice 为 $0.751\pm0.008$，BWTR 为 $-0.039\pm0.003$，是固定参数方法中遗忘较小的结果；ClassCL-PLOP 的 WCD 为 $0.707\pm0.009$，高于 MiB 的 $0.697\pm0.008$，但其 A-Dice 和 BWTR 分别为 $0.708\pm0.025$ 和 $-0.104\pm0.026$。WCD 与 A-Dice 的排序差异说明，最终全类别输出与逐阶段任务平均不能相互替代。
+
+通用回放方法中，Repl-GEM 的 A-Dice 为 $0.684\pm0.036$，Repl-FDR 为 $0.666\pm0.012$。后者 BWTR 为 $-0.146\pm0.046$，优于多数回放基线，但 RMA 为 $0.917\pm0.035$。Repl-ER 的 RMA 为 $1.015\pm0.029$，说明当前任务学习接近独立训练，但 BWTR 仍为 $-0.243\pm0.068$。类别增量结果再次表明，RMA、BWTR 和 WCD 分别刻画不同能力，单一数值不能形成完整排序。
+
+\begin{table}[htbp]
+\centering
+\caption{Class-CL 场景下不同持续学习方法的综合结果}
+\label{tab:benchmark-class-results}
+\scriptsize
+\setlength{\tabcolsep}{3.8pt}
+\renewcommand{\arraystretch}{1.12}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lcccccc}
+\toprule
+方法 & A-Dice & BWTR & RMA & WCD & MPE & DRR \\
+\midrule
+\multicolumn{7}{l}{\textit{正则化方法}} \\
+Regu-EWC & $.487\pm.020$ & $-.552\pm.042$ & $.999\pm.022$ & $.513\pm.022$ & $0$ & $0$ \\
+Regu-SI & $.469\pm.007$ & $-.602\pm.016$ & $1.018\pm.028$ & $.570\pm.020$ & $0$ & $0$ \\
+Regu-LwF & $.384\pm.022$ & $-.575\pm.013$ & $.782\pm.046$ & $.602\pm.002$ & $0$ & $0$ \\
+\addlinespace[2pt]
+\multicolumn{7}{l}{\textit{回放方法}} \\
+Repl-ER & $.654\pm.034$ & $-.243\pm.068$ & $1.015\pm.029$ & $.596\pm.019$ & $0$ & $.011^{*}$ \\
+Repl-GSS & $.456\pm.003$ & $-.611\pm.016$ & $.991\pm.038$ & $.600\pm.006$ & $0$ & $.018^{*}$ \\
+Repl-GEM & $.684\pm.036$ & $-.304\pm.038$ & $1.014\pm.031$ & $.622\pm.031$ & $0$ & $.010^{*}$ \\
+Repl-GPM & $.575\pm.023$ & $-.219\pm.033$ & $.892\pm.014$ & $.513\pm.014$ & $0$ & $.068$ \\
+Repl-AGEM & $.595\pm.017$ & $-.370\pm.032$ & $1.020\pm.019$ & $.562\pm.026$ & $0$ & $.010^{*}$ \\
+Repl-DER & $.628\pm.027$ & $-.219\pm.070$ & $.913\pm.029$ & $.622\pm.029$ & $0$ & $.011^{*}$ \\
+Repl-DER++ & $.638\pm.036$ & $-.208\pm.056$ & $.932\pm.034$ & $.633\pm.043$ & $0$ & $.011^{*}$ \\
+Repl-FDR & $.666\pm.012$ & $-.146\pm.046$ & $.917\pm.035$ & $.627\pm.015$ & $0$ & $.010^{*}$ \\
+\addlinespace[2pt]
+\multicolumn{7}{l}{\textit{参数隔离方法}} \\
+ParIso-PNN & $.770\pm.012$ & $0\pm0$ & $.976\pm.021$ & $.620\pm.020$ & $1.056$ & $0$ \\
+ParIso-DAN & $.729\pm.009$ & $0\pm0$ & $.897\pm.022$ & $.543\pm.127$ & $.111$ & $0$ \\
+\addlinespace[2pt]
+\multicolumn{7}{l}{\textit{类别增量专项方法}} \\
+ClassCL-PLOP & $.708\pm.025$ & $-.104\pm.026$ & $.986\pm.038$ & $.707\pm.009$ & $0$ & $0$ \\
+ClassCL-MiB & $.751\pm.008$ & $-.039\pm.003$ & $1.004\pm.018$ & $.697\pm.008$ & $0$ & $0$ \\
+\addlinespace[2pt]
+\multicolumn{7}{l}{\textit{参照方法}} \\
+Non-CL & $.471\pm.012$ & $-.598\pm.015$ & $1.014\pm.028$ & $.572\pm.023$ & $0$ & $0$ \\
+JointTrain & $.810\pm.023$ & -- & -- & -- & $0$ & $0$ \\
+\bottomrule
+\end{tabular}%
+}
+\vspace{2pt}
+\begin{minipage}{0.98\textwidth}
+\footnotesize 注：数值为均值$\pm$标准差；“--”表示不适用或未报告；DRR 中带“$^{*}$”的数值表示回放原始图像。JointTrain 可访问全部任务数据，其结果仅作为不同访问条件下的参照。
+\end{minipage}
+\end{table}
+
+\subsection*{Organ-CL 结果}
+
+表\ref{tab:benchmark-organ-results}给出了跨器官和跨模态任务序列的结果。JointTrain 的 A-Dice 为 $0.881\pm0.010$。ParIso-PNN 与 ParIso-DAN 的 A-Dice 分别为 $0.839\pm0.004$ 和 $0.824\pm0.005$，BWTR 均为 0，MPE 分别为 1.074 和 0.166。多头和任务特定参数可以隔离器官任务，但其容量增长随具体结构设计而不同。
+
+在回放方法中，Repl-ER 的 A-Dice 为 $0.729\pm0.009$，RMA 为 $0.996\pm0.011$；Repl-DER 的 A-Dice 为 $0.717\pm0.005$，BWTR 为 $-0.157\pm0.022$。两者均使用较低原始样本回放率。Repl-GSS 的 A-Dice 同为 $0.717\pm0.005$，但 BWTR 为 $-0.276\pm0.055$。这说明即使最终平均性能接近，历史任务退化过程也可能不同。
+
+正则化方法的 A-Dice 位于 0.594 至 0.621 之间，BWTR 均为负。Regu-EWC 和 Regu-SI 的 RMA 接近 1，表明它们能够学习当前器官，但旧任务性能在后续训练中下降。Non-CL 也呈现相似现象，其 RMA 为 $1.006\pm0.008$，A-Dice 仅为 $0.603\pm0.008$。对于标签集合与输入分布同时变化的任务序列，当前任务学习和历史保持之间的差异更为明显。
+
+\begin{table}[htbp]
+\centering
+\caption{Organ-CL 场景下不同持续学习方法的综合结果}
+\label{tab:benchmark-organ-results}
+\scriptsize
+\setlength{\tabcolsep}{4.5pt}
+\renewcommand{\arraystretch}{1.12}
+\resizebox{0.90\textwidth}{!}{%
+\begin{tabular}{lccccc}
+\toprule
+方法 & A-Dice & BWTR & RMA & MPE & DRR \\
+\midrule
+\multicolumn{6}{l}{\textit{正则化方法}} \\
+Regu-EWC & $.601\pm.008$ & $-.371\pm.014$ & $1.004\pm.012$ & $0$ & $0$ \\
+Regu-SI & $.621\pm.024$ & $-.343\pm.025$ & $1.003\pm.009$ & $0$ & $0$ \\
+Regu-LwF & $.594\pm.018$ & $-.308\pm.044$ & $.916\pm.004$ & $0$ & $0$ \\
+\addlinespace[2pt]
+\multicolumn{6}{l}{\textit{回放方法}} \\
+Repl-ER & $.729\pm.009$ & $-.178\pm.021$ & $.996\pm.011$ & $0$ & $.012^{*}$ \\
+Repl-GSS & $.717\pm.005$ & $-.276\pm.055$ & $.995\pm.009$ & $0$ & $.023^{*}$ \\
+Repl-GEM & $.599\pm.007$ & $-.182\pm.068$ & $.806\pm.059$ & $0$ & $.023^{*}$ \\
+Repl-GPM & $.605\pm.009$ & $-.329\pm.034$ & $.960\pm.027$ & $0$ & $.068$ \\
+Repl-AGEM & $.635\pm.013$ & $-.193\pm.069$ & $.873\pm.052$ & $0$ & $.023^{*}$ \\
+Repl-DER & $.717\pm.005$ & $-.157\pm.022$ & $.953\pm.013$ & $0$ & $.012^{*}$ \\
+Repl-FDR & $.631\pm.008$ & $-.217\pm.008$ & $.885\pm.013$ & $0$ & $.023^{*}$ \\
+\addlinespace[2pt]
+\multicolumn{6}{l}{\textit{参数隔离方法}} \\
+ParIso-PNN & $.839\pm.004$ & $0\pm0$ & $1.001\pm.006$ & $1.074$ & $0$ \\
+ParIso-DAN & $.824\pm.005$ & $0\pm0$ & $.972\pm.016$ & $.166$ & $0$ \\
+\addlinespace[2pt]
+\multicolumn{6}{l}{\textit{参照方法}} \\
+Non-CL & $.603\pm.008$ & $-.369\pm.005$ & $1.006\pm.008$ & $0$ & $0$ \\
+JointTrain & $.881\pm.010$ & -- & -- & $0$ & $0$ \\
+\bottomrule
+\end{tabular}%
+}
+\vspace{2pt}
+\begin{minipage}{0.90\textwidth}
+\footnotesize 注：数值为均值$\pm$标准差；“--”表示不适用或未报告；DRR 中带“$^{*}$”的数值表示回放原始图像。JointTrain 可访问全部任务数据，其结果仅作为不同访问条件下的参照。
+\end{minipage}
+\end{table}
+
+\subsection*{任务顺序与回放容量分析}
+
+持续学习结果还可能受到任务排列影响。图\ref{fig:benchmark-order-adice}和图\ref{fig:benchmark-order-bwtr}展示了十种 Domain-CL 任务顺序下的 A-Dice 与 BWTR。不同顺序会改变各方法的最终表现，说明固定单一任务序列不足以完全描述方法鲁棒性。原始分析中，Repl-GSS 在十种顺序下的 A-Dice 和 BWTR 标准差分别为 0.0134 和 0.0123，显示出较小的顺序波动；由于当前材料没有提供十种排列的完整数值表，本章不进一步给出逐顺序排名。
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.92\textwidth]{ch03/task_robustness_adice.pdf}
+\caption{不同 Domain-CL 任务顺序下各方法的 A-Dice。任务排列会改变最终平均性能，图中结果用于观察顺序敏感性，不用于声称所有方法间差异具有统计显著性。}
+\label{fig:benchmark-order-adice}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.92\textwidth]{ch03/task_robustness_bwt_from_bottom.pdf}
+\caption{不同 Domain-CL 任务顺序下各方法的 BWTR。不同方法的知识保持对任务顺序具有不同敏感性。}
+\label{fig:benchmark-order-bwtr}
+\end{figure}
+
+回放容量决定历史样本对训练的覆盖程度，也改变存储成本。图\ref{fig:benchmark-memory}给出了多种回放方法随缓存规模变化的 Domain-CL A-Dice。ER、FDR、GEM、DER 和 GSS 的性能整体随缓存增加而提高，随后呈现趋于饱和的趋势。这一结果说明更大的缓存可以改善历史分布近似，但不能据此确定跨数据集通用的最优缓存容量。缓存收益还需与 DRR、数据治理条件和方法自身的历史信息形式共同解释。
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.90\textwidth]{ch03/domain_memory_size_adice.pdf}
+\caption{Domain-CL 中不同回放方法的缓存规模与 A-Dice 关系。曲线显示性能随缓存增加总体提高并逐渐趋于饱和，但当前图不提供固定最优容量的证据。}
+\label{fig:benchmark-memory}
+\end{figure}
+
+\subsection*{跨场景综合分析}
+
+三类场景的结果没有形成脱离资源条件的统一最优方法。参数隔离在多个场景中获得零 BWTR 和较高 A-Dice，但需要扩展模型参数。回放方法通常优于单纯正则化，但其性能依赖缓存大小、回放对象和任务顺序。面向 Class-CL 背景语义变化的 MiB 和 PLOP 能够改善全类别分割与遗忘，却不适用于输出任务完全不同的 Organ-CL。正则化方法保持固定参数量和零回放率，但在域或器官变化较大时容易出现较强遗忘。
+
+结果还说明稳定性、可塑性和前向能力并不总是一致。EWC、SI 和 Non-CL 在部分场景中具有接近或超过 1 的 RMA，却伴随较负的 BWTR；参数隔离方法可以实现零遗忘，但未来域 E-FWT 不一定同步提高；Class-CL 的 WCD 与 A-Dice 也可能给出不同排序。因此，持续医学图像分割的评价应保留完整阶段—任务性能关系，并把资源条件作为结果解释的一部分。
+
+
 \section{基准研究的主要发现与局限性}
 \label{sec:benchmark-findings-limitations}
 
+\subsection*{主要发现}
+
+第一，医学图像分割中的持续变化不能由单一场景统一描述。跨中心域变化保持标签语义不变，类别增量扩展统一输出空间，跨器官任务则同时改变输入分布和分割目标。不同场景决定哪些性能矩阵条目具有可比性，也决定 E-FWT、WCD 和多头评价是否适用。场景定义必须与标签协议、输出组织和测试方式共同给出。
+
+第二，最终平均性能和遗忘量不足以完整评价持续模型。Domain-CL 和 Organ-CL 中，一些方法的 RMA 接近或超过 1，但 BWTR 仍明显为负，说明当前任务建模与历史保持可以沿不同方向变化。Class-CL 中，WCD 与 A-Dice 对专项方法给出不同排序，表明最终统一输出和逐任务平均需要分别观察。
+
+第三，稳定性改进通常伴随资源或可塑性代价。参数隔离方法能够获得零 BWTR，但 MPE 显示模型容量随任务增长。回放方法利用历史样本改善平均性能和遗忘，却引入非零 DRR，并受缓存规模影响。正则化方法不保存原始数据和扩展参数，但过强约束可能降低当前任务学习。由此，方法比较不能脱离历史访问、参数增长和回放预算。
+
+第四，前向泛化需要独立评价。Domain-CL 中，多数方法的 E-FWT 没有相对于 Non-CL 形成稳定提升；DAN 在表中取得较高均值，但方差较大。降低遗忘不自动意味着模型已经学到对未来中心更有效的表示。E-FWT 通过汇总多个未来域的直接表现补充这一维度，但其定义依赖共享输出语义，不适合直接套用于 Class-CL 和 Organ-CL。
+
+第五，任务顺序和缓存容量会改变方法行为。不同中心排列导致 A-Dice 和 BWTR 波动，缓存增大则总体改善回放方法的结果并逐渐趋于饱和。这些观察说明单一顺序和单一缓存预算只能刻画方法的一部分行为。报告持续学习结果时，应同时说明任务排列、回放容量和输出协议。
+
+\subsection*{研究局限性}
+
+本章的结论受数据、网络和实验归档范围限制。三类场景覆盖中心域变化、类别扩展和跨器官任务，但没有研究任务边界未知、连续漂移、中心重访、开放世界类别或多种变化因素同时发生的情况。所有方法采用 ResUNet32 和固定基础训练预算，结果不能直接代表其他网络、三维模型或医学基础模型上的排序。
+
+当前实验材料没有报告各数据集和中心的完整样本数、随机种子、重复次数、硬件、早停规则和代码版本。结果表提供均值与标准差，但缺少统计检验信息，因此本章只描述数值和趋势，不使用“统计显著”表述。Class-CL 的旧类标签可访问性、背景处理细节和任务身份供给也没有被完整形式化，这限制了与采用不同标签协议的持续语义分割研究进行严格对照。
+
+RMA、E-FWT、MPE 和 DRR 的公式已与主稿表格和索引范围核对，但当前归档没有指标实现代码或逐运行日志，因而无法从代码层面复现其计算流程。原始工程也未保留可在当前环境中直接重建的完整依赖配置。本章据此将指标解释限定在已给出的数学定义和结果表，不声称已经完成端到端实验复现。
+
+参数和数据资源评价仍不完整。MPE 反映参数增长，DRR 反映回放比例，但没有覆盖训练时间、推理延迟、显存、能耗和通信成本。JointTrain 使用全部历史数据，只能作为不同访问条件下的参照。未来工作还需要在统一代码、多个任务顺序和更完整资源核算下复核本章观察，并扩展至 task-free、开放世界和基础模型持续适配场景。
+
+
 \section{本章小结}
 \label{sec:benchmark-summary}
+
+本章围绕持续医学图像分割的场景定义与综合评价构建了系统性基准。根据输入分布、标签空间和分割对象的变化，基准组织 Domain-CL、Class-CL 和 Organ-CL 三类场景，并在统一主干、训练预算和数据划分下比较正则化、回放、参数隔离及类别增量专项方法。三类场景服务于本章的数据组织和实验分析，不被视为对全部持续医学影像问题的穷尽分类。
+
+在评价方面，本章在 A-Dice 和 BWTR 的基础上，引入 RMA 描述持续约束下的当前任务建模能力，使用 E-FWT 评价 Domain-CL 对多个未来域的直接表现，并以 WCD、MPE 和 DRR 补充分类别输出及资源条件。实验结果表明，知识保持、当前任务学习、前向泛化和资源开销可能给出不同方法排序；任务顺序和回放容量也会改变方法行为。由此，后续持续医学影像研究需要在明确任务协议和访问条件的基础上解释结果，而不能只依据单一最终性能或遗忘指标。第三章建立的场景与评价语言将作为第四章联邦持续分类和第五章任务级持续学习研究的参照，但不构成后续方法的算法组件。
+
+```

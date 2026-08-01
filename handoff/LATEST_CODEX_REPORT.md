@@ -1,4 +1,17 @@
-# Codex 最新报告：第一章作者复审定向精修（2026-07-31）
+# Codex 最新报告：第三章 Benchmark 整章工程集成（2026-08-01）
+
+## 第三章 Benchmark 整章工程集成
+
+- 已将 GPT Pro 批准的第三章全文完整集成至 `chapters/ch03_benchmark.tex`；仅将 9 个占位 citation key 映射为库内已核验 key，未改写学术内容。第三章及其 3.1--3.8、3.3.1--3.3.3 均为 `drafted_pending_review`，不得视为已验证。
+- 已复制并逐字节核验四个原始图：`benchmark_overview_new.pdf`、`task_robustness_adice.pdf`、`task_robustness_bwt_from_bottom.pdf`、`domain_memory_size_adice.pdf`。8 个公式标签为 `eq:benchmark-task-distribution`、`eq:benchmark-adice`、`eq:benchmark-bwtr`、`eq:benchmark-rma`、`eq:benchmark-efwt`、`eq:benchmark-wcd`、`eq:benchmark-mpe`、`eq:benchmark-drr`。6 个表为 `tab:benchmark-scenarios`（第28页）、`tab:benchmark-datasets`（第30页）、`tab:benchmark-methods`（第31页）、`tab:benchmark-domain-results`（第34页）、`tab:benchmark-class-results`（第36页）、`tab:benchmark-organ-results`（第37页）；4 个图为 `fig:benchmark-overview`（第26页）、`fig:benchmark-order-adice`（第38页）、`fig:benchmark-order-bwtr`（第38页）、`fig:benchmark-memory`（第39页）。
+- 实际复用并重命名的 citation key：`wang2024continualsurvey`、`kumari2025medicalcl`、`yuan2024continualseg`、`gonzalez2023lifelong`、`kirkpatrick2017ewc`、`li2018lwf`、`saha2021gpm`、`cermelli2020mib`、`douillard2021plop`；其余本章实际引用均已按源稿信息补齐 author/title/year/venue 元数据。
+- 已追加 C3B-001--C3B-015、E3B-001--E3B-008、256 条 Benchmark 实验记录和 LIM-BM-001--LIM-BM-008，并登记本章术语与符号。所有数字仅转录原始活动表；不补造样本量、种子、硬件、代码版本或统计检验。
+- 原始材料指纹在开始和结束时一致：`sources/benchmark/` 共 31 个文件，排序 SHA-256 清单指纹为 `b9a529ada136e552fcd183df573d98c32048b0db53d3b0169a8490af879e8cad`；主稿 `main.tex` SHA-256 为 `b88ae877066b6e826f968a2239c9047d56c32e33bacfe94ffa2c3b10c2b8a1ee`，补充材料 `supplementary.tex` 为 `34813f5d264b97b6404a9b74fca5fdf889ec33d97c4ff8c5b101073cf7fcba4b`。源码只读，未进入 Git diff。
+- 证据限制仍然成立：归档源没有指标实现代码、配置、代码版本、随机种子、硬件、完整样本量或统计检验；因此不能声称公式—代码复现。原 Benchmark 工程在当前环境因缺少 `makecell.sty` 及 Palatino 字体度量而未成功编译，未修改其任何文件。
+- 已运行 `bash scripts/build_and_audit.sh`，并运行 `latexmk -C main.tex` 后完整 XeLaTeX 构建。`main.pdf` 共 77 页，第三章为第25--41页（17 页），大小 1,547,689 字节，SHA-256 为 `41725ece9b69873440cf5e0cf246f222527224890744a0b1db1047f31d379439`。最终日志无未解析引用、交叉引用或 overfull 警告；三张宽表已仅作缩放级排版修复。已逐页核查第三章及与第四章的过渡、四张图、六张表和公式页；Poppler 渲染器不能显示 CJK 正文，故以 XeLaTeX 完整构建、无溢出日志和可见图表/数学内容共同核验，未见裁切、重叠、异常空白或不可读图表。
+- 下一步仅为第三章作者/GPT Pro 整章复审，重点复核公式、三张结果表、图表和结论边界；复审前不得开始第四章。
+
+# 历史报告：第一章作者复审定向精修（2026-07-31）
 
 ## 第三章 Benchmark 整章证据上下文准备（2026-08-01）
 
