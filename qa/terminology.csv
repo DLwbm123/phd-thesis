@@ -98,12 +98,25 @@ restricted modeling ability,受限建模能力,第一章与第四章,受限学�
 extended forward transfer,扩展前向迁移,第一章与第四章,扩展前向泛化（不是指标原名）,E-FWT；在Domain-CL中汇总多个尚未训练域上的直接表现并用于评价前向泛化
 orthogonal-complement projection,正交补投影,第一章与第六章,正交投影（范围不完全等同）,移除梯度在保护子空间内的分量并保留其正交补分量
 first-order interference,一阶干扰,第一章与第六章,一级干扰（错误）,一阶近似下当前参数更新对历史任务损失的影响
-domain-incremental continual learning,域增量持续学习,第三章,无,第三章 Benchmark,统一术语
-class-incremental continual learning,类别增量持续学习,第三章,无,第三章 Benchmark,统一术语
-organ-level continual learning,跨器官任务持续学习,第三章,无,第三章 Benchmark,统一术语
-average Dice,平均 Dice（A-Dice）,第三章,无,第三章 Benchmark,统一术语
-backward transfer rate,后向迁移率（BWTR）,第三章,无,第三章 Benchmark,统一术语
-whole-class Dice,全类别 Dice（WCD）,第三章,无,第三章 Benchmark,统一术语
-model parameter expansion,模型参数扩展率（MPE）,第三章,无,第三章 Benchmark,统一术语
-data replay ratio,数据回放率（DRR）,第三章,无,第三章 Benchmark,统一术语
-background shift,背景语义变化,第三章,无,第三章 Benchmark,统一术语
+domain-incremental continual learning,域增量持续学习,第三章,无,第三章 Benchmark
+class-incremental continual learning,类别增量持续学习,第三章,无,第三章 Benchmark
+organ-level continual learning,跨器官任务持续学习,第三章,无,第三章 Benchmark
+average Dice,平均 Dice（A-Dice）,第三章,无,第三章 Benchmark
+backward transfer rate,后向迁移率（BWTR）,第三章,无,第三章 Benchmark
+whole-class Dice,全类别 Dice（WCD）,第三章,无,第三章 Benchmark
+model parameter expansion,模型参数扩展率（MPE）,第三章,无,第三章 Benchmark
+data replay ratio,数据回放率（DRR）,第三章,无,第三章 Benchmark
+background shift,背景语义变化,第三章,无,第三章 Benchmark
+multiclass classification,多分类,第二章,多类分类,互斥类别设定
+multilabel classification,多标签分类,第二章,多标签学习,多个标签可同时为真
+balanced accuracy,平衡准确率,第二章,无,2.1.3
+area under the receiver operating characteristic curve,受试者工作特征曲线下面积,第二章,ROC面积,简称 AUROC
+replay-free learning,无回放学习,第二章,无,不重新读取历史原始样本
+client heterogeneity,客户端异质性,第二章,无,2.2.2
+secure aggregation,安全聚合,第二章,无,附加隐私机制
+task-aware,任务可知,第二章,无,测试时具有上下文身份
+task-free,任务无关,第二章,无,测试时不提供上下文身份
+parameter regularization,参数正则化,第二章,无,2.3.3
+function regularization,函数正则化,第二章,无,2.3.3
+gradient projection,梯度投影,第二章,无,2.3.3
+meta-learning,元学习,第二章,无,2.3.3

@@ -1,4 +1,15 @@
-# Codex 最新报告：第二章剩余内容整章证据上下文准备（2026-08-01）
+# Codex 最新报告：第二章剩余内容整章工程集成（2026-08-01）
+
+## 第二章剩余内容整章工程集成
+
+- 已将批准稿从 `\subsection{医学图像分类}` 至第二章末尾完整写入 `chapters/ch02_foundations.tex`；2.1.1/2.1.2 的保护段落将以提交前差异核验确认逐字未改。新增 12 个公式标签和 2 张比较表，第二章整体及 2.1.3、2.2--2.4 均为 `drafted_pending_review`。
+- 新增 8 条经任务指定元数据核验的文献：Goodfellow、Fawcett、Brodersen、Geiping、Bonawitz、Abadi、Finn、Foret；其余正文引用均复用现有 key。新增 claims C2-021--C2-036（16 条）与 equations E2-005--E2-016（12 条），未写入实验账本或虚构结果。
+- 已登记 13 个当前不存在的术语和 26 个实际首次使用的符号；第三章状态/正文不变，ScribbleCL 继续 `TODO-EXPERIMENT` / `blocked_by_experiments`，TRE/Jacobian 两项 TODO 继续开放。构建、视觉、风格和重合审查结果将在完成后补入本报告；下一步仅为第二章整章复审，不开始第四章。
+- 已执行 `bash scripts/build_and_audit.sh`、`latexmk -C main.tex` 与完整 XeLaTeX 构建，并通过 `scripts/verify_fast_section.sh --quiet chapters/ch02_foundations.tex`。最终 `main.pdf` 为 85 页；日志无 undefined citation/reference、duplicate label、missing file 或新增 overfull/underfull 警告。第二章新增内容使全文比集成前增加 8 页；新增内容覆盖日志页 22--30，第三章从第 32 页开始。
+- 已核验 12 个公式标签和 2 个表标签均唯一；两张表采用纯列宽调整且未改变表意。Poppler 对 CJK 正文仍受字形映射限制，故结合 XeLaTeX 成功构建、无溢出日志和公式/表格可见内容进行视觉核验；未发现裁切、重叠或异常空白。
+- `git diff --unified=0` 确认第二章改动仅从 2.1.3 标题后的原空骨架开始，2.1.1/2.1.2 未改；第三章和其他正文 `.tex` 未改。风格审查、与参考毕业论文的文本重合审查已由里程碑脚本运行；本轮新增文本的快速审查通过。四个 `sources/` 目录在开始和结束时文件数及 SHA-256 清单指纹一致。
+
+# 历史报告：第二章剩余内容整章证据上下文准备（2026-08-01）
 
 ## 第二章剩余内容整章证据上下文准备
 

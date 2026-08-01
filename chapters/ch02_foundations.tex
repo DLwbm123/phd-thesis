@@ -131,30 +131,411 @@ D\!\left(I_F,W(I_M,\phi_{\theta})\right)
 \subsection{医学图像分类}
 \label{subsec:foundations-classification}
 
+医学图像分类以图像、一次检查或病例为预测单位，目标是建立输入影像与疾病类别、异常状态或风险水平之间的映射。与分割输出空间标签图、配准输出空间变换不同，分类模型通常输出有限标签集合上的类别概率或连续风险分数\cite{litjens2017survey}。当一名患者包含多个视图、多个切片或多个时间点时，模型可以先获得图像级表示，再按照明确的聚合规则形成检查级或病例级判断。不同预测粒度对应不同的数据独立性和评价单位，因而不能把同一患者的多幅图像简单视为彼此独立的病例。
+
+设分类样本为 $(\mathbf{x}_i,y_i)$，模型 $h_\theta$ 输出类别得分向量
+$\mathbf{z}_\theta(\mathbf{x}_i)\in\mathbb{R}^{K}$。对于互斥的 $K$ 类分类，模型通过 softmax 将得分归一化为概率；对于多标签分类，各标签可以同时为真，通常对每个输出独立使用 sigmoid。两种概率形式写为\cite{goodfellow2016deep}
+\begin{equation}
+\begin{aligned}
+q_{\theta,c}^{\mathrm{mc}}(\mathbf{x})
+&=
+\frac{\exp z_{\theta,c}(\mathbf{x})}
+{\sum_{j=1}^{K}\exp z_{\theta,j}(\mathbf{x})},
+\qquad
+\widehat{y}
+=
+\operatorname*{arg\,max}_{1\leq c\leq K}
+q_{\theta,c}^{\mathrm{mc}}(\mathbf{x}),
+\\
+q_{\theta,c}^{\mathrm{ml}}(\mathbf{x})
+&=
+\sigma\!\left(z_{\theta,c}(\mathbf{x})\right),
+\qquad c=1,\ldots,K ,
+\end{aligned}
+\label{eq:foundations-cls-probability}
+\end{equation}
+其中，上标 $\mathrm{mc}$ 和 $\mathrm{ml}$ 分别表示多分类与多标签情形。二分类既可以用两个互斥输出表示，也可以只输出一个阳性概率。多标签预测还需要为每个标签给定判别阈值，阈值由具体任务和验证协议确定，不能默认所有类别共享同一最优阈值。
+
+令 $y_{i,c}$ 表示样本 $i$ 对类别 $c$ 的目标编码。互斥多分类采用独热编码，多标签任务采用
+$\mathbf{y}_i\in\{0,1\}^{K}$。相应的平均交叉熵和二元交叉熵为
+\begin{equation}
+\begin{aligned}
+\mathcal{L}_{\mathrm{CE}}^{\mathrm{cls}}(\theta)
+&=
+-\frac{1}{n}
+\sum_{i=1}^{n}\sum_{c=1}^{K}
+y_{i,c}\log q_{\theta,c}^{\mathrm{mc}}(\mathbf{x}_i),
+\\
+\mathcal{L}_{\mathrm{BCE}}^{\mathrm{cls}}(\theta)
+&=
+-\frac{1}{nK}
+\sum_{i=1}^{n}\sum_{c=1}^{K}
+\left[
+y_{i,c}\log q_{\theta,c}^{\mathrm{ml}}(\mathbf{x}_i)
++
+(1-y_{i,c})
+\log\!\left(1-q_{\theta,c}^{\mathrm{ml}}(\mathbf{x}_i)\right)
+\right].
+\end{aligned}
+\label{eq:foundations-cls-loss}
+\end{equation}
+两种损失分别对应互斥类别分布和多个独立二元标签，不能只因输出类别数相同而相互替代。类别加权、采样重平衡或代价敏感损失可以进一步处理训练集中的类别不均衡，但其权重和目标依赖具体任务，不属于上述基本定义。
+
+分类评价通常从混淆矩阵出发。对指定阳性类别，真阳性、真阴性、假阳性和假阴性分别记为
+$\mathrm{TP}$、$\mathrm{TN}$、$\mathrm{FP}$ 和 $\mathrm{FN}$。常用阈值依赖指标可写为
+\begin{equation}
+\begin{aligned}
+\mathrm{Acc}
+&=
+\frac{\mathrm{TP}+\mathrm{TN}}
+{\mathrm{TP}+\mathrm{TN}+\mathrm{FP}+\mathrm{FN}},
+&
+\mathrm{Sens}
+&=
+\frac{\mathrm{TP}}{\mathrm{TP}+\mathrm{FN}},
+\\
+\mathrm{Spec}
+&=
+\frac{\mathrm{TN}}{\mathrm{TN}+\mathrm{FP}},
+&
+\mathrm{Prec}
+&=
+\frac{\mathrm{TP}}{\mathrm{TP}+\mathrm{FP}},
+\\
+\mathrm{F1}
+&=
+\frac{2\mathrm{TP}}
+{2\mathrm{TP}+\mathrm{FP}+\mathrm{FN}},
+&
+\mathrm{BAcc}
+&=
+\frac{\mathrm{Sens}+\mathrm{Spec}}{2}.
+\end{aligned}
+\label{eq:foundations-cls-metrics}
+\end{equation}
+其中，敏感度也称召回率；平衡准确率分别计算阳性和阴性类别的识别能力后取平均，适合补充观察类别不均衡条件下的模型行为\cite{brodersen2010balanced}。若某一分母为零，评价实现必须显式规定处理规则。多分类和多标签任务还需说明采用逐类、宏平均、微平均还是按样本平均，汇总方式不同会改变指标含义。
+
+受试者工作特征曲线下面积通过遍历判别阈值，描述真阳性率与假阳性率之间的关系\cite{fawcett2006roc}。它主要反映模型对阳性与阴性样本的排序能力，不能替代特定决策阈值下的敏感度、特异度，也不能直接说明概率校准或临床效用。分类实验还应以最终预测单位组织数据划分；例如，同一患者的多个切片或检查若跨越训练集与测试集，会使模型利用患者相关信息而高估泛化能力\cite{willemink2020preparing}。因此，评价结果至少需要同时说明预测粒度、阳性类别、阈值、类别汇总和患者级划分方式。分割、配准和分类的预测对象由此得到统一区分，下一节进一步讨论这些任务在真实训练过程中能够访问哪些监督、历史和跨中心信息。
+
 \section{数据不全场景下的学习问题}
 \label{sec:foundations-incomplete-data}
+
+本节沿用“数据不全”概括真实训练中的信息受限条件，其严格含义是：在特定训练阶段，模型不能完整调用潜在可用的监督信息、历史样本或跨中心原始数据，而不是图像矩阵存在随机缺失值，也不表示数据已经被物理删除。三类限制改变可利用信息集合的不同部分。部分监督限制当前样本中直接可见的标签，历史数据不可访问限制后续阶段重新使用旧样本的能力，多中心分布式存放则限制原始数据在机构之间的集中调用。它们可以独立出现，也可以叠加，因此方法设定必须分别说明监督形式、时间访问范围和跨中心协作方式。
 
 \subsection{历史数据不可访问与无回放学习}
 \label{subsec:foundations-replay-free}
 
+设第 $t$ 个训练阶段到达的数据为 $\mathcal{D}_t$，训练系统在该阶段仍可重新读取的历史原始样本集合为 $\mathcal{H}_t$。完整联合训练默认能够访问
+$\bigcup_{\tau=1}^{t}\mathcal{D}_{\tau}$，并在每次更新时随机组合新旧样本。这一设置可作为观察完整历史信息时的参考，但它与顺序任务中受限的访问条件不同。历史样本即使继续保存在原医疗系统中，也可能因实验协议、治理授权或存储配置而不能被后续训练过程重新调用。
+
+有限回放方法从历史数据中保留容量受限的记忆 $\mathcal{M}_{t-1}$，并与当前数据共同构造训练目标。对保存带标签原始样本的基本情形，可写为\cite{method_replay_er,delange2022continual}
+\begin{equation}
+\mathcal{L}_{t}^{\mathrm{rep}}(\theta)
+=
+\mathbb{E}_{(\mathbf{x},y)\sim\mathcal{D}_t}
+\!\left[\ell\!\left(f_\theta(\mathbf{x}),y\right)\right]
++
+\lambda_{\mathrm{rep}}
+\mathbb{E}_{(\mathbf{x},y)\sim\mathcal{M}_{t-1}}
+\!\left[\ell\!\left(f_\theta(\mathbf{x}),y\right)\right],
+\label{eq:foundations-replay-objective}
+\end{equation}
+其中，$\lambda_{\mathrm{rep}}$ 控制当前样本与记忆样本的相对作用。有限记忆只能近似历史分布，其有效性还受样本选择、任务比例和存储预算影响。若 $\mathcal{M}_{t-1}$ 保存的是特征、logit、原型或生成模型，历史信息的载体与训练目标将相应改变，不能继续解释为对旧原始样本的直接重放。
+
+无回放通常指后续阶段不重新读取历史原始样本，即 $\mathcal{H}_t=\varnothing$，且 $\mathcal{M}_{t-1}$ 不包含历史原始图像。该条件并不禁止保留旧模型参数、参数重要性、特征统计、原型或梯度子空间等压缩信息；是否允许这些信息应由方法协议单独说明。有限回放与无回放因而不是算法名称上的差别，而是模型更新时可利用历史证据的差别。完整联合训练、有限回放和无回放得到的结果处于不同资源条件下，比较时不能忽略这一访问边界。
+
 \subsection{多中心分布式数据与隐私约束}
 \label{subsec:foundations-distributed-data}
+
+多中心医学影像通常由不同机构分别管理。设客户端集合为 $\mathcal{K}_{\mathrm{cli}}$，第 $k$ 个客户端持有本地数据 $\mathcal{D}^{(k)}$，样本数为 $n_k$。联邦学习在不集中原始数据的条件下，通过本地优化和服务器聚合学习共享模型。其基本目标及第 $r$ 轮的加权模型聚合可写为\cite{mcmahan2017fedavg}
+\begin{equation}
+\begin{aligned}
+\min_{\theta}\;F(\theta)
+&=
+\sum_{k\in\mathcal{K}_{\mathrm{cli}}}
+\frac{n_k}{\sum_j n_j}
+F_k(\theta),
+\qquad
+F_k(\theta)
+=
+\mathbb{E}_{(\mathbf{x},y)\sim\mathcal{D}^{(k)}}
+\!\left[\ell\!\left(f_\theta(\mathbf{x}),y\right)\right],
+\\
+\theta^{(r+1)}
+&=
+\sum_{k\in\mathcal{S}_r}
+\frac{n_k}{\sum_{j\in\mathcal{S}_r}n_j}
+\theta_k^{(r+1)},
+\end{aligned}
+\label{eq:foundations-fed-learning}
+\end{equation}
+其中，$\mathcal{S}_r\subseteq\mathcal{K}_{\mathrm{cli}}$ 表示第 $r$ 轮参与训练的客户端集合，$\theta_k^{(r+1)}$ 为客户端完成本地更新后的模型参数。该表达给出样本数加权聚合的基本形式；实际系统还需要明确本地训练步数、参与规则、通信对象和服务器信任假设。
+
+客户端数据并不必然服从相同分布。不同中心的样本数量、疾病类别比例、患者人群、设备和采集协议可能存在差异，部分客户端还可能间歇参与。上述异质性会使本地优化方向与全局目标产生偏离，并改变收敛、泛化和中心间公平性\cite{rieke2020future,sheller2020federated}。当各客户端的数据还按任务序列到达时，空间上的分布差异与时间上的持续更新进一步叠加，形成联邦持续学习问题；静态联邦训练本身并不能描述这一时间维度。
+
+原始数据不出中心只限定了数据流动方式，并不自动提供形式化隐私保证。共享参数或梯度仍可能携带与本地训练样本相关的信息，已有研究表明在特定条件下可以从梯度重建输入\cite{geiping2020inverting}。安全聚合可以在给定威胁模型下使服务器只获得多客户端更新的聚合结果，而不直接观察单个更新\cite{bonawitz2017practical}；差分隐私训练则需要梯度裁剪、随机噪声和隐私核算，并通过明确的隐私预算描述保护强度\cite{abadi2016deep}。这些机制解决的风险和假设不同，均不能由普通模型聚合自然推出。医学联邦学习的技术表述因此应区分原始数据不可集中、通信内容、攻击能力和附加隐私机制。
 
 \subsection{部分监督与稀疏标注}
 \label{subsec:foundations-partial-supervision}
 
+医学图像分割的监督可以来自完整掩膜，也可以采用图像级标签、点、边界框、涂鸦或部分切片等较弱形式\cite{tajbakhsh2020imperfect}。这些标注提供的空间信息不同：图像级标签主要说明目标是否存在，点和涂鸦标明局部类别位置，边界框限定大致范围，密集掩膜则描述完整区域和边界。弱监督强调标签形式相对密集真值更弱；部分监督强调只有部分空间位置具有标签；半监督学习通常同时使用有标签样本和完全无标签样本。三者可以组合，但不能仅因都包含“未标注信息”而视为相同设定。
+
+设完整图像域为 $\Omega$，具有类别标签的位置集合为 $\Omega_L\subset\Omega$。沿用式\eqref{eq:foundations-seg-ce}中的类别概率和独热编码，只在已标注位置计算的部分交叉熵为\cite{lin2016scribblesup,can2018scribble}
+\begin{equation}
+\mathcal{L}_{\mathrm{PCE}}(\theta)
+=
+-\frac{1}{|\Omega_L|}
+\sum_{\mathbf{u}\in\Omega_L}
+\sum_{c=0}^{K-1}
+Y_c(\mathbf{u})
+\log p_{\theta,c}(\mathbf{u}),
+\qquad |\Omega_L|>0 .
+\label{eq:foundations-partial-ce}
+\end{equation}
+该目标避免把未知位置直接设为背景，但它只在有限位置产生直接监督。未标注区域的类别、边界和结构仍需依赖图像表征及附加约束进行推断；因而，在标注覆盖不足或类别分布偏斜时，仅降低已标注像素损失不能保证恢复完整目标。
+
+用于补充稀疏监督的方法可以概括为标签传播与伪标签、一致性约束以及空间或形状先验。标签传播和伪标签扩大参与训练的像素范围，但会受到当前模型偏差影响；一致性约束利用相关输入或预测之间应保持的关系；先验约束则以区域大小、空间关系或结构性质限定输出\cite{luo2022scribble,tang2018regularized,kervadec2019constrained}。这些机制的有效性取决于标签质量、目标形态和数据分布，本节只说明其基本作用，不展开后续弱监督分割方法的具体损失组合。
+
+表\ref{tab:foundations-information-access}从当前监督、历史访问和跨中心位置三个维度比较常见训练条件。表中各行不是互斥的方法类别。例如，联邦环境可以同时采用有限回放或无回放，本地数据也可以只有部分监督；只有逐项说明这些条件，才能判断模型实际利用了哪些训练信息。
+
+\begin{table}[htbp]
+\centering
+\caption{医学影像学习中典型训练信息访问条件比较}
+\label{tab:foundations-information-access}
+\small
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.18}
+\begin{tabular}{
+>{\raggedright\arraybackslash}p{2.1cm}
+>{\raggedright\arraybackslash}p{3.5cm}
+>{\raggedright\arraybackslash}p{3.4cm}
+>{\raggedright\arraybackslash}p{4.4cm}}
+\toprule
+条件 & 可访问的训练信息 & 主要资源或假设 & 解释边界 \\
+\midrule
+完整联合训练
+& 当前数据及全部历史原始样本
+& 历史数据可持续保存并集中读取
+& 可作为完整历史访问的参考，不代表受限条件下可实现的训练方式 \\
+有限回放
+& 当前数据及容量受限的旧样本或替代表示
+& 需要记忆预算、样本选择或生成机制
+& 只能近似历史分布，结果依赖保存内容和任务比例 \\
+无历史原始样本回放
+& 当前原始数据及协议允许的模型或压缩统计
+& 不重新读取历史原始样本
+& 不等于禁止保存参数、重要性、原型或子空间等摘要 \\
+多中心分布式训练
+& 各中心本地原始数据及约定的通信信息
+& 服务器聚合、客户端参与和通信机制
+& 原始数据不集中不等同形式化隐私；可与回放条件叠加 \\
+部分监督
+& 当前图像及其局部、粗粒度或不完整标签
+& 明确标注位置、标签语义和未标注区域处理
+& 未标注位置不自动属于背景；可与集中、联邦或持续学习组合 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+上述三类限制回答模型在每个阶段能够获得什么信息。即使访问条件已经明确，数据分布和任务目标仍可能继续变化，模型因而需要在顺序更新中协调新知识学习与既有能力保持。
+
 \section{医学影像持续学习方法}
 \label{sec:foundations-continual-learning}
+
+持续学习研究模型如何在数据或任务顺序到达时更新参数并累积能力。任务变化决定需要学习什么，训练信息访问条件决定更新时能够使用什么，两者是相关但不同的维度。同一域增量或类增量序列既可以允许完整历史数据，也可以采用有限回放或无回放；相反，无回放设置本身不能说明输入分布或标签空间是否发生变化。本节先给出基本场景，再分析遗忘与稳定性--可塑性，最后按照历史信息载体和更新方式概括主要方法路线。
 
 \subsection{持续学习的问题定义与基本场景}
 \label{subsec:foundations-cl-definition}
 
+设任务或数据阶段按 $t=1,\ldots,T$ 顺序到达，模型在第 $t$ 阶段接收可访问训练信息 $\mathcal{A}_t$，并由上一阶段参数 $\theta_{t-1}$ 更新为
+\begin{equation}
+\theta_t
+=
+\operatorname{Update}
+\!\left(
+\theta_{t-1};
+\mathcal{A}_t
+\right),
+\qquad
+\mathcal{A}_t
+=
+\left(
+\mathcal{D}_t,
+\mathcal{H}_t,
+\mathcal{M}_{t-1},
+s_t,
+\mathcal{U}_t
+\right).
+\label{eq:foundations-cl-update}
+\end{equation}
+其中，$\mathcal{D}_t$ 为当前阶段数据，$\mathcal{H}_t$ 和 $\mathcal{M}_{t-1}$ 分别表示协议允许访问的历史原始样本与有限记忆，$s_t$ 表示可用的任务或上下文身份，$\mathcal{U}_t$ 表示联邦环境中可获得的客户端通信信息。并非所有设定都包含上述全部要素；式\eqref{eq:foundations-cl-update}的作用是显式记录一次更新依赖哪些证据，而不是规定统一算法。
+
+按照输入分布、输出语义和测试上下文的变化，监督式持续学习通常区分任务增量、域增量和类增量三类基本场景\cite{vandeven2022three,delange2022continual}。任务增量学习面对可区分任务的顺序学习，测试时通常提供任务身份，并允许使用任务特定输出头。域增量学习保持输出语义不变，但输入域、采集条件或上下文发生变化，测试时通常不依赖任务特定类别空间。类增量学习逐步扩展统一预测空间，测试时一般不提供样本所属阶段，模型需要在所有已见类别间共同判别。具体医学任务还需说明标签协议、输出头和背景语义，不能仅根据“中心变化”“新增器官”等表面现象确定场景名称。
+
+单头与多头描述输出结构，任务可知与任务无关描述测试时是否获得上下文身份。多头模型可以通过独立参数减少任务间直接干扰，但通常需要已知任务身份；单头模型需要在共享输出空间中处理全部已见类别或结构，场景难度还受到旧类别在当前阶段是否有标签的影响。现实数据流也可能没有清晰任务边界，或同时发生域、类别和任务变化。因而，任务增量、域增量和类增量是分析问题的基本坐标，而不是对所有真实演化过程的穷尽分类。
+
+集中式持续学习由单一学习器处理顺序数据；联邦持续学习则由多个客户端分别接收本地任务序列，并通过通信形成共享模型\cite{yang2024fclsurvey}。后者同时包含客户端内的时间变化和客户端间的空间异质性，但仍需单独说明历史访问、参与方式和服务器能力。第三章将在医学图像分割中进一步给出具体场景与评价协议，本节只保留可跨分割、配准和分类任务使用的抽象定义。
+
 \subsection{灾难性遗忘与稳定性--可塑性权衡}
 \label{subsec:foundations-forgetting-plasticity}
 
+灾难性遗忘是指模型在学习后续任务或分布后，先前已经获得的能力发生明显下降。它相对于顺序更新定义：模型必须先在旧任务上形成能力，随后该能力因参数变化而受损。首次测试一个从未学习的外部域时表现较差属于泛化不足，而不是遗忘。正向或负向迁移则描述已有知识对新任务学习过程的促进或阻碍，前向泛化关注模型在尚未针对目标任务更新前的直接表现。这些现象分别对应历史保持、当前学习和未来适应，不能由单一最终平均性能完全概括\cite{hadsell2020embracing,delange2022continual}。
+
+参数共享使不同任务的优化方向相互作用。令 $\ell_{\mathrm{old}}$ 和 $\ell_{\mathrm{new}}$ 分别表示旧任务和当前任务损失，$\mathbf{g}_{\mathrm{old}}=\nabla_\theta\ell_{\mathrm{old}}(\theta_{t-1})$，$\mathbf{g}_{\mathrm{new}}=\nabla_\theta\ell_{\mathrm{new}}(\theta_{t-1})$。若当前阶段采用一步梯度下降 $\theta_t=\theta_{t-1}-\eta\mathbf{g}_{\mathrm{new}}$，则旧任务损失的一阶变化为
+\begin{equation}
+\begin{aligned}
+\ell_{\mathrm{old}}(\theta_t)
+&\approx
+\ell_{\mathrm{old}}(\theta_{t-1})
++
+\mathbf{g}_{\mathrm{old}}^{\top}
+(\theta_t-\theta_{t-1})
+\\
+&=
+\ell_{\mathrm{old}}(\theta_{t-1})
+-
+\eta\,
+\mathbf{g}_{\mathrm{old}}^{\top}
+\mathbf{g}_{\mathrm{new}} .
+\end{aligned}
+\label{eq:foundations-gradient-interference}
+\end{equation}
+当两个梯度内积为正时，这一局部近似下的当前更新可能同时降低旧任务损失；内积为负时，当前更新可能增加旧任务损失，形成梯度冲突\cite{method_replay_gem}。该解释只描述局部一阶关系，不能替代对非凸优化、多步更新和完整任务序列的实证评价。
+
+稳定性要求模型在后续更新中维持既有能力，可塑性要求模型充分适应当前数据。只强调稳定性会压缩参数可更新空间，使新任务学习不足；只强调可塑性则可能破坏旧表示。稳定性--可塑性权衡因此不是要求模型在更新后保持参数不变，而是在给定存储、参数和数据访问条件下协调历史保护与当前适应\cite{hadsell2020embracing}。评价持续学习方法时，应把旧任务变化、当前任务达到的性能、未来任务上的直接能力及资源条件分别记录；第三章将针对持续医学图像分割给出具体矩阵和指标。
+
 \subsection{正则化、回放、参数隔离与梯度投影方法}
 \label{subsec:foundations-cl-methods}
-% 本节可在不提前泄露方法章创新的前提下，简要介绍元学习、锐度感知优化和梯度子空间的通用基础。
+
+持续学习方法可以按照保留何种历史信息以及如何改变当前更新来理解。参数或函数正则化保留旧参数重要性或旧模型响应，回放方法保存样本或替代表示，参数隔离为不同任务分配独立容量，梯度投影则利用旧任务梯度或子空间限制当前优化。元学习和锐度感知优化不是专属于持续学习的抗遗忘类别，但可以为跨任务适应和优化几何提供通用工具。
+
+参数正则化根据旧任务对不同参数的依赖程度限制后续变化。弹性权重巩固以 Fisher 信息的对角近似衡量参数重要性，其基本目标为\cite{kirkpatrick2017ewc}
+\begin{equation}
+\mathcal{L}_{t}^{\mathrm{EWC}}(\theta)
+=
+\mathcal{L}_{t}(\theta)
++
+\frac{\lambda_{\mathrm{EWC}}}{2}
+\sum_i
+F_i
+\left(
+\theta_i-\theta_{t-1,i}^{*}
+\right)^2 ,
+\label{eq:foundations-ewc}
+\end{equation}
+其中，$\theta_{t-1}^{*}$ 为先前阶段参数，$F_i$ 为参数重要性近似。该类方法不需要保存全部旧样本，但重要性估计只概括指定历史数据和模型状态，保护过强时会限制新任务更新。函数正则化则约束当前模型在相关输入上的输出接近旧模型，知识蒸馏是常用实现\cite{li2018lwf}。它保留的是函数响应而非单个参数，但效果依赖当前可用输入是否覆盖旧知识以及新旧输出空间是否兼容。
+
+回放通过在当前训练中重新引入历史证据，直接近似旧任务目标。经验回放保存少量原始样本，替代回放可以保存特征、logit、原型或生成数据\cite{method_replay_er}。回放通常能够缓解当前数据对优化的单方面支配，但需要额外存储或生成机制，并受到记忆选择偏差、信息暴露和数据治理条件影响。式\eqref{eq:foundations-replay-objective}只描述原始样本记忆的基本形式，不能代表所有替代回放方法。
+
+参数隔离为不同任务保留独立模块、掩码、适配器或输出头，从结构上减少共享参数冲突。渐进神经网络为新任务增加网络列并利用横向连接复用已有表示，是这一思路的代表\cite{method_dyn_pnn}。参数隔离可以获得较强稳定性，但会带来参数增长、路由和任务身份依赖；当测试时无法获得任务身份或模型容量固定时，独立结构未必适用。
+
+梯度约束方法利用记忆样本估计旧任务梯度，并将当前梯度修正到不增加旧任务损失的一阶可行区域。梯度情景记忆的基本投影以及低秩子空间的正交补投影可以分别写为\cite{method_replay_gem,saha2021gpm}
+\begin{equation}
+\begin{aligned}
+\widetilde{\mathbf{g}}
+&=
+\operatorname*{arg\,min}_{\mathbf{v}}
+\frac{1}{2}
+\left\|
+\mathbf{v}-\mathbf{g}
+\right\|_2^2
+\quad
+\mathrm{s.t.}\quad
+\mathbf{v}^{\top}\mathbf{g}_m\geq 0,\;\;m<t,
+\\
+\mathbf{g}_{\perp}
+&=
+\left(
+\mathbf{I}_{d}
+-
+\mathbf{U}\mathbf{U}^{\top}
+\right)
+\mathbf{g},
+\end{aligned}
+\label{eq:foundations-gradient-projection}
+\end{equation}
+其中，$\mathbf{g}$ 为当前梯度，$\mathbf{g}_m$ 为由历史记忆估计的第 $m$ 个任务梯度，$\mathbf{U}$ 的列向量构成待保护方向的正交基，$\mathbf{I}_{d}$ 为 $d$ 维单位矩阵。前者逐项施加历史损失的一阶约束，后者从当前梯度中移除保护子空间分量。两类方法均依赖历史方向的估计质量；随着受保护方向增加，可行更新空间可能收缩，稳定性改善也可能伴随可塑性下降。
+
+元学习通过多个任务学习易于适应的参数初始化或更新规则。以梯度型元学习为例，对任务 $j$ 的内层和外层数据分别定义 $\mathcal{L}_{j}^{\mathrm{in}}$ 与 $\mathcal{L}_{j}^{\mathrm{out}}$，基本双层目标为\cite{finn2017maml}
+\begin{equation}
+\theta_j'
+=
+\theta
+-
+\alpha
+\nabla_{\theta}
+\mathcal{L}_{j}^{\mathrm{in}}(\theta),
+\qquad
+\min_{\theta}
+\sum_{j\in\mathcal{B}}
+\mathcal{L}_{j}^{\mathrm{out}}
+\!\left(\theta_j'\right),
+\label{eq:foundations-maml}
+\end{equation}
+其中，$\mathcal{B}$ 为一批训练任务，$\alpha$ 为内层学习率。该目标关注跨任务快速适应，但普通元学习并未自动处理任务顺序、历史访问和遗忘。
+
+锐度感知最小化进一步考虑参数邻域内的损失，将优化目标写为\cite{foret2021sam}
+\begin{equation}
+\min_{\theta}
+\max_{\lVert\boldsymbol{\epsilon}\rVert_2\leq\rho}
+\mathcal{L}
+\!\left(
+\theta+\boldsymbol{\epsilon}
+\right),
+\label{eq:foundations-sam}
+\end{equation}
+其中，$\rho$ 为参数扰动半径。该目标寻求邻域内损失均较低的参数区域，但局部平坦性本身不构成历史知识保持或未知任务泛化的充分保证。将元学习、锐度感知优化或梯度子空间用于持续医学影像任务时，仍需结合具体任务序列、历史访问信息和评价协议设计。
+
+表\ref{tab:foundations-cl-method-families}总结了上述方法路线。不同路线保存的信息、资源代价和测试假设不同，不存在脱离场景与访问条件的统一优劣顺序。
+
+\begin{table}[htbp]
+\centering
+\caption{持续学习主要方法路线及其信息与资源条件}
+\label{tab:foundations-cl-method-families}
+\small
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.18}
+\begin{tabular}{
+>{\raggedright\arraybackslash}p{2.2cm}
+>{\raggedright\arraybackslash}p{4.2cm}
+>{\raggedright\arraybackslash}p{3.4cm}
+>{\raggedright\arraybackslash}p{3.7cm}}
+\toprule
+方法路线 & 保留的信息与更新方式 & 主要资源或适用条件 & 主要局限与代表方法 \\
+\midrule
+参数正则化
+& 保存旧参数及其重要性，惩罚重要参数偏离
+& 固定或近似固定模型容量，不要求完整旧数据
+& 重要性估计可能失效，保护过强限制新任务；EWC \\
+函数正则化
+& 保存旧模型，通过输出或特征蒸馏约束当前函数
+& 需要教师模型及可用于蒸馏的输入
+& 输入覆盖和输出空间变化影响保护效果；LwF \\
+回放与替代回放
+& 保存旧样本、特征、logit、原型或生成表示，并与当前数据联合训练
+& 需要记忆预算、生成模型或附加存储
+& 记忆选择偏差、隐私与治理约束；ER、GEM \\
+参数隔离与动态结构
+& 为任务分配独立模块、掩码、适配器或输出头
+& 允许参数增长或具有明确路由/任务身份
+& 容量随任务增加，task-free 测试受限；PNN \\
+梯度约束与投影
+& 保存历史梯度或保护子空间，修正当前梯度方向
+& 需要估计历史方向及计算投影
+& 方向估计误差和可行空间收缩；GEM、GPM \\
+元学习与锐度感知优化
+& 学习跨任务初始化或约束参数邻域损失
+& 需要任务采样、双层更新或额外梯度计算
+& 不直接提供抗遗忘保证；MAML、SAM \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+上述方法分别从参数、函数、数据、结构和优化方向保护历史能力。后续章节将在明确的医学任务、历史访问与跨中心条件下具体化这些基础机制，而不会把任一通用方法路线视为对所有持续学习问题的统一解答。
 
 \section{本章小结}
 \label{sec:foundations-summary}
+
+本章从预测对象、训练信息访问和顺序更新三个层面建立全文使用的理论基础。医学图像分割在像素或体素网格上预测结构标签，配准估计图像之间的空间变换，分类则在图像、检查或病例层面输出类别概率。三类任务使用不同的监督单位和评价尺度，但均依赖训练阶段实际可调用的图像、标签和历史信息。
+
+在训练信息受限条件下，部分监督限制当前标签内容，历史不可访问限制旧样本的重复使用，多中心分布式存放限制原始数据的集中调用。持续学习进一步要求模型在任务和分布顺序变化时协调知识保持与当前适应。正则化、回放、参数隔离、梯度投影、元学习和锐度感知优化分别利用不同信息并承担不同资源代价。上述定义为第三章的持续分割场景与综合评价、第四章的无回放联邦持续分类以及第五章的弱监督持续分割和持续配准提供共同术语与数学基础。

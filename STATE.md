@@ -11,7 +11,7 @@
 ## 当前阶段
 
 - 导师框架迁移与题目、第一章作者复审已于 2026-07-31 完成，连续六章结构已批准；第一章状态为 `drafted_and_verified`。
-- 当前优先任务为第二章剩余内容（2.1.3、2.2、2.3、2.4）的整章证据上下文准备，正式正文尚未写作。2.1.1“医学图像分割”与 2.1.2“医学图像配准”继续为 `drafted_and_verified`，不得改写。
+- 第二章剩余内容（2.1.3、2.2、2.3、2.4）已完成工程集成；第二章整体为 `drafted_pending_review`。2.1.1“医学图像分割”与 2.1.2“医学图像配准”继续为 `drafted_and_verified`，且本轮未修改。
 - 第三章 Benchmark 继续为 `drafted_pending_review`，本轮不复审、不批准也不修改。第四章正文不得开始。
 - TRE 通用数学定义（`TODO-EVIDENCE-REG-001`）与非正 Jacobian 比例具体统计形式（`TODO-EVIDENCE-REG-002`）尚未闭合，但二者均未作为公式写入 2.1.2 正文。
 - ScribbleCL 持续学习实验继续为 `TODO-EXPERIMENT` / `blocked_by_experiments`；任务、基线、指标、日志和结论均不得虚构。
@@ -25,4 +25,4 @@
 
 ## 下一动作
 
-由 GPT Pro 基于 `handoff/CH02_REMAINING_CONTEXT_FOR_GPT.md` 一次性撰写第二章 2.1.3 至 2.4 的受证据约束草稿；随后才由 Codex 进行整章集成与核验。第三章作者/GPT Pro 复审仍待后续单独安排。
+下一动作仅为第二章作者/GPT Pro 整章复审与里程碑批准；不得开始第四章。第三章作者/GPT Pro 复审仍待后续单独安排。
