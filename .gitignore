@@ -30,6 +30,13 @@ __pycache__/
 .vscode/
 .idea/
 
+# ScribbleCL generated experiment artifacts (code, compact summaries and reports stay tracked)
+/experiments/scribblecl/artifacts/scribbles/
+/experiments/scribblecl/artifacts/scribble_visual_audit/
+/experiments/scribblecl/local_outputs/
+/experiments/scribblecl/results/matrices/*.json
+/experiments/scribblecl/results/figures/*.png
+
 # Generated QA reports
 qa/*_report.md
 !qa/reference_overlap_report.md
