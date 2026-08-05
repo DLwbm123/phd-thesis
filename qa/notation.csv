@@ -89,3 +89,9 @@ epsilon_tau,旧任务梯度未覆盖残差,第四章,4.5,FedSubMerge,defined,Cha
 B_c^(t),递归客户端历史代理,第四章,4.5,FedSubMerge,defined,Chapter 4
 "R_j,R_srv",客户端和服务器截断残差,第四章,4.5,FedSubMerge,defined,Chapter 4
 "C_model,C_PGS",模型和 PGS 通信量,第四章,4.5,FedSubMerge,defined,Chapter 4
+"Omega_L,Omega_U",已标注与未标注像素集合,第五章,5.2,ZScribbleSeg,defined,
+"pi_k",未标注像素属于类别 k 的混合比例,第五章,5.3.1,ZScribbleSeg,defined,
+"Phi_i^(k)",类别 k 在位置 i 的局部空间能量,第五章,5.3.1,ZScribbleSeg,defined,
+"M,rho,epsilon",SAMCL 记忆缓冲区及锐度邻域参数,第五章,5.2/5.4,SAMCL,defined,
+"G_sup,G_CL",监督不足与持续训练的当前任务差距,第五章,5.3.2,ScribbleCL,defined,TODO-EXPERIMENT analysis quantities
+"Delta_int",监督增强与持续保护的描述性交互量,第五章,5.3.2,ScribbleCL,defined,TODO-EXPERIMENT descriptive only

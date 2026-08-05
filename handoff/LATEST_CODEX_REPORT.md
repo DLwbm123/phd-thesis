@@ -1,5 +1,14 @@
 # Codex 最新报告：第二章剩余内容整章工程集成（2026-08-01）
 
+## 第五章 ZScribbleSeg、ScribbleCL 与 SAMCL 集成状态（2026-08-05）
+
+- 已将作者批准稿 `CH05_DRAFT_FOR_REVIEW.tex`（SHA-256 `2f377a56ffb4970dbf839a8511da18e24301003ce34c99167c571ffdcd5d7e23`）完整写入 `chapters/ch05_scribble_samcl.tex`；仅为消除一处数学行溢出，将式（5.16）的等价减项拆行，未改语义、数值或作者结论。
+- 本章登记 19 个公式、8 张表和 108 个原始静态实验数值。ZScribbleSeg 的 Decathlon-Prostate Dice 以表格事实 `0.706` 登记；正文中相冲突的 `0.726` 已明确标为待作者核对，不作替换或推断。
+- ScribbleCL 仅纳入任务协议、监督/历史访问边界、配对设计和评价定义；当前没有可核验的 ScribbleCL 结果、性能表或结论，状态保持 `blocked_by_experiments`，不得将静态 ZScribbleSeg 结果外推为持续学习结果。
+- 仅逐字节复制两张可直接使用的 SAMCL 原始 PDF 图：`samcl_framework.pdf`（SHA-256 `bd950fcf8320c604e577f92d47d2b0bf17a6141457896c1debbbe2e8f0704559`）和 `samcl_qualitative.pdf`（SHA-256 `321fa6987a264182351685ee443f9489b135ce57347adb24c5e34da82afe6930`）。未转换 ZScribbleSeg PNG，亦未拼接 SAMCL 消融/泛化两图，因此两个不可安全构造的图位被 `\\IfFileExists` 保持省略。
+- 已执行指定审计、清理与 XeLaTeX 完整构建。当前 `main.pdf` 为 121 页，SHA-256 `7528a362f4376fe07033ee1961384afed026c40558a0caebe4982643613b3596`；章节页码为印刷页 71--88。MuPDF 已逐页复核该范围及相邻过渡页，中文、公式、表格和两张原始图均正常。`pdffonts` 确认 Fandol CJK 字体嵌入并子集化。
+- `sources/zscribble`（26 文件，`48367f5b56a12cffe357ea9c6f5c26a9947781467c7b9b7f61ef53de6bd8ff9d`）、`sources/samcl`（12 文件，`d043158cf22668283643da294d40dba5505279ee41b7bfe567f65a733750a4a6`）与 `sources/benchmark`（31 文件，`b9a529ada136e552fcd183df573d98c32048b0db53d3b0169a8490af879e8cad`）的开始/结束排序清单指纹一致。未修改 `sources/`、第一至第四章或字体配置。本轮尚未提交、推送或同步 Overleaf，须等待作者明确授权。
+
 ## 第四章 FedSubMerge 集成状态（2026-08-05）
 
 - 已将作者批准稿写入 `chapters/ch04_fedsubmerge.tex`，并复制并校验三张最终矢量图；最终主稿、附录、文献库和三张图均通过指定 SHA-256 校验。

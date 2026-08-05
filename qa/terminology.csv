@@ -3,7 +3,7 @@ medical imaging,医学影像,领域与体系,医学成像（除非强调成像�
 medical image,医学图像,具体数据与任务,医学影像图像,
 annotation-efficient learning,标注高效学习,第一章与第三章,高效监督学习,
 weakly supervised segmentation,弱监督医学图像分割,第一章与第三章,弱标注分割（可作解释但非首选）,
-scribble supervision,涂鸦监督,第一章与第三章,草图监督/划线监督,
+scribble supervision,涂鸦监督,第一章、第三章与第五章,草图监督/划线监督,未标注像素不得直接视为背景
 supervision augmentation,监督增强,第一章与第三章,监督增广（避免混用）,
 global consistency,全局一致性,第一章与第三章,整体一致性（避免混用）,
 class mixture ratio,类别混合比例,第一章与第三章,类别占比先验（首次说明后可简称比例先验）,
@@ -20,7 +20,7 @@ federated continual learning,联邦持续学习,第一章、第四章与第六�
 principal gradient subspace,主梯度子空间,第一章、第四章与第六章,主要梯度子空间,
 subspace merging,子空间融合,第一章与第六章,子空间合并（避免混用）,
 sharpness-aware minimization,锐度感知最小化,第一章与第五章,锐度感知优化（可用作上位描述）,
-meta-continual learning,元持续学习,第一章与第五章,,
+meta-continual learning,元持续学习,第一章与第五章,锐度感知优化,SAMCL 中与 SAM 分工不同
 medical image classification,医学图像分类,全文,医学影像分类（具体任务中避免混用）,领域总称可写医学影像智能分析
 medical image segmentation,医学图像分割,全文,医学影像分割（具体任务中避免混用）,用于具体图像和算法任务
 medical image registration,医学图像配准,全文,医学影像配准（具体任务中避免混用）,用于具体图像和算法任务
@@ -132,3 +132,6 @@ shared PGS,共享 PGS,第四章,,
 personalized PGS,个性化 PGS,第四章,,
 recursive client history proxy,递归客户端历史代理,第四章,原始全历史梯度,
 projection distance,投影距离,第四章,语义相关性,
+finite replay,有限回放,第五章,无回放,
+static weak supervision,静态弱监督,第五章,持续学习,
+sharpness-aware optimization,锐度感知优化,第五章,SAMCL 的元学习,

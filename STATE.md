@@ -14,6 +14,7 @@
 - 第二章剩余内容（2.1.3、2.2、2.3、2.4）已完成工程集成；第二章整体为 `drafted_pending_review`。2.1.1“医学图像分割”与 2.1.2“医学图像配准”继续为 `drafted_and_verified`，且本轮未修改。
 - 第三章 Benchmark 继续为 `drafted_pending_review`，本轮不复审、不批准也不修改。作者已于本任务明确授权第四章开始并完成工程集成；旧的“第四章正文不得开始”限制已失效。
 - 第四章 FedSubMerge 已完成批准稿、最终图表、文献和证据账本的工程集成，状态为 `drafted_pending_review`；尚未获得作者/GPT Pro 全章复审批准。
+- 第五章已集成作者批准的 ZScribbleSeg 静态内容、ScribbleCL 协议与待实验分析、SAMCL 方法和原始实验，整体为 `drafted_pending_review`；5.3.2 的 ScribbleCL 结果仍为 `TODO-EXPERIMENT` / `blocked_by_experiments`。
 - TRE 通用数学定义（`TODO-EVIDENCE-REG-001`）与非正 Jacobian 比例具体统计形式（`TODO-EVIDENCE-REG-002`）尚未闭合，但二者均未作为公式写入 2.1.2 正文。
 - ScribbleCL 持续学习实验继续为 `TODO-EXPERIMENT` / `blocked_by_experiments`；任务、基线、指标、日志和结论均不得虚构。
 
@@ -27,4 +28,4 @@
 
 ## 下一动作
 
-下一动作是第四章作者/GPT Pro 全章复审与必要修订；第二、三章保持各自既有状态。第五章尚未开始，ScribbleCL 仍受实验事实源约束。
+下一动作是第四、五章作者/GPT Pro 全章复审与必要修订；ScribbleCL 仅在核心实验完成、日志和性能矩阵核验后补写 5.3.2 结果。
