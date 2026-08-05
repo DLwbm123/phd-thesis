@@ -16,8 +16,8 @@ forward transfer,前向迁移,第一章与第四至六章,,
 forward generalization,前向泛化,第一章与第四至六章,未来泛化（可作解释）,
 experience replay,经验回放,第一章与第四至五章,样本重放（避免混用）,
 replay-free,无回放,第一章与第六章,免回放（避免混用）,
-federated continual learning,联邦持续学习,第一章与第六章,,
-principal gradient subspace,主梯度子空间,第一章与第六章,主要梯度子空间,
+federated continual learning,联邦持续学习,第一章、第四章与第六章,,
+principal gradient subspace,主梯度子空间,第一章、第四章与第六章,主要梯度子空间,
 subspace merging,子空间融合,第一章与第六章,子空间合并（避免混用）,
 sharpness-aware minimization,锐度感知最小化,第一章与第五章,锐度感知优化（可用作上位描述）,
 meta-continual learning,元持续学习,第一章与第五章,,
@@ -120,3 +120,15 @@ parameter regularization,参数正则化,第二章,无,2.3.3
 function regularization,函数正则化,第二章,无,2.3.3
 gradient projection,梯度投影,第二章,无,2.3.3
 meta-learning,元学习,第二章,无,2.3.3
+replay-free FCL,无回放联邦持续学习,第四章,无回放等于形式化隐私,FedSubMerge
+global catastrophic forgetting,全局灾难性遗忘,第四章,局部遗忘,FedSubMerge
+local forgetting,局部遗忘,第四章,全局遗忘,FedSubMerge
+distribution-based label skew,分布偏斜,第四章,,
+quantity-based label skew,数量偏斜,第四章,,
+feature skew,特征偏斜,第四章,,
+stability--plasticity trade-off,稳定性--可塑性权衡,第四章,,
+plasticity,可塑性,第四章,,
+shared PGS,共享 PGS,第四章,,
+personalized PGS,个性化 PGS,第四章,,
+recursive client history proxy,递归客户端历史代理,第四章,原始全历史梯度,
+projection distance,投影距离,第四章,语义相关性,

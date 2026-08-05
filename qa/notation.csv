@@ -78,3 +78,14 @@ theta_star,先前阶段参数,第二章,2.3.3,EWC,defined,正文写作theta_{t-1
 g_m,第m个历史任务梯度估计,第二章,2.3.3,GEM,defined,来自历史记忆
 I_d,d维单位矩阵,第二章,2.3.3,author_definition,defined,不与医学图像I混淆
 epsilon,参数扰动,第二章,2.3.3,SAM,defined,二范数受rho约束
+C_t,第t个任务参与客户端集合,第四章,4.3,FedSubMerge,defined,Chapter 4
+D_c^(t),客户端c在任务t的本地数据集,第四章,4.3,FedSubMerge,defined,Chapter 4
+w_c^r,第r轮客户端模型,第四章,4.3,FedSubMerge,defined,Chapter 4
+"U_c,Sigma_c",客户端主梯度子空间基与奇异值,第四章,4.4,FedSubMerge,defined,Chapter 4
+"epsilon_th,gamma",客户端与服务器能量阈值,第四章,4.4,FedSubMerge,defined,Chapter 4
+"P_U,P_U^perp",保护子空间投影及其正交补,第四章,4.4,FedSubMerge,defined,Chapter 4
+N_c,目标客户端c的选邻集合,第四章,4.4,FedSubMerge,defined,Chapter 4
+epsilon_tau,旧任务梯度未覆盖残差,第四章,4.5,FedSubMerge,defined,Chapter 4
+B_c^(t),递归客户端历史代理,第四章,4.5,FedSubMerge,defined,Chapter 4
+"R_j,R_srv",客户端和服务器截断残差,第四章,4.5,FedSubMerge,defined,Chapter 4
+"C_model,C_PGS",模型和 PGS 通信量,第四章,4.5,FedSubMerge,defined,Chapter 4

@@ -1,3 +1,7 @@
+# GPT Pro 复审上下文包：第四章优先（2026-08-05）
+
+> 第四章完整复审信息见 `handoff/CH04_FEDSUBMERGE_CONTEXT_FOR_GPT.md`。第四章已集成且待作者/GPT Pro 复审；MuPDF 与 macOS 原生 PDFKit/Quick Look 已确认中文正常显示，Poppler 空白属于工具限制而非字体故障。不得开始第五章。
+
 # GPT Pro 复审上下文包：第二章整章（2026-08-01）
 
 ## 当前任务与批准边界

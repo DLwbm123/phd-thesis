@@ -46,3 +46,28 @@ section_id,title,status,artifact
 5.3,ScribbleCL：涂鸦监督医学图像分割方法及其持续学习,blocked_by_experiments,chapters/ch05_scribble_samcl.tex
 5.4,SAMCL：锐度感知元持续医学图像配准方法,not_started,chapters/ch05_scribble_samcl.tex
 6,总结与展望,not_started,chapters/ch06_conclusion.tex
+4,基于梯度子空间融合的无回放联邦持续医学图像分类研究,drafted_pending_review,chapters/ch04_fedsubmerge.tex
+sec:fedsubmerge-introduction,引言,drafted_pending_review,chapters/ch04_fedsubmerge.tex
+sec:fedsubmerge-motivation,问题定义与研究动机,drafted_pending_review,chapters/ch04_fedsubmerge.tex
+sec:fedsubmerge-formulation,无回放联邦持续学习问题建模,drafted_pending_review,chapters/ch04_fedsubmerge.tex
+sec:fedsubmerge-method,FedSubMerge 方法,drafted_pending_review,chapters/ch04_fedsubmerge.tex
+subsec:fedsubmerge-overview,方法总体框架,drafted_pending_review,chapters/ch04_fedsubmerge.tex
+subsec:fedsubmerge-client-pgs,客户端主梯度子空间构建,drafted_pending_review,chapters/ch04_fedsubmerge.tex
+subsec:fedsubmerge-server-merge,服务器端跨客户端子空间融合,drafted_pending_review,chapters/ch04_fedsubmerge.tex
+subsec:fedsubmerge-local-projection,基于正交补投影的本地训练,drafted_pending_review,chapters/ch04_fedsubmerge.tex
+subsec:fedsubmerge-adaptive-selection,自适应逐层客户端选择,drafted_pending_review,chapters/ch04_fedsubmerge.tex
+subsec:fedsubmerge-personalized-subspace,客户端特定保护子空间构建,drafted_pending_review,chapters/ch04_fedsubmerge.tex
+subsec:fedsubmerge-algorithm,算法流程与实现细节,drafted_pending_review,chapters/ch04_fedsubmerge.tex
+sec:fedsubmerge-theory,方法理论分析,drafted_pending_review,chapters/ch04_fedsubmerge.tex
+subsec:fedsubmerge-theory-loss,共享与个性化 PGS 下的旧任务损失,drafted_pending_review,chapters/ch04_fedsubmerge.tex
+subsec:fedsubmerge-theory-compression,递归历史代理与两阶段截断,drafted_pending_review,chapters/ch04_fedsubmerge.tex
+subsec:fedsubmerge-theory-plasticity,稳定性--可塑性与选邻依据,drafted_pending_review,chapters/ch04_fedsubmerge.tex
+subsec:fedsubmerge-theory-communication,通信与存储开销,drafted_pending_review,chapters/ch04_fedsubmerge.tex
+sec:fedsubmerge-experiments,实验设计与结果分析,drafted_pending_review,chapters/ch04_fedsubmerge.tex
+subsec:fedsubmerge-experimental-setup,实验设置,drafted_pending_review,chapters/ch04_fedsubmerge.tex
+subsec:fedsubmerge-main-results,总体性能,drafted_pending_review,chapters/ch04_fedsubmerge.tex
+subsec:fedsubmerge-robustness,异质性、客户端规模与参与率,drafted_pending_review,chapters/ch04_fedsubmerge.tex
+subsec:fedsubmerge-ablation,消融、参数敏感性与任务级行为,drafted_pending_review,chapters/ch04_fedsubmerge.tex
+subsec:fedsubmerge-efficiency,计算、存储与通信开销,drafted_pending_review,chapters/ch04_fedsubmerge.tex
+sec:fedsubmerge-discussion,方法讨论,drafted_pending_review,chapters/ch04_fedsubmerge.tex
+sec:fedsubmerge-summary,本章小结,drafted_pending_review,chapters/ch04_fedsubmerge.tex

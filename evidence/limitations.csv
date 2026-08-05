@@ -11,3 +11,11 @@ LIM-BM-005,Benchmark,结果表给出均值和标准差但未报告重复数与�
 LIM-BM-006,Benchmark,当前归档没有指标实现代码或逐运行日志，RMA和E-FWT等只能完成公式与表格核对,handoff/CH03_BENCHMARK_CONTEXT_FOR_GPT.md,3.5/3.7,confirmed,不得声称公式代码一致性已复现
 LIM-BM-007,Benchmark,MPE和DRR未覆盖训练时间、显存、能耗和通信成本,sources/benchmark/Benchmark_pa/main.tex;author metric analysis,3.5/3.7,confirmed,资源评价仍不完整
 LIM-BM-008,Benchmark,JointTrain可访问全部历史数据，与受限持续学习方法的访问条件不同,sources/benchmark/Benchmark_pa/main.tex,3.2/3.6/3.7,confirmed,仅作为参照而非同条件基线
+LIM-FSM-001,FedSubMerge,同步且已知任务边界与已知测试任务身份,sources/fedsubmerge/ Subspace Merging for Replay-Free Federated Continual Medical Image Classification 720/FedSubMerge_final.tex,4.5/4.7,confirmed,Discussion limitations
+LIM-FSM-002,FedSubMerge,实证范围限于 ResNet-18、当前任务流长度和医学图像分类,sources/fedsubmerge/ Subspace Merging for Replay-Free Federated Continual Medical Image Classification 720/FedSubMerge_final.tex,4.5/4.7,confirmed,Discussion limitations
+LIM-FSM-003,FedSubMerge,原始结果为点估计，未报告多随机种子区间或统计检验,sources/fedsubmerge/ Subspace Merging for Replay-Free Federated Continual Medical Image Classification 720/FedSubMerge_final.tex,4.5/4.7,confirmed,Discussion limitations
+LIM-FSM-004,FedSubMerge,理论为局部旧任务损失机制，受模型漂移、截断和有效投影条件限制,sources/fedsubmerge/ Subspace Merging for Replay-Free Federated Continual Medical Image Classification 720/FedSubMerge_final.tex,4.5/4.7,confirmed,Appendix theory
+LIM-FSM-005,FedSubMerge,未投影参数、动量和解耦权重衰减可能引入残差,sources/fedsubmerge/ Subspace Merging for Replay-Free Federated Continual Medical Image Classification 720/FedSubMerge_final.tex,4.5/4.7,confirmed,Appendix theory
+LIM-FSM-006,FedSubMerge,最终能量截断后的统一和自适应子空间不保证嵌套,sources/fedsubmerge/ Subspace Merging for Replay-Free Federated Continual Medical Image Classification 720/FedSubMerge_final.tex,4.5/4.7,confirmed,Appendix theory
+LIM-FSM-007,FedSubMerge,PGS 交换无形式化隐私保证，也未评估威胁模型,sources/fedsubmerge/ Subspace Merging for Replay-Free Federated Continual Medical Image Classification 720/FedSubMerge_final.tex,4.5/4.7,confirmed,Discussion privacy boundary
+LIM-FSM-008,FedSubMerge,计算、存储和通信随逐层秩、层维度和客户端数变化,sources/fedsubmerge/ Subspace Merging for Replay-Free Federated Continual Medical Image Classification 720/FedSubMerge_final.tex,4.5/4.7,confirmed,Appendix communication

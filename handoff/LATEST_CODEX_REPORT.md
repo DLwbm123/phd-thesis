@@ -1,5 +1,19 @@
 # Codex 最新报告：第二章剩余内容整章工程集成（2026-08-01）
 
+## 第四章 FedSubMerge 集成状态（2026-08-05）
+
+- 已将作者批准稿写入 `chapters/ch04_fedsubmerge.tex`，并复制并校验三张最终矢量图；最终主稿、附录、文献库和三张图均通过指定 SHA-256 校验。
+- 已补入最终文献库中 17 条实际被第四章引用的记录，并复用既有的 4 条同一文献记录，避免重复题名；数值账本已登记 196 个主表、40 个异质性、27 个规模和 28 个消融值，30 个公式和章节状态已登记。
+- `latexmk` 成功生成 105 页 PDF（SHA-256 `14c5ca7194c96b09febe7f72e41abf4ce388237facf4ef2797eaaa7cd8d9428d`），章节交叉引用和引文均已解析，风格审查未报告第四章规则命中，参考论文重合审查未发现达到阈值的长文本重合。
+- `config/thesis_info.tex` 保持 `cjk-font = fandol` 未改。`pdffonts` 确认 FandolSong、FandolHei、FandolKai 等 CJK 字体均已嵌入并子集化；MuPDF 逐页复核第三章代表页 34 与第四章印刷页 51--69，中文、公式、表格和图件均正常。macOS Quick Look/PDFKit 复核亦正常。
+- 结论：Poppler `pdftoppm` 的 CJK 空白是该工具的渲染/映射限制，不是论文或 Fandol 字体配置缺陷；未使用 macOS 专用字体规避。视觉验收已关闭，可按发布流程提交、推送并同步 Overleaf。
+
+## FedSubMerge 最终事实源替换（2026-08-05）
+
+- 作者提供的 `FedSubMerge_final.zip` 已完整替换 `sources/fedsubmerge/ Subspace Merging for Replay-Free Federated Continual Medical Image Classification 720/` 的早期无附录稿。当前事实源入口为 `FedSubMerge_final.tex`，并包括 `FedSubMerge_appendix.tex`、`references.bib`、样式文件及 `Figs/` 下的三张最终图。
+- 安装文件逐项 SHA-256 已与压缩包解出的文件一致。替换前版本已保留在 `/Users/bominwang/Desktop/Supspace Merging 文章投稿/check_appendix/FedSubMerge_project_source_before_final_20260805`，未删除。
+- `SOURCE_MAP.md` 与证据账本 C1-120--C1-124 已将事实源定位更新为最终主稿；本轮未改论文正文、实验数字、第四章状态或其他原始材料。
+
 ## 第二章剩余内容整章工程集成
 
 - 已将批准稿从 `\subsection{医学图像分类}` 至第二章末尾完整写入 `chapters/ch02_foundations.tex`；2.1.1/2.1.2 的保护段落将以提交前差异核验确认逐字未改。新增 12 个公式标签和 2 张比较表，第二章整体及 2.1.3、2.2--2.4 均为 `drafted_pending_review`。

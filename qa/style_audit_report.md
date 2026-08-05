@@ -13,7 +13,9 @@
 
 | 归一化开头 | 次数 |
 |---|---:|
-| `figure[htbp]` | 4 |
+| `figure[htbp]` | 7 |
+| `table[htbp]P` | 4 |
+| `FedSubMerge-` | 3 |
 
 ## 解释原则
 
