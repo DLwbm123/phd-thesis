@@ -45,7 +45,9 @@ def main():
      loss=zs_current_task_loss(logits,sparse,stage(a.stage).active) if a.method.startswith('zs') else partial_cross_entropy(logits,sparse,allowed)
      if a.method.startswith('zs'): loss=loss+.1*consistency_loss(logits,model(torch.flip(x,[-1])).flip(-1),stage(a.stage).active)
      if teacher: loss=loss+10*scribble_mib_loss(logits,teacher(x),sparse,old_classes(a.stage))
-     opt.zero_grad(); loss.backward(); opt.step(); losses.append(float(loss.detach()))
+     if not torch.isfinite(loss):
+      manifest.update({'completion_status':'failed_nonfinite_loss','failure_reason':f'nonfinite loss at epoch {epoch} batch {batch_i}','end_time':time.time()}); (out/'run_manifest.json').write_text(json.dumps(manifest,indent=2)); raise FloatingPointError(manifest['failure_reason'])
+     opt.zero_grad(); loss.backward(); torch.nn.utils.clip_grad_norm_(model.parameters(), 5.0); opt.step(); losses.append(float(loss.detach()))
      if a.max_batches and batch_i + 1 >= a.max_batches: break
    log.write(json.dumps({'epoch':epoch,'loss':float(np.mean(losses))})+'\n'); log.flush()
    if epoch==79: [g.update(lr=g['lr']*.5) for g in opt.param_groups]
