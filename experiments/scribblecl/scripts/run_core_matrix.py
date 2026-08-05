@@ -7,6 +7,10 @@ PCE={'pce','pce_mib'}
 def complete(path):
     try: return json.loads((path/'run_manifest.json').read_text()).get('completion_status') == 'completed' and (path/'best.pt').exists()
     except FileNotFoundError: return False
+def active(path):
+    try:
+        pid=int((path/'pid').read_text().strip()); os.kill(pid, 0); return True
+    except (FileNotFoundError, ProcessLookupError, ValueError): return False
 def main():
     p=argparse.ArgumentParser(); p.add_argument('--app-root',required=True); p.add_argument('--output-root',required=True); p.add_argument('--mmwhs-root',required=True); p.add_argument('--seed',type=int,required=True); p.add_argument('--device',default='cuda:0'); p.add_argument('--max-parallel',type=int,default=2); p.add_argument('--family',choices=['pce','zs'],required=True); a=p.parse_args()
     app,out=Path(a.app_root),Path(a.output_root); scrib=out.parent/'outputs'/'scribbles'/str(a.seed); env={**os.environ,'PYTHONPATH':str(app)}
@@ -14,7 +18,7 @@ def main():
     for family,methods,lr in [('pce',['pce','pce_mib'],'.004'),('zs',['zs','zs_mib'],'.008')]:
         if family != a.family: continue
         t1=out/f'{family}_seed{a.seed}_stage1'
-        if not complete(t1): jobs.append((family,1,lr))
+        if not complete(t1) and not active(t1): jobs.append((family,1,lr))
         for method in methods:
             jobs.extend([(method,2,lr),(method,3,lr)])
     running=[]
