@@ -1,6 +1,7 @@
 import torch
 from scribblecl.losses import partial_cross_entropy, scribble_mib_loss, masked_logits
 from scribblecl.protocol import IGNORE_INDEX, old_classes, future_classes, stage
+from scribblecl.metrics import benchmark_patient_dice
 import numpy as np
 
 def test_stage_sets_are_disjoint_and_complete():
@@ -26,3 +27,13 @@ def test_seeded_shuffle_is_reproducible_for_zero_batch_audit():
     order=torch.randperm(17,generator=torch.Generator().manual_seed(42)).numpy()
     zero=np.zeros(17,dtype=bool); zero[order[:8]]=True
     assert zero[order[:8]].all() and not zero[order[8:16]].all()
+
+def test_benchmark_metric_aggregates_patient_volumes_and_includes_background():
+    target=np.array([[[0,1]],[[0,1]],[[0,1]],[[0,1]]])
+    pred=target.copy(); pred[0,0,1]=0; pred[1,0,1]=0
+    mean, per_class=benchmark_patient_dice(pred,target,[1,3],(0,1))
+    eps=1e-5
+    patient1_bg=(4+eps)/(6+eps); patient1_fg=eps/(2+eps)
+    expected=np.mean([[patient1_bg,patient1_fg],[1.0,1.0]])
+    assert abs(mean-expected)<1e-12
+    assert set(per_class)=={0,1}
