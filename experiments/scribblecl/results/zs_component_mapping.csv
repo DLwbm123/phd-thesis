@@ -1,0 +1,7 @@
+component,original,current_legacy,status
+sparse_ce,onehot_probability_ce,masked_logit_ce,adapted
+foreground_ratio,warmup_EM,annotated_vs_whole_image_MSE,invalid
+puzzlemix,gradient_graphcut,absent,missing
+cutout_consistency,cutout_rotation,flip_only,missing
+integrity,largest_component_CE,absent,missing
+spatial_pseudo,gated_CRF_negative_correction,absent,missing

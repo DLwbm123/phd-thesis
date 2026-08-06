@@ -20,9 +20,9 @@ def partial_cross_entropy(logits: torch.Tensor, sparse: torch.Tensor, allowed: t
         return logits.sum() * 0.0
     return F.cross_entropy(masked_logits(logits, allowed), sparse, ignore_index=IGNORE_INDEX)
 
-def zs_current_task_loss(logits: torch.Tensor, sparse: torch.Tensor, active: tuple[int, ...],
+def pce_ratio_flip_legacy_loss(logits: torch.Tensor, sparse: torch.Tensor, active: tuple[int, ...],
                          ratio_weight: float = 0.05) -> torch.Tensor:
-    """PCE plus active-class mixture-ratio prior; no dense labels are consumed."""
+    """Diagnostic-only legacy ratio loss; this is not ZScribbleSeg."""
     allowed = (0,) + active
     pce = partial_cross_entropy(logits, sparse, allowed)
     known = sparse.ne(IGNORE_INDEX)
@@ -32,6 +32,8 @@ def zs_current_task_loss(logits: torch.Tensor, sparse: torch.Tensor, active: tup
     probs = torch.softmax(masked_logits(logits, allowed), 1)
     predicted = torch.stack([probs[:, c].mean() for c in active])
     return pce + ratio_weight * F.mse_loss(predicted, observed)
+
+zs_current_task_loss = pce_ratio_flip_legacy_loss  # archived-run compatibility only
 
 def consistency_loss(logits_a: torch.Tensor, logits_b: torch.Tensor, active: tuple[int, ...]) -> torch.Tensor:
     allowed = (0,) + active
