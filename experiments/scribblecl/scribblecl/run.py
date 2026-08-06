@@ -5,7 +5,7 @@ from pathlib import Path
 import numpy as np, torch
 from torch.utils.data import DataLoader
 from .data import MMWHS, DenseMMWHS
-from .losses import partial_cross_entropy, zs_current_task_loss, consistency_loss, scribble_mib_loss
+from .losses import partial_cross_entropy, zs_current_task_loss, consistency_loss, scribble_mib_loss, masked_logits
 from .metrics import dice
 from .model import ResUNet32
 from .protocol import stage, old_classes
@@ -16,16 +16,22 @@ def sha(path):
         for b in iter(lambda:f.read(1<<20),b''): h.update(b)
     return h.hexdigest()
 
-def evaluate(model, root, stages, device):
-    model.eval(); values=[]
+def evaluate(model, root, stages, trained_stage, device):
+    model.eval(); values=[]; class_values=[]
     with torch.no_grad():
         for s in stages:
-            d=MMWHS(root,s,'val'); scores=[]
+            d=MMWHS(root,s,'val'); scores=[]; per_class={c:[] for c in stage(s).active}
             for x,y in DataLoader(d,batch_size=4):
-                p=model(x.to(device)).argmax(1).cpu().numpy(); y=y.numpy()
+                # Benchmark Class-CL protocol: future classes are unavailable at stage t.
+                seen=(0,)+tuple(c for s in range(1,trained_stage+1) for c in stage(s).active)
+                p=masked_logits(model(x.to(device)),seen).argmax(1).cpu().numpy(); y=y.numpy()
                 scores.extend([np.mean([dice(a,b,c) for c in stage(s).active]) for a,b in zip(p,y)])
+                for a,b in zip(p,y):
+                    for c in per_class: per_class[c].append(dice(a,b,c))
             values.append(float(np.mean(scores)))
-    return values
+            for c in stage(s).active:
+                class_values.append({'evaluated_task':s,'class_id':c,'dice':float(np.mean(per_class[c]))})
+    return values, class_values
 
 def main():
  p=argparse.ArgumentParser(); p.add_argument('--method',required=True,choices=['pce','zs','pce_mib','zs_mib','dense','dense_mib']); p.add_argument('--stage',type=int,required=True); p.add_argument('--seed',type=int,required=True); p.add_argument('--mmwhs-root',required=True); p.add_argument('--scribble',default=None); p.add_argument('--output-root',required=True); p.add_argument('--parent',default=None); p.add_argument('--epochs',type=int,default=150); p.add_argument('--batch-size',type=int,default=8); p.add_argument('--lr',type=float,default=.008); p.add_argument('--device',default='cuda:0'); p.add_argument('--max-batches',type=int,default=None); p.add_argument('--fixed-batches',action='store_true'); a=p.parse_args()
@@ -52,5 +58,8 @@ def main():
    log.write(json.dumps({'epoch':epoch,'loss':float(np.mean(losses))})+'\n'); log.flush()
    if epoch==79: [g.update(lr=g['lr']*.5) for g in opt.param_groups]
  torch.save({'model':model.state_dict(),'epoch':a.epochs-1},out/'best.pt'); (out/'best_checkpoint_pointer.txt').write_text(str(out/'best.pt'))
- vals=evaluate(model,a.mmwhs_root,list(range(1,a.stage+1)),device); (out/'stage_metrics.csv').write_text('evaluated_task,dice\n'+'\n'.join(f'{i+1},{v}' for i,v in enumerate(vals))+'\n'); manifest.update({'completion_status':'completed','end_time':time.time(),'validation_dice':vals}); (out/'run_manifest.json').write_text(json.dumps(manifest,indent=2)); log.close()
+ vals,class_vals=evaluate(model,a.mmwhs_root,list(range(1,a.stage+1)),a.stage,device); (out/'stage_metrics.csv').write_text('evaluated_task,dice\n'+'\n'.join(f'{i+1},{v}' for i,v in enumerate(vals))+'\n');
+ with open(out/'class_metrics.csv','w',newline='') as f:
+  w=csv.DictWriter(f,fieldnames=('evaluated_task','class_id','dice')); w.writeheader(); w.writerows(class_vals)
+ manifest.update({'completion_status':'completed','end_time':time.time(),'validation_dice':vals}); (out/'run_manifest.json').write_text(json.dumps(manifest,indent=2)); log.close()
 if __name__=='__main__': main()

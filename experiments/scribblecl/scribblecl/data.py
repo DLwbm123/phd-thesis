@@ -39,13 +39,14 @@ class DenseMMWHS(MMWHS):
         x = torch.from_numpy((self.images[i] - self.images[i].mean()) / (self.images[i].std() + 1e-6)).unsqueeze(0)
         return x, torch.from_numpy(self.dense[i]).long()
 
-def make_sparse(local: np.ndarray, stage_index: int, skeletonize) -> np.ndarray:
+def make_sparse(local: np.ndarray, stage_index: int, skeletonize, width: int = 3) -> np.ndarray:
     spec = stage(stage_index); out = np.full(local.shape, IGNORE_INDEX, dtype=np.int16)
     for src, dst in spec.local_to_global.items():
         mask = local == src
         if mask.any():
             skel = skeletonize(mask)
-            # One-pixel dilation constrained to true current class; never accesses other labels.
+            # Dilation remains inside the same current class; never accesses other labels.
             from scipy.ndimage import binary_dilation
-            out[binary_dilation(skel) & mask] = dst
+            grown = binary_dilation(skel, iterations=(width - 1) // 2) if width > 1 else skel
+            out[grown & mask] = dst
     return out
