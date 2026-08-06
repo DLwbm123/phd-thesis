@@ -585,7 +585,7 @@ SAMCL 采用 LK-UNet 作为配准骨干，首层使用 16 个卷积核。配准�
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=\textwidth]{ch05/samcl_framework.pdf}
-\caption{SAMCL 面向顺序配准任务的训练与部署框架。训练阶段依次接收脑部 MR--MR、腹部 CT--CT、肺部 CT--CT 和腹部 MR--CT 图像对，并通过有限经验回放、元更新和锐度感知优化形成单一配准模型。图件应由 SAMCL 最终事实源原样复制。}
+\caption{SAMCL 面向顺序配准任务的训练与部署框架。训练阶段依次接收脑部 MR--MR、腹部 CT--CT、肺部 CT--CT 和腹部 MR--CT 图像对，并通过有限经验回放、元更新和锐度感知优化形成单一配准模型。}
 \label{fig:samcl-framework}
 \end{figure}
 }{}
@@ -669,7 +669,7 @@ SAMCL 在腹部 MR--CT 上取得 0.563 的最终 Dice，高于独立训练的 0.
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=\textwidth]{ch05/samcl_qualitative.pdf}
-\caption{不同训练策略在 OASIS 与腹部 CT 图像对上的代表性配准结果。图件应由 SAMCL 最终事实源原样复制；差值图只用于展示对应病例的配准行为，不替代测试集总体结果。}
+\caption{不同训练策略在 OASIS 与腹部 CT 图像对上的代表性配准结果。}
 \label{fig:samcl-qualitative}
 \end{figure}
 }{}
