@@ -1,5 +1,5 @@
 """Controlled validation-only MMWHS Task-1 A--E runner."""
-import argparse,json,random,time,hashlib
+import argparse,json,random,time,hashlib,os
 from pathlib import Path
 import numpy as np,torch
 from torch.utils.data import DataLoader
@@ -45,6 +45,7 @@ def main():
     p.add_argument('--optimizer',choices=['adam','sgd'],required=True); p.add_argument('--lr',type=float,required=True)
     p.add_argument('--epochs',type=int,default=150); p.add_argument('--batch-size',type=int,default=8)
     p.add_argument('--device',default='cuda:0'); p.add_argument('--max-batches',type=int); p.add_argument('--grad-every',type=int,default=10)
+    p.add_argument('--resume',action='store_true'); p.add_argument('--source-commit',required=True)
     a=p.parse_args(); assert a.seed==42, 'static gate is seed 42 only'
     random.seed(a.seed); np.random.seed(a.seed); torch.manual_seed(a.seed); torch.cuda.manual_seed_all(a.seed)
     torch.backends.cudnn.benchmark=False; torch.backends.cudnn.deterministic=True
@@ -53,13 +54,25 @@ def main():
     manifest={'run_id':out.name,'scope':'MMWHS_Task1_validation_only','level':a.level,'seed':a.seed,
         'optimizer':a.optimizer,'lr':a.lr,'epochs':a.epochs,'batch_size':a.batch_size,
         'scribble_sha256':file_sha(a.scribble),'initialization_sha256':initial_sha,
-        'warmup_epoch':8,'ratio_mse':False,'test_set_used':False,'status':'running','start_time':time.time()}
-    (out/'run_manifest.json').write_text(json.dumps(manifest,indent=2)); (out/'config_resolved.json').write_text(json.dumps(vars(a),indent=2))
+        'warmup_epoch':8,'ratio_mse':False,'test_set_used':False,'source_commit':a.source_commit,
+        'status':'running','start_time':time.time(),'resume_count':0}
+    manifest_path=out/'run_manifest.json'
+    if a.resume and manifest_path.exists():
+        previous=json.loads(manifest_path.read_text()); manifest['start_time']=previous.get('start_time',manifest['start_time']); manifest['status']='running'; manifest['resume_count']=previous.get('resume_count',0)+1; manifest['last_resume_time']=time.time()
+    manifest_path.write_text(json.dumps(manifest,indent=2)); (out/'config_resolved.json').write_text(json.dumps(vars(a),indent=2))
     train=MMWHS(a.mmwhs_root,1,'train',a.scribble); allowed=(0,)+stage(1).active
     opt=torch.optim.Adam(model.parameters(),lr=a.lr,weight_decay=1e-4) if a.optimizer=='adam' else torch.optim.SGD(model.parameters(),lr=a.lr)
     scheduler=torch.optim.lr_scheduler.StepLR(opt,step_size=80,gamma=.5)
-    best=-1.; best_epoch=None
-    for epoch in range(a.epochs):
+    best=-1.; best_epoch=None; start_epoch=0
+    if a.resume and (out/'last.pt').exists():
+        ck=torch.load(out/'last.pt',map_location='cpu',weights_only=False); model.load_state_dict(ck['model']); opt.load_state_dict(ck['optimizer']); scheduler.load_state_dict(ck['scheduler'])
+        for state in opt.state.values():
+            for key,value in state.items():
+                if torch.is_tensor(value): state[key]=value.to(device)
+        best=ck['best']; best_epoch=ck['best_epoch']; start_epoch=ck['epoch']+1
+        random.setstate(ck['rng_python']); np.random.set_state(ck['rng_numpy']); torch.set_rng_state(ck['rng_torch'])
+        if torch.cuda.is_available() and ck.get('rng_cuda') is not None: torch.cuda.set_rng_state_all(ck['rng_cuda'])
+    for epoch in range(start_epoch,a.epochs):
         gen=torch.Generator().manual_seed(a.seed+epoch)
         loader=DataLoader(train,batch_size=a.batch_size,shuffle=True,generator=gen,num_workers=2,pin_memory=True)
         model.train(); sums={k:[] for k in ('pce','augmentation','consistency','integrity','pseudo','total')}
@@ -77,7 +90,9 @@ def main():
             if a.level>='E' and epoch>=8:
                 e=spatial_pseudo_correction(probs,x,sparse,allowed); parts['pseudo']=e['pseudo']; aux=e
             total=sum(parts.values())
-            if not torch.isfinite(total): raise FloatingPointError(f'nonfinite epoch={epoch} batch={bi} parts={parts}')
+            if not torch.isfinite(total):
+                manifest.update({'status':'failed_nonfinite','failure_epoch':epoch,'failure_batch':bi,'end_time':time.time()}); manifest_path.write_text(json.dumps(manifest,indent=2))
+                raise FloatingPointError(f'nonfinite epoch={epoch} batch={bi} parts={parts}')
             if bi==0 and epoch%a.grad_every==0:
                 for k,v in parts.items(): grad_record[k]=component_gradient_norm(v,model)
             opt.zero_grad(set_to_none=True); total.backward(); opt.step()
@@ -91,9 +106,15 @@ def main():
         if grad_record: append_json(out/'gradient_norms.jsonl',{'epoch':epoch,**grad_record})
         val=evaluate(model,a.mmwhs_root,device); val['epoch']=epoch; append_json(out/'validation.jsonl',val)
         append_json(out/'prediction_distribution.jsonl',{'epoch':epoch,**{k:val[k] for k in ('background_fraction','foreground_fraction','nonempty_prediction_rate')}})
-        torch.save({'model':model.state_dict(),'epoch':epoch,'validation':val},out/'last.pt')
-        if val['benchmark_mean']>best:
-            best=val['benchmark_mean']; best_epoch=epoch; torch.save({'model':model.state_dict(),'epoch':epoch,'validation':val},out/'best_val.pt')
+        improved=val['benchmark_mean']>best
+        if improved: best=val['benchmark_mean']; best_epoch=epoch
+        state={'model':model.state_dict(),'optimizer':opt.state_dict(),'scheduler':scheduler.state_dict(),
+            'epoch':epoch,'validation':val,'best':best,'best_epoch':best_epoch,'rng_python':random.getstate(),
+            'rng_numpy':np.random.get_state(),'rng_torch':torch.get_rng_state(),
+            'rng_cuda':torch.cuda.get_rng_state_all() if torch.cuda.is_available() else None}
+        torch.save(state,out/'last.pt.tmp'); os.replace(out/'last.pt.tmp',out/'last.pt')
+        if improved:
+            torch.save(state,out/'best_val.pt.tmp'); os.replace(out/'best_val.pt.tmp',out/'best_val.pt')
     manifest.update({'status':'completed','end_time':time.time(),'best_validation':best,'best_epoch':best_epoch})
-    (out/'run_manifest.json').write_text(json.dumps(manifest,indent=2))
+    manifest_path.write_text(json.dumps(manifest,indent=2))
 if __name__=='__main__': main()
