@@ -22,6 +22,21 @@ def benchmark_patient_dice(pred, target, patient_info, classes, eps=1e-5):
         per_patient.append(row)
     return float(np.mean(per_patient)), {c: float(np.mean(v)) for c, v in per_class.items()}
 
+def benchmark_patient_summary(pred, target, patient_info, classes, eps=1e-5):
+    """Expose BG-inclusive and foreground-only patient metrics together."""
+    bg_included, per_class = benchmark_patient_dice(
+        pred, target, patient_info, classes, eps=eps
+    )
+    foreground = tuple(class_id for class_id in classes if class_id != 0)
+    return {
+        "benchmark_mean_bg_included": bg_included,
+        "background_patient_dice": float(per_class[0]),
+        "foreground_patient_mean": float(
+            np.mean([per_class[class_id] for class_id in foreground])
+        ),
+        "patient_per_class": per_class,
+    }
+
 def matrix_summary(matrix, independent):
     n = len(matrix); diag = np.diag(matrix)
     return {
