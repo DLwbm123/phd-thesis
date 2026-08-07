@@ -20,6 +20,22 @@ def partial_cross_entropy(logits: torch.Tensor, sparse: torch.Tensor, allowed: t
         return logits.sum() * 0.0
     return F.cross_entropy(masked_logits(logits, allowed), sparse, ignore_index=IGNORE_INDEX)
 
+def soft_partial_cross_entropy(probabilities: torch.Tensor,
+                               targets: torch.Tensor) -> torch.Tensor:
+    """Cross entropy for transported sparse targets with an unknown channel.
+
+    ``targets`` contains one channel per active probability followed by the
+    explicit unknown channel.  Only pixels whose known-channel mass is
+    positive contribute to the loss.
+    """
+    known_targets = targets[:, :probabilities.shape[1]]
+    known_mass = known_targets.sum(1)
+    valid = known_mass.gt(0)
+    if not valid.any():
+        return probabilities.sum() * 0.0
+    per_pixel = -(known_targets * torch.log(probabilities.clamp_min(1e-12))).sum(1)
+    return per_pixel[valid].sum() / known_mass[valid].sum().clamp_min(1e-12)
+
 def pce_ratio_flip_legacy_loss(logits: torch.Tensor, sparse: torch.Tensor, active: tuple[int, ...],
                          ratio_weight: float = 0.05) -> torch.Tensor:
     """Diagnostic-only legacy ratio loss; this is not ZScribbleSeg."""

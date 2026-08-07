@@ -61,10 +61,15 @@ def mixup_process(out, target_reweighted, hidden=0, args=None, grad=None, noise=
         elif graph:
             # PuzzleMix
             if block_num > 1:
-                out, ratio, mask = mixup_graph(out,target_reweighted, grad, indices, block_num=block_num,
+                graph_result = mixup_graph(out,target_reweighted, grad, indices, block_num=block_num,
                                  alpha=lam, beta=beta, gamma=gamma, eta=eta, neigh_size=neigh_size, n_labels=n_labels,
                                  mean=mean, std=std, transport=transport, t_eps=t_eps, t_size=t_size, 
-                                 noise=noise, adv_mask1=adv_mask1, adv_mask2=adv_mask2, mp=mp, device=device)
+                                 noise=noise, adv_mask1=adv_mask1, adv_mask2=adv_mask2, mp=mp, device=device,
+                                 return_reverse=getattr(args, 'return_reverse', False))
+                if getattr(args, 'return_reverse', False):
+                    out, ratio, mask, reverse_out = graph_result
+                else:
+                    out, ratio, mask = graph_result
                 target_shuffled_onehot = target_reweighted[indices].clone()
                 target_reweighted_final = torch.zeros_like(target_shuffled_onehot)
                 # print(mask.shape, target_shuffled_onehot.shape)
@@ -75,6 +80,8 @@ def mixup_process(out, target_reweighted, hidden=0, args=None, grad=None, noise=
             out = out*lam + out[indices]*(1-lam)
             target_reweighted = target_reweighted * lam + target_shuffled_onehot * (1 - lam)
     
+    if args is not None and getattr(args, 'return_reverse', False):
+        return out, target_reweighted_final, indices, mask, reverse_out
     return out, target_reweighted_final, indices, mask
 
 
@@ -158,7 +165,8 @@ def mixup_box(input1, input2, alpha=0.5, device='cuda'):
 
 
 def mixup_graph(input1,target_reweighted, grad1, indices, block_num=2, alpha=0.5, beta=0., gamma=0., eta=0.2, neigh_size=2, n_labels=2, 
-        mean=None, std=None, transport=False, t_eps=10.0, t_size=16, noise=None, adv_mask1=0, adv_mask2=0, device='cuda', mp=None):
+        mean=None, std=None, transport=False, t_eps=10.0, t_size=16, noise=None, adv_mask1=0, adv_mask2=0, device='cuda', mp=None,
+        return_reverse=False):
     '''Puzzle Mix'''
     input2 = input1[indices].clone()
         
@@ -263,19 +271,43 @@ def mixup_graph(input1,target_reweighted, grad1, indices, block_num=2, alpha=0.5
         mask1_torch = mask1_pool / mask1_pool.reshape(batch_size, -1).sum(1).reshape(batch_size, 1, 1)
         mask2_pool = mask1_pool[indices]
         
-        # input1
-        plan = mask_transport(mask, unary1_torch,mask1_pool, device, eps=t_eps)
-        input1 = transport_image(input1, plan, batch_size, t_block_num, t_size)
-
-        # input2
-        plan = mask_transport(1-mask, unary2_torch,mask2_pool, device, eps=t_eps)
-        input2 = transport_image(input2, plan, batch_size, t_block_num, t_size)
+        # The released implementation materializes the BxN xN transport plan
+        # and the corresponding batched matmul at once.  At native 256x256
+        # with checkpoint t_size=4 this requests roughly 8 GiB for batch 8.
+        # Transport is independent per sample, so chunking here is exactly the
+        # same computation while keeping the formal batch/permutation intact.
+        transported1 = []
+        transported2 = []
+        for sample_index in range(batch_size):
+            sample = slice(sample_index, sample_index + 1)
+            plan1 = mask_transport(
+                mask[sample], unary1_torch[sample], mask1_pool[sample],
+                device, eps=t_eps
+            )
+            transported1.append(
+                transport_image(input1[sample], plan1, 1, t_block_num, t_size)
+            )
+            del plan1
+            plan2 = mask_transport(
+                (1-mask)[sample], unary2_torch[sample], mask2_pool[sample],
+                device, eps=t_eps
+            )
+            transported2.append(
+                transport_image(input2[sample], plan2, 1, t_block_num, t_size)
+            )
+            del plan2
+        input1 = torch.cat(transported1, dim=0)
+        input2 = torch.cat(transported2, dim=0)
 
     # final mask and mixed ratio
     mask = F.interpolate(mask, size=width)
     ratio = mask.reshape(batch_size, -1).mean(-1)
          
-    return mask * input1 + (1-mask) * input2, ratio, mask
+    mixed = mask * input1 + (1-mask) * input2
+    if return_reverse:
+        reverse = mask * input2 + (1-mask) * input1
+        return mixed, ratio, mask, reverse
+    return mixed, ratio, mask
 
 cost_matrix_dict = {'2': cost_matrix(2).unsqueeze(0), '4': cost_matrix(4).unsqueeze(0),
                         '8': cost_matrix(8).unsqueeze(0), '16': cost_matrix(16).unsqueeze(0),
@@ -328,4 +360,3 @@ def transport_image(img, plan, batch_size, block_num, block_size):
     return input_transport
 
   
-
