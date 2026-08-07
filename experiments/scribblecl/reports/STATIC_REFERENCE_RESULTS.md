@@ -35,6 +35,7 @@ The historical run called `A0` below is the old foreground-only diagnostic. It m
 - A-ratio's legacy BG-inclusive best is epoch 10, while its foreground-patient best is epoch 13 (`0.367150`). This is direct evidence that BG-inclusive checkpoint selection is invalid for the formal ladder.
 - Dense-v2 has the same BG and foreground best epoch, 136.
 - Previously completed A and B were independently rechecked from their full validation JSONL: A is epoch 56 under both metrics; B is epoch 124 under both metrics. They do not require rerunning solely for checkpoint-selection correction.
+- The previously completed `B` used right-angle geometry and is retained only as `basic_geometry_diagnostic`; it is not a paper component or a formal rung. The rebuilt formal `A` uses the paper's shared flip/random-rotation augmentation.
 - New formal runs select and gate only on `foreground_patient_mean`. BG-inclusive mean remains logged as a diagnostic.
 
 The complete machine-readable values and checkpoint SHA-256 digests are in `results/static_reference_results.csv`. Checkpoint bodies were not copied; the external evidence directory contains metadata and the original small JSON/JSONL records only.
