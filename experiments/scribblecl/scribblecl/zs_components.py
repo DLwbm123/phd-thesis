@@ -59,8 +59,10 @@ def original_puzzlemix_cutout(model,x,sparse,allowed,lambda2=0.01):
     shuffled=probs[indices]
     expected=probs*mask+shuffled*(1-mask)
     expected=expected*cut_mask[:,:1]
-    consistency=lambda2*(1-F.cosine_similarity(cut_probs,expected,dim=1).mean())
+    consistency_raw=1-F.cosine_similarity(cut_probs,expected,dim=1).mean()
+    consistency=lambda2*consistency_raw
     return {'augmentation':augmentation,'consistency':consistency,
+            'consistency_unweighted':consistency_raw,
             'puzzlemix_mask_mean':mask.mean().detach()}
 
 def _largest_components(pred):

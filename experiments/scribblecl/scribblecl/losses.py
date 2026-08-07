@@ -28,10 +28,17 @@ def pce_ratio_flip_legacy_loss(logits: torch.Tensor, sparse: torch.Tensor, activ
     known = sparse.ne(IGNORE_INDEX)
     if not known.any():
         return pce
+    return pce + ratio_weight * legacy_ratio_mse(logits, sparse, active)
+
+def legacy_ratio_mse(logits: torch.Tensor, sparse: torch.Tensor, active: tuple[int, ...]) -> torch.Tensor:
+    """Invalid legacy diagnostic, isolated from every formal method."""
+    known = sparse.ne(IGNORE_INDEX)
+    if not known.any(): return logits.sum() * 0.0
+    allowed = (0,) + active
     observed = torch.stack([(sparse == c).float()[known].mean() for c in active])
     probs = torch.softmax(masked_logits(logits, allowed), 1)
     predicted = torch.stack([probs[:, c].mean() for c in active])
-    return pce + ratio_weight * F.mse_loss(predicted, observed)
+    return F.mse_loss(predicted, observed)
 
 zs_current_task_loss = pce_ratio_flip_legacy_loss  # archived-run compatibility only
 
