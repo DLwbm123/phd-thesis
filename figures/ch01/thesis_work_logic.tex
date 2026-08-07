@@ -1,0 +1,65 @@
+\begin{tikzpicture}[
+  font=\small,
+  box/.style={
+    rectangle,
+    draw=black,
+    fill=white,
+    text=black,
+    line width=0.7pt,
+    align=center,
+    inner xsep=8pt,
+    inner ysep=5pt
+  },
+  widebox/.style={box, text width=13.7cm, minimum height=1.15cm},
+  methodbox/.style={box, text width=6.15cm, minimum height=1.42cm},
+  arrow/.style={
+    -{Latex[length=2.1mm,width=1.4mm]},
+    draw=black,
+    line width=0.7pt
+  },
+  node distance=6.5mm and 10mm
+]
+
+\node[widebox] (constraints) {
+  \textbf{真实临床约束}\\[2pt]
+  \footnotesize 部分监督 \quad｜\quad 历史访问受限 \quad｜\quad 原始数据不可集中 \quad｜\quad 任务与分布持续演化
+};
+
+\node[widebox, below=of constraints] (question) {
+  \textbf{核心问题}\\[2pt]
+  在受限数据访问条件下持续积累医学影像分析能力
+};
+
+\node[widebox, below=of question] (benchmark) {
+  \textbf{第3章：场景与评价基础}\\[2pt]
+  持续医学图像分割场景建模与综合评测
+};
+
+\node[methodbox, below left=9mm and 4mm of benchmark.south] (chapter4) {
+  \textbf{第4章}\\[2pt]
+  无回放联邦持续分类\\[-1pt]
+  \footnotesize FedSubMerge
+};
+
+\node[methodbox, below right=9mm and 4mm of benchmark.south] (chapter5) {
+  \textbf{第5章}\\[2pt]
+  弱监督持续分割与持续配准\\[-1pt]
+  \footnotesize ZScribbleSeg / ScribbleCL / SAMCL
+};
+
+\coordinate (merge) at ($(chapter4.south)!0.5!(chapter5.south)+(0,-7mm)$);
+
+\node[widebox, below=13mm of merge] (goal) {
+  \textbf{共同主线}\\[2pt]
+  在明确数据访问边界的前提下，协调稳定性、可塑性、泛化与资源开销
+};
+
+\draw[arrow] (constraints) -- (question);
+\draw[arrow] (question) -- (benchmark);
+\draw[arrow] (benchmark.south) -- ++(0,-4mm) -| (chapter4.north);
+\draw[arrow] (benchmark.south) -- ++(0,-4mm) -| (chapter5.north);
+\draw[draw=black, line width=0.7pt] (chapter4.south) |- (merge);
+\draw[draw=black, line width=0.7pt] (chapter5.south) |- (merge);
+\draw[arrow] (merge) -- (goal.north);
+
+\end{tikzpicture}
