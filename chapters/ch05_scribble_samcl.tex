@@ -199,7 +199,7 @@ $\mathcal{L}_{\cos}(u,v)=-\langle u,v\rangle/(\|u\|_2\|v\|_2)$，交换两个输
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=\textwidth]{ch05/zscribbleseg_overview.pdf}
-\caption{ZScribbleSeg 的训练框架。方法以部分交叉熵为基础，通过混合、遮挡和全局一致性增强涂鸦监督，并利用类别混合比例、空间先验和结构约束修正未标注区域预测。图件应由 ZScribbleSeg 最终事实源原样复制。}
+\caption{ZScribbleSeg 的训练框架。方法以部分交叉熵为基础，通过混合、遮挡和全局一致性增强涂鸦监督，并利用类别混合比例、空间先验和结构约束修正未标注区域预测。}
 \label{fig:zscribble-overview}
 \end{figure}
 }{}
@@ -303,7 +303,7 @@ $\mathcal{F}(\widehat Y_k)$ 表示预测类别 $k$ 的最大连通区域。结�
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.92\textwidth]{ch05/zscribbleseg_spatial_prior.pdf}
-\caption{类别混合比例与空间先验共同构造可信负样本的过程。空间能量对未标注像素进行类内排序，估计的类别比例用于确定候选覆盖，空间先验损失在剩余负集合上约束预测。图件应由 ZScribbleSeg 最终事实源原样复制。}
+\caption{类别混合比例与空间先验共同构造可信负样本的过程。空间能量对未标注像素进行类内排序，估计的类别比例用于确定候选覆盖，空间先验损失在剩余负集合上约束预测。}
 \label{fig:zscribble-spatial-prior}
 \end{figure}
 }{}
@@ -678,7 +678,7 @@ SAMCL 在腹部 MR--CT 上取得 0.563 的最终 Dice，高于独立训练的 0.
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=\textwidth]{ch05/samcl_ablation_generalization.pdf}
-\caption{SAMCL 的记忆容量消融与未见任务泛化分析。图件应由最终事实源原样复制；左图中的 Dice 与 TRE 方向不同，右图只覆盖原稿定义的有限迁移方向。}
+\caption{SAMCL 的记忆容量消融与未见任务泛化分析。左图中的 Dice 与 TRE 方向不同，右图只覆盖原稿定义的有限迁移方向。}
 \label{fig:samcl-ablation-generalization}
 \end{figure}
 }{}
