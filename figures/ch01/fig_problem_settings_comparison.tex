@@ -1,0 +1,138 @@
+\begingroup
+\centering
+\tikzset{
+  >=Latex,
+  panel/.style={draw=black, dashed, rounded corners=3pt, inner sep=6pt},
+  data/.style={draw=black, fill=white, text=black, rounded corners=3pt, align=center, minimum width=17mm, minimum height=8mm, font=\scriptsize},
+  smalldata/.style={draw=black, fill=white, text=black, rounded corners=3pt, align=center, minimum width=15mm, minimum height=7mm, font=\scriptsize},
+  model/.style={draw=black, fill=white, text=black, align=center, minimum width=15mm, minimum height=7mm, font=\scriptsize},
+  meta/.style={draw=black, fill=white, text=black, align=center, minimum width=19mm, minimum height=9mm, font=\scriptsize\bfseries},
+  server/.style={draw=black, fill=white, text=black, align=center, minimum width=18mm, minimum height=8mm, font=\scriptsize\bfseries},
+  title/.style={text=black, font=\bfseries},
+  note/.style={text=black, font=\scriptsize},
+  tr/.style={-{Latex[length=1.8mm,width=1.2mm]}, draw=black, line width=0.6pt},
+  inf/.style={-{Latex[length=1.6mm,width=1.1mm]}, draw=black, line width=0.5pt},
+  app/.style={-{Latex[length=1.6mm,width=1.1mm]}, draw=black, dashed, line width=0.5pt}
+}
+
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[x=1cm,y=1cm]
+\coordinate (A) at (0,5.9);
+\coordinate (B) at (9.0,5.9);
+\coordinate (C) at (0,0);
+\coordinate (D) at (9.0,0);
+
+% Conventional supervised learning
+\node[title] at ($(A)+(4.1,5.35)$) {Conventional Supervised Learning};
+\draw[panel] ($(A)+(0,2.4)$) rectangle ($(A)+(8.2,5.0)$);
+\draw[panel] ($(A)+(0,0)$) rectangle ($(A)+(8.2,1.8)$);
+\node[rotate=90, note] at ($(A)+(-0.45,3.7)$) {Training};
+\node[rotate=90, note] at ($(A)+(-0.45,0.9)$) {Testing};
+\node[data] (suptrain) at ($(A)+(4.1,4.2)$) {$\{X,Y\}^{\mathrm{tr}}\!\sim\!\mathcal{D}$};
+\node[model] (suplearn1) at ($(A)+(4.1,3.0)$) {Learner};
+\node[model] (suplearn2) at ($(A)+(4.1,1.35)$) {Learner};
+\node[data] (suptest) at ($(A)+(4.1,0.45)$) {$\{X,Y\}^{\mathrm{te}}\!\sim\!\mathcal{D}$};
+\draw[tr] (suptrain) -- (suplearn1);
+\draw[app] (suplearn1) -- (suplearn2);
+\draw[inf] (suplearn2) -- (suptest);
+
+% Meta learning
+\node[title] at ($(B)+(4.1,5.35)$) {Meta Learning};
+\draw[panel] ($(B)+(0,2.4)$) rectangle ($(B)+(8.2,5.0)$);
+\draw[panel] ($(B)+(0,0)$) rectangle ($(B)+(8.2,1.8)$);
+\node[rotate=90, note] at ($(B)+(-0.45,3.7)$) {Meta-Training};
+\node[rotate=90, note] at ($(B)+(-0.45,0.9)$) {Meta-Testing};
+\node[smalldata] (mt1) at ($(B)+(1.1,4.4)$) {$\mathcal{T}_1$};
+\node[smalldata] (mt2) at ($(B)+(1.1,3.7)$) {$\mathcal{T}_2$};
+\node[smalldata] (mtk) at ($(B)+(1.1,2.9)$) {$\mathcal{T}_K$};
+\node[meta] (meta1) at ($(B)+(3.2,3.65)$) {Meta\\Learner};
+\node[model] (base1) at ($(B)+(5.35,3.65)$) {Learner};
+\node[smalldata] (mte1) at ($(B)+(7.1,4.35)$) {$\mathcal{T}_1$};
+\node[smalldata] (mte2) at ($(B)+(7.1,3.65)$) {$\mathcal{T}_2$};
+\node[smalldata] (mtek) at ($(B)+(7.1,2.95)$) {$\mathcal{T}_K$};
+\draw[tr] (mt1) -- (meta1);
+\draw[tr] (mt2) -- (meta1);
+\draw[tr] (mtk) -- (meta1);
+\draw[tr] (meta1) -- (base1);
+\draw[tr] (base1) -- (mte1);
+\draw[tr] (base1) -- (mte2);
+\draw[tr] (base1) -- (mtek);
+\node[smalldata] (newtask) at ($(B)+(1.2,0.9)$) {$\mathcal{T}_{\mathrm{new}}$};
+\node[meta] (meta2) at ($(B)+(3.2,0.9)$) {Meta\\Learner};
+\node[model] (base2) at ($(B)+(5.35,0.9)$) {Learner};
+\node[smalldata] (newtest) at ($(B)+(7.1,0.9)$) {$\mathcal{T}_{\mathrm{new}}$};
+\draw[inf] (newtask) -- (meta2);
+\draw[inf] (meta2) -- (base2);
+\draw[inf] (base2) -- (newtest);
+\draw[app] (meta1) -- (meta2);
+
+% Continual learning
+\node[title] at ($(C)+(4.1,5.35)$) {Continual Learning};
+\draw[panel] ($(C)+(0,2.4)$) rectangle ($(C)+(8.2,5.0)$);
+\draw[panel] ($(C)+(0,0)$) rectangle ($(C)+(8.2,1.8)$);
+\node[rotate=90, note] at ($(C)+(-0.45,3.7)$) {Training};
+\node[rotate=90, note] at ($(C)+(-0.45,0.9)$) {Testing};
+\node[smalldata] (ct1) at ($(C)+(1.1,4.3)$) {$\mathcal{T}_1$};
+\node[smalldata] (ct2) at ($(C)+(3.2,4.3)$) {$\mathcal{T}_2$};
+\node[note] at ($(C)+(5.1,4.2)$) {$\cdots$};
+\node[smalldata] (ctt) at ($(C)+(6.9,4.3)$) {$\mathcal{T}_t$};
+\node[model] (cl1) at ($(C)+(1.1,3.05)$) {Learner};
+\node[model] (cl2) at ($(C)+(3.2,3.05)$) {Learner};
+\node[note] at ($(C)+(5.1,3.05)$) {$\cdots$};
+\node[model] (clt) at ($(C)+(6.9,3.05)$) {Learner};
+\draw[tr] (ct1) -- (cl1);
+\draw[tr] (ct2) -- (cl2);
+\draw[tr] (ctt) -- (clt);
+\draw[app] (cl1) -- (cl2);
+\draw[app] (cl2) -- ($(C)+(5.7,3.05)$);
+\draw[app] ($(C)+(6.1,3.05)$) -- (clt);
+\node[model] (cl1t) at ($(C)+(1.1,1.25)$) {Learner};
+\node[model] (cl2t) at ($(C)+(3.2,1.25)$) {Learner};
+\node[note] at ($(C)+(5.1,1.25)$) {$\cdots$};
+\node[model] (cltt) at ($(C)+(6.9,1.25)$) {Learner};
+\node[smalldata] (cd1) at ($(C)+(1.1,0.35)$) {$\mathcal{T}_1$};
+\node[smalldata] (cd2) at ($(C)+(3.2,0.35)$) {$\mathcal{T}_2$};
+\node[smalldata] (cdt) at ($(C)+(6.9,0.35)$) {$\mathcal{T}_t$};
+\draw[app] (cl1) -- (cl1t);
+\draw[app] (cl2) -- (cl2t);
+\draw[app] (clt) -- (cltt);
+\draw[inf] (cl1t) -- (cd1);
+\draw[inf] (cl2t) -- (cd2);
+\draw[inf] (cltt) -- (cdt);
+
+% Federated learning
+\node[title] at ($(D)+(4.1,5.35)$) {Federated Learning};
+\draw[panel] ($(D)+(0,2.4)$) rectangle ($(D)+(8.2,5.0)$);
+\draw[panel] ($(D)+(0,0)$) rectangle ($(D)+(8.2,1.8)$);
+\node[rotate=90, note] at ($(D)+(-0.45,3.7)$) {Training};
+\node[rotate=90, note] at ($(D)+(-0.45,0.9)$) {Testing};
+\node[smalldata] (fd1) at ($(D)+(0.95,4.35)$) {Client 1\\Data};
+\node[smalldata] (fd2) at ($(D)+(2.65,4.35)$) {Client 2\\Data};
+\node[note] at ($(D)+(4.1,4.3)$) {$\cdots$};
+\node[smalldata] (fdk) at ($(D)+(4.35,4.35)$) {Client $K$\\Data};
+\node[server] (srv) at ($(D)+(6.75,2.95)$) {Server\\Aggregation};
+\node[model] (fl1) at ($(D)+(0.95,3.25)$) {Local\\Learner};
+\node[model] (fl2) at ($(D)+(2.65,3.25)$) {Local\\Learner};
+\node[model] (flk) at ($(D)+(4.35,3.25)$) {Local\\Learner};
+\draw[tr] (fd1) -- (fl1);
+\draw[tr] (fd2) -- (fl2);
+\draw[tr] (fdk) -- (flk);
+\draw[tr] (fl1) -- (srv);
+\draw[tr] (fl2) -- (srv);
+\draw[tr] (flk) -- (srv);
+\node[model] (glob) at ($(D)+(4.1,1.15)$) {Global Learner};
+\node[data] (fedtest) at ($(D)+(4.1,0.35)$) {$\{X,Y\}^{\mathrm{te}}$};
+\draw[app] (srv) -- (glob);
+\draw[inf] (glob) -- (fedtest);
+
+% Legend
+\coordinate (L0) at (2.6,-1.0);
+\draw[tr] ($(L0)+(0,0)$) -- ($(L0)+(0.8,0)$);
+\node[note, right] at ($(L0)+(0.8,0)$) {Training / optimization};
+\draw[inf] ($(L0)+(5.4,0)$) -- ($(L0)+(6.2,0)$);
+\node[note, right] at ($(L0)+(6.2,0)$) {Inference / testing};
+\draw[app] ($(L0)+(10.1,0)$) -- ($(L0)+(10.9,0)$);
+\node[note, right] at ($(L0)+(10.9,0)$) {Applying / transfer};
+\end{tikzpicture}%
+}
+\endgroup
