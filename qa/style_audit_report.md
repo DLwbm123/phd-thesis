@@ -6,7 +6,7 @@
 
 | 文件 | 类别 | 模式 | 次数 | 原因 |
 |---|---|---:|---:|---|
-| `chapters/ch01_introduction.tex` | transition | `同时` | 22 | 过度依赖统一连接词 |
+| `chapters/ch01_introduction.tex` | transition | `同时` | 24 | 过度依赖统一连接词 |
 | `chapters/ch03_benchmark.tex` | transition | `同时` | 12 | 过度依赖统一连接词 |
 | `chapters/ch05_scribble_samcl.tex` | transition | `同时` | 18 | 过度依赖统一连接词 |
 | `chapters/ch05_scribble_samcl.tex` | sequence | `最后` | 5 | 避免所有段落都采用固定枚举结构 |

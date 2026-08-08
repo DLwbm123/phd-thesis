@@ -1,4 +1,15 @@
-# Codex 最新报告：第二章剩余内容整章工程集成（2026-08-01）
+# Codex 最新报告：第一、二章 Mode B 对齐修订（2026-08-08）
+
+## 本轮交付
+
+- 基线为 `main` 的 `7d2950dcc86832044fd3489c59e1752a5be235ec`。批准稿为 `CH01_CH02_REVISION_SPEC.md`，执行任务为 `CODEX_TASK_ch01_ch02_alignment_revision.md`；批准正文和 TikZ 代码均按其集成，未自由改写。
+- 第一章完成 1.3 的 Benchmark → FedSubMerge → ScribbleCL → SAMCL 重排；更新 1.1.4、1.2.1 限定段落、图 1-1 和图 1-2，并同步契约、章节卡、计划、状态与 claim section_id。第二章完成 HD/HD95/ASSD、Acc/ACC、2.2 严格术语、完整联合训练行与 $d/p$ 投影符号修订。
+- 已同步 claims、equations、notation 与 terminology 账本，CSV 模式与键唯一性通过。新公式标签为 `eq:foundations-seg-directed-distance`、`eq:foundations-seg-hd`、`eq:foundations-seg-hd95`、`eq:foundations-seg-assd` 和 `eq:foundations-cls-accuracy`；废弃的 `eq:foundations-seg-boundary` 不在活跃论文源码中。
+- Mode B 构建 `bash scripts/build_and_audit.sh` 成功，PDF 为 123 页；无 LaTeX error、未定义引用/交叉引用、重复 label 或缺失文件。已视觉检查图 1-1、图 1-2、HD/HD95/ASSD、Acc/ACC、2.2、表 2-1 与 $\mathbf{I}_p$ 所在页，确认无裁切、重叠或歧义。
+- Scribble 保护子节、RQ3、创新点（3）及 TODO 与基线逐字一致；Chapter 5、`evidence/experiments.csv`、`sources/` 均无差异。`sources/` 仍为 237 文件、指纹 `6c5d3c84a5418fffc6f2c3130b0a3939343acc9403b15dd53fe76e18f17ebf8f`。
+- ScribbleCL 仍为 `TODO-EXPERIMENT` / `blocked_by_experiments`；未改动其任务、基线、状态、数字、结果或结论。详细审查记录见 `handoff/MODE_B_CH01_CH02_ALIGNMENT_AUDIT.md`，GPT 上下文包已重建。
+
+# 历史报告：第二章剩余内容整章工程集成（2026-08-01）
 
 ## 第五章 ZScribbleSeg、ScribbleCL 与 SAMCL 集成状态（2026-08-05）
 

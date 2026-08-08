@@ -50,7 +50,7 @@ C1-038,1,1.2.3,超像素引导涂鸦传播和类别级对比正则可联合利�
 C1-039,1,1.2.3,伪标签扩大监督范围的同时可能继承并强化模型早期预测误差,author synthesis based on pseudo-label methods,Section synthesis,luo2022scribble;han2024dmsps,author_analysis,confirmed,drafted,采用审慎表述
 C1-040,1,1.2.3,有效涂鸦监督与标注像素比例空间覆盖和随机性有关,DOI:10.1016/j.media.2026.104074,Abstract introduction and efficient-scribble analysis,zhang2026zscribbleseg,method,confirmed,drafted,属于ZScribbleSeg对标注形式的研究范围
 C1-041,1,1.2.3,ZScribbleSeg通过监督增强全局一致性类别混合比例空间先验和形状正则利用稀疏监督,DOI:10.1016/j.media.2026.104074,Abstract and framework overview,zhang2026zscribbleseg,method,confirmed,drafted,仅概括机制不写公式或结果
-C1-042,1,1.2.3,涂鸦监督现有不足集中于监督覆盖伪标签噪声类别比例偏差及边界形状缺失,author synthesis based on section sources,Section synthesis,tajbakhsh2020imperfect;luo2022scribble;han2024dmsps;zhang2026zscribbleseg,author_analysis,confirmed,drafted,用于过渡至1.3.2且不解释为持续学习
+C1-042,1,1.2.3,涂鸦监督现有不足集中于监督覆盖伪标签噪声类别比例偏差及边界形状缺失,author synthesis based on section sources,Section synthesis,tajbakhsh2020imperfect;luo2022scribble;han2024dmsps;zhang2026zscribbleseg,author_analysis,confirmed,drafted,用于过渡至1.3.3且不解释为持续学习
 C1-043,1,1.2.1,持续学习研究要求顺序累积知识并协调稳定性和可塑性,DOI:10.1109/TPAMI.2021.3057446,Abstract introduction and scope,delange2022continual,literature,confirmed,drafted,该综述重点为任务增量分类
 C1-044,1,1.2.1,持续学习总体目标还包括任务内任务间泛化和资源效率,DOI:10.1109/TPAMI.2024.3367329,Abstract and conceptual framework,wang2024continualsurvey,literature,confirmed,drafted,用于扩展评价视角
 C1-045,1,1.2.1,医学影像持续学习文献包含实例类任务域及混合增量场景,DOI:10.1016/j.media.2025.103730,Scenario taxonomy,kumari2025medicalcl,literature,confirmed,drafted,不将分类视为互斥且穷尽
@@ -82,14 +82,14 @@ C1-070,1,1.2.2,公开胸部X射线与CT研究比较多种模型和持续学习�
 C1-071,1,1.2.2,DP-FedEPC结合EWC潜在原型和客户端DP-SGD处理胸片FCL,DOI:10.1038/s41598-026-55211-7,Abstract,sinhal2026dpfedepc,method,confirmed,drafted,形式化差分隐私来自DP机制而非联邦聚合
 C1-072,1,1.2.2,潜在原型属于历史信息的压缩保存而不等同完全无回放,author scope definition,Section distinction,sinhal2026dpfedepc,author_definition,confirmed,drafted,用于统一回放边界
 C1-073,1,1.2.2,GPM保存旧任务重要梯度子空间并将新梯度投影到正交补空间,primary paper,Method formulation,saha2021gpm,method,confirmed,drafted,原始方法面向单一学习器
-C1-074,1,1.2.2,无回放医学FCL仍需跨客户端汇集历史保护并控制统一保护对新任务可塑性的约束,author synthesis based on section sources,Section synthesis,yoon2021fedweit;saha2021gpm;yang2024fclsurvey,author_analysis,confirmed,drafted,用于过渡至1.3.4且不提前展开FedSubMerge
-C1-075,1,1.3.2,涂鸦监督在空间类别和结构层面均不等价于完整密集掩膜,DOI:10.1016/j.media.2020.101693;DOI:10.1016/j.media.2026.104074,Review taxonomy and ZScribbleSeg problem formulation,tajbakhsh2020imperfect;zhang2026zscribbleseg,author_synthesis,confirmed,drafted,用于界定稀疏监督缺失的三个层面
-C1-076,1,1.3.2,部分交叉熵只在已有涂鸦位置提供直接监督,DOI:10.1007/978-3-030-00889-5_27,Training strategy,can2018scribble,method,confirmed,drafted,不把未标注像素视为已知背景
-C1-077,1,1.3.2,同一组稀疏涂鸦可能与多种未标注区域预测同时相容,author analysis based on sparse supervision,Section challenge analysis,tajbakhsh2020imperfect;can2018scribble,author_analysis,confirmed,drafted,用于说明低涂鸦损失不保证完整分割正确
-C1-078,1,1.3.2,伪标签扩大监督范围时可能继承并强化模型或分支的共同预测偏差,DOI:10.1007/978-3-031-16431-6_50;DOI:10.1016/j.media.2024.103274,Method assumptions and pseudo-label construction,luo2022scribble;han2024dmsps,author_analysis,confirmed,drafted,采用条件性表述而非断言所有伪标签均有害
-C1-079,1,1.3.2,有效涂鸦监督受到标注像素比例空间随机性和类别覆盖差异影响,DOI:10.1016/j.media.2026.104074,Introduction and efficient-scribble analysis,zhang2026zscribbleseg,method,confirmed,drafted,用于说明标注分布代表性
-C1-080,1,1.3.2,类别标注比例偏差和结构信息缺失可能表现为欠分割及碎片化预测,DOI:10.1016/j.media.2026.104074,Problem formulation and framework motivation,zhang2026zscribbleseg,author_analysis,confirmed,drafted,不扩展为所有弱监督方法必然现象
-C1-081,1,1.3.2,稀疏标注挑战需要联合处理可靠监督扩展类别空间偏差和结构恢复,author synthesis based on section sources,Section synthesis,tajbakhsh2020imperfect;luo2022scribble;han2024dmsps;kervadec2019constrained;zhang2026zscribbleseg,author_analysis,confirmed,drafted,用于形成第三章问题入口且不提前展开具体解法
+C1-074,1,1.2.2,无回放医学FCL仍需跨客户端汇集历史保护并控制统一保护对新任务可塑性的约束,author synthesis based on section sources,Section synthesis,yoon2021fedweit;saha2021gpm;yang2024fclsurvey,author_analysis,confirmed,drafted,用于过渡至1.3.2且不提前展开FedSubMerge
+C1-075,1,1.3.3,涂鸦监督在空间类别和结构层面均不等价于完整密集掩膜,DOI:10.1016/j.media.2020.101693;DOI:10.1016/j.media.2026.104074,Review taxonomy and ZScribbleSeg problem formulation,tajbakhsh2020imperfect;zhang2026zscribbleseg,author_synthesis,confirmed,drafted,用于界定稀疏监督缺失的三个层面
+C1-076,1,1.3.3,部分交叉熵只在已有涂鸦位置提供直接监督,DOI:10.1007/978-3-030-00889-5_27,Training strategy,can2018scribble,method,confirmed,drafted,不把未标注像素视为已知背景
+C1-077,1,1.3.3,同一组稀疏涂鸦可能与多种未标注区域预测同时相容,author analysis based on sparse supervision,Section challenge analysis,tajbakhsh2020imperfect;can2018scribble,author_analysis,confirmed,drafted,用于说明低涂鸦损失不保证完整分割正确
+C1-078,1,1.3.3,伪标签扩大监督范围时可能继承并强化模型或分支的共同预测偏差,DOI:10.1007/978-3-031-16431-6_50;DOI:10.1016/j.media.2024.103274,Method assumptions and pseudo-label construction,luo2022scribble;han2024dmsps,author_analysis,confirmed,drafted,采用条件性表述而非断言所有伪标签均有害
+C1-079,1,1.3.3,有效涂鸦监督受到标注像素比例空间随机性和类别覆盖差异影响,DOI:10.1016/j.media.2026.104074,Introduction and efficient-scribble analysis,zhang2026zscribbleseg,method,confirmed,drafted,用于说明标注分布代表性
+C1-080,1,1.3.3,类别标注比例偏差和结构信息缺失可能表现为欠分割及碎片化预测,DOI:10.1016/j.media.2026.104074,Problem formulation and framework motivation,zhang2026zscribbleseg,author_analysis,confirmed,drafted,不扩展为所有弱监督方法必然现象
+C1-081,1,1.3.3,稀疏标注挑战需要联合处理可靠监督扩展类别空间偏差和结构恢复,author synthesis based on section sources,Section synthesis,tajbakhsh2020imperfect;luo2022scribble;han2024dmsps;kervadec2019constrained;zhang2026zscribbleseg,author_analysis,confirmed,drafted,用于形成第五章弱监督持续分割问题入口，且不提前展开具体解法
 C1-082,1,1.3.1,持续学习场景名称取决于输入分布标签空间任务身份和评价协议,DOI:10.1109/TPAMI.2024.3367329;DOI:10.1016/j.media.2025.103730,Scenario taxonomies,wang2024continualsurvey;kumari2025medicalcl,author_synthesis,confirmed,drafted,用于说明相同数据序列可能因协议不同被归入不同场景
 C1-083,1,1.3.1,Domain-CL Class-CL和Organ-CL是第四章基准组织医学持续分割的三个命名场景,arXiv:2605.06160,Abstract and scenario definitions,wang2026benchmark,benchmark,confirmed,drafted,不得表述为领域统一且穷尽的标准分类
 C1-084,1,1.3.1,背景语义漂移是否出现取决于当前阶段对旧类和未来类的标注协议,DOI:10.1109/TPAMI.2024.3446949,Problem definition and protocols,yuan2024continualseg,author_analysis,confirmed,drafted,完整标注域增量场景不机械套用该结论
@@ -98,24 +98,24 @@ C1-086,1,1.3.1,最终平均性能或遗忘单一指标不能同时反映知识�
 C1-087,1,1.3.1,阶段任务性能矩阵能够分别支撑稳定性可塑性和前向泛化评价,arXiv:2605.06160,Evaluation framework,wang2026benchmark,benchmark,confirmed,drafted,具体公式留待第四章
 C1-088,1,1.3.1,前向泛化指未适应任务上的直接表现而前向迁移关注已有知识对后续学习过程的影响,author terminology distinction,Section definition,wang2024continualsurvey;wang2026benchmark,author_definition,confirmed,drafted,遵守本论文术语边界
 C1-089,1,1.3.1,历史访问参数增长计算开销和任务身份条件影响持续分割结果的可比性,DOI:10.1109/TPAMI.2024.3367329;arXiv:2605.06160,Resource-efficiency framework and benchmark design,wang2024continualsurvey;wang2026benchmark,author_synthesis,confirmed,drafted,不能忽略资源条件直接排序
-C1-090,1,1.3.1,持续医学分割基准需联合解决场景定义与稳定性可塑性泛化资源多维评价,author synthesis based on section sources,Section synthesis,kumari2025medicalcl;yuan2024continualseg;gonzalez2023lifelong;wang2026benchmark,author_analysis,confirmed,drafted,用于形成第四章问题入口而非算法贡献
-C1-091,1,1.3.3,持续医学图像配准任务由图像域解剖对象模态组合和空间映射共同定义而非离散类别扩展,DOI:10.1007/978-3-031-72069-7_69,Problem setting and task construction,wang2024samcl,author_synthesis,confirmed,drafted,用于限制类增量术语的机械套用
-C1-092,1,1.3.3,有限经验回放只能以受限样本近似旧任务分布而不等同完整联合训练,DOI:10.1109/TPAMI.2021.3057446;DOI:10.1109/TPAMI.2024.3367329,Replay taxonomy and resource analysis,delange2022continual;wang2024continualsurvey,author_synthesis,confirmed,drafted,不作法律或机构政策的一般断言
-C1-093,1,1.3.3,过强历史保护可能限制当前配准任务学习而自由更新可能破坏旧任务能力,DOI:10.1016/j.tics.2020.09.004;DOI:10.1109/TPAMI.2021.3057446,Stability-plasticity discussion,hadsell2020embracing;delange2022continual,literature,confirmed,drafted,用于界定稳定性可塑性张力
-C1-094,1,1.3.3,配准任务差异会改变共享参数更新中的任务干扰和知识迁移关系,DOI:10.1109/TPAMI.2024.3367329,Inter-task generalizability analysis,wang2024continualsurvey,author_analysis,confirmed,drafted,不声称任务相似性影响方向始终一致
-C1-095,1,1.3.3,跨任务泛化关注模型在未参与持续优化的配准任务上的直接适应基础,DOI:10.1007/978-3-031-72069-7_69,Abstract motivation and evaluation scope,wang2024samcl,author_definition,confirmed,drafted,与前向迁移术语区分
-C1-096,1,1.3.3,元持续学习需要在任务内适应任务间积累和历史保持之间协调更新,DOI:10.1007/978-3-031-72069-7_69,Method motivation,wang2024samcl,author_analysis,confirmed,drafted,不提前写入具体内外层公式
-C1-097,1,1.3.3,较平坦损失区域通常对参数扰动和任务分布差异更不敏感但平坦性本身不保证全部目标,DOI:10.1109/TPAMI.2024.3367329;DOI:10.1007/978-3-031-72069-7_69,Generalizability analysis and SAMCL motivation,wang2024continualsurvey;wang2024samcl,author_synthesis,confirmed,drafted,采用审慎表述
-C1-098,1,1.3.3,持续配准需联合优化有限回放知识保持当前任务可塑性和未见任务跨任务泛化,author synthesis based on section sources,Section synthesis,delange2022continual;wang2024continualsurvey;wang2024samcl,author_analysis,confirmed,drafted,用于形成第五章问题入口
-C1-099,1,1.3.4,联邦持续学习同时面临客户端顺序学习和服务器跨客户端融合中的知识损失,DOI:10.1109/TKDE.2024.3363240,Problem definition and framework,yang2024fclsurvey,literature,confirmed,drafted,本文使用更具体的跨客户端全局灾难性遗忘表述
-C1-100,1,1.3.4,只利用客户端本地历史的保护机制不能直接覆盖仅在其他客户端出现的任务知识,primary FCL methods and author synthesis,Section challenge analysis,yoon2021fedweit;dong2022glfc,author_analysis,confirmed,drafted,用于区分本地遗忘与全局知识保护
-C1-101,1,1.3.4,本文无回放设定指后续任务不重新调用历史原始样本而非禁止所有压缩统计,author scope definition,Section definition,yang2024fclsurvey;saha2021gpm,author_definition,confirmed,drafted,不作机构删除义务或形式化隐私断言
-C1-102,1,1.3.4,GPM保存单一学习器的旧任务重要梯度子空间并在正交补中更新,primary paper,Method formulation,saha2021gpm,method,confirmed,drafted,原始方法未覆盖跨客户端历史融合
-C1-103,1,1.3.4,联邦无回放保护需要在服务器端形成代表跨客户端任务历史的紧凑信息,author synthesis based on FCL and GPM,Section challenge analysis,yang2024fclsurvey;saha2021gpm,author_analysis,confirmed,drafted,不提前指定FedSubMerge实现
-C1-104,1,1.3.4,无差别保护全部客户端历史方向可能收缩可行更新空间并降低当前任务可塑性,author analysis based on gradient-subspace constraints,Section challenge analysis,saha2021gpm,author_analysis,confirmed,drafted,采用条件性机制分析
-C1-105,1,1.3.4,跨中心保护需考虑不同客户端和网络层对历史方向的相关性差异,author synthesis based on client heterogeneity,Section challenge synthesis,yang2024fclsurvey,author_analysis,confirmed,drafted,用于提出客户端特定保护需求而不提前给出算法
-C1-106,1,1.3.4,交换参数梯度原型或压缩子空间不自动构成形式化隐私保证,DOI:10.1038/s41746-020-00323-1;DOI:10.1109/TKDE.2024.3363240,Security and privacy discussion,rieke2020future;yang2024fclsurvey,literature,confirmed,drafted,仅描述原始数据未直接传输
-C1-107,1,1.3.4,无回放医学FCL需协调跨客户端全局稳定性本地可塑性通信代价和信息暴露边界,author synthesis based on section sources,Section synthesis,yang2024fclsurvey;yoon2021fedweit;dong2022glfc;saha2021gpm;rieke2020future,author_analysis,confirmed,drafted,用于形成第六章问题入口
+C1-090,1,1.3.1,持续医学分割基准需联合解决场景定义与稳定性可塑性泛化资源多维评价,author synthesis based on section sources,Section synthesis,kumari2025medicalcl;yuan2024continualseg;gonzalez2023lifelong;wang2026benchmark,author_analysis,confirmed,drafted,用于形成第三章场景与评价问题入口，而非算法贡献
+C1-091,1,1.3.4,持续医学图像配准任务由图像域解剖对象模态组合和空间映射共同定义而非离散类别扩展,DOI:10.1007/978-3-031-72069-7_69,Problem setting and task construction,wang2024samcl,author_synthesis,confirmed,drafted,用于限制类增量术语的机械套用
+C1-092,1,1.3.4,有限经验回放只能以受限样本近似旧任务分布而不等同完整联合训练,DOI:10.1109/TPAMI.2021.3057446;DOI:10.1109/TPAMI.2024.3367329,Replay taxonomy and resource analysis,delange2022continual;wang2024continualsurvey,author_synthesis,confirmed,drafted,不作法律或机构政策的一般断言
+C1-093,1,1.3.4,过强历史保护可能限制当前配准任务学习而自由更新可能破坏旧任务能力,DOI:10.1016/j.tics.2020.09.004;DOI:10.1109/TPAMI.2021.3057446,Stability-plasticity discussion,hadsell2020embracing;delange2022continual,literature,confirmed,drafted,用于界定稳定性可塑性张力
+C1-094,1,1.3.4,配准任务差异会改变共享参数更新中的任务干扰和知识迁移关系,DOI:10.1109/TPAMI.2024.3367329,Inter-task generalizability analysis,wang2024continualsurvey,author_analysis,confirmed,drafted,不声称任务相似性影响方向始终一致
+C1-095,1,1.3.4,跨任务泛化关注模型在未参与持续优化的配准任务上的直接适应基础,DOI:10.1007/978-3-031-72069-7_69,Abstract motivation and evaluation scope,wang2024samcl,author_definition,confirmed,drafted,与前向迁移术语区分
+C1-096,1,1.3.4,元持续学习需要在任务内适应任务间积累和历史保持之间协调更新,DOI:10.1007/978-3-031-72069-7_69,Method motivation,wang2024samcl,author_analysis,confirmed,drafted,不提前写入具体内外层公式
+C1-097,1,1.3.4,较平坦损失区域通常对参数扰动和任务分布差异更不敏感但平坦性本身不保证全部目标,DOI:10.1109/TPAMI.2024.3367329;DOI:10.1007/978-3-031-72069-7_69,Generalizability analysis and SAMCL motivation,wang2024continualsurvey;wang2024samcl,author_synthesis,confirmed,drafted,采用审慎表述
+C1-098,1,1.3.4,持续配准需联合优化有限回放知识保持当前任务可塑性和未见任务跨任务泛化,author synthesis based on section sources,Section synthesis,delange2022continual;wang2024continualsurvey;wang2024samcl,author_analysis,confirmed,drafted,用于形成第五章持续配准问题入口
+C1-099,1,1.3.2,联邦持续学习同时面临客户端顺序学习和服务器跨客户端融合中的知识损失,DOI:10.1109/TKDE.2024.3363240,Problem definition and framework,yang2024fclsurvey,literature,confirmed,drafted,本文使用更具体的跨客户端全局灾难性遗忘表述
+C1-100,1,1.3.2,只利用客户端本地历史的保护机制不能直接覆盖仅在其他客户端出现的任务知识,primary FCL methods and author synthesis,Section challenge analysis,yoon2021fedweit;dong2022glfc,author_analysis,confirmed,drafted,用于区分本地遗忘与全局知识保护
+C1-101,1,1.3.2,本文无回放设定指后续任务不重新调用历史原始样本而非禁止所有压缩统计,author scope definition,Section definition,yang2024fclsurvey;saha2021gpm,author_definition,confirmed,drafted,不作机构删除义务或形式化隐私断言
+C1-102,1,1.3.2,GPM保存单一学习器的旧任务重要梯度子空间并在正交补中更新,primary paper,Method formulation,saha2021gpm,method,confirmed,drafted,原始方法未覆盖跨客户端历史融合
+C1-103,1,1.3.2,联邦无回放保护需要在服务器端形成代表跨客户端任务历史的紧凑信息,author synthesis based on FCL and GPM,Section challenge analysis,yang2024fclsurvey;saha2021gpm,author_analysis,confirmed,drafted,不提前指定FedSubMerge实现
+C1-104,1,1.3.2,无差别保护全部客户端历史方向可能收缩可行更新空间并降低当前任务可塑性,author analysis based on gradient-subspace constraints,Section challenge analysis,saha2021gpm,author_analysis,confirmed,drafted,采用条件性机制分析
+C1-105,1,1.3.2,跨中心保护需考虑不同客户端和网络层对历史方向的相关性差异,author synthesis based on client heterogeneity,Section challenge synthesis,yang2024fclsurvey,author_analysis,confirmed,drafted,用于提出客户端特定保护需求而不提前给出算法
+C1-106,1,1.3.2,交换参数梯度原型或压缩子空间不自动构成形式化隐私保证,DOI:10.1038/s41746-020-00323-1;DOI:10.1109/TKDE.2024.3363240,Security and privacy discussion,rieke2020future;yang2024fclsurvey,literature,confirmed,drafted,仅描述原始数据未直接传输
+C1-107,1,1.3.2,无回放医学FCL需协调跨客户端全局稳定性本地可塑性通信代价和信息暴露边界,author synthesis based on section sources,Section synthesis,yang2024fclsurvey;yoon2021fedweit;dong2022glfc;saha2021gpm;rieke2020future,author_analysis,confirmed,drafted,用于形成第四章 FedSubMerge 问题入口，而非第六章
 C1-108,1,1.4,本文四项研究依次对应持续分割基准、无回放联邦持续分类、弱监督持续分割扩展与有限回放持续配准,THESIS_CONTRACT.md;SOURCE_MAP.md,Four-work positioning and chapter mapping,,author_synthesis,confirmed,drafted,四项工作共享持续学习主线，但不建立虚构的方法依赖
 C1-109,1,1.4,高效涂鸦建模同时考虑有效标注比例和标注位置的空间随机性,sources/zscribble/Zscribble_MEDIA_arxiv/main_clean_new.tex,Introduction motivation and contributions,zhang2026zscribbleseg,method,confirmed,drafted,第五章 5.3.1 原始工作不表述为持续学习
 C1-110,1,1.4,ZScribbleSeg通过混合遮挡和全局一致性实施监督增强,sources/zscribble/Zscribble_MEDIA_arxiv/main_clean_new.tex,Method overview and supervision augmentation sections,zhang2026zscribbleseg,method,confirmed,drafted,用于扩展可靠监督覆盖而不宣称密集标签等价
@@ -135,7 +135,7 @@ C1-123,1,1.4,FedSubMerge从一阶近似分析保护强度与可塑性并在标�
 C1-124,1,1.4,FedSubMerge不调用历史原始样本但低秩梯度子空间交换不构成形式化隐私保证,sources/fedsubmerge/ Subspace Merging for Replay-Free Federated Continual Medical Image Classification 720/FedSubMerge_final.tex,Replay-free setting and privacy scope,,author_definition,confirmed,drafted,区分原始数据不传输与形式化隐私保护
 C1-125,1,1.4,全文按照绪论、理论基础、三项研究章节和总结展望组织为连续六章,THESIS_CONTRACT.md;main.tex,Six-chapter structure and include order,,author_structure,confirmed,drafted,总结与展望为第六章；不保留空白编号
 C1-126,1,1.4,第一章依次完成研究背景、研究现状、关键挑战和主要研究内容与创新点，并在1.4末尾说明六章组织结构,chapter_cards/ch01.md;chapters/ch01_introduction.tex,Chapter 1 structure and completed headings,,author_structure,confirmed,drafted,不再保留独立1.5
-C1-127,1,1.4,第二章提供医学图像任务、数据不全场景与持续学习方法的理论基础,chapter_cards/ch02.md;chapters/ch02_foundations.tex,Chapter 2 card and heading skeleton,,author_structure,confirmed,drafted,2.1.1已验证，2.1.2保持queued
+C1-127,1,1.4,第二章提供任务定义、训练信息受限条件与持续学习机制的理论基础,chapter_cards/ch02.md;chapters/ch02_foundations.tex,Chapter 2 card and heading skeleton,,author_structure,confirmed,drafted,2.2已统一为训练信息受限条件；ScribbleCL状态不变
 C1-128,1,1.4,第五章5.3.1保留ZScribbleSeg的监督增强与先验正则化弱监督分割事实,chapter_cards/ch05.md;chapters/ch05_scribble_samcl.tex,Section 5.3.1 card and chapter skeleton,,author_structure,confirmed,drafted,原始ZScribbleSeg不是持续学习算法
 C1-129,1,1.4,第三章研究持续医学图像分割场景定义、多维评价和系统性实证比较,chapter_cards/ch03.md;chapters/ch03_benchmark.tex,Chapter 3 card and chapter title,,author_structure,confirmed,drafted,第三章不是单一抗遗忘算法
 C1-130,1,1.4,第五章5.4研究有限回放条件下的锐度感知元持续医学图像配准,chapter_cards/ch05.md;chapters/ch05_scribble_samcl.tex,Section 5.4 card and chapter skeleton,,author_structure,confirmed,drafted,保持集中式有限回放边界
@@ -147,7 +147,7 @@ C2-003,2,2.1.1,二维和三维分割可统一写在离散图像域上但距离�
 C2-004,2,2.1.1,分割模型在每个空间位置输出类别概率并通过最大概率得到多类标签图,author mathematical definition,Equation eq:foundations-seg-prediction,,author_definition,confirmed,drafted,二值情形允许单前景概率与阈值
 C2-005,2,2.1.1,完整监督下平均交叉熵对所有有参考标签的空间位置计算类别概率损失,author mathematical definition,Equation eq:foundations-seg-ce,,author_definition,confirmed,drafted,训练损失不等同评价指标
 C2-006,2,2.1.1,Dice相似系数和交并比分别基于预测区域与参考区域的交集和集合大小衡量重叠,DOI:10.1186/s12880-015-0068-x,Overlap metric definitions,taha2015metrics,metric,confirmed,drafted,空类别处理规则必须显式说明
-C2-007,2,2.1.1,HD95和ASSD基于预测与参考边界之间的双向点集距离衡量边界误差,DOI:10.1186/s12880-015-0068-x,Distance metric definitions,taha2015metrics,metric,confirmed,drafted,距离应在物理坐标中计算
+C2-007,2,2.1.1,HD、HD95和ASSD是基于双向边界距离的不同边界指标，且应在物理坐标中计算,DOI:10.1186/s12880-015-0068-x,Distance metric definitions,taha2015metrics,metric,confirmed,drafted,HD、HD95和ASSD分别定义，并在物理坐标中计算
 C2-008,2,2.1.1,区域重叠指标和边界距离指标对目标大小局部误差及离群点具有不同敏感性,DOI:10.1186/s12880-015-0068-x,Metric analysis and selection guidelines,taha2015metrics,literature,confirmed,drafted,不以单一指标覆盖全部任务需求
 C2-009,2,2.1.1,多类医学图像分割评价需要说明逐类逐样本或全局聚合方式,author evaluation definition,Section metric interpretation,taha2015metrics,author_analysis,confirmed,drafted,用于保证不同实验结果可解释
 C2-010,2,2.1.2,"医学图像配准通过估计空间变换建立固定图像与移动图像中对应结构之间的空间关系，可用于纵向、多模态、跨个体或模板对应","DOI:10.1109/TMI.2013.2265603","Abstract and survey scope","sotiras2013deformable","literature","confirmed","drafted","基础任务定义，不涉及持续学习"
@@ -179,9 +179,9 @@ C3B-015,3,3.7,三类场景的结果支持稳定性、可塑性、前向能力与
 C2-021,2,2.1.3,"医学图像分类在图像、检查或病例层面输出类别概率或风险分数，其预测对象区别于分割标签图和配准空间变换",DOI:10.1016/j.media.2017.07.005,Medical image analysis task taxonomy,litjens2017survey,literature,confirmed,drafted,分类粒度必须与数据划分和评价单位一致
 C2-022,2,2.1.3,"互斥多分类使用softmax归一化类别概率，多标签分类对各标签独立使用sigmoid且概率不要求和为一",Goodfellow et al. 2016 Deep Learning,Softmax and sigmoid output units,goodfellow2016deep,mathematical_definition,confirmed,drafted,多标签阈值由具体验证协议确定
 C2-023,2,2.1.3,"多分类交叉熵和多标签二元交叉熵对应不同标签语义，不能只依据输出类别数相互替代",Goodfellow et al. 2016 Deep Learning,Maximum likelihood and cross-entropy objectives,goodfellow2016deep,mathematical_definition,confirmed,drafted,类别加权和重采样不是基本定义的默认组成
-C2-024,2,2.1.3,"分类评价需结合阈值依赖的混淆矩阵指标与AUROC，并明确类别汇总、阈值和空分母规则",DOI:10.1016/j.patrec.2005.10.010;DOI:10.1109/ICPR.2010.764,ROC analysis and balanced accuracy definitions,fawcett2006roc;brodersen2010balanced,metric,confirmed,drafted,AUROC不替代特定阈值性能或概率校准
+C2-024,2,2.1.3,"单任务多分类Acc、二分类或one-vs-rest阈值指标与AUROC具有不同定义；第四章ACC是持续学习聚合指标",DOI:10.1016/j.patrec.2005.10.010;DOI:10.1109/ICPR.2010.764,ROC analysis and balanced accuracy definitions,fawcett2006roc;brodersen2010balanced,metric,confirmed,drafted,Acc与ACC处于不同评价层级；AUROC不替代阈值指标
 C2-025,2,2.1.3,"医学影像分类的数据划分应与最终预测单位一致，同一患者的相关图像不应跨训练和测试集合",DOI:10.1148/radiol.2020192224,Medical imaging data preparation and leakage control,willemink2020preparing,author_synthesis,confirmed,drafted,不据此断言所有既有数据集协议均满足患者级划分
-C2-026,2,2.2,"本文所称数据不全是训练信息受限的概括，包括监督、历史样本和跨中心原始数据不能被完整调用",THESIS_CONTRACT.md,Operational definition of limited training information,,author_definition,confirmed,drafted,不指随机缺失值或数据物理删除
+C2-026,2,2.2,"训练信息受限是严格术语；数据不全仅为监督、历史样本和跨中心原始数据不能被完整调用的直观背景概括",THESIS_CONTRACT.md,Operational definition of limited training information,,author_definition,confirmed,drafted,不指随机缺失值或数据物理删除；严格技术分析使用训练信息受限
 C2-027,2,2.2.1,"完整联合训练、有限回放、替代回放和无历史原始样本回放对应不同的历史访问与存储条件",DOI:10.1109/TPAMI.2021.3057446;NeurIPS 2019 Experience Replay,Replay taxonomy and memory setting,delange2022continual;method_replay_er,author_synthesis,confirmed,drafted,有限记忆只能近似历史分布
 C2-028,2,2.2.1,"无回放指后续阶段不重新读取历史原始样本，不等同于禁止保存旧模型参数或压缩统计",sources/fedsubmerge/;sources/samcl/;THESIS_CONTRACT.md,Replay-free and limited-replay scope,,author_definition,confirmed,drafted,任何允许的摘要形式仍需在具体方法中说明
 C2-029,2,2.2.2,"联邦学习在客户端本地训练并通过服务器聚合形成共享模型，基本目标可写为客户端经验风险的加权和",PMLR 54:1273--1282,Federated objective and iterative model averaging,mcmahan2017fedavg,method,confirmed,drafted,具体参与和权重规则必须由协议说明

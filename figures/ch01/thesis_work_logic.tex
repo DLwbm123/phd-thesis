@@ -2,64 +2,77 @@
   font=\small,
   box/.style={
     rectangle,
+    rounded corners=2pt,
     draw=black,
     fill=white,
     text=black,
-    line width=0.7pt,
+    line width=0.65pt,
     align=center,
-    inner xsep=8pt,
+    inner xsep=7pt,
     inner ysep=5pt
   },
-  widebox/.style={box, text width=13.7cm, minimum height=1.15cm},
-  methodbox/.style={box, text width=6.15cm, minimum height=1.42cm},
-  arrow/.style={
-    -{Latex[length=2.1mm,width=1.4mm]},
-    draw=black,
-    line width=0.7pt
-  },
-  node distance=6.5mm and 10mm
+  band/.style={box, fill=black!5, text width=13.8cm, minimum height=1.05cm},
+  widebox/.style={box, text width=13.8cm, minimum height=1.08cm},
+  methodbox/.style={box, text width=4.15cm, minimum height=1.55cm},
+  arrow/.style={-{Latex[length=2.0mm,width=1.3mm]}, draw=black, line width=0.65pt},
+  relation/.style={draw=black, line width=0.65pt},
+  node distance=6.5mm and 6mm
 ]
 
-\node[widebox] (constraints) {
-  \textbf{真实临床约束}\\[2pt]
+\node[band] (constraints) {
+  \textbf{现实约束}\\[2pt]
   \footnotesize 部分监督 \quad｜\quad 历史访问受限 \quad｜\quad 原始数据不可集中 \quad｜\quad 任务与分布持续演化
 };
 
 \node[widebox, below=of constraints] (question) {
   \textbf{核心问题}\\[2pt]
-  在受限数据访问条件下持续积累医学影像分析能力
+  在明确训练信息访问边界的条件下，持续积累医学影像分析能力
 };
 
 \node[widebox, below=of question] (benchmark) {
-  \textbf{第3章：场景与评价基础}\\[2pt]
-  持续医学图像分割场景建模与综合评测
+  \textbf{第 3 章：场景与评价基础}\\[2pt]
+  持续医学图像分割的场景定义、实验协议与综合评价
 };
 
-\node[methodbox, below left=9mm and 4mm of benchmark.south] (chapter4) {
-  \textbf{第4章}\\[2pt]
-  无回放联邦持续分类\\[-1pt]
+\node[methodbox, below left=9mm and 0mm of benchmark.south] (fed) {
+  \textbf{第 4 章}\\[2pt]
+  无回放联邦持续分类\\[2pt]
   \footnotesize FedSubMerge
 };
 
-\node[methodbox, below right=9mm and 4mm of benchmark.south] (chapter5) {
-  \textbf{第5章}\\[2pt]
-  弱监督持续分割与持续配准\\[-1pt]
-  \footnotesize ZScribbleSeg / ScribbleCL / SAMCL
+\node[methodbox, right=of fed] (scribble) {
+  \textbf{第 5 章：分割}\\[2pt]
+  ZScribbleSeg（静态弱监督基础）\\[-1pt]
+  $\downarrow$\\[-1pt]
+  ScribbleCL（持续扩展）
 };
 
-\coordinate (merge) at ($(chapter4.south)!0.5!(chapter5.south)+(0,-7mm)$);
-
-\node[widebox, below=13mm of merge] (goal) {
-  \textbf{共同主线}\\[2pt]
-  在明确数据访问边界的前提下，协调稳定性、可塑性、泛化与资源开销
+\node[methodbox, right=of scribble] (samcl) {
+  \textbf{第 5 章：配准}\\[2pt]
+  有限回放持续配准\\[2pt]
+  \footnotesize SAMCL
 };
 
+\coordinate (branch) at ($(benchmark.south)+(0,-4mm)$);
 \draw[arrow] (constraints) -- (question);
 \draw[arrow] (question) -- (benchmark);
-\draw[arrow] (benchmark.south) -- ++(0,-4mm) -| (chapter4.north);
-\draw[arrow] (benchmark.south) -- ++(0,-4mm) -| (chapter5.north);
-\draw[draw=black, line width=0.7pt] (chapter4.south) |- (merge);
-\draw[draw=black, line width=0.7pt] (chapter5.south) |- (merge);
+\draw[relation] (benchmark.south) -- (branch);
+\draw[arrow] (branch) -| (fed.north);
+\draw[arrow] (branch) -- (scribble.north);
+\draw[arrow] (branch) -| (samcl.north);
+
+\coordinate (merge) at ($(scribble.south)+(0,-7mm)$);
+\draw[relation] (fed.south) |- (merge);
+\draw[relation] (scribble.south) -- (merge);
+\draw[relation] (samcl.south) |- (merge);
+
+\node[band, below=12mm of merge] (goal) {
+  \textbf{共同分析主线}\\[2pt]
+  \footnotesize 在各自任务与访问条件下，分析稳定性、可塑性、泛化及资源开销的取舍
+};
 \draw[arrow] (merge) -- (goal.north);
+
+\node[font=\scriptsize, align=center, text width=13.5cm, below=3.5mm of goal]
+  {箭头表示论文组织和问题承接关系，不表示各章方法构成同一算法链。};
 
 \end{tikzpicture}

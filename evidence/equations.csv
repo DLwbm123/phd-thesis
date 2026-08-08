@@ -13,7 +13,7 @@ E3B-007,3,3.5,模型参数扩展率,sources/benchmark/Benchmark_pa/main.tex,MPE 
 E3B-008,3,3.5,数据回放率,sources/benchmark/Benchmark_pa/main.tex,DRR formula lines 571--575,eq:benchmark-drr,drafted,星号另标原始图像回放
 E2-005,2,2.1.3,多分类softmax与多标签sigmoid概率,Goodfellow et al. 2016 Deep Learning,Softmax and sigmoid output definitions,eq:foundations-cls-probability,drafted,多分类与多标签采用不同概率约束
 E2-006,2,2.1.3,分类交叉熵与多标签二元交叉熵,Goodfellow et al. 2016 Deep Learning,Maximum likelihood and cross-entropy definitions,eq:foundations-cls-loss,drafted,不包含类别加权或重采样
-E2-007,2,2.1.3,二分类混淆矩阵评价指标组,DOI:10.1016/j.patrec.2005.10.010;DOI:10.1109/ICPR.2010.764,ROC and balanced accuracy metric definitions,eq:foundations-cls-metrics,drafted,多分类与多标签需另行声明汇总方式
+E2-007,2,2.1.3,二分类或one-vs-rest混淆矩阵评价指标组,DOI:10.1016/j.patrec.2005.10.010;DOI:10.1109/ICPR.2010.764,ROC and balanced accuracy metric definitions,eq:foundations-cls-metrics,drafted,适用于二分类或多分类指定类别的one-vs-rest评价；多分类汇总方式须单独声明
 E2-008,2,2.2.1,有限原始样本回放目标,NeurIPS 2019 Experience Replay;DOI:10.1109/TPAMI.2021.3057446,Replay objective author synthesis,eq:foundations-replay-objective,drafted,替代回放需按实际保存载体修改
 E2-009,2,2.2.2,联邦经验风险目标与FedAvg聚合,PMLR 54:1273--1282,Federated objective and iterative model averaging,eq:foundations-fed-learning,drafted,参与集合和样本数权重必须首次定义
 E2-010,2,2.2.3,稀疏标注位置上的部分交叉熵,DOI:10.1109/CVPR.2016.344;DOI:10.1007/978-3-030-00889-5_27,Partial-label loss formulation,eq:foundations-partial-ce,drafted,未标注位置不进入求和且不设为背景
@@ -23,6 +23,11 @@ E2-013,2,2.3.3,弹性权重巩固参数正则目标,DOI:10.1073/pnas.1611835114,
 E2-014,2,2.3.3,历史梯度约束与保护子空间正交投影,NeurIPS 2017 Gradient Episodic Memory;ICLR 2021 Gradient Projection Memory,GEM and GPM formulations,eq:foundations-gradient-projection,drafted,不包含FedSubMerge服务器端融合
 E2-015,2,2.3.3,梯度型元学习双层目标,PMLR 70:1126--1135,MAML inner and outer objectives,eq:foundations-maml,drafted,普通元学习不自动处理顺序遗忘
 E2-016,2,2.3.3,锐度感知最小化邻域目标,ICLR 2021 Sharpness-Aware Minimization,SAM min-max objective,eq:foundations-sam,drafted,局部邻域低损失不构成持续学习保证
+E2-017,2,2.1.1,边界点到集合距离及有向距离集合,DOI:10.1186/s12880-015-0068-x,Taha and Hanbury boundary metric definitions,eq:foundations-seg-directed-distance,drafted,边界距离在物理坐标中计算
+E2-018,2,2.1.1,标准豪斯多夫距离,DOI:10.1186/s12880-015-0068-x,Taha and Hanbury boundary metric definitions,eq:foundations-seg-hd,drafted,取双向边界距离的最大值；与HD95不同
+E2-019,2,2.1.1,95%豪斯多夫距离,DOI:10.1186/s12880-015-0068-x,Taha and Hanbury boundary metric definitions,eq:foundations-seg-hd95,drafted,取双向距离集合95%分位数的最大值；与HD不同
+E2-020,2,2.1.1,平均对称表面距离,DOI:10.1186/s12880-015-0068-x,Taha and Hanbury boundary metric definitions,eq:foundations-seg-assd,drafted,对双向最近边界距离取平均
+E2-021,2,2.1.3,单个分类任务的样本级总体准确率,author mathematical definition,Sample-level accuracy definition,eq:foundations-cls-accuracy,drafted,Acc不等同于第四章阶段--任务性能矩阵定义的最终平均准确率ACC
 E4-001,4,4,local dataset,sources/fedsubmerge/ Subspace Merging for Replay-Free Federated Continual Medical Image Classification 720/FedSubMerge_final.tex,Approved Chapter 4 / final manuscript and appendix,eq:fedsubmerge-local-dataset,drafted_pending_review,"Direct source formula, equivalent notation, or thesis-level grouping; not an ACC/BWT theorem"
 E4-002,4,4,fedavg,sources/fedsubmerge/ Subspace Merging for Replay-Free Federated Continual Medical Image Classification 720/FedSubMerge_final.tex,Approved Chapter 4 / final manuscript and appendix,eq:fedsubmerge-fedavg,drafted_pending_review,"Direct source formula, equivalent notation, or thesis-level grouping; not an ACC/BWT theorem"
 E4-003,4,4,objective,sources/fedsubmerge/ Subspace Merging for Replay-Free Federated Continual Medical Image Classification 720/FedSubMerge_final.tex,Approved Chapter 4 / final manuscript and appendix,eq:fedsubmerge-objective,drafted_pending_review,"Direct source formula, equivalent notation, or thesis-level grouping; not an ACC/BWT theorem"

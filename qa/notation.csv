@@ -18,7 +18,12 @@ Y_hat,预测标签图,第二至四章,2.1.1,author_definition,defined,由逐位�
 L_CE,交叉熵损失,第二至六章,2.1.1,author_definition,defined,按任务可采用多类或二元形式
 P_k,类别k的预测区域,第二至四章,2.1.1,author_definition,defined,由预测标签图定义
 G_k,类别k的参考区域,第二至四章,2.1.1,author_definition,defined,由参考标签图定义
+d,图像空间维度,第二章,2.1.1,author_definition,defined,仅取2或3，分别表示二维图像或三维体数据
 d_a_B,点a到集合B的最近欧氏距离,第二至五章,2.1.1,author_definition,defined,边界评价时应使用物理坐标
+"Delta(A,B)",有向点到集合距离集合,第二章,2.1.1,author_definition,defined,由A中点到集合B的最近距离构成
+HD_k,标准豪斯多夫距离,第二章,2.1.1,taha2015metrics,defined,双向边界距离最大值
+HD95_k,95%豪斯多夫距离,第二章,2.1.1,taha2015metrics,defined,双向边界距离95%分位数最大值
+ASSD_k,平均对称表面距离,第二章,2.1.1,taha2015metrics,defined,双向最近边界距离平均值
 Q_q,q分位数算子,第二至五章,2.1.1,author_definition,defined,HD95中q取0.95
 I_F,固定图像,第二章,2.1.2,author_definition,defined,配准图像对中的固定图像
 I_M,移动图像,第二章,2.1.2,author_definition,defined,配准图像对中的移动图像
@@ -56,6 +61,9 @@ h_theta,分类模型,第二章,2.1.3,author_definition,defined,输出分类得�
 z_theta,分类模型输出的得分向量,第二章,2.1.3,Goodfellow2016,defined,logits
 q_theta_c,样本属于类别c的分类概率,第二章,2.1.3,Goodfellow2016,defined,多分类或多标签须以正文上标区分
 hat_y,分类预测标签,第二章,2.1.3,author_definition,defined,互斥多分类取最大概率类别
+Acc,单个分类任务的样本级总体准确率,第二章,2.1.3,author_definition,defined,不等同于第四章持续学习聚合指标ACC
+ACC,最终平均准确率,第四章,4.6,FedSubMerge,defined,由阶段--任务性能矩阵计算；详细定义见第四章
+mathbb_I,示性函数,第二章,2.1.3,author_definition,defined,正文写作mathbb I(·)
 TP,真阳性数,第二章,2.1.3,metric_definition,defined,指定阳性类别和阈值
 TN,真阴性数,第二章,2.1.3,metric_definition,defined,指定阳性类别和阈值
 FP,假阳性数,第二章,2.1.3,metric_definition,defined,指定阳性类别和阈值
@@ -76,7 +84,8 @@ g_new,当前任务损失梯度,第二章,2.3.2,author_definition,defined,在thet
 F_i,第i个参数的重要性近似,第二章,2.3.3,EWC,defined,Fisher信息对角近似
 theta_star,先前阶段参数,第二章,2.3.3,EWC,defined,正文写作theta_{t-1}^*
 g_m,第m个历史任务梯度估计,第二章,2.3.3,GEM,defined,来自历史记忆
-I_d,d维单位矩阵,第二章,2.3.3,author_definition,defined,不与医学图像I混淆
+p,参数梯度向量维度,第二章,2.3.3,author_definition,defined,p=dim(g)，与图像空间维度d不同
+I_p,p维单位矩阵,第二章,2.3.3,author_definition,defined,与当前参数梯度维度一致
 epsilon,参数扰动,第二章,2.3.3,SAM,defined,二范数受rho约束
 C_t,第t个任务参与客户端集合,第四章,4.3,FedSubMerge,defined,Chapter 4
 D_c^(t),客户端c在任务t的本地数据集,第四章,4.3,FedSubMerge,defined,Chapter 4

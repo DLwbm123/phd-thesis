@@ -1,30 +1,32 @@
-# GPT Pro 复审上下文包：第五章优先（2026-08-05）
+# GPT Pro 复审上下文包：第一、二章对齐后（2026-08-08）
 
-> 第五章完整边界与可用事实见 `handoff/CH05_AVAILABLE_CONTENT_CONTEXT_FOR_GPT.md`。第五章已集成且待作者/GPT Pro 复审；静态 ZScribbleSeg 与 SAMCL 的来源内容可审，ScribbleCL 仍无可核验实验结果，必须保持 `TODO-EXPERIMENT` / `blocked_by_experiments`。MuPDF 已逐页确认中文正常显示，Fandol 字体嵌入；不得因 Poppler 的 CJK 渲染限制改用 macOS 专用字体。第四章完整复审信息仍见 `handoff/CH04_FEDSUBMERGE_CONTEXT_FOR_GPT.md`。
+## 当前审阅范围
 
-# GPT Pro 复审上下文包：第二章整章（2026-08-01）
+- 本包对应 Mode B 里程碑：第一章与第二章已按批准稿完成结构、概念图、公式、术语和账本对齐；完整审查见 `handoff/MODE_B_CH01_CH02_ALIGNMENT_AUDIT.md`。
+- 全文保持连续六章。第一章为 `drafted_and_verified`；第二章为 `drafted_pending_review`；第三、四章为 `drafted_pending_review`，本轮未改其正文。
 
-## 当前任务与批准边界
+## 第一章的固定主线
 
-- 第二章已完整集成，整体状态为 `drafted_pending_review`；本包只支持作者/GPT Pro 整章复审，不生成新正文。
-- 2.1.1“医学图像分割”和 2.1.2“医学图像配准”均为 `drafted_and_verified`，本轮未修改；2.1.3 至 2.4 是本轮新增且待复审的正文。
-- 第二章结构为：2.1 三类医学图像任务；2.2 训练信息受限条件；2.3 持续学习定义、遗忘与方法路线；2.4 总结。2.2 首段已明确“数据不全”只是训练信息受限的概括。
+- 1.3 顺序必须保持：Benchmark（场景与评价）→ FedSubMerge（分布式无回放）→ ScribbleCL（部分监督持续分割）→ SAMCL（知识保持与跨任务泛化）。
+- 图 1-1 分别说明任务组织、时间与历史访问、数据位置与协同优化，强调三者可组合；图 1-2 只表示论文组织关系，不表示算法链。
+- Chapter 3 提供场景与评价基础；Chapter 4 研究无回放联邦持续分类；Chapter 5 的分割线为 ZScribbleSeg（静态弱监督基础）→ ScribbleCL（持续扩展），配准线为有限回放 SAMCL。
 
-## 新增且应复核的内容
+## 第二章的固定边界
 
-- 12 个公式标签：`eq:foundations-cls-probability`、`eq:foundations-cls-loss`、`eq:foundations-cls-metrics`、`eq:foundations-replay-objective`、`eq:foundations-fed-learning`、`eq:foundations-partial-ce`、`eq:foundations-cl-update`、`eq:foundations-gradient-interference`、`eq:foundations-ewc`、`eq:foundations-gradient-projection`、`eq:foundations-maml`、`eq:foundations-sam`。
-- 两张表：`tab:foundations-information-access` 与 `tab:foundations-cl-method-families`。
-- 复用既有引用，并新增 Goodfellow、Fawcett、Brodersen、Geiping、Bonawitz、Abadi、Finn、Foret 八项文献。
+- “训练信息受限”是严格术语；“数据不全”仅是第一章背景的直观概括，不指随机缺失值或物理删除。
+- HD、HD95、ASSD 是不同的物理坐标边界指标；不得在第五章或其他结果中替换已有的 HD 名称。
+- `Acc` 是单个分类任务的样本级总体准确率；`ACC` 是第四章阶段--任务性能矩阵计算的最终平均准确率。
+- 图像空间维度为 $d\in\{2,3\}$；梯度维度为 $p=\dim(\mathbf{g})$，投影矩阵为 $\mathbf{I}_p$。
+- 完整联合训练表示完整历史访问，可采用集中式或分布式组织，不等于跨机构集中原始数据。
 
-## 复审重点
+## 不可越过的保护边界
 
-- 分类中多分类/多标签的概率、损失、阈值、指标汇总与患者级划分边界。
-- 无回放、有限回放、原始数据不可集中和部分监督不可混写；未标注位置不等于背景；普通 FedAvg 不等于形式化隐私保证。
-- MAML、SAM 与梯度子空间只作为通用基础，不泄露第四、第五章方法或性能；MAML/SAM 不自动保证抗遗忘。
-- 不得重复第三章的场景细则、A-Dice、BWTR、RMA、E-FWT 或实验数字。
+- 不得修改 Chapter 5、`evidence/experiments.csv` 或任何 ScribbleCL 的任务协议、方法地位、基线、实验状态、数字、TODO 或结论。
+- Chapter 1 的 Scribble 挑战子节、RQ3、创新点（3）和其 `TODO-EXPERIMENT` 经 SHA-256 与基线逐字一致。
+- 继续区分静态 ZScribbleSeg、论文级 ScribbleCL 持续扩展与有限回放 SAMCL；不得将静态结果外推为 ScribbleCL 结果。
 
-## 全文状态
+## 待作者/GPT Pro 复审
 
-- 第三章继续 `drafted_pending_review`，本轮未复审或修改；不得开始第四章。
-- ScribbleCL 继续 `TODO-EXPERIMENT` / `blocked_by_experiments`。
-- `TODO-EVIDENCE-REG-001/002`（TRE 与非正 Jacobian 统计）保持开放，未写入本轮正文。
+- 第一章：检查 1.1.4 与 1.2.1 的压缩是否保持“动机/文献缺口”角色，且不与第二章机制定义重复。
+- 第二章：检查边界指标、Acc/ACC、训练信息访问条件和 $d/p$ 区分是否满足答辩时的严格表述。
+- ScribbleCL 保持 `TODO-EXPERIMENT` / `blocked_by_experiments`；只有在协议、日志、性能矩阵、表格和证据账本齐备后才可补写任何实验结论。
