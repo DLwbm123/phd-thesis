@@ -43,7 +43,26 @@ trap cleanup EXIT
 GIT_TERMINAL_PROMPT=0 GCM_INTERACTIVE=never \
   git clone --branch "$overleaf_branch" --single-branch "$overleaf_url" "$deploy_repo"
 
-git -C "$deploy_repo" rm -rq -- .
+# Replace only the paths owned by the Overleaf deployment.  The Overleaf
+# repository also retains project-management material that is intentionally
+# GitHub-only/local-only; deleting the whole clone would turn that material
+# into an accidental deployment change.
+git -C "$deploy_repo" rm -rq --ignore-unmatch -- \
+  .gitignore \
+  main.tex \
+  latexmkrc \
+  fduthesis.cls \
+  fduthesis-en.cls \
+  fduthesis.def \
+  fudan-emblem.pdf \
+  fudan-emblem-new.pdf \
+  fudan-name.pdf \
+  chapters \
+  config \
+  bibliography \
+  figures \
+  tables \
+  scripts
 install -d \
   "$deploy_repo/chapters" \
   "$deploy_repo/config" \
