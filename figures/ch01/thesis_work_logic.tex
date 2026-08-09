@@ -1,3 +1,5 @@
+\begingroup
+\centering
 \begin{tikzpicture}[
   font=\small,
   box/.style={
@@ -34,17 +36,16 @@
   持续医学图像分割的场景定义、实验协议与综合评价
 };
 
-\node[methodbox, below left=9mm and 0mm of benchmark.south] (fed) {
+% 以第 5 章节点为中轴放置三个方法框，使整行严格居中。
+\node[methodbox, below=9mm of benchmark] (scribble) {
+  \textbf{第 5 章：分割}\\[4pt]
+  \footnotesize ScribbleCL
+};
+
+\node[methodbox, left=of scribble] (fed) {
   \textbf{第 4 章}\\[2pt]
   无回放联邦持续分类\\[2pt]
   \footnotesize FedSubMerge
-};
-
-\node[methodbox, right=of fed] (scribble) {
-  \textbf{第 5 章：分割}\\[2pt]
-  ZScribbleSeg（静态弱监督基础）\\[-1pt]
-  $\downarrow$\\[-1pt]
-  ScribbleCL（持续扩展）
 };
 
 \node[methodbox, right=of scribble] (samcl) {
@@ -57,14 +58,18 @@
 \draw[arrow] (constraints) -- (question);
 \draw[arrow] (question) -- (benchmark);
 \draw[relation] (benchmark.south) -- (branch);
-\draw[arrow] (branch) -| (fed.north);
-\draw[arrow] (branch) -- (scribble.north);
-\draw[arrow] (branch) -| (samcl.north);
+% 对称的分支横线与三条竖直箭头，避免原布局整体向右偏移。
+\draw[relation] (fed.north |- branch) -- (samcl.north |- branch);
+\draw[arrow] (fed.north |- branch) -- (fed.north);
+\draw[arrow] (scribble.north |- branch) -- (scribble.north);
+\draw[arrow] (samcl.north |- branch) -- (samcl.north);
 
 \coordinate (merge) at ($(scribble.south)+(0,-7mm)$);
-\draw[relation] (fed.south) |- (merge);
-\draw[relation] (scribble.south) -- (merge);
-\draw[relation] (samcl.south) |- (merge);
+% 对称汇合，保证下方“共同分析主线”位于整图中轴。
+\draw[relation] (fed.south) -- (fed.south |- merge);
+\draw[relation] (scribble.south) -- (scribble.south |- merge);
+\draw[relation] (samcl.south) -- (samcl.south |- merge);
+\draw[relation] (fed.south |- merge) -- (samcl.south |- merge);
 
 \node[band, below=12mm of merge] (goal) {
   \textbf{共同分析主线}\\[2pt]
@@ -76,3 +81,5 @@
   {箭头表示论文组织和问题承接关系，不表示各章方法构成同一算法链。};
 
 \end{tikzpicture}
+\par
+\endgroup
