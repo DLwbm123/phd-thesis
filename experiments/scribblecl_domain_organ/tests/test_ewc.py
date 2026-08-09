@@ -59,3 +59,10 @@ def test_old_organ_heads_not_penalized():
 def test_online_consolidation_matches_benchmark():
     model=DomainSegmenter(ResUNet32Backbone()); ewc=OnlineEWC(gamma=.1); one=_ones(model); ewc.consolidate(model,one); two={n:2*x for n,x in one.items()}; ewc.consolidate(model,two)
     assert all(torch.allclose(v,torch.full_like(v,2.1)) for v in ewc.fisher.values())
+
+
+def test_ewc_state_contains_fisher_and_theta_star():
+    model=DomainSegmenter(ResUNet32Backbone()); ewc=OnlineEWC(); ewc.consolidate(model,_ones(model))
+    state=ewc.state_dict()
+    assert set(state) == {"lambda", "gamma", "fisher", "theta_star"}
+    assert set(state["fisher"]) == set(state["theta_star"])

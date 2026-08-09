@@ -11,11 +11,14 @@ ZS_ORIGINAL_ROOT=/root/ZScribble/ZScribbleSeg_MSCMR \
 PYTHONPATH=. /root/anaconda3/bin/python -m pytest -q tests
 ```
 
-Result: `33 passed in 37.12s`.
+Result after adding the persisted-regularizer-state contract:
+`34 passed in 41.51s`.
 
 This includes parity against the executable Benchmark ResUNet32 feature path,
 212x212 four-channel parity against the original ZS U-Net, the 256x256 output
 contract, shared/task-specific head behavior, weak-loader access boundaries,
 sparse-only Fisher, online consolidation, SI/EWC parameter scope, and the
 Domain/Organ metric definitions. The canonical three-pixel v2 artifact is also
-checked to carry the registered S2 strategy name.
+checked to carry the registered S2 strategy name. EWC state is checked to
+contain both the Fisher diagonal and `theta_star`; the pilot persists that state
+after every stage without placing it under Git.

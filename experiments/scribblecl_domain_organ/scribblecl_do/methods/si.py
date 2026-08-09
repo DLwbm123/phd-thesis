@@ -47,3 +47,12 @@ class SynapticIntelligence:
     def state_nbytes(self) -> int:
         values = [*self.checkpoint.values(), *self.big_omega.values(), *self.small_omega.values()]
         return sum(v.numel() * v.element_size() for v in values)
+
+    def state_dict(self) -> dict:
+        return {
+            "c": self.c,
+            "xi": self.xi,
+            "checkpoint": self.checkpoint,
+            "big_omega": self.big_omega,
+            "small_omega": self.small_omega,
+        }

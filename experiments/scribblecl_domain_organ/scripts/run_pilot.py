@@ -89,8 +89,10 @@ def main() -> None:
         if ewc is not None:
             fisher_loader=DataLoader(weak,batch_size=cfg["batch_size"],shuffle=False,num_workers=0)
             fisher,summary=estimate_sparse_fisher(model,fisher_loader,a.device,None if scenario=="domain" else stage,cfg["ewc"].get("fisher_max_batches")); ewc.consolidate(model,fisher); fisher_records.append({"stage":stage+1,**summary.__dict__})
+            ewc_path=run/f"checkpoints/ewc_state_stage_{stage+1}.pt"; torch.save(ewc.state_dict(),ewc_path); resource["ewc_state_sha256"]=file_sha256(ewc_path)
         if si is not None:
             si.consolidate(model)
+            si_path=run/f"checkpoints/si_state_stage_{stage+1}.pt"; torch.save(si.state_dict(),si_path); resource["si_state_sha256"]=file_sha256(si_path)
         checkpoint=run/f"checkpoints/stage_{stage+1}.pt"; torch.save(model.state_dict(),checkpoint)
         resource.update({"stage":stage+1,"task":task.code,"checkpoint_sha256":file_sha256(checkpoint),"ewc_state_bytes":ewc.state_nbytes() if ewc else 0,"si_state_bytes":si.state_nbytes() if si else 0,"model_parameters":sum(p.numel() for p in model.parameters())}); stage_records.append(resource)
         if scenario=="organ": model.freeze_completed_head(stage)
