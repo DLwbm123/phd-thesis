@@ -83,6 +83,7 @@ def main() -> None:
                 if a.paired_ft_run:
                     paired=json.loads((Path(a.paired_ft_run)/"stage_rows.json").read_text())["rows"][stage][stage]
                     gate["current_vs_ft_ratio"]=row[stage]/paired; gate["current_at_least_50pct_ft"]=gate["current_vs_ft_ratio"]>=.5
+            jdump(run/"STAGE2_GATE.json",gate)
             if not all(v for k,v in gate.items() if isinstance(v,bool)):
                 jdump(run/"STAGE2_BLOCKER.json",gate); raise RuntimeError(f"stage-2 engineering gate failed: {gate}")
         # Fisher is always current-task sparse PCE, including for a shared parent.
