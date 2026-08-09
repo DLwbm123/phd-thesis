@@ -1,0 +1,14 @@
+scenario: domain
+method: dense_ewc
+supervision: dense
+backbone: resunet32
+seed: 42
+epochs: 150
+batch_size: 8
+learning_rate: 0.008
+lr_decay_epoch: 80
+lr_decay_rate: 0.5
+checkpoint_selection: fixed_last_epoch
+test_for_selection: false
+validity: dense_access_reference_only
+ewc: {mode: online, lambda: 1.0, gamma: 0.1, fisher_max_batches: null, fisher_supervision: sparse_pce_only}

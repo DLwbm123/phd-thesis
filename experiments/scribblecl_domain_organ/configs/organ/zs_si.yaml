@@ -1,0 +1,8 @@
+scenario: organ
+method: zs_si
+supervision: zs
+backbone: resunet32
+seed: 42
+status: blocked_by_static_gate
+required_gates: [DENSE_SANITY_GATE, ZS_STATIC_TASK1_GATE]
+si: {c: 5.0, xi: 1.0}

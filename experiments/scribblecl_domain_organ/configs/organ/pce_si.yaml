@@ -1,0 +1,13 @@
+scenario: organ
+method: pce_si
+supervision: pce
+backbone: resunet32
+seed: 42
+epochs: 150
+batch_size: 8
+learning_rate: 0.008
+lr_decay_epoch: 80
+lr_decay_rate: 0.5
+checkpoint_selection: fixed_last_epoch
+test_for_selection: false
+si: {c: 5.0, xi: 1.0}
