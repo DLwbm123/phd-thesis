@@ -574,7 +574,7 @@ ACC 越高表示最终模型在全部已见任务上的平均分类能力越好�
 \subsection{总体性能}
 \label{subsec:fedsubmerge-main-results}
 
-表\ref{tab:fedsubmerge-main-distribution}和表\ref{tab:fedsubmerge-main-other}给出七个设置的最终 ACC 与 BWT。星号表示使用存储或生成历史样本的回放方法。为保持可读性，原始主表按分布偏斜和数量/特征偏斜拆分，但数值与排序规则保持一致。
+表\ref{tab:fedsubmerge-main-distribution}和表\ref{tab:fedsubmerge-main-other}给出七个设置的最终 ACC 与 BWT。星号表示使用存储或生成历史样本的回放方法。为保持可读性，主表按分布偏斜和数量/特征偏斜拆分，数值与排序规则保持一致。
 
 \begin{table}[htbp]
 \centering
@@ -646,7 +646,7 @@ FedSubMerge-AD 在七个设置中的五个取得高于 FedSubMerge 的 ACC。Pat
 
 BWT 呈现不同趋势。FedSubMerge 在全部七个设置中的 BWT 均高于 FedSubMerge-AD，并在其中五个取得全部方法中的最高 BWT。例如，Hyper-Kvasir 分布偏斜 $\alpha=0.3$ 上，统一融合的 BWT 为 $-6.55\%$，自适应融合为 $-10.95\%$。统一融合覆盖更广的跨客户端历史方向，因而在多数设置中表现出更强的旧任务保持；自适应方法则以部分稳定性换取更高可塑性。该排序是实验中的总体观察，不是理论要求。
 
-不同模态上的结果还表明，本章方法的优势不依赖于单一图像类型。病理图像、腹部 CT、消化道内镜和多中心皮肤镜分别对应不同类别数、任务长度和异质性来源。所提方法在这些条件下均保持较高 ACC，说明跨客户端 PGS 融合能够用于多种医学图像分类任务；当前证据仍限于表\ref{tab:fedsubmerge-setup}中的任务增量协议和数据设置。
+不同模态上的结果还表明，本章方法的优势不依赖于单一图像类型。病理图像、腹部 CT、消化道内镜和多中心皮肤镜分别对应不同类别数、任务长度和异质性来源。所提方法在这些条件下均保持较高 ACC，说明跨客户端 PGS 融合能够用于多种医学图像分类任务；这一结论限于表\ref{tab:fedsubmerge-setup}所列任务增量协议和数据设置。
 
 \subsection{异质性、客户端规模与参与率}
 \label{subsec:fedsubmerge-robustness}

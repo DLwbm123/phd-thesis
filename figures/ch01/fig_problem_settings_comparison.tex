@@ -17,7 +17,6 @@
 \resizebox{\textwidth}{!}{%
 \begin{tikzpicture}[x=1cm,y=1cm]
 
-% Panel 1: conventional offline supervised learning
 \begin{scope}[shift={(0,5.45)}]
   \draw[frame] (0,0) rectangle (8.35,4.75);
   \node[header, minimum width=7.75cm] at (4.175,4.28)
@@ -40,7 +39,6 @@
     {测试数据不参与训练；模型通常在训练完成后保持不变。};
 \end{scope}
 
-% Panel 2: meta-learning
 \begin{scope}[shift={(9.05,5.45)}]
   \draw[frame] (0,0) rectangle (8.35,4.75);
   \node[header, minimum width=7.75cm] at (4.175,4.28)
@@ -66,7 +64,6 @@
     {主要改变任务采样和适应方式，不自动规定任务是否按时间持续到达。};
 \end{scope}
 
-% Panel 3: continual learning
 \begin{scope}[shift={(0,0)}]
   \draw[frame] (0,0) rectangle (8.35,4.75);
   \node[header, minimum width=7.75cm] at (4.175,4.28)
@@ -92,7 +89,6 @@
     {核心是顺序更新与能力累积；历史访问条件必须单独说明。};
 \end{scope}
 
-% Panel 4: federated learning
 \begin{scope}[shift={(9.05,0)}]
   \draw[frame] (0,0) rectangle (8.35,4.75);
   \node[header, minimum width=7.75cm] at (4.175,4.28)
