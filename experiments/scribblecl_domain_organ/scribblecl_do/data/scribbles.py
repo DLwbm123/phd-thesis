@@ -4,12 +4,27 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass
 from hashlib import sha256
 import json
+from pathlib import Path
 
 import numpy as np
 from scipy import ndimage as ndi
 from skimage.morphology import skeletonize
 
 from .protocols import IGNORE_INDEX
+
+
+LEVEL_BY_WIDTH = {1: "s1", 3: "s2", 5: "s3"}
+
+
+def scribble_filename(task_code: str, seed: int, width: int = 3) -> str:
+    """Return a strategy-level name; Benchmark v2 S2 is the 3 px rule."""
+    if width not in LEVEL_BY_WIDTH:
+        raise ValueError("bounded S1/S2/S3 widths are 1, 3 or 5")
+    return f"{task_code}_v2_{LEVEL_BY_WIDTH[width]}_seed{int(seed)}.npz"
+
+
+def scribble_path(root: str | Path, scenario: str, task_code: str, seed: int, width: int = 3) -> Path:
+    return Path(root) / scenario / scribble_filename(task_code, seed, width)
 
 
 @dataclass(frozen=True)
@@ -65,7 +80,7 @@ def _background_strokes(mask: np.ndarray, seed: int, slice_index: int) -> np.nda
 
 def generate_binary_scribble(mask: np.ndarray, width: int = 3, seed: int = 42, slice_index: int = 0) -> np.ndarray:
     """Return -100 unknown, 0 explicit BG and 1 explicit FG."""
-    if width not in {1, 3, 5}:
+    if width not in LEVEL_BY_WIDTH:
         raise ValueError("bounded S1/S2/S3 widths are 1, 3 or 5")
     dense = np.asarray(mask, dtype=np.int64) == 1
     out = np.full(dense.shape, IGNORE_INDEX, dtype=np.int16)

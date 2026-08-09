@@ -5,7 +5,7 @@ import numpy as np
 
 from scribblecl_do.data.h5_dataset import DenseH5Dataset, WeakH5Dataset, patient_ranges
 from scribblecl_do.data.protocols import DOMAIN_TASKS, ORGAN_TASKS
-from scribblecl_do.data.scribbles import generate_binary_scribble
+from scribblecl_do.data.scribbles import generate_binary_scribble, scribble_filename
 
 
 def test_domain_order_matches_benchmark():
@@ -48,6 +48,10 @@ def test_scribble_bg_fg_unknown_partition():
     assert set(np.unique(scribble)) == {-100, 0, 1}
     assert np.all(scribble[scribble == 1] == mask[scribble == 1])
     assert not np.any((scribble == 0) & (mask == 1))
+
+
+def test_v2_s2_name_means_three_pixel_rule():
+    assert scribble_filename("A", 42, width=3) == "A_v2_s2_seed42.npz"
 
 
 def test_no_future_data_access():

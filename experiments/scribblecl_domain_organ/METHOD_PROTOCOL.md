@@ -7,6 +7,10 @@ generation, evaluation and sanity references. PCE is sparse CE on values 0/1;
 v2 S2 generation uses a 3px foreground skeleton clipped to the current binary
 foreground plus deterministic sparse BG strokes at least 5px away. Generation
 receives only one current-task binary mask and cannot encode future identities.
+The canonical artifact name is `*_v2_s2_seed42.npz`; `s2` denotes the
+registered strategy level, not the pixel width. The initial pilot launcher used
+an `*_v2_s3_seed42.npz` width-coded alias for the same inode/content. That alias
+is retained only so the already-running FT processes can finish reproducibly.
 S1/S3 are permitted only as a bounded diagnosis after a task-specific PCE
 failure.
 

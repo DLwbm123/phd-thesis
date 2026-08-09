@@ -11,6 +11,7 @@ from torch.utils.data import DataLoader, Subset
 
 from scribblecl_do.data import domain_prostate, organ_tasks
 from scribblecl_do.data.protocols import DOMAIN_TASKS, ORGAN_TASKS
+from scribblecl_do.data.scribbles import scribble_path
 from scribblecl_do.methods.ft import sparse_pce
 from scribblecl_do.metrics.segmentation import binary_patient_dice
 from scribblecl_do.models import DomainSegmenter, OrganSegmenter, build_backbone
@@ -42,7 +43,7 @@ def main() -> None:
     dense_batches=list(DataLoader(Subset(dense,positives),batch_size=len(positives),shuffle=False))
     if a.supervision=="dense": train_batches=dense_batches
     else:
-        npz=Path(a.scribble_root)/a.scenario/f"{task.code}_v2_s3_seed{a.seed}.npz"; weak=factory.weak_dataset(a.data_root,task,npz); train_batches=list(DataLoader(Subset(weak,positives[:8]),batch_size=4,shuffle=False))
+        npz=scribble_path(a.scribble_root,a.scenario,task.code,a.seed); weak=factory.weak_dataset(a.data_root,task,npz); train_batches=list(DataLoader(Subset(weak,positives[:8]),batch_size=4,shuffle=False))
     model=(DomainSegmenter(build_backbone(a.backbone)) if a.scenario=="domain" else OrganSegmenter(build_backbone(a.backbone))).to(a.device); task_id=None if a.scenario=="domain" else task.index
     if task_id is not None: model.activate_head(task_id)
     optimizer=torch.optim.Adam(model.parameters(),lr=a.lr); log=[]

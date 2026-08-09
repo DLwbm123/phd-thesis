@@ -9,7 +9,7 @@ import h5py
 import numpy as np
 
 from scribblecl_do.data.protocols import DOMAIN_TASKS, ORGAN_TASKS
-from scribblecl_do.data.scribbles import generate_volume_scribbles, scribble_hash
+from scribblecl_do.data.scribbles import generate_volume_scribbles, scribble_filename, scribble_hash
 
 
 def main() -> None:
@@ -33,7 +33,7 @@ def main() -> None:
         scribbles, stats = generate_volume_scribbles(masks, args.width, args.seed)
         metadata = {"scenario": args.scenario, "task": task.code, "width": args.width, "seed": args.seed}
         digest = scribble_hash(scribbles, metadata)
-        npz_path = out_root / f"{task.code}_v2_s{args.width}_seed{args.seed}.npz"
+        npz_path = out_root / scribble_filename(task.code, args.seed, args.width)
         np.savez_compressed(npz_path, scribbles=scribbles)
         record = {**metadata, **stats.__dict__, "fg_coverage": stats.fg_coverage, "bg_annotation_ratio": stats.bg_annotation_ratio, "total_annotation_ratio": stats.total_annotation_ratio, "scribble_sha256": digest, "npz": str(npz_path)}
         (out_root / f"{task.code}_manifest.json").write_text(json.dumps(record, indent=2, sort_keys=True) + "\n")

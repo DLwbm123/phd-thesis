@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+from hashlib import sha256
 import json
 import os
 from pathlib import Path
@@ -17,7 +18,8 @@ from torch.utils.data import DataLoader
 import yaml
 
 from scribblecl_do.data import domain_prostate, organ_tasks
-from scribblecl_do.data.protocols import DOMAIN_TASKS, ORGAN_TASKS, order_checksum
+from scribblecl_do.data.protocols import DOMAIN_TASKS, ORGAN_TASKS, EXPECTED_H5_SHA256, order_checksum
+from scribblecl_do.data.scribbles import scribble_path
 from scribblecl_do.methods.ewc import OnlineEWC, estimate_sparse_fisher
 from scribblecl_do.methods.si import SynapticIntelligence
 from scribblecl_do.metrics.matrix import matrix_summary
@@ -34,6 +36,11 @@ def jsonable_row(row):
     return [None if not np.isfinite(x) else float(x) for x in row]
 
 
+def mapping_sha256(value: dict) -> str:
+    payload=json.dumps(value,sort_keys=True,separators=(",",":")).encode()
+    return sha256(payload).hexdigest()
+
+
 def main() -> None:
     p=argparse.ArgumentParser(); p.add_argument("--config",required=True); p.add_argument("--data-root",required=True); p.add_argument("--scribble-root",required=True); p.add_argument("--runs-root",required=True); p.add_argument("--device",default="cuda:0"); p.add_argument("--shared-stage1-from"); p.add_argument("--paired-ft-run"); p.add_argument("--independent-scores"); a=p.parse_args()
     cfg=yaml.safe_load(Path(a.config).read_text()); scenario=cfg["scenario"]; method=cfg["method"]; seed=int(cfg["seed"])
@@ -42,7 +49,11 @@ def main() -> None:
     run_id=f"{scenario}_{method}_seed{seed}_{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')}"; run=Path(a.runs_root)/scenario/run_id; run.mkdir(parents=True,exist_ok=False); (run/"checkpoints").mkdir()
     shutil.copyfile(a.config,run/"config_resolved.yaml")
     source_root=Path(__file__).resolve().parents[1]
-    manifest={"run_id":run_id,"scenario":scenario,"method":method,"seed":seed,"status":"running","backbone":cfg["backbone"],"head":"shared_binary" if scenario=="domain" else "task_specific_binary","order_sha256":order_checksum(tasks),"source_tree_sha256":tree_sha256(source_root/"scribblecl_do"),"history_images":False,"replay":False,"zs_gate":"blocked_by_static_gate"}
+    prefix="Domain_Prostate" if scenario=="domain" else "Task_incre"
+    h5_hashes={task.code:EXPECTED_H5_SHA256[f"{prefix}/{task.h5_name}"] for task in tasks}
+    scribble_paths={task.code:scribble_path(a.scribble_root,scenario,task.code,seed) for task in tasks}
+    scribble_hashes={code:file_sha256(path) for code,path in scribble_paths.items()}
+    manifest={"run_id":run_id,"scenario":scenario,"method":method,"seed":seed,"status":"running","backbone":cfg["backbone"],"head":"shared_binary" if scenario=="domain" else "task_specific_binary","order_sha256":order_checksum(tasks),"split_h5_sha256":h5_hashes,"split_checksum_sha256":mapping_sha256(h5_hashes),"scribble_sha256":scribble_hashes,"scribble_protocol":"v2_S2_width3","checkpoint_selection":cfg["checkpoint_selection"],"test_for_selection":bool(cfg["test_for_selection"]),"source_tree_sha256":tree_sha256(source_root/"scribblecl_do"),"history_images":False,"replay":False,"zs_gate":"blocked_by_static_gate"}
     jdump(run/"run_manifest.json",manifest); (run/"environment.txt").write_text(f"python={sys.version}\nplatform={platform.platform()}\ntorch={torch.__version__}\ncuda={torch.version.cuda}\ndevice={a.device}\n")
     for name in ("train.jsonl","validation.jsonl","stdout.log","stderr.log"): (run/name).touch()
     model=(DomainSegmenter(build_backbone(cfg["backbone"])) if scenario=="domain" else OrganSegmenter(build_backbone(cfg["backbone"]))).to(a.device)
@@ -56,7 +67,7 @@ def main() -> None:
     for stage,task in enumerate(tasks):
         if scenario=="organ":
             model.activate_head(stage)
-        npz=Path(a.scribble_root)/scenario/f"{task.code}_v2_s3_seed{seed}.npz"
+        npz=scribble_paths[task.code]
         weak=factory.weak_dataset(a.data_root,task,npz); loader=DataLoader(weak,batch_size=cfg["batch_size"],shuffle=True,num_workers=0,generator=torch.Generator().manual_seed(seed+stage))
         skipped=False
         if stage==0 and a.shared_stage1_from:
