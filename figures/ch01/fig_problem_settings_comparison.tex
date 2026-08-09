@@ -72,13 +72,14 @@
   \node[process, minimum width=1.15cm] (c-m1) at (2.45,2.85) {$\theta_1$};
   \node[data, minimum width=1.15cm] (c-t2) at (3.95,2.85) {$\mathcal{T}_2$};
   \node[process, minimum width=1.15cm] (c-m2) at (5.45,2.85) {$\theta_2$};
-  \node[note] at (6.55,2.85) {$\cdots$};
-  \node[process, minimum width=1.15cm] (c-mt) at (7.45,2.85) {$\theta_t$};
-  \draw[flow] (c-t1) -- (c-m1);
-  \draw[flow] (c-m1) -- (c-t2);
-  \draw[flow] (c-t2) -- (c-m2);
-  \draw[flow] (c-m2) -- (6.20,2.85);
-  \draw[flow] (6.90,2.85) -- (c-mt);
+  \node[process, minimum width=1.15cm] (c-mt) at (7.60,2.85) {$\theta_t$};
+  \draw[flow] (c-t1.east) -- (c-m1.west);
+  \draw[flow] (c-m1.east) -- (c-t2.west);
+  \draw[flow] (c-t2.east) -- (c-m2.west);
+  \draw[flow] (c-m2.east) -- (6.20,2.85);
+  \node[note, inner xsep=0pt] at (6.48,2.85) {$\cdots$};
+  % 箭头在省略号之后、theta_t 方框之前结束，避免箭头侵入方框。
+  \draw[flow] (6.72,2.85) -- ([xshift=-0.8mm]c-mt.west);
   \node[data, minimum width=2.55cm] (c-history) at (2.05,1.35)
     {协议允许的历史信息\\完整／有限／无回放};
   \node[process, minimum width=2.55cm] (c-eval) at (6.20,1.35)
@@ -104,18 +105,15 @@
     {服务器\\聚合与下发};
   \node[process, minimum width=1.95cm] (f-global) at (7.10,2.35)
     {共享模型};
-  \draw[exchange] (f-c1.east) -- (f-server.west);
+  % 使用不同的服务器端口，避免三组双向箭头在同一点重叠。
+  \draw[exchange] (f-c1.east) -- ([yshift=3.0mm]f-server.west);
   \draw[exchange] (f-c2.east) -- (f-server.west);
-  \draw[exchange] (f-ck.east) -- (f-server.west);
+  \draw[exchange] (f-ck.east) -- ([yshift=-3.0mm]f-server.west);
   \draw[exchange] (f-server) -- (f-global);
   \node[note, text width=7.3cm] at (4.175,0.23)
     {原始数据不集中；双向模型通信不自动等同形式化隐私。};
 \end{scope}
 
-\node[draw=black, rounded corners=2pt, fill=black!3, line width=0.55pt,
-      align=center, font=\scriptsize, text width=15.6cm, inner ysep=4pt]
-      at (8.70,-0.78)
-      {上述设定描述不同维度，并非互斥类别：元学习可用于持续适应，持续学习也可在联邦环境中实施。};
 
 \end{tikzpicture}%
 }
