@@ -91,14 +91,19 @@ class OnlineEWC:
         self.gamma = float(gamma)
         self.fisher: dict[str, torch.Tensor] = {}
         self.theta_star: dict[str, torch.Tensor] = {}
+        self._names: tuple[str, ...] = ()
+        self._fisher_flat: torch.Tensor | None = None
+        self._theta_flat: torch.Tensor | None = None
 
     def penalty(self, model: nn.Module) -> torch.Tensor:
         params = _selected(model)
         if not self.theta_star:
             anchor = next(iter(params.values()))
             return anchor.sum() * 0.0
-        terms = [self.fisher[n] * (params[n] - self.theta_star[n]).square() for n in self.theta_star]
-        return self.lambda_ * sum(term.sum() for term in terms)
+        if tuple(params) != self._names or self._fisher_flat is None or self._theta_flat is None:
+            self._refresh_flat_cache(params)
+        current = torch.cat([params[name].reshape(-1) for name in self._names])
+        return self.lambda_ * (self._fisher_flat * (current - self._theta_flat).square()).sum()
 
     def consolidate(self, model: nn.Module, current_fisher: dict[str, torch.Tensor]) -> None:
         params = _selected(model)
@@ -109,6 +114,12 @@ class OnlineEWC:
         else:
             self.fisher = {name: value.detach().clone() for name, value in current_fisher.items()}
         self.theta_star = {name: parameter.detach().clone() for name, parameter in params.items()}
+        self._refresh_flat_cache(params)
+
+    def _refresh_flat_cache(self, params: dict[str, nn.Parameter]) -> None:
+        self._names = tuple(params)
+        self._fisher_flat = torch.cat([self.fisher[name].reshape(-1) for name in self._names])
+        self._theta_flat = torch.cat([self.theta_star[name].reshape(-1) for name in self._names])
 
     def state_nbytes(self) -> int:
         return sum(v.numel() * v.element_size() for v in [*self.fisher.values(), *self.theta_star.values()])

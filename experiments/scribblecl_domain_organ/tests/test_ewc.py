@@ -66,3 +66,14 @@ def test_ewc_state_contains_fisher_and_theta_star():
     state=ewc.state_dict()
     assert set(state) == {"lambda", "gamma", "fisher", "theta_star"}
     assert set(state["fisher"]) == set(state["theta_star"])
+
+
+def test_vectorized_ewc_matches_parameterwise_value_and_gradient():
+    model=DomainSegmenter(ResUNet32Backbone()); ewc=OnlineEWC(lambda_=1.7); fisher=_ones(model); ewc.consolidate(model,fisher)
+    next(model.parameters()).data.add_(.25)
+    expected=1.7*sum((fisher[n]*(p-ewc.theta_star[n]).square()).sum() for n,p in model.fisher_named_parameters() if p.requires_grad)
+    actual=ewc.penalty(model)
+    expected_grads=torch.autograd.grad(expected,tuple(model.parameters()),allow_unused=True,retain_graph=True)
+    actual_grads=torch.autograd.grad(actual,tuple(model.parameters()),allow_unused=True)
+    assert torch.allclose(actual,expected)
+    assert all((a is None and b is None) or torch.allclose(a,b) for a,b in zip(actual_grads,expected_grads))
