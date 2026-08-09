@@ -250,7 +250,7 @@ def write_progress(root: Path, states: list[dict]) -> None:
             writer.writerow({key: state.get(key) for key in fields})
 
 
-def one_cycle(root: Path, status_dir: Path, no_launch: bool) -> dict:
+def one_cycle(root: Path, status_dir: Path, no_launch: bool, allow_p3: bool) -> dict:
     processes = process_table()
     jobs = core_jobs()
     states = [job_state(job, root, processes) for job in jobs]
@@ -283,6 +283,11 @@ def one_cycle(root: Path, status_dir: Path, no_launch: bool) -> dict:
                 continue
             if job.priority == "P3" and near_parent_ready:
                 continue
+            # Frozen independent-task currently retains only last.pt.  P3 is
+            # held until its external validation-best checkpoint selector is
+            # available; silently reporting last-epoch references is invalid.
+            if job.priority == "P3" and not allow_p3:
+                continue
             # Existing final FT jobs are protected P0; only a stopped final FT/EWC is P2-resumable.
             resume = state["status"] == "resumable"
             launches.append(start(job, root, idle.pop(0), status_dir, resume))
@@ -291,6 +296,7 @@ def one_cycle(root: Path, status_dir: Path, no_launch: bool) -> dict:
                "training_entry": "python main.py", "launches_this_cycle": launches,
                "jobs": states, "manifest_inventory": manifest_inventory(root, process_table()),
                "near_parent_ready_hold": near_parent_ready,
+               "p3_gate": "open" if allow_p3 else "blocked_validation_best_selector_required",
                "disabled": ["enhanced", "si", "mib", "replay", "history_image_cache"]}
     (status_dir / "core_queue_status.json").write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n")
     write_progress(root, states)
@@ -317,6 +323,7 @@ def main() -> int:
     parser.add_argument("--poll-seconds", type=int, default=45, choices=range(30, 61))
     parser.add_argument("--once", action="store_true")
     parser.add_argument("--no-launch", action="store_true")
+    parser.add_argument("--allow-p3", action="store_true", help="requires a validation-best selector")
     arguments = parser.parse_args()
     root = arguments.runtime_root.resolve()
     if not (root / "main.py").is_file():
@@ -325,7 +332,7 @@ def main() -> int:
     lock = acquire_lock(status_dir / ".core_dispatcher.lock")
     try:
         while True:
-            one_cycle(root, status_dir, arguments.no_launch)
+            one_cycle(root, status_dir, arguments.no_launch, arguments.allow_p3)
             if arguments.once:
                 return 0
             time.sleep(arguments.poll_seconds)
