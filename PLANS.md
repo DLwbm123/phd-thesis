@@ -56,9 +56,9 @@
 
 ## 阶段 F：第五章弱监督分割与配准持续学习
 
-### 5.3 ZScribbleSeg / ScribbleCL
+### 5.3 ScribbleCL
 
-- [ ] 整合原始 ZScribbleSeg 方法与离线实验
+- [x] 将被引用静态弱监督机制与原始实验明确标为技术来源和文献证据
 - [ ] 冻结 Class-CL / Organ-CL 的弱监督协议
 - [ ] 建立 ScribbleCL 代码、日志、划分、种子和证据账本
 - [ ] 完成主结果、标注效率、遗忘、RMA/E-FWT 和消融

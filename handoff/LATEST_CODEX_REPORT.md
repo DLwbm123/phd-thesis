@@ -1,4 +1,15 @@
-# Codex 最新报告：第一、二章 Mode B 对齐修订（2026-08-08）
+# Codex 最新报告：ScribbleCL 作者贡献边界与第一章研究现状修订（2026-08-09）
+
+## 本轮交付
+
+- 本轮作者决定取代此前任何与其冲突的第五章组织要求：论文四项工作固定为 Benchmark、FedSubMerge、ScribbleCL、SAMCL。文献 `zhang2026zscribbleseg` 的正式题名、作者、期刊和 DOI 保留在参考文献库；该文献只作为 ScribbleCL 当前任务弱监督模块的引用基础。
+- 第一章 1.2 删除作者本人参与的 Benchmark、SAMCL 和静态弱监督论文内容，改为外部持续分割与弱监督文献的协议、评价和研究缺口综述。自动检查确认 1.2 不含自有方法名、自引键、章节前向指引或“本文/本论文”自指。
+- 第五章 5.3 现以 ScribbleCL 为唯一分割论文工作：5.3.1 的机制、公式、静态表格和图注均明确标为文献事实，5.3.2 只包含新增持续协议与分析。公开显示名使用 `\mathcal{L}_{\mathrm{WS}}`、`WS-FT`、`ScribbleCL` 和 `PCE/WS`；内部 `ZS` 代码/日志标识仅在 `experiments/scribblecl/PROTOCOL.md` 映射。
+- 静态结果数值未改动，ScribbleCL 继续为 `TODO-EXPERIMENT` / `blocked_by_experiments`，未写入任何新增性能数值、方向性结论或完成性结论。
+- Mode B 构建成功：`bash scripts/build_and_audit.sh` 生成 123 页 `main.pdf`，无 LaTeX error、未定义 citation/reference、重复标签或缺失文件。MuPDF 视觉复核 PDF 页 19、21、23（第一章 1.2），29、31、32（RQ3 与工作逻辑），89、91、93、95、97（5.3）以及 102、103（5.5/5.6），未见裁切、重叠或标签解析问题。
+- `sources/` 排序 SHA-256 清单指纹仍为 `6c5d3c84a5418fffc6f2c3130b0a3939343acc9403b15dd53fe76e18f17ebf8f`，未进入本轮 diff。
+
+# 历史报告：第一、二章 Mode B 对齐修订（2026-08-08）
 
 ## 本轮交付
 

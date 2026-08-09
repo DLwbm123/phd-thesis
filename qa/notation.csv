@@ -1,9 +1,9 @@
 symbol,meaning,scope,first_definition,source,status,notes
-L_pce,部分交叉熵损失,第三章,,ZScribbleSeg,pending,LaTeX 具体形式由正文确定
-L_global,全局一致性损失,第三章,,ZScribbleSeg,pending,
-pi,类别混合比例向量,第三章,,ZScribbleSeg,pending,向量格式需统一
-L_spatial,空间先验损失,第三章,,ZScribbleSeg,pending,
-L_shape,形状正则化损失,第三章,,ZScribbleSeg,pending,
+L_pce,部分交叉熵损失,第三章,,引用弱监督模块,pending,LaTeX 具体形式由正文确定
+L_global,全局一致性损失,第三章,,引用弱监督模块,pending,
+pi,类别混合比例向量,第三章,,引用弱监督模块,pending,向量格式需统一
+L_spatial,空间先验损失,第三章,,引用弱监督模块,pending,
+L_shape,形状正则化损失,第三章,,引用弱监督模块,pending,
 theta,模型参数,跨章节,2.1.1,all,defined,各章可带上下标但含义需一致
 rho,SAM 邻域半径,第五章,,SAMCL,pending,
 U,子空间正交基,第六章,,FedSubMerge,pending,需区分客户端与层索引
@@ -98,9 +98,10 @@ epsilon_tau,旧任务梯度未覆盖残差,第四章,4.5,FedSubMerge,defined,Cha
 B_c^(t),递归客户端历史代理,第四章,4.5,FedSubMerge,defined,Chapter 4
 "R_j,R_srv",客户端和服务器截断残差,第四章,4.5,FedSubMerge,defined,Chapter 4
 "C_model,C_PGS",模型和 PGS 通信量,第四章,4.5,FedSubMerge,defined,Chapter 4
-"Omega_L,Omega_U",已标注与未标注像素集合,第五章,5.2,ZScribbleSeg,defined,
-"pi_k",未标注像素属于类别 k 的混合比例,第五章,5.3.1,ZScribbleSeg,defined,
-"Phi_i^(k)",类别 k 在位置 i 的局部空间能量,第五章,5.3.1,ZScribbleSeg,defined,
+"Omega_L,Omega_U",已标注与未标注像素集合,第五章,5.2,引用弱监督模块,defined,
+"pi_k",未标注像素属于类别 k 的混合比例,第五章,5.3.1,引用弱监督模块,defined,
+"Phi_i^(k)",类别 k 在位置 i 的局部空间能量,第五章,5.3.1,引用弱监督模块,defined,
+"L_WS",被引用的当前任务弱监督组合损失,第五章,5.3.1,引用弱监督模块,defined,论文显示符号；内部 ZS 标识见 experiments/scribblecl/PROTOCOL.md
 "M,rho,epsilon",SAMCL 记忆缓冲区及锐度邻域参数,第五章,5.2/5.4,SAMCL,defined,
 "G_sup,G_CL",监督不足与持续训练的当前任务差距,第五章,5.3.2,ScribbleCL,defined,TODO-EXPERIMENT analysis quantities
 "Delta_int",监督增强与持续保护的描述性交互量,第五章,5.3.2,ScribbleCL,defined,TODO-EXPERIMENT descriptive only

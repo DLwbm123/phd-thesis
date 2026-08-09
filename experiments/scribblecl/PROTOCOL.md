@@ -1,5 +1,15 @@
 # ScribbleCL fixed core protocol
 
+## Paper display names and internal identifiers
+
+The thesis display name **ScribbleCL** denotes the configuration that combines
+the cited weak-supervision current-task loss with old-model continual
+protection.  Internal code and log identifiers remain unchanged: `ZS` maps to
+the cited weak-supervision loss (`\mathcal{L}_{\mathrm{WS}}` in the thesis),
+`ZS-FT` maps to `WS-FT`, and `ZS-ScribbleMiB` maps to `ScribbleCL`.
+`PCE/ZS` in internal analysis maps to `PCE/WS` in the thesis.  These mappings
+do not alter configurations, checkpoints, raw logs, or results.
+
 ## MMWHS Class-CL
 
 The task order is read from the Benchmark implementation: task 1 uses local

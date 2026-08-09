@@ -8,8 +8,8 @@
 |---|---|---:|---:|---|
 | `chapters/ch01_introduction.tex` | transition | `同时` | 24 | 过度依赖统一连接词 |
 | `chapters/ch03_benchmark.tex` | transition | `同时` | 12 | 过度依赖统一连接词 |
-| `chapters/ch05_scribble_samcl.tex` | transition | `同时` | 18 | 过度依赖统一连接词 |
-| `chapters/ch05_scribble_samcl.tex` | sequence | `最后` | 5 | 避免所有段落都采用固定枚举结构 |
+| `chapters/ch05_scribble_samcl.tex` | transition | `同时` | 19 | 过度依赖统一连接词 |
+| `chapters/ch05_scribble_samcl.tex` | sequence | `最后` | 6 | 避免所有段落都采用固定枚举结构 |
 
 ## 重复段落开头
 
@@ -17,11 +17,10 @@
 |---|---:|
 | `figure[htbp]` | 7 |
 | `figures/ch05` | 5 |
-| `ZScribbleSeg` | 4 |
 | `table[htbp]P` | 4 |
+| `table[htbp]文` | 4 |
 | `FedSubMerge-` | 3 |
 | `table[htbp]S` | 3 |
-| `table[htbp]Z` | 3 |
 
 ## 解释原则
 

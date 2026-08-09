@@ -1,4 +1,4 @@
-# GPT Pro 复审上下文包：第一、二章对齐后（2026-08-08）
+# GPT Pro 复审上下文包：作者贡献边界修订后（2026-08-09）
 
 ## 当前审阅范围
 
@@ -9,7 +9,7 @@
 
 - 1.3 顺序必须保持：Benchmark（场景与评价）→ FedSubMerge（分布式无回放）→ ScribbleCL（部分监督持续分割）→ SAMCL（知识保持与跨任务泛化）。
 - 图 1-1 分别说明任务组织、时间与历史访问、数据位置与协同优化，强调三者可组合；图 1-2 只表示论文组织关系，不表示算法链。
-- Chapter 3 提供场景与评价基础；Chapter 4 研究无回放联邦持续分类；Chapter 5 的分割线为 ZScribbleSeg（静态弱监督基础）→ ScribbleCL（持续扩展），配准线为有限回放 SAMCL。
+- Chapter 3 提供场景与评价基础；Chapter 4 研究无回放联邦持续分类；Chapter 5 的分割论文工作为 ScribbleCL，配准线为有限回放 SAMCL。文献 `zhang2026zscribbleseg` 仅是 ScribbleCL 当前任务弱监督模块的来源。
 
 ## 第二章的固定边界
 
@@ -21,9 +21,9 @@
 
 ## 不可越过的保护边界
 
-- 不得修改 Chapter 5、`evidence/experiments.csv` 或任何 ScribbleCL 的任务协议、方法地位、基线、实验状态、数字、TODO 或结论。
-- Chapter 1 的 Scribble 挑战子节、RQ3、创新点（3）和其 `TODO-EXPERIMENT` 经 SHA-256 与基线逐字一致。
-- 继续区分静态 ZScribbleSeg、论文级 ScribbleCL 持续扩展与有限回放 SAMCL；不得将静态结果外推为 ScribbleCL 结果。
+- 1.2 只能介绍其他研究者的已有工作，不得出现作者本人参与的 Benchmark、FedSubMerge、SAMCL 或静态弱监督论文，也不得前向指引本文工作。
+- ScribbleCL 是第五章分割部分的论文工作；静态弱监督论文只能作为当前任务模块的文献来源，不能进入创新点、四项工作或 ScribbleCL 新增结果。
+- ScribbleCL 结果继续为 `TODO-EXPERIMENT` / `blocked_by_experiments`；不得修改其任务协议、方法地位、基线、数字或结论，也不得将静态结果外推为 ScribbleCL 结果。
 
 ## 待作者/GPT Pro 复审
 

@@ -67,11 +67,11 @@ GPT Pro：学术论证、中文正文、创新点、跨章节综合和审稿
 ```text
 Benchmark    → 第三章
 FedSubMerge  → 第四章
-ZScribbleSeg + 新增 ScribbleCL 实验 → 第五章 5.3
+ScribbleCL（引用静态弱监督模块 + 新增持续研究） → 第五章 5.3
 SAMCL        → 第五章 5.4
 ```
 
-ZScribbleSeg 原论文仍是弱监督分割工作。只有新增的 Class-CL / Organ-CL 任务、基线、指标和结果可以被称为 ScribbleCL 扩展。结果未完成时写 `TODO-EXPERIMENT`。
+文献 `zhang2026zscribbleseg` 仅是 ScribbleCL 当前任务弱监督模块的技术来源。只有新增的 Class-CL / Organ-CL 任务、基线、指标和结果属于 ScribbleCL 论文工作；结果未完成时写 `TODO-EXPERIMENT`。
 
 ## 六、迁移后写作顺序
 
