@@ -1,0 +1,10 @@
+results/**
+!results/.gitkeep
+reports/runtime/**
+*.npz
+*.pt
+*.pth
+*.log
+__pycache__/
+.pytest_cache/
+*.egg-info/
