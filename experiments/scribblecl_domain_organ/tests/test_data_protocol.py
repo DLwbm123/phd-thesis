@@ -33,8 +33,9 @@ def test_no_dense_label_in_weak_loader(binary_h5, sparse_npz):
     weak = WeakH5Dataset(binary_h5, sparse_npz)
     assert weak.exposes_dense is False
     weak[0]
-    assert set(weak._file.keys()) >= {"train_images", "train_labels"}
+    assert weak.current_images is not None and weak._file is None
     assert not hasattr(weak, "labels") and not hasattr(weak, "dense")
+    weak.close(); assert weak.current_images is None
 
 
 def test_dense_loader_is_explicit(binary_h5):

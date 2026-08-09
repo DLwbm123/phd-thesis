@@ -27,7 +27,7 @@ def score(model, batches, device, task_id):
 
 
 def main() -> None:
-    p=argparse.ArgumentParser(); p.add_argument("--scenario",choices=["domain","organ"],required=True); p.add_argument("--task",required=True); p.add_argument("--data-root",required=True); p.add_argument("--scribble-root",required=True); p.add_argument("--output",required=True); p.add_argument("--supervision",choices=["dense","pce"],required=True); p.add_argument("--backbone",default="resunet32",choices=["resunet32","zs_unet"]); p.add_argument("--device",default="cuda:0"); p.add_argument("--steps",type=int,default=500); p.add_argument("--seed",type=int,default=42); a=p.parse_args()
+    p=argparse.ArgumentParser(); p.add_argument("--scenario",choices=["domain","organ"],required=True); p.add_argument("--task",required=True); p.add_argument("--data-root",required=True); p.add_argument("--scribble-root",required=True); p.add_argument("--output",required=True); p.add_argument("--supervision",choices=["dense","pce"],required=True); p.add_argument("--backbone",default="resunet32",choices=["resunet32","zs_unet"]); p.add_argument("--device",default="cuda:0"); p.add_argument("--steps",type=int,default=500); p.add_argument("--lr",type=float,default=1e-3); p.add_argument("--seed",type=int,default=42); a=p.parse_args()
     seed_everything(a.seed)
     tasks = DOMAIN_TASKS if a.scenario=="domain" else ORGAN_TASKS; task=next(t for t in tasks if t.code==a.task); factory=domain_prostate if a.scenario=="domain" else organ_tasks
     dense=factory.dense_dataset(a.data_root,task,"train")
@@ -45,7 +45,7 @@ def main() -> None:
         npz=Path(a.scribble_root)/a.scenario/f"{task.code}_v2_s3_seed{a.seed}.npz"; weak=factory.weak_dataset(a.data_root,task,npz); train_batches=list(DataLoader(Subset(weak,positives[:8]),batch_size=4,shuffle=False))
     model=(DomainSegmenter(build_backbone(a.backbone)) if a.scenario=="domain" else OrganSegmenter(build_backbone(a.backbone))).to(a.device); task_id=None if a.scenario=="domain" else task.index
     if task_id is not None: model.activate_head(task_id)
-    optimizer=torch.optim.Adam(model.parameters(),lr=1e-3); log=[]
+    optimizer=torch.optim.Adam(model.parameters(),lr=a.lr); log=[]
     for step in range(1,a.steps+1):
         model.train(); x,y=train_batches[(step-1)%len(train_batches)]; x,y=x.to(a.device),y.to(a.device); logits=model(x) if task_id is None else model(x,task_id); loss=torch.nn.functional.cross_entropy(logits,y) if a.supervision=="dense" else sparse_pce(logits,y); optimizer.zero_grad(); loss.backward(); optimizer.step()
         if step==1 or step%25==0:

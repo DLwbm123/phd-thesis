@@ -72,13 +72,20 @@ class WeakH5Dataset(Dataset):
 
     exposes_dense = False
 
-    def __init__(self, h5_path: str | Path, scribble_npz: str | Path):
+    def __init__(self, h5_path: str | Path, scribble_npz: str | Path, preload_current_images: bool = True):
         self.h5_path = str(h5_path)
         self.scribble_npz = str(scribble_npz)
         self._file: h5py.File | None = None
         with h5py.File(self.h5_path, "r") as h:
             self.length = int(h["train_images"].shape[2])
             self.spatial_shape = tuple(int(x) for x in h["train_images"].shape[:2])
+            # Current-stage images may reside in RAM only for the lifetime of
+            # this dataset. No label or historical-stage image is cached.
+            self.current_images = (
+                np.asarray(h["train_images"][:], dtype=np.float32).transpose(2, 0, 1)
+                if preload_current_images
+                else None
+            )
         archive = np.load(self.scribble_npz, allow_pickle=False, mmap_mode="r")
         if set(archive.files) != {"scribbles"}:
             raise ValueError("weak archive must contain only sparse scribbles")
@@ -99,7 +106,7 @@ class WeakH5Dataset(Dataset):
         return self.length
 
     def __getitem__(self, index: int) -> tuple[torch.Tensor, torch.Tensor]:
-        image = np.asarray(self._open()["train_images"][:, :, index], dtype=np.float32)
+        image = self.current_images[index] if self.current_images is not None else np.asarray(self._open()["train_images"][:, :, index], dtype=np.float32)
         sparse = np.asarray(self.scribbles[index], dtype=np.int64)
         return torch.from_numpy(image[None]), torch.from_numpy(sparse.copy()).long()
 
@@ -107,3 +114,4 @@ class WeakH5Dataset(Dataset):
         if self._file is not None:
             self._file.close()
             self._file = None
+        self.current_images = None
