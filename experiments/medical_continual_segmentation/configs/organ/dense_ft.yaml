@@ -1,0 +1,12 @@
+scenario: organ
+method: dense_ft
+backbone: U-Net
+data_root: /data/benchmark
+sparse_root: /data/sparse_annotations
+epochs: 150
+batch_size: 8
+learning_rate: 0.008
+lr_decay_epoch: 80
+lr_decay_rate: 0.5
+fisher_batches: 50
+current_gate_min: 0.10

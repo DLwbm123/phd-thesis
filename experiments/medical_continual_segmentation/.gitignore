@@ -1,0 +1,11 @@
+__pycache__/
+.pytest_cache/
+*.pyc
+runs/*/*/
+!runs/class/.gitkeep
+!runs/domain/.gitkeep
+!runs/organ/.gitkeep
+*.h5
+*.npz
+*.pt
+*.log
