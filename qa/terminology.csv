@@ -2,8 +2,8 @@ term_en,preferred_zh,scope,avoid,notes
 medical imaging,医学影像,领域与体系,医学成像（除非强调成像过程）,
 medical image,医学图像,具体数据与任务,医学影像图像,
 annotation-efficient learning,标注高效学习,第一章与第三章,高效监督学习,
-weakly supervised segmentation,弱监督医学图像分割,第一章与第三章,弱标注分割（可作解释但非首选）,
-scribble supervision,涂鸦监督,第一章、第三章与第五章,草图监督/划线监督,未标注像素不得直接视为背景
+weakly supervised segmentation,弱监督医学图像分割,第一章与第五章,弱标注分割（可作解释但非首选）,第一章仅综述外部文献；第五章区分引用机制与新增研究
+scribble supervision,涂鸦监督,第一章与第五章,草图监督/划线监督,未标注像素不得直接视为背景
 supervision augmentation,监督增强,第一章与第三章,监督增广（避免混用）,
 global consistency,全局一致性,第一章与第三章,整体一致性（避免混用）,
 class mixture ratio,类别混合比例,第一章与第三章,类别占比先验（首次说明后可简称比例先验）,
@@ -137,5 +137,5 @@ personalized PGS,个性化 PGS,第四章,,
 recursive client history proxy,递归客户端历史代理,第四章,原始全历史梯度,
 projection distance,投影距离,第四章,语义相关性,
 finite replay,有限回放,第五章,无回放,
-static weak supervision,静态弱监督,第五章,持续学习,
+static weak supervision,静态弱监督,第五章,持续学习,仅指被引用的既有机制和原始证据；不属于本文创新或 ScribbleCL 新增结果
 sharpness-aware optimization,锐度感知优化,第五章,SAMCL 的元学习,
