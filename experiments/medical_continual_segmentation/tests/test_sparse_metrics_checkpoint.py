@@ -3,7 +3,7 @@ import random
 import numpy as np
 import torch
 
-from medcl.data.sparse import generate, scale_existing
+from medcl.data.sparse import generate, generate_wsl_style_from_baseline, scale_existing
 from medcl.metrics.matrix import matrix_summary
 from medcl.utils import CheckpointController, file_sha256
 
@@ -34,6 +34,15 @@ def test_scaled_noncontiguous_h5_layout_keeps_exact_target_count():
     base,_=generate(labels,0,42); scaled,_=scale_existing(labels,base,0,8,10)
     assert (scaled==1).sum() == min((base==1).sum()*8,(labels==1).sum())
     assert not np.any((scaled==0) & (labels>0))
+
+
+def test_wsl_style_respects_baseline_area_and_semantics():
+    labels=np.zeros((2,64,64),dtype=np.int16); labels[:,12:52,14:50]=1
+    base,_=generate(labels,0,42); styled,_=generate_wsl_style_from_baseline(labels,base,0,42,5,7)
+    assert (styled==1).sum() == min((base==1).sum()*5,(labels==1).sum())
+    assert (styled==0).sum() == min((base==0).sum()*7,(labels==0).sum())
+    assert not np.any((styled==1) & (labels!=1))
+    assert not np.any((styled==0) & (labels>0))
 
 
 def test_matrix_metrics_and_domain_only_efwt():
