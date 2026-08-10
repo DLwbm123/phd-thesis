@@ -286,7 +286,7 @@ def _balanced_batches(annotations, classes, batch_size, seed):
 
 def run_pce_rescue_diagnostic(options: RunOptions, source_root: Path, variant: str) -> dict:
     """Pre-registered 20-epoch first-task PCE diagnostic; validation selects best."""
-    if options.method != "pce_ft" or variant not in {"original_optimizer","balanced_sampler"}: raise ValueError("invalid PCE rescue route")
+    if options.method != "pce_ft" or variant not in {"current_recipe","original_optimizer","balanced_sampler"}: raise ValueError("invalid PCE rescue route")
     if options.epochs != 20: raise ValueError("PCE rescue diagnostics require exactly 20 epochs")
     task=tasks_for(options.scenario)[0]; seed_all(options.seed); run_id=options.run_id or f"medseg_{options.scenario}_pce_{variant}_20e_seed{options.seed}"; run_dir=options.runs_root/"pce_rescue"/options.scenario/run_id; run_dir.mkdir(parents=True,exist_ok=False); controller=CheckpointController(run_dir)
     manifest=_manifest(options,run_id,(task,),source_root); manifest.update(reference_type="pre_registered_pce_rescue_20e",variant=variant,selection_metric="validation_foreground_patient_mean",test_for_selection=False); _json(run_dir/"run_manifest.json",manifest)

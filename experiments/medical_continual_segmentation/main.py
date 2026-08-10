@@ -41,7 +41,7 @@ def parser() -> argparse.ArgumentParser:
     value.add_argument("--tiny-steps", type=int, default=700)
     value.add_argument("--independent-task", help="Train one from-scratch RMA reference task")
     value.add_argument("--dense-first-task-gate", action="store_true", help="Validation-best dense task-1 learnability gate")
-    value.add_argument("--pce-rescue-variant", choices=("original_optimizer","balanced_sampler"))
+    value.add_argument("--pce-rescue-variant", choices=("current_recipe","original_optimizer","balanced_sampler"))
     return value
 
 
