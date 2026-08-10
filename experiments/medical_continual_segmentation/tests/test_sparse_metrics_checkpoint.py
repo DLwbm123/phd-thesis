@@ -3,7 +3,7 @@ import random
 import numpy as np
 import torch
 
-from medcl.data.sparse import generate
+from medcl.data.sparse import generate, scale_existing
 from medcl.metrics.matrix import matrix_summary
 from medcl.utils import CheckpointController, file_sha256
 
@@ -19,6 +19,21 @@ def test_area_scaled_annotations_expand_without_label_leakage():
     assert (scaled==1).sum() >= (base==1).sum()
     assert (scaled==0).sum() >= (base==0).sum()
     assert not np.any((scaled==1) & (labels!=1))
+
+
+def test_persisted_baseline_controls_requested_area_multiplier():
+    labels=np.zeros((1,48,48),dtype=np.int16); labels[:,10:38,10:38]=1
+    base,_=generate(labels,0,42); scaled,_=scale_existing(labels,base,0,8,10)
+    assert (scaled==1).sum() == min((base==1).sum()*8,(labels==1).sum())
+    assert (scaled==0).sum() == min((base==0).sum()*10,(labels==0).sum())
+
+
+def test_scaled_noncontiguous_h5_layout_keeps_exact_target_count():
+    source=np.zeros((64,64,2),dtype=np.int16); source[16:48,16:48,:]=1
+    labels=source.transpose(2,0,1)  # Matches the H5 transpose used in generation.
+    base,_=generate(labels,0,42); scaled,_=scale_existing(labels,base,0,8,10)
+    assert (scaled==1).sum() == min((base==1).sum()*8,(labels==1).sum())
+    assert not np.any((scaled==0) & (labels>0))
 
 
 def test_matrix_metrics_and_domain_only_efwt():

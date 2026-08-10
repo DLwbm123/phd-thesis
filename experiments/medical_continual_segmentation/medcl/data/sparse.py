@@ -42,7 +42,11 @@ def _expand(seed_mask: np.ndarray, allowed: np.ndarray, multiplier: float) -> np
     candidates = np.flatnonzero(allowed)
     order = np.lexsort((candidates, distance.ravel()[candidates]))
     chosen = candidates[order[:target]]
-    output = np.zeros_like(allowed, dtype=bool); output.ravel()[chosen] = True
+    output = np.zeros(allowed.shape, dtype=bool, order="C")
+    # ``allowed`` originates from transposed H5 slices and may be
+    # non-contiguous.  Both the target and its flat indexing must be C-order;
+    # otherwise a later boolean assignment can move background candidates.
+    output.flat[chosen] = True
     return output
 
 
@@ -59,6 +63,26 @@ def generate(labels: np.ndarray, shift: int, seed: int = 42, foreground_area_mul
         base_bg = _background(foreground, seed, index) & (result[index] == IGNORE_INDEX)
         bg = _expand(base_bg, (~foreground) & (result[index] == IGNORE_INDEX), background_area_multiplier)
         result[index][bg] = 0
+    valid = result != IGNORE_INDEX
+    stats = AnnotationStats(int((result > 0).sum()), int((result == 0).sum()), int((result == IGNORE_INDEX).sum()), int((labels > 0).sum()), int((~(result > 0).reshape(len(result), -1).any(1)).sum()), int(valid.reshape(len(result), -1).sum(1).min()), int(valid.reshape(len(result), -1).sum(1).max()))
+    return result, stats
+
+
+def scale_existing(labels: np.ndarray, annotations: np.ndarray, shift: int, foreground_area_multiplier: float, background_area_multiplier: float) -> tuple[np.ndarray, AnnotationStats]:
+    """Scale the *persisted* v2 strokes, retaining the exact current baseline."""
+    if labels.shape != annotations.shape:
+        raise ValueError("labels and annotations must have identical shapes")
+    if foreground_area_multiplier < 1 or background_area_multiplier < 1:
+        raise ValueError("area multipliers must be >= 1")
+    result = np.full(labels.shape, IGNORE_INDEX, dtype=np.int16)
+    for index, dense in enumerate(labels):
+        foreground = dense > 0; old = annotations[index]
+        for local_class in sorted(set(np.unique(dense).tolist()) - {0}):
+            value = int(local_class) + int(shift)
+            expanded = _expand(old == value, dense == local_class, foreground_area_multiplier)
+            result[index][expanded] = value
+        expanded_bg = _expand(old == 0, (~foreground) & (result[index] == IGNORE_INDEX), background_area_multiplier)
+        result[index][expanded_bg] = 0
     valid = result != IGNORE_INDEX
     stats = AnnotationStats(int((result > 0).sum()), int((result == 0).sum()), int((result == IGNORE_INDEX).sum()), int((labels > 0).sum()), int((~(result > 0).reshape(len(result), -1).any(1)).sum()), int(valid.reshape(len(result), -1).sum(1).min()), int(valid.reshape(len(result), -1).sum(1).max()))
     return result, stats
