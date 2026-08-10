@@ -31,14 +31,33 @@ def _background(mask: np.ndarray, seed: int, index: int) -> np.ndarray:
     return out & safe
 
 
-def generate(labels: np.ndarray, shift: int, seed: int = 42) -> tuple[np.ndarray, AnnotationStats]:
+def _expand(seed_mask: np.ndarray, allowed: np.ndarray, multiplier: float) -> np.ndarray:
+    """Deterministically grow a stroke only within its semantically valid area."""
+    if multiplier <= 1:
+        return seed_mask & allowed
+    target = min(int(allowed.sum()), int(round(seed_mask.sum() * multiplier)))
+    if target <= int(seed_mask.sum()):
+        return seed_mask & allowed
+    distance = ndi.distance_transform_edt(~seed_mask)
+    candidates = np.flatnonzero(allowed)
+    order = np.lexsort((candidates, distance.ravel()[candidates]))
+    chosen = candidates[order[:target]]
+    output = np.zeros_like(allowed, dtype=bool); output.ravel()[chosen] = True
+    return output
+
+
+def generate(labels: np.ndarray, shift: int, seed: int = 42, foreground_area_multiplier: float = 1.0, background_area_multiplier: float = 1.0) -> tuple[np.ndarray, AnnotationStats]:
+    if foreground_area_multiplier < 1 or background_area_multiplier < 1:
+        raise ValueError("area multipliers must be >= 1")
     result = np.full(labels.shape, IGNORE_INDEX, dtype=np.int16)
     for index, dense in enumerate(labels):
         foreground = dense > 0
         for local_class in sorted(set(np.unique(dense).tolist()) - {0}):
             line = ndi.binary_dilation(skeletonize(dense == local_class), iterations=1) & (dense == local_class)
+            line = _expand(line, dense == local_class, foreground_area_multiplier)
             result[index][line] = int(local_class) + int(shift)
-        bg = _background(foreground, seed, index) & (result[index] == IGNORE_INDEX)
+        base_bg = _background(foreground, seed, index) & (result[index] == IGNORE_INDEX)
+        bg = _expand(base_bg, (~foreground) & (result[index] == IGNORE_INDEX), background_area_multiplier)
         result[index][bg] = 0
     valid = result != IGNORE_INDEX
     stats = AnnotationStats(int((result > 0).sum()), int((result == 0).sum()), int((result == IGNORE_INDEX).sum()), int((labels > 0).sum()), int((~(result > 0).reshape(len(result), -1).any(1)).sum()), int(valid.reshape(len(result), -1).sum(1).min()), int(valid.reshape(len(result), -1).sum(1).max()))

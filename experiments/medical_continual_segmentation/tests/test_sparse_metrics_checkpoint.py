@@ -13,6 +13,14 @@ def test_v2_s2_label_contract_and_determinism():
     a,stats=generate(labels,3,42); b,_=generate(labels,3,42); assert np.array_equal(a,b); assert set(np.unique(a))<={-100,0,4,5}; assert stats.foreground_pixels>0 and stats.background_pixels>0 and stats.unknown_pixels>0
 
 
+def test_area_scaled_annotations_expand_without_label_leakage():
+    labels=np.zeros((2,48,48),dtype=np.int16); labels[:,10:38,10:38]=1
+    base,_=generate(labels,0,42); scaled,_=generate(labels,0,42,foreground_area_multiplier=8,background_area_multiplier=10)
+    assert (scaled==1).sum() >= (base==1).sum()
+    assert (scaled==0).sum() >= (base==0).sum()
+    assert not np.any((scaled==1) & (labels!=1))
+
+
 def test_matrix_metrics_and_domain_only_efwt():
     matrix=np.array([[.8,.3],[.7,.75]]); domain=matrix_summary(matrix,"domain",[.82,.78],[.2,.2]); organ=matrix_summary(matrix,"organ",[.82,.78]); assert set(("A-Dice","BWTR","RMA","E-FWT"))<=set(domain); assert "E-FWT" not in organ
 
