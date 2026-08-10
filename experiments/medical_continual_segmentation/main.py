@@ -8,7 +8,7 @@ from pathlib import Path
 
 import yaml
 
-from medcl.trainers import RunOptions, dry_run, run_independent_task, run_sequence, run_tiny_gate
+from medcl.trainers import RunOptions, dry_run, run_dense_first_task_gate, run_independent_task, run_pce_rescue_diagnostic, run_sequence, run_tiny_gate
 
 
 SCENARIOS = ("class", "domain", "organ")
@@ -40,6 +40,8 @@ def parser() -> argparse.ArgumentParser:
     value.add_argument("--supervision", choices=("dense", "pce"), help="Tiny-gate supervision")
     value.add_argument("--tiny-steps", type=int, default=700)
     value.add_argument("--independent-task", help="Train one from-scratch RMA reference task")
+    value.add_argument("--dense-first-task-gate", action="store_true", help="Validation-best dense task-1 learnability gate")
+    value.add_argument("--pce-rescue-variant", choices=("original_optimizer","balanced_sampler"))
     return value
 
 
@@ -72,6 +74,10 @@ def main() -> None:
     if args.tiny_overfit:
         if not args.task or not args.supervision: raise ValueError("--task and --supervision are required by --tiny-overfit")
         print(json.dumps(run_tiny_gate(options, args.task, args.supervision, args.tiny_steps), indent=2, sort_keys=True)); return
+    if args.dense_first_task_gate:
+        print(json.dumps(run_dense_first_task_gate(options,Path(__file__).resolve().parent),indent=2,sort_keys=True)); return
+    if args.pce_rescue_variant:
+        print(json.dumps(run_pce_rescue_diagnostic(options,Path(__file__).resolve().parent,args.pce_rescue_variant),indent=2,sort_keys=True)); return
     if args.independent_task:
         print(json.dumps(run_independent_task(options,args.independent_task,Path(__file__).resolve().parent),indent=2,sort_keys=True)); return
     print(json.dumps(run_sequence(options, Path(__file__).resolve().parent), indent=2, sort_keys=True))
