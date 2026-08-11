@@ -1,4 +1,15 @@
-# Codex 最新报告：ScribbleCL 作者贡献边界与第一章研究现状修订（2026-08-09）
+# Codex 最新报告：第五章 ScribbleCL 重写与全文术语统一（2026-08-11）
+
+## 本轮交付
+
+1. 已严格按 `CODEX_CH05_SCRIBBLECL_REVISION.md` 重写第五章 ScribbleCL 正文、实验设定与三类结果表，并保留原章节标题、标签及 SAMCL 内容。实验工程设置以该修改文件为唯一写作依据，未按工作区中的实验草稿改写。
+2. 已更新第一章与第五章的衔接段落、研究问题及章节总结，并将全文编译输入中的“协议”统一替换为符合上下文的表述；当前检索结果为零。
+3. 结果表仅保留批准的 Dense-Sequential 数值，PCE-Sequential、ZS-Sequential、ZS-Regu 与 ZS-MiB 均以“--”明确标记为待补实验结果；“实验分析”“讨论”“结论”小节保留为空白，不提前写入性能判断。
+4. 已同步更新 `STATE.md`、`chapter_cards/ch05.md` 和 `qa/chapter_status.csv`，并确认 `sources/` 未改动且未纳入本轮提交。
+5. 已完成 `latexmk -xelatex -interaction=nonstopmode -file-line-error main.tex`，生成 121 页 `main.pdf`（SHA-256：`06b7fc10beef6a84b94f7d8421a00cc8b2bae292bc209b6e5dd5190a5c629055`）；日志无 LaTeX error、未定义引用/交叉引用、重复标签或缺失文件。快速章节检查通过，PDF 已复核 ScribbleCL 标题、训练设置、三张表和与 SAMCL 的过渡，未见越界、裁切或表格断裂。
+6. 用户原有的 `experiments/medical_continual_segmentation/` 未提交实验代码改动将全程排除在论文文档提交之外，并在远端同步后恢复工作区。
+
+# 历史报告：ScribbleCL 作者贡献边界与第一章研究现状修订（2026-08-09）
 
 ## 本轮交付
 

@@ -81,7 +81,7 @@
   % 箭头在省略号之后、theta_t 方框之前结束，避免箭头侵入方框。
   \draw[flow] (6.72,2.85) -- ([xshift=-0.8mm]c-mt.west);
   \node[data, minimum width=2.55cm] (c-history) at (2.05,1.35)
-    {协议允许的历史信息\\完整／有限／无回放};
+    {可访问的历史信息\\完整／有限／无回放};
   \node[process, minimum width=2.55cm] (c-eval) at (6.20,1.35)
     {持续评价\\旧任务、当前任务与未来任务};
   \draw[flow] (c-history) -- (4.15,1.35) -- (c-eval);
