@@ -1,4 +1,15 @@
-# Codex 最新报告：第五章 ScribbleCL 重写与全文术语统一（2026-08-11）
+# Codex 最新报告：第五章 ScribbleCL 第二轮修改（2026-08-11）
+
+## 本轮交付
+
+1. 已严格按 `CODEX_CH05_SCRIBBLECL_REVISION_V2.md` 更新第五章：可见正文不再出现 Zhang 等涂鸦监督方法的英文名称或指定的元写作表述；引用键 `zhang2026zscribbleseg` 保持不变。
+2. 5.3.1 标题现为“监督增强、类别分布校正与结构先验正则化”，并连续写入批准的监督增强、类别分布校正、空间先验、结构正则化与总体目标公式；原有静态表格、图位和作者说明均未恢复。
+3. 已同步更新 ScribbleCL 的引言、问题定义、顺序训练参照、ZS-Regu、ZS-MiB、比较方法表、训练设置、综合讨论和本章小结；三类场景、训练超参数、三张结果表以及空白的分析、讨论、结论小节均按 V2 保持。
+4. 已保留 SAMCL 方法与实验内容，并吸收 Overleaf 后续的第一章问题设定比较图版式修改；`sources/` 与用户未提交的实验工程草稿均未纳入本轮论文改动。
+5. 已完成 `latexmk -xelatex -interaction=nonstopmode -file-line-error main.tex`，生成 123 页 `main.pdf`（SHA-256：`0f888a8b3023b4416cee7aefecf152e3372687565b27feac89596db6f93ddb81`）；日志无 LaTeX error、未定义引用/交叉引用、重复标签或缺失文件。快速章节检查与 V2 指定检索均通过。
+6. PDF 已复核 5.3.1 标题、主要公式、持续方法、三张结果表和与 SAMCL 的过渡；新增的余弦距离定义以无编号展示公式排版，未见裁切、重叠、表格断裂或越界。PCE-Sequential、ZS-Sequential、ZS-Regu 和 ZS-MiB 仍待实际实验、日志和性能矩阵后再填入结果或结论。
+
+# 历史报告：第五章 ScribbleCL 重写与全文术语统一（2026-08-11）
 
 ## 本轮交付
 

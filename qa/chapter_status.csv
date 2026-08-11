@@ -46,7 +46,7 @@ section_id,title,status,artifact
 5.3,ScribbleCL：面向涂鸦监督的持续医学图像分割研究,blocked_by_experiments,chapters/ch05_scribble_samcl.tex
 5.1,引言,drafted_pending_review,chapters/ch05_scribble_samcl.tex
 5.2,问题定义与研究动机,drafted_pending_review,chapters/ch05_scribble_samcl.tex
-5.3.1,ZScribbleSeg 弱监督分割基础,drafted_pending_review,chapters/ch05_scribble_samcl.tex
+5.3.1,监督增强、类别分布校正与结构先验正则化,drafted_pending_review,chapters/ch05_scribble_samcl.tex
 5.3.2,ScribbleCL 方法、实验设定与待补结果,blocked_by_experiments,chapters/ch05_scribble_samcl.tex
 5.4,SAMCL：锐度感知元持续医学图像配准方法,drafted_pending_review,chapters/ch05_scribble_samcl.tex
 5.4.1,面向配准任务序列的元持续学习,drafted_pending_review,chapters/ch05_scribble_samcl.tex
