@@ -1,58 +1,14 @@
-# Codex 最新报告：第五章 ScribbleCL Domain-CL 定稿式更新（2026-08-12）
+# Codex 最新报告：第五章 ZSDERpp 方法与 Domain-CL 结果更新（2026-08-12）
 
-## 本轮交付
+- 已重写 `chapters/ch05_scribble_samcl.tex` 的 ScribbleCL 方法与实验部分。当前任务只保留部分交叉熵、全局一致性和空间先验；来源弱监督文献仅作为这两个组成部分的公式依据，并在方法段多处引用。
+- ZSDERpp 已包装为统一方法。缓冲区损失严格写为 `0.5 L_feature + 0.5 L_PCE^buffer + 1.0 L_global^buffer + 0.1 L_spatial^buffer`；Domain-CL、Class-CL 和 Organ-CL 共用方法主体，Class-CL 只在内部增加背景语义校正。
+- 已写入作者更新的 Domain-CL 表格。ZSDERpp 的 A-Dice/BWTR 为 `0.701/-0.152`，Dense-Sequential 的 RMA/E-FWT 为 `1.086/0.260`。正文逐项给出与 PCE-Sequential、ZS-Sequential、ZS-GPM 和 Dense-Sequential 的差值，并明确有限回放与无回放/当前密集监督之间的访问条件差异。
+- 当前归档未提供该表的重复次数、标准差或统计检验，因此全部结论限定为点估计；Class-CL 与 Organ-CL 仅写方法适配，不写结果方向。
+- 第一章研究内容、RQ、创新点和章节说明已同步为统一的 ZSDERpp 叙述。章节卡、协议、状态、证据账本和复审上下文同步更新，避免后续任务恢复旧的无回放边界。
 
-1. 已在 `chapters/ch05_scribble_samcl.tex` 集成作者提供的三类持续分割场景涂鸦标注图、指定引导语、图注和标签；图件经 MuPDF 规范化后置于 `figures/ch05/scribble_annotation_fig.pdf`，XeLaTeX/xdvipdfmx 可正常读取。
-2. 已删除 `tab:scribblecl-class-results` 和 `tab:scribblecl-organ-results`，保留三类场景的数据集描述、任务顺序、预处理、方法定义、公式、方法对照表和数据组织表。
-3. Domain-CL 结果表已填入四种方法的 A-Dice、BWTR、RMA 和 E-FWT，并补全实验分析、讨论和结论；综合讨论与本章小结已同步更新。结论严格限定于当前六中心前列腺 MRI 序列，不对 Class-CL 或 Organ-CL 作结果判断。
-4. 已执行 `latexmk -xelatex -interaction=nonstopmode -halt-on-error -file-line-error main.tex`，退出码为 0，生成 123 页 `main.pdf`（SHA-256：`d2c4a3529966b44ae8fb3f4a676e792f9edb2369e59b541b5d98c78720ce21b1`）。日志无 LaTeX error、未定义 citation/reference、重复 label 或缺失文件。
-5. 已视觉复核第 82--84、89--90 印刷页：涂鸦图三行内容完整清晰、图注与正文引用正常；Domain-CL 表和分析未跨页破坏；讨论、结论、综合讨论与本章小结均无裁切或重叠。
+---
 
-# 历史报告：第五章 ScribbleCL 第二轮修改（2026-08-11）
-
-## 本轮交付
-
-1. 已严格按 `CODEX_CH05_SCRIBBLECL_REVISION_V2.md` 更新第五章：可见正文不再出现 Zhang 等涂鸦监督方法的英文名称或指定的元写作表述；引用键 `zhang2026zscribbleseg` 保持不变。
-2. 5.3.1 标题现为“监督增强、类别分布校正与结构先验正则化”，并连续写入批准的监督增强、类别分布校正、空间先验、结构正则化与总体目标公式；原有静态表格、图位和作者说明均未恢复。
-3. 已同步更新 ScribbleCL 的引言、问题定义、顺序训练参照、ZS-Regu、ZS-MiB、比较方法表、训练设置、综合讨论和本章小结；三类场景、训练超参数、三张结果表以及空白的分析、讨论、结论小节均按 V2 保持。
-4. 已保留 SAMCL 方法与实验内容，并吸收 Overleaf 后续的第一章问题设定比较图版式修改；`sources/` 与用户未提交的实验工程草稿均未纳入本轮论文改动。
-5. 已完成 `latexmk -xelatex -interaction=nonstopmode -file-line-error main.tex`，生成 123 页 `main.pdf`（SHA-256：`0f888a8b3023b4416cee7aefecf152e3372687565b27feac89596db6f93ddb81`）；日志无 LaTeX error、未定义引用/交叉引用、重复标签或缺失文件。快速章节检查与 V2 指定检索均通过。
-6. PDF 已复核 5.3.1 标题、主要公式、持续方法、三张结果表和与 SAMCL 的过渡；新增的余弦距离定义以无编号展示公式排版，未见裁切、重叠、表格断裂或越界。PCE-Sequential、ZS-Sequential、ZS-Regu 和 ZS-MiB 仍待实际实验、日志和性能矩阵后再填入结果或结论。
-
-# 历史报告：第五章 ScribbleCL 重写与全文术语统一（2026-08-11）
-
-## 本轮交付
-
-1. 已严格按 `CODEX_CH05_SCRIBBLECL_REVISION.md` 重写第五章 ScribbleCL 正文、实验设定与三类结果表，并保留原章节标题、标签及 SAMCL 内容。实验工程设置以该修改文件为唯一写作依据，未按工作区中的实验草稿改写。
-2. 已更新第一章与第五章的衔接段落、研究问题及章节总结，并将全文编译输入中的“协议”统一替换为符合上下文的表述；当前检索结果为零。
-3. 结果表仅保留批准的 Dense-Sequential 数值，PCE-Sequential、ZS-Sequential、ZS-Regu 与 ZS-MiB 均以“--”明确标记为待补实验结果；“实验分析”“讨论”“结论”小节保留为空白，不提前写入性能判断。
-4. 已同步更新 `STATE.md`、`chapter_cards/ch05.md` 和 `qa/chapter_status.csv`，并确认 `sources/` 未改动且未纳入本轮提交。
-5. 已完成 `latexmk -xelatex -interaction=nonstopmode -file-line-error main.tex`，生成 121 页 `main.pdf`（SHA-256：`06b7fc10beef6a84b94f7d8421a00cc8b2bae292bc209b6e5dd5190a5c629055`）；日志无 LaTeX error、未定义引用/交叉引用、重复标签或缺失文件。快速章节检查通过，PDF 已复核 ScribbleCL 标题、训练设置、三张表和与 SAMCL 的过渡，未见越界、裁切或表格断裂。
-6. 用户原有的 `experiments/medical_continual_segmentation/` 未提交实验代码改动将全程排除在论文文档提交之外，并在远端同步后恢复工作区。
-
-# 历史报告：ScribbleCL 作者贡献边界与第一章研究现状修订（2026-08-09）
-
-## 本轮交付
-
-- 本轮作者决定取代此前任何与其冲突的第五章组织要求：论文四项工作固定为 Benchmark、FedSubMerge、ScribbleCL、SAMCL。文献 `zhang2026zscribbleseg` 的正式题名、作者、期刊和 DOI 保留在参考文献库；该文献只作为 ScribbleCL 当前任务弱监督模块的引用基础。
-- 第一章 1.2 删除作者本人参与的 Benchmark、SAMCL 和静态弱监督论文内容，改为外部持续分割与弱监督文献的协议、评价和研究缺口综述。自动检查确认 1.2 不含自有方法名、自引键、章节前向指引或“本文/本论文”自指。
-- 第五章 5.3 现以 ScribbleCL 为唯一分割论文工作：5.3.1 的机制、公式、静态表格和图注均明确标为文献事实，5.3.2 只包含新增持续协议与分析。公开显示名使用 `\mathcal{L}_{\mathrm{WS}}`、`WS-FT`、`ScribbleCL` 和 `PCE/WS`；内部 `ZS` 代码/日志标识仅在 `experiments/scribblecl/PROTOCOL.md` 映射。
-- 静态结果数值未改动，ScribbleCL 继续为 `TODO-EXPERIMENT` / `blocked_by_experiments`，未写入任何新增性能数值、方向性结论或完成性结论。
-- Mode B 构建成功：`bash scripts/build_and_audit.sh` 生成 123 页 `main.pdf`，无 LaTeX error、未定义 citation/reference、重复标签或缺失文件。MuPDF 视觉复核 PDF 页 19、21、23（第一章 1.2），29、31、32（RQ3 与工作逻辑），89、91、93、95、97（5.3）以及 102、103（5.5/5.6），未见裁切、重叠或标签解析问题。
-- `sources/` 排序 SHA-256 清单指纹仍为 `6c5d3c84a5418fffc6f2c3130b0a3939343acc9403b15dd53fe76e18f17ebf8f`，未进入本轮 diff。
-
-# 历史报告：第一、二章 Mode B 对齐修订（2026-08-08）
-
-## 本轮交付
-
-- 基线为 `main` 的 `7d2950dcc86832044fd3489c59e1752a5be235ec`。批准稿为 `CH01_CH02_REVISION_SPEC.md`，执行任务为 `CODEX_TASK_ch01_ch02_alignment_revision.md`；批准正文和 TikZ 代码均按其集成，未自由改写。
-- 第一章完成 1.3 的 Benchmark → FedSubMerge → ScribbleCL → SAMCL 重排；更新 1.1.4、1.2.1 限定段落、图 1-1 和图 1-2，并同步契约、章节卡、计划、状态与 claim section_id。第二章完成 HD/HD95/ASSD、Acc/ACC、2.2 严格术语、完整联合训练行与 $d/p$ 投影符号修订。
-- 已同步 claims、equations、notation 与 terminology 账本，CSV 模式与键唯一性通过。新公式标签为 `eq:foundations-seg-directed-distance`、`eq:foundations-seg-hd`、`eq:foundations-seg-hd95`、`eq:foundations-seg-assd` 和 `eq:foundations-cls-accuracy`；废弃的 `eq:foundations-seg-boundary` 不在活跃论文源码中。
-- Mode B 构建 `bash scripts/build_and_audit.sh` 成功，PDF 为 123 页；无 LaTeX error、未定义引用/交叉引用、重复 label 或缺失文件。已视觉检查图 1-1、图 1-2、HD/HD95/ASSD、Acc/ACC、2.2、表 2-1 与 $\mathbf{I}_p$ 所在页，确认无裁切、重叠或歧义。
-- Scribble 保护子节、RQ3、创新点（3）及 TODO 与基线逐字一致；Chapter 5、`evidence/experiments.csv`、`sources/` 均无差异。`sources/` 仍为 237 文件、指纹 `6c5d3c84a5418fffc6f2c3130b0a3939343acc9403b15dd53fe76e18f17ebf8f`。
-- ScribbleCL 仍为 `TODO-EXPERIMENT` / `blocked_by_experiments`；未改动其任务、基线、状态、数字、结果或结论。详细审查记录见 `handoff/MODE_B_CH01_CH02_ALIGNMENT_AUDIT.md`，GPT 上下文包已重建。
-
-# 历史报告：第二章剩余内容整章工程集成（2026-08-01）
+# Codex 最新报告：第二章剩余内容整章工程集成（2026-08-01）
 
 ## 第五章 ZScribbleSeg、ScribbleCL 与 SAMCL 集成状态（2026-08-05）
 

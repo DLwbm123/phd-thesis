@@ -1,9 +1,9 @@
 symbol,meaning,scope,first_definition,source,status,notes
-L_pce,部分交叉熵损失,第三章,,引用弱监督模块,pending,LaTeX 具体形式由正文确定
-L_global,全局一致性损失,第三章,,引用弱监督模块,pending,
-pi,类别混合比例向量,第三章,,引用弱监督模块,pending,向量格式需统一
-L_spatial,空间先验损失,第三章,,引用弱监督模块,pending,
-L_shape,形状正则化损失,第三章,,引用弱监督模块,pending,
+L_pce,部分交叉熵损失,第二章与第五章,2.2.3/5.3.1,author_definition;zhang2026zscribbleseg,defined,第五章仅在有效涂鸦位置计算
+L_global,全局一致性损失,第五章,5.3.1,zhang2026zscribbleseg,defined,全局一致性损失
+pi,类别混合比例向量,第三章,,ZScribbleSeg,pending,向量格式需统一
+L_spatial,空间先验损失,第五章,5.3.1,zhang2026zscribbleseg,defined,空间先验负证据损失
+L_shape,形状正则化损失,第三章,,ZScribbleSeg,pending,
 theta,模型参数,跨章节,2.1.1,all,defined,各章可带上下标但含义需一致
 rho,SAM 邻域半径,第五章,,SAMCL,pending,
 U,子空间正交基,第六章,,FedSubMerge,pending,需区分客户端与层索引
@@ -18,12 +18,7 @@ Y_hat,预测标签图,第二至四章,2.1.1,author_definition,defined,由逐位�
 L_CE,交叉熵损失,第二至六章,2.1.1,author_definition,defined,按任务可采用多类或二元形式
 P_k,类别k的预测区域,第二至四章,2.1.1,author_definition,defined,由预测标签图定义
 G_k,类别k的参考区域,第二至四章,2.1.1,author_definition,defined,由参考标签图定义
-d,图像空间维度,第二章,2.1.1,author_definition,defined,仅取2或3，分别表示二维图像或三维体数据
 d_a_B,点a到集合B的最近欧氏距离,第二至五章,2.1.1,author_definition,defined,边界评价时应使用物理坐标
-"Delta(A,B)",有向点到集合距离集合,第二章,2.1.1,author_definition,defined,由A中点到集合B的最近距离构成
-HD_k,标准豪斯多夫距离,第二章,2.1.1,taha2015metrics,defined,双向边界距离最大值
-HD95_k,95%豪斯多夫距离,第二章,2.1.1,taha2015metrics,defined,双向边界距离95%分位数最大值
-ASSD_k,平均对称表面距离,第二章,2.1.1,taha2015metrics,defined,双向最近边界距离平均值
 Q_q,q分位数算子,第二至五章,2.1.1,author_definition,defined,HD95中q取0.95
 I_F,固定图像,第二章,2.1.2,author_definition,defined,配准图像对中的固定图像
 I_M,移动图像,第二章,2.1.2,author_definition,defined,配准图像对中的移动图像
@@ -53,17 +48,14 @@ theta_t,完成第t阶段训练后的模型参数,第三章,3.2,Benchmark,defined
 "d_{t,i}",完成阶段t后在任务i测试集的平均Dice,第三章,3.2,Benchmark,defined,与正文 LaTeX 记号一致
 d_i^{NC},任务i独立训练参考的Dice,第三章,3.5,Benchmark,defined,RMA分母
 "d_{0,i}",随机初始化模型在任务i上的Dice,第三章,3.5,Benchmark,defined,E-FWT基线
-"d_{\mathrm{all}}",全部已见类别的Dice,第三章,3.5,Benchmark,defined,WCD
-"\\mathrm{Param}(\\theta_t)",模型theta_t的参数量,第三章,3.5,Benchmark,defined,模型参数量
-"N_t^{\mathrm{replay}}",回放数据量,第三章,3.5,Benchmark,defined,DRR分子
-"N_t^{\mathrm{train}}",训练数据量,第三章,3.5,Benchmark,defined,DRR分母
+d_{\mathrm{all}},全部已见类别的Dice,第三章,3.5,Benchmark,defined,WCD
+\\mathrm{Param}(\\theta_t),模型theta_t的参数量,第三章,3.5,Benchmark,defined,模型参数量
+N_t^{\mathrm{replay}},回放数据量,第三章,3.5,Benchmark,defined,DRR分子
+N_t^{\mathrm{train}},训练数据量,第三章,3.5,Benchmark,defined,DRR分母
 h_theta,分类模型,第二章,2.1.3,author_definition,defined,输出分类得分向量
 z_theta,分类模型输出的得分向量,第二章,2.1.3,Goodfellow2016,defined,logits
 q_theta_c,样本属于类别c的分类概率,第二章,2.1.3,Goodfellow2016,defined,多分类或多标签须以正文上标区分
 hat_y,分类预测标签,第二章,2.1.3,author_definition,defined,互斥多分类取最大概率类别
-Acc,单个分类任务的样本级总体准确率,第二章,2.1.3,author_definition,defined,不等同于第四章持续学习聚合指标ACC
-ACC,最终平均准确率,第四章,4.6,FedSubMerge,defined,由阶段--任务性能矩阵计算；详细定义见第四章
-mathbb_I,示性函数,第二章,2.1.3,author_definition,defined,正文写作mathbb I(·)
 TP,真阳性数,第二章,2.1.3,metric_definition,defined,指定阳性类别和阈值
 TN,真阴性数,第二章,2.1.3,metric_definition,defined,指定阳性类别和阈值
 FP,假阳性数,第二章,2.1.3,metric_definition,defined,指定阳性类别和阈值
@@ -84,8 +76,7 @@ g_new,当前任务损失梯度,第二章,2.3.2,author_definition,defined,在thet
 F_i,第i个参数的重要性近似,第二章,2.3.3,EWC,defined,Fisher信息对角近似
 theta_star,先前阶段参数,第二章,2.3.3,EWC,defined,正文写作theta_{t-1}^*
 g_m,第m个历史任务梯度估计,第二章,2.3.3,GEM,defined,来自历史记忆
-p,参数梯度向量维度,第二章,2.3.3,author_definition,defined,p=dim(g)，与图像空间维度d不同
-I_p,p维单位矩阵,第二章,2.3.3,author_definition,defined,与当前参数梯度维度一致
+I_d,d维单位矩阵,第二章,2.3.3,author_definition,defined,不与医学图像I混淆
 epsilon,参数扰动,第二章,2.3.3,SAM,defined,二范数受rho约束
 C_t,第t个任务参与客户端集合,第四章,4.3,FedSubMerge,defined,Chapter 4
 D_c^(t),客户端c在任务t的本地数据集,第四章,4.3,FedSubMerge,defined,Chapter 4
@@ -98,10 +89,13 @@ epsilon_tau,旧任务梯度未覆盖残差,第四章,4.5,FedSubMerge,defined,Cha
 B_c^(t),递归客户端历史代理,第四章,4.5,FedSubMerge,defined,Chapter 4
 "R_j,R_srv",客户端和服务器截断残差,第四章,4.5,FedSubMerge,defined,Chapter 4
 "C_model,C_PGS",模型和 PGS 通信量,第四章,4.5,FedSubMerge,defined,Chapter 4
-"Omega_L,Omega_U",已标注与未标注像素集合,第五章,5.2,引用弱监督模块,defined,
-"pi_k",未标注像素属于类别 k 的混合比例,第五章,5.3.1,引用弱监督模块,defined,
-"Phi_i^(k)",类别 k 在位置 i 的局部空间能量,第五章,5.3.1,引用弱监督模块,defined,
-"L_WS",被引用的当前任务弱监督组合损失,第五章,5.3.1,引用弱监督模块,defined,论文显示符号；内部 ZS 标识见 experiments/scribblecl/PROTOCOL.md
+"Omega_L,Omega_U",已标注与未标注像素集合,第五章,5.2,author_definition;zhang2026zscribbleseg,defined,已标注与未标注位置；未标注位置不等于背景
 "M,rho,epsilon",SAMCL 记忆缓冲区及锐度邻域参数,第五章,5.2/5.4,SAMCL,defined,
-"G_sup,G_CL",监督不足与持续训练的当前任务差距,第五章,5.3.2,ScribbleCL,defined,TODO-EXPERIMENT analysis quantities
-"Delta_int",监督增强与持续保护的描述性交互量,第五章,5.3.2,ScribbleCL,defined,TODO-EXPERIMENT descriptive only
+L_cur^(t),第 t 阶段当前任务损失,第五章,5.3.1,author_method,defined,PCE、全局一致性和空间先验之和
+M_(t-1),第 t 阶段开始前的容量受限历史缓冲区,第五章,5.3.2,author_method,defined,保存图像、涂鸦、参考特征和任务标识
+h_theta(X),分割网络为输入 X 计算的选定中间特征,第五章,5.3.2,author_method,defined,用于历史特征保持
+h_tilde_m,样本进入缓冲区时保存的参考特征,第五章,5.3.2,author_method,defined,固定历史目标
+L_feature,缓冲区历史特征保持损失,第五章,5.3.2,author_method,defined,当前特征与参考特征的平方距离
+L_buffer^(t),ZSDERpp 的缓冲区损失,第五章,5.3.2,author_method,defined,系数为 0.5/0.5/1.0/0.1
+L_ZSDERpp^(t),ZSDERpp 在第 t 阶段的统一训练目标,第五章,5.3.2,author_method,defined,当前任务损失与缓冲区损失之和
+L_bg^(t),Class-CL 的背景语义保持损失,第五章,5.3.2,cermelli2020mib;author adaptation,defined,同一方法内部的类别增量校正
