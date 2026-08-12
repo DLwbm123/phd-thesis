@@ -14,9 +14,9 @@
 - 第二章剩余内容（2.1.3、2.2、2.3、2.4）已完成工程集成；第二章整体为 `drafted_pending_review`。2.1.1“医学图像分割”与 2.1.2“医学图像配准”继续为 `drafted_and_verified`；本轮批准范围内更新了 2.1.1 的 HD、HD95、ASSD 定义，2.1.3 的 Acc/ACC 区分，2.2 严格术语、表 2-1 完整联合训练行及 2.3.3 的 $d$/$p$ 符号边界。
 - 第三章 Benchmark 继续为 `drafted_pending_review`，本轮不复审、不批准也不修改。作者已于本任务明确授权第四章开始并完成工程集成；旧的“第四章正文不得开始”限制已失效。
 - 第四章 FedSubMerge 已完成批准稿、最终图表、文献和证据账本的工程集成，状态为 `drafted_pending_review`；尚未获得作者/GPT Pro 全章复审批准。
-- 第五章已重构 ScribbleCL 的方法与实验设定：覆盖 Domain-CL、Class-CL 和 Organ-CL，并使用 Dense-Sequential、PCE-Sequential、ZS-Sequential、ZS-Regu 和 ZS-MiB。5.3.1 现以“监督增强、类别分布校正与结构先验正则化”说明当前任务弱监督目标。Dense-Sequential 已从第三章 Non-CL 填入；PCE-Sequential、ZS-Sequential、ZS-Regu 和 ZS-MiB 结果仍为 `TODO-EXPERIMENT` / `blocked_by_experiments`。实验分析、讨论和结论暂未写作；SAMCL 方法和原始实验保持不变。
+- 第五章已完成 ScribbleCL 的 Domain-CL 定稿式更新：保留三类场景的数据组织、预处理和方法内容，删除 Class-CL 与 Organ-CL 的结果表；新增涂鸦标注图，并依据当前四组 Domain-CL 结果补全实验分析、讨论、结论、综合讨论衔接和本章小结。SAMCL 方法和原始实验保持不变。
 - TRE 通用数学定义（`TODO-EVIDENCE-REG-001`）与非正 Jacobian 比例具体统计形式（`TODO-EVIDENCE-REG-002`）尚未闭合，但二者均未作为公式写入 2.1.2 正文。
-- ScribbleCL 持续学习实验继续为 `TODO-EXPERIMENT` / `blocked_by_experiments`；PCE-Sequential、ZS-Sequential、ZS-Regu 和 ZS-MiB 需要实际运行、日志和性能矩阵后方可填入结果或结论。
+- ScribbleCL 的 Domain-CL 结果已纳入正文；Class-CL 与 Organ-CL 不在本章报告结果，且未对两类场景作性能判断。
 
 ## 当前分支与验证
 

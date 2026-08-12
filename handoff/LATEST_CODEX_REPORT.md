@@ -1,4 +1,14 @@
-# Codex 最新报告：第五章 ScribbleCL 第二轮修改（2026-08-11）
+# Codex 最新报告：第五章 ScribbleCL Domain-CL 定稿式更新（2026-08-12）
+
+## 本轮交付
+
+1. 已在 `chapters/ch05_scribble_samcl.tex` 集成作者提供的三类持续分割场景涂鸦标注图、指定引导语、图注和标签；图件经 MuPDF 规范化后置于 `figures/ch05/scribble_annotation_fig.pdf`，XeLaTeX/xdvipdfmx 可正常读取。
+2. 已删除 `tab:scribblecl-class-results` 和 `tab:scribblecl-organ-results`，保留三类场景的数据集描述、任务顺序、预处理、方法定义、公式、方法对照表和数据组织表。
+3. Domain-CL 结果表已填入四种方法的 A-Dice、BWTR、RMA 和 E-FWT，并补全实验分析、讨论和结论；综合讨论与本章小结已同步更新。结论严格限定于当前六中心前列腺 MRI 序列，不对 Class-CL 或 Organ-CL 作结果判断。
+4. 已执行 `latexmk -xelatex -interaction=nonstopmode -halt-on-error -file-line-error main.tex`，退出码为 0，生成 123 页 `main.pdf`（SHA-256：`d2c4a3529966b44ae8fb3f4a676e792f9edb2369e59b541b5d98c78720ce21b1`）。日志无 LaTeX error、未定义 citation/reference、重复 label 或缺失文件。
+5. 已视觉复核第 82--84、89--90 印刷页：涂鸦图三行内容完整清晰、图注与正文引用正常；Domain-CL 表和分析未跨页破坏；讨论、结论、综合讨论与本章小结均无裁切或重叠。
+
+# 历史报告：第五章 ScribbleCL 第二轮修改（2026-08-11）
 
 ## 本轮交付
 

@@ -489,6 +489,15 @@ $256\times256$。Organ-CL 对每幅图像进行零均值、单位方差归一化
 
 生成结果保留前景类别和背景涂鸦，其他位置写为 255，并在部分交叉熵中作为忽略位置。若训练代码内部使用其他 \texttt{ignore\_index}，只能在数据读取阶段执行确定性映射，不改变磁盘中构建的数据含义。所有比较方法共享同一份固定涂鸦文件，避免由重新随机生成标注造成额外差异。
 
+图\ref{fig:scribblecl-annotation-sequences}给出了三类持续分割场景中由密集训练标签生成的代表性涂鸦及任务到达顺序。Domain-CL 保持前列腺分割语义不变并依次改变数据中心，Organ-CL 依次改变器官与成像模态，Class-CL 则分阶段扩展心脏结构类别。
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{ch05/scribble_annotation_fig.pdf}
+\caption{ScribbleCL 三类持续分割场景的涂鸦标注与任务序列。每一行对应一种持续分割设定，箭头表示任务到达顺序；蓝色曲线表示背景涂鸦，其他彩色曲线表示当前阶段可访问的前景类别涂鸦，未被涂鸦覆盖的像素在弱监督训练中设为忽略位置。}
+\label{fig:scribblecl-annotation-sequences}
+\end{figure}
+
 Class-CL 先按照当前阶段的标签空间完成类别重映射，再调用涂鸦生成代码。当前不可访问的旧类别和未来类别只按该阶段的背景含义处理，生成过程不读取其真实类别身份。完整密集标签仅用于构建模拟涂鸦、验证、测试和 Dense-Sequential，不进入 PCE-Sequential、ZS-Sequential 或 ZS-MiB 的训练损失。
 
 \subsubsection{训练与评价设置}
@@ -500,12 +509,14 @@ $\lambda_1=0.05$、$\lambda_2=1$ 和 $\lambda_3=1$。结构项只对满足单一
 
 ZS-Regu 使用 $\lambda_{\mathrm{EWC}}=1$ 和 $\gamma=0.1$。ZS-MiB 使用蒸馏权重 10 和 $\alpha=1.0$。这些持续学习参数与第三章保持一致。所有方法均不回放历史原始图像，也不增加随任务保存的原始样本缓存。
 
-评价使用第三章定义的阶段--任务性能矩阵。Domain-CL 报告 A-Dice、BWTR、RMA 和 E-FWT；Class-CL 报告 A-Dice、BWTR、RMA 和 WCD；Organ-CL 报告 A-Dice、BWTR 和 RMA。所有指标均在密集测试标签上计算。Dense-Sequential 的数值直接采用第三章 Non-CL 结果，其余方法在实验完成前不填写数值。
+评价使用第三章定义的阶段--任务性能矩阵。Domain-CL 报告 A-Dice、BWTR、RMA 和 E-FWT；Class-CL 报告 A-Dice、BWTR、RMA 和 WCD；Organ-CL 报告 A-Dice、BWTR 和 RMA。所有指标均在密集测试标签上计算。Dense-Sequential 的数值采用第三章对应的 Non-CL 结果，弱监督方法按照相同任务顺序和指标定义计算。下文基于当前表中已有结果分析 Domain-CL 场景。
 
 \subsection{实验结果}
 \label{subsec:scribblecl-results}
 
-\begin{table}[htbp]
+表\ref{tab:scribblecl-domain-results}给出了六中心前列腺 MRI 序列上的 Domain-CL 结果。A-Dice、RMA 和 E-FWT 的数值越大越好；BWTR 数值越大，表示后续阶段训练后旧域性能保持越充分。
+
+\begin{table}[H]
 \centering
 \caption{Domain-CL 场景下 ScribbleCL 方法的结果}
 \label{tab:scribblecl-domain-results}
@@ -516,75 +527,40 @@ ZS-Regu 使用 $\lambda_{\mathrm{EWC}}=1$ 和 $\gamma=0.1$。ZS-MiB 使用蒸馏
 \toprule
 方法 & A-Dice & BWTR & RMA & E-FWT \\
 \midrule
-Dense-Sequential & $.676\pm.021$ & $-.237\pm.038$ & $1.086\pm.008$ & $.260\pm.151$ \\
-PCE-Sequential & -- & -- & -- & -- \\
-ZS-Sequential & -- & -- & -- & -- \\
-ZS-Regu & -- & -- & -- & -- \\
+Dense-Sequential & $0.676$ & $-0.237$ & $1.086$ & $0.260$ \\
+PCE-Sequential & $0.248$ & $-0.545$ & $0.776$ & $0.133$ \\
+ZS-Sequential & $0.510$ & $-0.324$ & $0.732$ & $0.234$ \\
+ZS-Regu & $0.612$ & $-0.206$ & $0.761$ & $0.216$ \\
 \bottomrule
 \end{tabular}
-\vspace{2pt}
-
-\begin{minipage}{0.96\textwidth}
-\footnotesize 注：Dense-Sequential 数值直接采用第\ref{chap:benchmark}章 Domain-CL 的 Non-CL 结果；“--”表示相应实验结果尚未填入。
-\end{minipage}
-\end{table}
-
-\begin{table}[htbp]
-\centering
-\caption{Class-CL 场景下 ScribbleCL 方法的结果}
-\label{tab:scribblecl-class-results}
-\small
-\renewcommand{\arraystretch}{1.14}
-\setlength{\tabcolsep}{7pt}
-\begin{tabular}{lcccc}
-\toprule
-方法 & A-Dice & BWTR & RMA & WCD \\
-\midrule
-Dense-Sequential & $.471\pm.012$ & $-.598\pm.015$ & $1.014\pm.028$ & $.572\pm.023$ \\
-PCE-Sequential & -- & -- & -- & -- \\
-ZS-Sequential & -- & -- & -- & -- \\
-ZS-MiB & -- & -- & -- & -- \\
-\bottomrule
-\end{tabular}
-\vspace{2pt}
-
-\begin{minipage}{0.96\textwidth}
-\footnotesize 注：Dense-Sequential 数值直接采用第\ref{chap:benchmark}章 Class-CL 的 Non-CL 结果；“--”表示相应实验结果尚未填入。
-\end{minipage}
-\end{table}
-
-\begin{table}[htbp]
-\centering
-\caption{Organ-CL 场景下 ScribbleCL 方法的结果}
-\label{tab:scribblecl-organ-results}
-\small
-\renewcommand{\arraystretch}{1.14}
-\setlength{\tabcolsep}{10pt}
-\begin{tabular}{lccc}
-\toprule
-方法 & A-Dice & BWTR & RMA \\
-\midrule
-Dense-Sequential & $.603\pm.008$ & $-.369\pm.005$ & $1.006\pm.008$ \\
-PCE-Sequential & -- & -- & -- \\
-ZS-Sequential & -- & -- & -- \\
-ZS-Regu & -- & -- & -- \\
-\bottomrule
-\end{tabular}
-\vspace{2pt}
-
-\begin{minipage}{0.88\textwidth}
-\footnotesize 注：Dense-Sequential 数值直接采用第\ref{chap:benchmark}章 Organ-CL 的 Non-CL 结果；“--”表示相应实验结果尚未填入。
-\end{minipage}
 \end{table}
 
 \subsection{实验分析}
 \label{subsec:scribblecl-experimental-analysis}
 
+Dense-Sequential 的 A-Dice、RMA 和 E-FWT 分别为 $0.676$、$1.086$ 和 $0.260$，均为四种方法中的最高值；其 BWTR 为 $-0.237$。BWTR 仍为负值，说明在当前六中心顺序中，即使每个阶段使用密集标签，直接顺序更新后仍存在旧域性能下降。因此，Dense-Sequential 提供的是监督充分条件下的顺序训练参照，而不是历史知识保持的上界。
+
+PCE-Sequential 仅在涂鸦位置计算部分交叉熵，其 A-Dice、BWTR、RMA 和 E-FWT 分别为 $0.248$、$-0.545$、$0.776$ 和 $0.133$。与 PCE-Sequential 相比，ZS-Sequential 的 A-Dice 提高 $0.262$，BWTR 提高 $0.221$，E-FWT 提高 $0.101$，而 RMA 降低 $0.044$。在统一骨干、任务顺序和训练预算下，ZS-Sequential 在最终多域性能、旧域保持和未来域直接分割能力上均高于 PCE-Sequential，但当前任务相对建模能力没有同步提高。该结果也说明，涂鸦监督持续分割不能只依据单一最终指标判断方法作用。
+
+ZS-Regu 在 ZS-Sequential 的基础上加入 EWC。其 A-Dice 从 $0.510$ 提高到 $0.612$，BWTR 从 $-0.324$ 提高到 $-0.206$，RMA 从 $0.732$ 提高到 $0.761$；E-FWT 则从 $0.234$ 降低到 $0.216$。在共享标签空间下，加入参数重要性约束后，最终平均性能、旧域保持和当前任务相对建模能力均有所改善，但旧域保持的改善没有同步转化为更高的未来域直接分割性能。
+
+与 Dense-Sequential 相比，ZS-Regu 的 A-Dice、RMA 和 E-FWT 分别低 $0.064$、$0.325$ 和 $0.044$，其 BWTR 则高 $0.031$。在本实验设置下，增强弱监督目标与参数正则化的组合缩小了最终平均性能差距，并在四种方法中取得最高 BWTR；当前任务相对建模和未来域直接泛化仍与密集监督参照存在差距。Dense-Sequential 在 A-Dice、RMA 和 E-FWT 上占优，ZS-Regu 在 BWTR 上占优，四项指标没有给出统一的方法排序。
+
 \subsection{讨论}
 \label{subsec:scribblecl-discussion}
 
+Domain-CL 结果反映了当前阶段监督覆盖与后续阶段历史保持两个不同问题。PCE-Sequential 与 ZS-Sequential 使用相同的涂鸦数据，二者的数值差异说明，仅在已标注位置计算部分交叉熵不足以充分利用未标注区域；监督增强、类别比例校正和结构先验能够在不把全部未标注像素写成确定标签的条件下补充训练约束。不过，ZS-Sequential 的 RMA 没有随 A-Dice 同步提高，表明更好的最终多域表现不等同于每个新域都获得更强的相对建模能力。对涂鸦监督持续分割的分析仍需同时观察主对角线、历史任务条目和未来域条目。
+
+Domain-CL 保持标签语义和共享输出头不变，不涉及类别增量场景中的背景语义变化。ZS-Regu 只保存上一阶段参数和参数重要性统计，不重新访问历史原始图像。其 A-Dice、BWTR 和 RMA 均高于 ZS-Sequential，与参数正则化减小后续更新对历史重要参数扰动的设计目标一致；E-FWT 略低于 ZS-Sequential，则说明稳定性、当前任务建模和前向能力是相关但不能互相替代的评价维度。该观察只适用于当前共享标签空间的 Domain-CL 设定，不能直接外推到输出空间扩展或任务特定输出头场景。
+
+本节结论限定于 A 到 F 的六中心前列腺 MRI 顺序、固定数据划分、由密集训练标签模拟得到的涂鸦、ResUNet32 骨干和统一的 150-epoch 训练预算。模拟涂鸦保证了比较方法使用相同的稀疏标注，但不能覆盖真实标注者在涂鸦位置、长度和类别选择上的差异。表中未报告离散性统计，因此本节只讨论汇总指标的相对关系，不作统计显著性判断。
+
 \subsection{结论}
 \label{subsec:scribblecl-conclusion}
+
+在六中心 Domain-CL 序列中，ZS-Sequential 相较 PCE-Sequential 将 A-Dice 从 $0.248$ 提高到 $0.510$，并同时提高 BWTR 与 E-FWT；在此基础上，ZS-Regu 取得 $0.612$ 的 A-Dice 和 $-0.206$ 的 BWTR。该结果表明，在当前实验设置下，增强弱监督目标与参数重要性正则化分别作用于当前阶段的稀疏监督利用和后续阶段的历史知识保持，并在最终平均性能与 BWTR 上体现出互补性。
+
+ZS-Regu 的 A-Dice、RMA 和 E-FWT 仍低于 Dense-Sequential，且其 E-FWT 低于 ZS-Sequential。由此可见，在不回放历史原始图像的条件下，保存参数重要性统计能够减轻旧域性能下降，但不能替代密集监督，也不能保证当前任务建模、旧域保持和未来域直接分割同时达到最优。ScribbleCL 的 Domain-CL 结果应基于阶段--任务性能矩阵的多个维度解释，而不能由单一最终 Dice 概括。
 \section{SAMCL：锐度感知元持续医学图像配准方法}
 \label{sec:samcl}
 
@@ -759,6 +735,7 @@ SAMCL 在腹部 MR--CT 上取得 0.563 的最终 Dice，高于独立训练的 0.
 
 第\ref{subsec:prior-scribble-foundation}节中的监督增强、类别分布校正和结构先验正则化用于改善当前任务的稀疏监督。EWC 和 MiB 分别处理参数保持与类别增量中的背景语义变化\cite{zhang2026zscribbleseg,kirkpatrick2017ewc,cermelli2020mib}。本章在三类 Benchmark 场景中统一数据构建和评价设置。SAMCL 则通过有限回放、元持续更新和锐度感知优化处理顺序配准。两部分针对不同任务，不共享同一训练目标。
 
+Domain-CL 结果进一步表明，当前监督与历史知识保护影响不同的能力维度。ZS-Regu 在四种分割方法中取得最高 BWTR，而 Dense-Sequential 在 A-Dice、RMA 和 E-FWT 上保持最高值。在不保存历史原始图像的条件下，参数重要性约束改善了 ZS-Sequential 的最终平均性能和旧域保持，但没有补足密集监督参照下的当前任务相对建模能力，也没有提高未来域直接分割性能。与之相比，SAMCL 的当前任务监督相对完整，并通过有限历史图像对回放获得旧任务梯度。两部分的差异说明，持续学习结果需要结合当前监督强度和历史信息载体共同解释。
 
 SAMCL 则在同一训练循环中同时使用当前和历史图像对。经验回放提供历史梯度，元更新减少跨样本干扰，锐度感知目标偏向邻域损失较平坦的参数。该组合可以共同影响稳定性与可塑性，但仍受记忆容量限制。更大的缓冲区可能改善旧任务覆盖，同时增加存储和治理成本；较强的历史约束也可能降低新任务适应。原始四任务结果中，SAMCL 在若干 Dice 任务上优于 MER，但在 NLST 的 TRE 和后向变化上不及 MER，正体现了不同任务之间的取舍，而不是单一指标上的统一优势。
 
@@ -766,7 +743,7 @@ SAMCL 则在同一训练循环中同时使用当前和历史图像对。经验�
 \section{本章小结}
 \label{sec:task-cl-summary}
 
-本章研究了任务持续演化与训练信息受限在医学图像分割和配准中的两种具体表现。对于涂鸦监督持续分割，本章构建 ScribbleCL，并沿用第三章的 Domain-CL、Class-CL 和 Organ-CL 数据场景。当前任务采用监督增强、类别分布校正与结构先验正则化\cite{zhang2026zscribbleseg}。Domain-CL 和 Organ-CL 使用 ZS-Regu，Class-CL 使用 ZS-MiB。实验同时设置 Dense-Sequential、PCE-Sequential 和 ZS-Sequential，用于区分监督形式与持续知识处理的作用。实验分析、讨论和结论将在对应结果完成后给出。
+本章研究了任务持续演化与训练信息受限在医学图像分割和配准中的两种具体表现。对于涂鸦监督持续分割，本章构建 ScribbleCL，并沿用第三章的 Domain-CL、Class-CL 和 Organ-CL 数据场景。当前任务采用监督增强、类别分布校正与结构先验正则化\cite{zhang2026zscribbleseg}。Domain-CL 和 Organ-CL 使用 ZS-Regu，Class-CL 使用 ZS-MiB；Dense-Sequential、PCE-Sequential 和 ZS-Sequential 用于区分监督形式与持续知识处理的作用。Domain-CL 实验中，ZS-Sequential 相较 PCE-Sequential 将 A-Dice 从 $0.248$ 提高到 $0.510$，ZS-Regu 进一步取得 $0.612$ 的 A-Dice 和 $-0.206$ 的 BWTR。Dense-Sequential 在 A-Dice、RMA 和 E-FWT 上保持最高值，ZS-Regu 在 BWTR 上取得最高值。该结果说明，在当前六中心序列中，增强弱监督目标和参数正则化能够分别改善稀疏监督利用与旧域保持，但不能完全补足密集监督下的当前任务建模和未来域直接分割能力。
 
 
 对于持续医学图像配准，本章介绍了 SAMCL。该方法在容量受限的经验回放基础上使用一阶元持续学习协调当前与历史梯度，并将锐度感知损失应用于两类更新，以改善参数邻域中的稳健性。四个顺序配准任务表明，SAMCL 相较直接顺序训练明显缓解了早期任务性能下降，并在多个任务上与 MER、独立训练和集中式多任务参考保持竞争性；同时，NLST 结果、记忆依赖和单一任务顺序也限定了其结论范围。通过上述两类研究，本章进一步说明，医学影像持续学习方法必须同时报告任务如何变化、当前监督提供什么信息、历史数据以何种形式可访问，以及相应结果能够支持何种范围的结论。

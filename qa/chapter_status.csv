@@ -43,11 +43,11 @@ section_id,title,status,artifact
 3.8,本章小结,drafted_pending_review,chapters/ch03_benchmark.tex
 4,基于梯度子空间融合的无回放联邦持续医学图像分类研究,not_started,chapters/ch04_fedsubmerge.tex
 5,面向弱监督分割与配准的医学影像持续学习研究,drafted_pending_review,chapters/ch05_scribble_samcl.tex
-5.3,ScribbleCL：面向涂鸦监督的持续医学图像分割研究,blocked_by_experiments,chapters/ch05_scribble_samcl.tex
+5.3,ScribbleCL：面向涂鸦监督的持续医学图像分割研究,drafted_pending_review,chapters/ch05_scribble_samcl.tex
 5.1,引言,drafted_pending_review,chapters/ch05_scribble_samcl.tex
 5.2,问题定义与研究动机,drafted_pending_review,chapters/ch05_scribble_samcl.tex
 5.3.1,监督增强、类别分布校正与结构先验正则化,drafted_pending_review,chapters/ch05_scribble_samcl.tex
-5.3.2,ScribbleCL 方法、实验设定与待补结果,blocked_by_experiments,chapters/ch05_scribble_samcl.tex
+5.3.2,ScribbleCL 方法、实验设定与 Domain-CL 结果,drafted_pending_review,chapters/ch05_scribble_samcl.tex
 5.4,SAMCL：锐度感知元持续医学图像配准方法,drafted_pending_review,chapters/ch05_scribble_samcl.tex
 5.4.1,面向配准任务序列的元持续学习,drafted_pending_review,chapters/ch05_scribble_samcl.tex
 5.4.2,锐度感知优化与当前任务--历史任务联合更新,drafted_pending_review,chapters/ch05_scribble_samcl.tex
