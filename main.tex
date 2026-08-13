@@ -26,11 +26,31 @@
 \listoffigures
 
 \begin{abstract}
-\mbox{}
+医学影像智能分析模型通常在预先汇集且相对固定的数据集上完成训练，但真实医疗环境中的中心、设备、疾病类别、器官和成像模态会持续变化。与此同时，模型在一次更新中能够调用的训练信息往往受到限制：当前样本可能只有涂鸦等部分监督，历史原始数据可能不能被完整回放，多中心影像也可能只能保留在各自机构。本文将上述条件概括为任务持续演化与训练信息受限，并围绕医学图像分割、分类和配准研究模型如何获得新能力、保持历史知识以及解释不同能力之间的取舍。
+
+针对持续医学图像分割缺少统一场景和评价口径的问题，本文从输入分布、标签空间与分割对象的变化出发，构建 Domain-CL、Class-CL 和 Organ-CL 三类场景，并以阶段--任务性能矩阵统一组织结果。在平均性能与后向迁移之外，受限建模能力用于比较持续约束下的当前任务学习与独立训练参照，扩展前向迁移用于汇总多个未来域上的直接表现，WCD、模型参数扩展和数据回放比例则补充最终统一输出与资源条件。实验表明，不同方法在知识保持、当前任务学习、前向能力和资源代价上的排序并不一致；任务顺序、背景语义处理和回放容量也会改变结论。因此，持续医学图像分割不能仅由单一最终平均性能或遗忘量评价。
+
+在多中心原始数据不可集中且历史原始样本不回放的条件下，本文提出 FedSubMerge。客户端根据样本级梯度递归构建低秩主梯度子空间，服务器融合不同客户端的基与奇异值，并在后续本地训练中将梯度投影到保护子空间的正交补，以降低当前更新对跨客户端历史知识的一阶干扰。FedSubMerge-AD 进一步按网络层计算子空间距离，为目标客户端选择相关节点并构建个性化保护空间。在四个医学影像基准构成的七种联邦设置中，每种设置的无回放最高 ACC 均由 FedSubMerge 系列取得，其中五种设置也取得全部比较方法中的最高 ACC；自适应融合在五种设置中具有更高 ACC，统一融合则在全部七种设置中具有更高 BWT。任务边界处增加的子空间通信在完全参与条件下约为二十轮常规模型通信量的 $3.0\%$--$3.5\%$。上述机制和结果不构成形式化隐私保证。
+
+针对涂鸦监督与持续任务演化叠加的分割问题，本文构建 ScribbleCL。当前任务以部分交叉熵为基础，只使用全局一致性和空间先验补充未标注区域约束；ZSDERpp 在容量受限的缓冲区中保存历史图像--涂鸦对、参考特征和任务标识，将特征保持、缓冲区部分交叉熵、全局一致性与空间先验纳入统一目标，并在 Class-CL 中重新解释背景概率以缓解背景语义变化。在已完成的六中心 Domain-CL 实验中，ZSDERpp 的 A-Dice 和 BWTR 分别为 $0.701$ 和 $-0.152$，均为该组比较中的最高值；Dense-Sequential 的 RMA 和 E-FWT 仍然更高。结果说明有限历史回放能够改善最终多域性能和旧域保持，但不能据此断言稀疏监督在当前任务建模或未来域直接能力上统一优于密集监督。
+
+面向解剖区域、模态关系和配准类型依次变化的持续医学图像配准，本文提出 SAMCL。该方法使用容量受限的历史图像对回放，以一阶元持续学习协调当前样本和历史样本的梯度关系，并将锐度感知目标用于两类更新。四任务实验中，直接顺序训练在 OASIS、腹部 CT--CT 和 NLST 上的后向变化分别为 $-0.395$、$-0.129$ 和 $3.508$ mm，SAMCL 将其改善为 $-0.037$、$-0.039$ 和 $0.306$ mm。SAMCL 在多个 Dice 任务上保持竞争性，但在 NLST 上不统一优于有限回放参照，表明知识保持与未见任务泛化仍是相关但不同的目标。
+
+综合上述研究，本文认为持续医学影像学习需要把任务如何变化、训练时能够访问何种监督与历史信息、模型需要保留哪些能力以及相应资源代价放在同一分析框架中。明确场景和访问条件是可比性的前提，多维评价是准确解释方法行为的基础，而任何性能结论都应限定在相应任务序列、模型和数据治理条件内。
 \end{abstract}
 
 \begin{abstract*}
-\mbox{}
+Medical image analysis models are commonly trained on pre-collected and relatively stationary datasets. In clinical practice, however, medical centers, scanners, disease categories, anatomical targets, and imaging modalities may continue to change. The information available to each model update is also often limited: current samples may provide only partial supervision such as scribbles, historical raw data may not be fully replayable, and multi-center images may have to remain within their institutions. This thesis studies continual learning for medical image segmentation, classification, and registration under these evolving tasks and limited training information, with an emphasis on how models acquire new capabilities, preserve historical knowledge, and trade off different dimensions of performance.
+
+To address the lack of consistent scenarios and evaluation protocols in continual medical image segmentation, this thesis defines Domain-CL, Class-CL, and Organ-CL according to changes in the input distribution, label space, and segmentation target. A stage--task performance matrix is used to organize all evaluations. In addition to average performance and backward transfer, restricted modeling ability compares current-task learning under continual constraints with task-specific training, extended forward transfer summarizes direct performance on multiple future domains, and WCD, model parameter expansion, and data replay ratio describe cumulative output quality and resource conditions. The experiments show that method rankings differ across knowledge retention, current-task learning, forward capability, and resource cost. Task order, background semantics, and replay capacity also affect the conclusions. Continual medical image segmentation therefore cannot be characterized by a single final average or forgetting score.
+
+For replay-free federated continual learning in which multi-center raw data cannot be centralized and historical raw samples cannot be replayed, this thesis proposes FedSubMerge. Each client recursively constructs a low-rank principal gradient subspace from sample-wise gradients. The server merges client bases with their singular values, and subsequent local training projects gradients onto the orthogonal complement of the protected subspace to reduce first-order interference with historical knowledge accumulated across clients. FedSubMerge-AD further measures layer-wise subspace distances, selects relevant clients for each target client, and forms personalized protection spaces. Across seven federated settings built from four medical imaging benchmarks, one of the two variants achieves the highest ACC among replay-free methods in every setting and the highest ACC among all compared methods in five settings. Adaptive merging yields higher ACC in five settings, whereas uniform merging yields higher BWT in all seven. Under full participation, task-boundary subspace communication accounts for approximately $3.0\%$--$3.5\%$ of the communication volume of twenty conventional model rounds. These mechanisms and results do not constitute a formal privacy guarantee.
+
+For continual segmentation with scribble supervision, this thesis develops ScribbleCL. The current-task objective is based on partial cross-entropy and uses only global consistency and a spatial prior to constrain unlabeled regions. ZSDERpp stores a capacity-limited buffer of historical image--scribble pairs, reference features, and task identities, and unifies feature preservation, buffer partial cross-entropy, global consistency, and the spatial prior. In Class-CL, background probabilities are reinterpreted to mitigate background semantic shift. In the completed six-center Domain-CL experiment, ZSDERpp obtains an A-Dice of $0.701$ and a BWTR of $-0.152$, the best values in the corresponding comparison, while Dense-Sequential retains higher RMA and E-FWT. The results indicate that limited historical replay improves final multi-domain performance and retention, but they do not establish uniform superiority of sparse supervision over dense supervision in current-task modeling or direct performance on future domains.
+
+For continual medical image registration across changing anatomical regions, modality relationships, and registration types, this thesis proposes SAMCL. The method replays a capacity-limited set of historical image pairs, applies first-order meta-continual learning to coordinate gradients from current and historical samples, and uses a sharpness-aware objective for both update paths. In a four-task sequence, direct sequential training produces backward changes of $-0.395$, $-0.129$, and $3.508$ mm on OASIS, abdominal CT--CT, and NLST, respectively; SAMCL improves them to $-0.037$, $-0.039$, and $0.306$ mm. SAMCL remains competitive on multiple Dice-based tasks but does not uniformly outperform the finite-replay reference on NLST, showing that knowledge retention and generalization to unseen tasks are related but distinct objectives.
+
+Taken together, the studies show that continual learning for medical image analysis should jointly specify how tasks evolve, which supervision and historical information are accessible during training, which capabilities must be retained, and what resource costs are accepted. Explicit scenarios and access conditions are prerequisites for meaningful comparison, multidimensional evaluation is necessary for interpreting method behavior, and every empirical conclusion should remain bounded by its task sequence, model, and data-governance assumptions.
 \end{abstract*}
 
 \mainmatter
@@ -42,7 +62,7 @@
 \include{chapters/ch06_conclusion}
 
 \appendix
-\chapter{在学期间学术成果和参加科研情况}
+\include{chapters/appendix_publications}
 
 \backmatter
 \ifthesisbibliography

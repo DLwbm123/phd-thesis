@@ -1,3 +1,12 @@
+# Codex 最新报告：作者提供整包 LaTeX 源码导入（2026-08-13）
+
+- 已将作者提供的 `PhD_Thesis_revised_clean_source_2026-08-12.zip` 解包到隔离副本，并以其 36 个文件作为全部 LaTeX 编译输入的唯一来源。逐项校验确认：所有仓库已跟踪的编译输入均与压缩包同路径文件逐字节一致；新增 `chapters/appendix_publications.tex` 与 `REVISION_REPORT.md`。仓库特有的 `sources/`、`evidence/`、`qa/`、`handoff/`、`prompts/`、`tasks/`、`drafts/` 与 `experiments/` 均未被删除或覆盖。
+- 本版补全中英文摘要、第六章“总结与展望”，并将内容完备的附录 A“在学期间学术成果与科研情况”置于参考文献之前；第一至第五章、文献库和图件均按用户交付版本更新。第六章状态更新为 `drafted_pending_review`，仍需作者/GPT Pro 全章复审。
+- 已在隔离副本运行 `bash scripts/build_and_audit.sh`，生成 129 页 `main.pdf`（SHA-256 `20b6997db61963771c6fa0c3ce3cb4f52bfad4425d7fc7a4d4ad35b0699d3b1b`）。日志无 undefined citation/reference、缺失文件、重复标签或 LaTeX 错误；风格审查未发现达到阈值的预设模式。参考论文文本重合审查仅命中成果附录与参考模板注释共同包含的会议名称 `Medical Image Computing and Computer Assisted Intervention--MICCAI`，未发现正文句段复制。
+- 已渲染并检查中文摘要、英文摘要、第六章、成果附录和参考文献首页，未见裁切、重叠、乱码或图表异常。英文摘要存在 3 处轻微 `Overfull \\hbox`（最大 9.25pt）提示；为忠实保留用户提供的整包源码，本轮没有自行改变作者正文。推送前需保留该已知非阻塞版式提示。
+
+---
+
 # Codex 最新报告：参考论文模板格式对齐（2026-08-13）
 
 - 已解包并核对参考论文 `651a9c0160c6e1a6ff00f86a.zip`。当前论文与参考论文的 `fduthesis.cls` 和 `fduthesis.def` SHA-256 完全一致，因此页边距、字号、章节层级、题注、页眉页脚和 GB/T 7714 数字制文献格式均由同一模板控制，无需替换类文件。

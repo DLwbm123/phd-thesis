@@ -4,18 +4,14 @@
 
 ## 规则命中
 
-| 文件 | 类别 | 模式 | 次数 | 原因 |
-|---|---|---:|---:|---|
-| `chapters/ch01_introduction.tex` | transition | `同时` | 24 | 过度依赖统一连接词 |
-| `chapters/ch03_benchmark.tex` | transition | `同时` | 12 | 过度依赖统一连接词 |
-| `chapters/ch05_scribble_samcl.tex` | transition | `同时` | 17 | 过度依赖统一连接词 |
-| `chapters/ch05_scribble_samcl.tex` | sequence | `最后` | 5 | 避免所有段落都采用固定枚举结构 |
+未发现达到阈值的预设模式。
 
 ## 重复段落开头
 
 | 归一化开头 | 次数 |
 |---|---:|
 | `figure[htbp]` | 8 |
+| `enumerate[le` | 4 |
 | `table[htbp]P` | 4 |
 | `table[htbp]S` | 4 |
 | `FedSubMerge-` | 3 |
