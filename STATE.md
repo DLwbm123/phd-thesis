@@ -10,6 +10,7 @@
 
 ## 当前阶段
 
+- 已按 `CODEX_TASK_update_thesis_abstracts.md` 更新中英文摘要与关键词；四项工作按 Benchmark、FedSubMerge、ScribbleCL/ZSDERpp、SAMCL 的顺序对应，未加入数值、引用、公式或未完成的 Class-CL/Organ-CL 实验结论。中文关键词为“医学影像、训练信息受限、持续学习、联邦持续学习、弱监督学习”，英文关键词对应为 “medical imaging, limited training information, continual learning, federated continual learning, weakly supervised learning”。完整构建为 129 页，摘要区未出现 `Overfull \\hbox`。
 - 已完整导入作者提供的 `PhD_Thesis_revised_clean_source_2026-08-12.zip` LaTeX 源文件：替换主文件与第一至第六章正文，补入中英文摘要、第六章、附录 A“在学期间学术成果与科研情况”及 `REVISION_REPORT.md`；编译输入逐项与该压缩包一致。仓库独有的证据、QA、任务、提示词、handoff 与实验目录均未从压缩包删除或覆盖。
 - 本次用户提供版本构建为 129 页；当前保留其对英文摘要产生的 3 处轻微 `Overfull \\hbox` 提示，未在作者交付正文上作未经授权的换行或措辞修改。未发现 undefined citation/reference、缺失文件或 LaTeX 错误。
 - 已依据参考论文 `651a9c0160c6e1a6ff00f86a.zip` 完成版式对齐：两者的 `fduthesis.cls` 与 `fduthesis.def` SHA-256 一致；正文西文字体恢复模板默认的 XITS（Times 风格），附录 A“在学期间学术成果和参加科研情况”位于参考文献之前，前置部分保留目录和插图目录，不生成表格目录。未复制参考论文的正文、图表、元数据、成果条目或文献库。

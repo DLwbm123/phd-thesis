@@ -1,3 +1,11 @@
+# Codex 最新报告：中英文摘要与关键词更新（2026-08-13）
+
+- 已严格按 `CODEX_TASK_update_thesis_abstracts.md` 将任务中给出的中文 `abstract` 与英文 `abstract*` 定稿文本完整写入 `main.tex`，并只同步更新 `config/thesis_info.tex` 的中英文关键词。第一至第六章正文、题目、作者信息、模板、文献库、成果附录和 `sources/` 均未修改。
+- 中英文摘要均以相同顺序概括四项工作：持续分割场景与综合评测、FedSubMerge/FedSubMerge-AD 无回放联邦持续分类、ScribbleCL/ZSDERpp 涂鸦监督持续分割、SAMCL 有限回放持续配准。自动检查确认中文只含一次（1）--（4），两种语言均不含具体数值、引用、公式、编辑备注或 `ZScribbleSeg`；Class-CL/Organ-CL 未被写成已完成结果，FedSubMerge 未暗示形式化隐私保证。
+- 已运行 `bash scripts/build_and_audit.sh` 并完成 XeLaTeX/BibTeX 构建。PDF 为 129 页，SHA-256 `f98dc4acd7c2d217e7d0c400ee54e429910133f69d1bd4e6433a38b850b9b7d2`；无 undefined citation/reference、缺失文件、重复标签或 LaTeX 错误。摘要替换没有新增 `Overfull \\hbox`，且中英文摘要、关键词、目录和正文起始顺序均已核验。
+
+---
+
 # Codex 最新报告：作者提供整包 LaTeX 源码导入（2026-08-13）
 
 - 已将作者提供的 `PhD_Thesis_revised_clean_source_2026-08-12.zip` 解包到隔离副本，并以其 36 个文件作为全部 LaTeX 编译输入的唯一来源。逐项校验确认：所有仓库已跟踪的编译输入均与压缩包同路径文件逐字节一致；新增 `chapters/appendix_publications.tex` 与 `REVISION_REPORT.md`。仓库特有的 `sources/`、`evidence/`、`qa/`、`handoff/`、`prompts/`、`tasks/`、`drafts/` 与 `experiments/` 均未被删除或覆盖。
