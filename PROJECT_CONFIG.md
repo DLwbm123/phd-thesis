@@ -2,7 +2,7 @@
 
 - Repository root: `.`
 - Main LaTeX entry: `main.tex`
-- Thesis class/template: `fduthesis`（来自用户提供的参考工程，仅保留模板实现）
+- Thesis class/template: `FDSDSthesis` v1.1（用户提供；模板实现与复旦标识资源随工程保留，CJK 字体由 TeX Live/ctex 提供）
 - Chapter directory: `chapters/`
 - Bibliography file: `bibliography/references.bib`
 - Figure directory: `figures/`
@@ -20,7 +20,7 @@
 - Local TeX toolchain: TeX Live 2026（用户级安装于 `~/Library/TinyTeX`；`~/.zprofile` 已加入 `bin/universal-darwin`）
 - Tool versions: `latexmk 4.88`、`XeTeX 0.999998`、`BibTeX 0.99e`
 - TeX package repository: `https://mirrors.ustc.edu.cn/CTAN/systems/texlive/tlnet`
-- Full build verification: 2026-07-29 执行上述完整命令成功，生成 37 页 `main.pdf`
+- Full build verification: 2026-08-14 已在 FDSDSthesis v1.1 模板下完成 XeLaTeX/BibTeX 构建，生成 163 页 `main.pdf`。
 
 ## Remote sync policy
 

@@ -1,15 +1,153 @@
-# Codex 最新报告：第一、二章 Mode B 对齐修订（2026-08-08）
+# Codex 最新报告：封面编号位置调整与 Overleaf 合并（2026-08-15）
 
-## 本轮交付
+- 已先合并作者刚在 Overleaf 对 `chapters/publications.tex` 的修改：移除两项奖项/候选表述，并删除 CARE 2025 书籍条目。
+- 封面右上角已移除“学号”行，保留“学校代码：10246”。为维持模板的垂直几何，原行位置保留为空白而不显示文字或编号。
+- 非盲审个人信息区的“院系”上方已新增“编号：21110980022”；当前专业学位版仍严格复用模板的“专业学位类别（领域）”和 10.5em 标签对齐。`\stuid{21110980022}` 仅作为该“编号”字段的数据源，不再在右上角输出学号。学术学位分支亦同步采用此逻辑。
+- XeLaTeX/BibTeX 完整构建成功，PDF 共 159 页（A4，SHA-256 `7f427c2e1587d10d1c4593786bebb32461bf770585f0d6e7562d923c1000b439`）；最终日志无 unresolved citation/reference、LaTeX error 或 Overfull 警告。已渲染并视觉检查封面：编号位于院系正上方，学校代码以外右上角无学号显示，未见裁切、重叠或错位。
 
-- 基线为 `main` 的 `7d2950dcc86832044fd3489c59e1752a5be235ec`。批准稿为 `CH01_CH02_REVISION_SPEC.md`，执行任务为 `CODEX_TASK_ch01_ch02_alignment_revision.md`；批准正文和 TikZ 代码均按其集成，未自由改写。
-- 第一章完成 1.3 的 Benchmark → FedSubMerge → ScribbleCL → SAMCL 重排；更新 1.1.4、1.2.1 限定段落、图 1-1 和图 1-2，并同步契约、章节卡、计划、状态与 claim section_id。第二章完成 HD/HD95/ASSD、Acc/ACC、2.2 严格术语、完整联合训练行与 $d/p$ 投影符号修订。
-- 已同步 claims、equations、notation 与 terminology 账本，CSV 模式与键唯一性通过。新公式标签为 `eq:foundations-seg-directed-distance`、`eq:foundations-seg-hd`、`eq:foundations-seg-hd95`、`eq:foundations-seg-assd` 和 `eq:foundations-cls-accuracy`；废弃的 `eq:foundations-seg-boundary` 不在活跃论文源码中。
-- Mode B 构建 `bash scripts/build_and_audit.sh` 成功，PDF 为 123 页；无 LaTeX error、未定义引用/交叉引用、重复 label 或缺失文件。已视觉检查图 1-1、图 1-2、HD/HD95/ASSD、Acc/ACC、2.2、表 2-1 与 $\mathbf{I}_p$ 所在页，确认无裁切、重叠或歧义。
-- Scribble 保护子节、RQ3、创新点（3）及 TODO 与基线逐字一致；Chapter 5、`evidence/experiments.csv`、`sources/` 均无差异。`sources/` 仍为 237 文件、指纹 `6c5d3c84a5418fffc6f2c3130b0a3939343acc9403b15dd53fe76e18f17ebf8f`。
-- ScribbleCL 仍为 `TODO-EXPERIMENT` / `blocked_by_experiments`；未改动其任务、基线、状态、数字、结果或结论。详细审查记录见 `handoff/MODE_B_CH01_CH02_ALIGNMENT_AUDIT.md`，GPT 上下文包已重建。
+---
 
-# 历史报告：第二章剩余内容整章工程集成（2026-08-01）
+# Codex 最新报告：PhD_Thesis_revised_round2 源码同步（2026-08-14）
+
+## Codex 最新报告：模板独创性与授权声明页恢复（2026-08-14）
+
+- 已先合并作者在 Overleaf 对 `chapters/publications.tex` 的最新修改，再加入模板原有的 `SRC/statement.tex`。声明页被置于“致谢”之后，包含“复旦大学学位论文独创性声明”和“学位论文使用授权声明”，作者、导师签名和日期线均保留为空白待签署。
+- `SRC/statement.tex` 已与 `template-v1.1/SRC/statement.tex` 逐字节核对一致；它按模板设置空白页眉页脚与独立页边距。声明页已渲染并视觉检查，未见裁切、重叠或页眉页脚残留。
+- XeLaTeX/BibTeX 完整构建为 159 页，`main.pdf` SHA-256 为 `a5dee7091d793a986a0faa66302a4bfddb7c0cf8e5fa74d4306558e8524ee93d`；最终日志无 undefined citation/reference、LaTeX error 或 Overfull 警告。
+
+---
+
+## Codex 最新报告：论文末尾结构调整（2026-08-14）
+
+- 已将末尾顺序调整为“参考文献 → 在学期间学术成果与科研情况 → 致谢”。成果内容文件已从 `appendix_publications.tex` 更名为 `publications.tex`，主文件不再调用 `\appendix`，故成果部分的正文、目录和页眉中均不显示“附录”或章节编号。
+- 原有成果条目与分组内容未改写；其内部三项分组标题保留但改为无编号标题，以避免在第六章后出现“6.5”等错误编号。新增 `chapters/acknowledgements.tex`，仅保留“致谢”章节标题，正文为空。
+- XeLaTeX/BibTeX 完整构建为 159 页，`main.pdf` SHA-256 为 `924d9ce69b8a7fef109b7234b5d27e8c42e5f6f5dc689ba55191c80b5eb4d810`；最终日志无 undefined citation/reference、LaTeX error 或 Overfull 警告。已渲染并视觉检查成果首页和空致谢页。
+
+---
+
+## Codex 最新报告：严格恢复 FDSDSthesis v1.1 模板字体与封面（2026-08-14）
+
+- 已以作者提供的 `template-v1.1.tar.xz` 为唯一模板基准，恢复随模板分发的 `FontStyle/SimSun.ttf`、`SimHei.ttf` 和 `SimKai.ttf`，并将模板的字体加载规则恢复至 `FDSDSthesis.cls`。三份字体文件的 SHA-256 均与模板一致，且已纳入清单、编译输入指纹与 Overleaf 部署范围。
+- 专业学位封面已恢复模板原始字段文字和 10.5em 的布局：“专业学位类别（领域）：电子信息”。这取代了早先按作者旧指示覆盖的“专业：电子信息”定制；博士学位论文标题、大数据学院和电子信息均使用模板原始字距、字体与居中机制。作者在 Overleaf 之后刚更新的 `chapters/ch06_conclusion.tex` 已原样合入。
+- 与模板类文件相比，仅保留两处不影响版式的必要兼容修改：不加载会和正文 `algorithm2e` 产生同名浮动体冲突的旧 `algorithm`/`algorithmic` 包，并不执行其对应的旧算法命名命令。未改写论文正文、数值、公式、图表或文献。
+- XeLaTeX/BibTeX 完整构建成功，`main.pdf` 为 159 页，SHA-256 `61cd38554e53c78750200406647e718fb7080b79a5b45c80b015af7a0c48e774`。最终日志无 undefined citation/reference、重复标签、缺失文件、LaTeX error 或 Overfull 警告；`pdffonts` 确认 SimSun/SimHei 嵌入，且封面已渲染并视觉核验。
+
+---
+
+- 已在隔离发布副本中导入作者提供的 `PhD_Thesis_revised_round2.zip`。该包更新中英文摘要、第一至第六章、附录 A 及第三、五、六章章节卡；仓库专有的审读报告、证据、QA、任务、提示词、handoff 与实验目录没有被压缩包覆盖。
+- 同步前 Overleaf 有一笔涉及中英文摘要、附录 A、第一章和第六章的并发编辑；这些路径均被作者 ZIP 覆盖，因此以 ZIP 内容作为最终版本。仅删除英文摘要文件末尾的一个空白行，不改变正文语义。
+- XeLaTeX/BibTeX 完整构建为 161 页，`main.pdf` SHA-256 为 `881896ed0b87df308e7b38b011e6c79cac5863de781a71456c54a0221bfd90b0`。最终 `main.log` 无 unresolved citation/reference、重复标签、缺失文件、LaTeX error 或 Overfull 警告；已视觉核验封面、中英文摘要、正文、结论及附录，未见裁切、重叠或乱码。本轮为作者交付源码的集成与工程验证，不构成对新增学术表述、数值或结论的独立复核。
+
+---
+
+# Codex 最新报告：PhD_Thesis_revised_linkage 源码同步（2026-08-14）
+
+- 已在隔离发布副本中导入作者提供的最新 LaTeX 源码，更新摘要、六章正文与第一章研究逻辑图的衔接表述；仓库既有的审读报告、证据、QA、任务、提示词、handoff 与实验目录未被压缩包覆盖。
+- 同步前发现 Overleaf 有一笔涉及摘要、第一章、第二章和研究逻辑图的并发修改；这些路径均被本次作者 ZIP 覆盖，故以 ZIP 为最终版本。XeLaTeX/BibTeX 完整构建为 163 页，最终 `main.log` 无 unresolved citation/reference、重复标签、缺失文件、LaTeX error 或 Overfull 警告。
+
+---
+
+# Codex 最新报告：PhD_Thesis_final 源码同步（2026-08-14）
+
+- 已将作者提供的最终 FDSDSthesis 源码导入隔离发布副本，更新中英文摘要、第一章、第五章和 `REVISION_REPORT.md`；其余仓库专有证据、QA、任务、提示词、handoff 与实验目录未被压缩包覆盖。
+- XeLaTeX/BibTeX 完整构建为 163 页，最终 `main.log` 无 unresolved citation/reference、重复标签、缺失文件、LaTeX error 或 Overfull 警告。已视觉检查封面、中英文摘要、附录和参考文献，未见裁切、重叠或乱码。
+
+---
+
+# Codex 最新报告：PhD_Thesis_revised_v2 源码同步（2026-08-14）
+
+- 已将作者提供的完整 FDSDSthesis 源码导入隔离发布副本：更新摘要、第一至第六章、附录、构建配置、图表与 `REVISION_REPORT.md`；仓库专有证据、QA、任务、提示词、handoff 和实验目录保持不变。
+- 最新源码不再携带 SimSun、SimHei 或 SimKai 字体文件，改用 ctex/TeX Live CJK 字体；Overleaf 部署脚本和输入指纹已同步去除 `FontStyle/`。
+- XeLaTeX/BibTeX 完整构建为 163 页，最终 `main.log` 无 unresolved citation/reference、重复标签、缺失文件、LaTeX error 或 Overfull 警告。同步前发现的 Overleaf 附录更新已与最新交付稿比较，最新版保留其作者加粗与投稿措辞，并进一步将相应成果标为“已发表或录用”“已录用”。
+
+---
+
+# Codex 最新报告：FDSDSthesis v1.1 模板迁移（2026-08-14）
+
+- 已将论文编译入口整体迁移至用户提供的 FDSDSthesis v1.1 模板。根目录新增 `FDSDSthesis.cls`、`FontStyle/`、`fig/`、`SRC/` 和 `macros.tex`，旧 `fduthesis` 类文件、旧封面配置和旧模板标识资源不再作为编译输入。
+- 本论文的中英文摘要、第一至第六章、附录 A、已引用图表及 `bibliography/references.bib` 已逐项迁入；外部 `sources/`、证据、QA、任务、提示词、handoff 与实验目录仍保留在 GitHub 工程中，未被模板迁移覆盖。Overleaf 在上次同步后对附录的更新亦已合并：章节“其他参与论文与著作”改为“其他参与论文”，并去除了“学术服务”小节。
+- 封面显示博士专业学位、学号 `21110980022`、院系“大数据学院”与“专业：电子信息”。为保留既有算法内容与已确认的封面字段，类文件仅移除了和 `algorithm2e` 冲突的旧算法包设置，并统一专业学位封面的“专业”字段标签；未改写学术正文、数值、公式、图表或文献条目。
+- 已执行 XeLaTeX/BibTeX 完整构建，`main.pdf` 为 167 页，SHA-256 为 `2ea8ff5b95c3cf780d2dc2bb483fec1e2fd4d4265cb557233f5bab399eaae9cc`。最终日志无 undefined citation/reference、重复标签、缺失文件或 LaTeX error；已视觉核验封面、摘要、目录、正文图表、附录 A 和参考文献。
+- 已将 Overleaf 同步脚本和输入指纹更新为 FDSDSthesis 的完整编译输入范围，保留非强制推送和本地部署编译门禁。
+
+---
+
+# Codex 最新报告：封面学号与专业学位信息更新（2026-08-14）
+
+- 已将 `config/thesis_info.tex` 中的学号更新为 `21110980022`，并将 `degree` 从 `academic` 改为模板支持的 `professional`，封面正确显示“博士学位论文（专业学位）”。按作者后续要求，已在 `fduthesis.cls` 仅覆盖专业学位封面字段的标签/间距分支，使原有 `major = {电子信息}` 仍显示为“专业：电子信息”，不显示“专业学位类别（领域）”。除此之外，正文、参考文献、图件、证据、任务与实验材料均未改动。
+- 已同步更新 `MANIFEST.sha256` 内 `config/thesis_info.tex` 与 `fduthesis.cls` 的 SHA-256，并验证全量清单。XeLaTeX/BibTeX 完整构建成功，`main.pdf` 为 143 页，SHA-256 `93ca95552db719cc71439d944a96f6dc3a9733342b4094ad86035321f8283a29`；最终日志无 undefined citation/reference、missing file、duplicate label 或 LaTeX error。已渲染并视觉核验中文封面，学号、专业学位标记及“专业：电子信息”均显示正确，无裁切或重叠。
+
+---
+
+# Codex 最新报告：Benchmark 扩展版源码导入（2026-08-14）
+
+- 已在隔离干净副本中导入作者提供的 `PhD_Thesis_revised_Benchmark_expanded.zip`。相较上一已发布论文树，本包仅更新 `chapters/ch03_benchmark.tex`、`bibliography/references.bib` 与 `MANIFEST.sha256`，并新增 `figures/ch03/SAM_confusion_matrix.pdf` 和 `figures/ch03/plots_for_benchmark.pdf`；`sources/`、`evidence/`、`experiments/`、其他章节和既有图件均未被改动。
+- 第三章现补充相关工作和基准定位、覆盖范围比较表、十种随机 Domain-CL 任务顺序的图说明、基础分割模型与 LoRA 顺序适配的阶段--任务 Dice 矩阵，以及持续学习与联邦持续学习、测试时适应、少样本、无监督和持续新类发现等范式的关系说明。新增引用全部在文献库中解析，`MANIFEST.sha256` 的所有受管输入和图件均通过 SHA-256 校验。本轮只完成作者交付材料的集成与工程审查，不独立复算其模型结果或文献元数据。
+- XeLaTeX/BibTeX 完整构建成功，`main.pdf` 为 143 页，SHA-256 `f9ae30c4d878ded7adb429ca96d5060270e2168c5fc35b9b4e399cc011187ca6`。最终日志无 undefined citation/reference、missing file、duplicate label 或 LaTeX error；已渲染并视觉核验新增定位表、基础模型矩阵图与学习范式图，未见裁切、重叠、乱码或图表异常。风格审查记录第三章“同时”14 次；为了保留作者给定文本，本轮未进行自动同义改写。第三章仍为 `drafted_pending_review`，下一动作是作者/GPT Pro 全章复审。
+
+---
+
+# Codex 最新报告：SAMCL 扩展版源码导入（2026-08-14）
+
+- 已在隔离干净副本中导入作者提供的 `PhD_Thesis_revised_SAMCL_expanded.zip`。相较上一已发布论文树，本包仅更新 `chapters/ch05_scribble_samcl.tex`、`bibliography/references.bib` 与 `MANIFEST.sha256`；`sources/`、`evidence/`、`experiments/`、其他章节和既有图件均未被改动。风格报告仅随第五章新增表格环境更新统计计数。
+- 第五章 SAMCL 部分现补齐研究动机、正式问题定义、MER 一阶元持续学习、锐度感知目标、扰动近似、训练算法、LK-UNet/任务损失配置、四任务实验设置，以及配准精度、知识保持、定性配准、记忆容量消融和前向泛化分析。新增引用均已在文献库中解析；`MANIFEST.sha256` 的所有受管输入与图件均通过 SHA-256 检验。对作者交付的算法、数值和参考文献元数据，本轮未做独立实验或原文事实复算。
+- XeLaTeX/BibTeX 完整构建成功，`main.pdf` 为 137 页，SHA-256 `5f5c81ee6154df81f1771724772319aa5e520c370ed6a72ec00e24670e6089e0`。最终日志无 undefined citation/reference、missing file、duplicate label 或 LaTeX error；已渲染并视觉核验新增公式页、算法页、定性配准图与消融双子图，未见裁切、重叠、乱码或图表异常。第五章仍为 `drafted_pending_review`，下一动作继续是作者/GPT Pro 全章复审。
+
+---
+
+# Codex 最新报告：MICCAI 2024 SAMCL 消融更新（2026-08-14）
+
+- 已在隔离干净副本中导入作者提供的 `PhD_Thesis_revised_with_MICCAI2024_ablation.zip`。相较于上一已发布论文树，压缩包只修改 `chapters/ch05_scribble_samcl.tex` 并新增 `figures/ch05/plot_memory_nnn.pdf`；`sources/`、`evidence/`、`experiments/`、文献库、其他章节与作者既有任务材料均未改变。QA 风格报告仅因新增图环境而更新其统计计数。
+- 表 5-6 的数值保持作者交付值不变，新增“若 SAMCL 优于对比方法则加下划线”和“与 SAMCL 配对 $t$ 检验 $p<0.05$ 以星号标记”的呈现说明。图 5-4 现以双子图并列作者提供的回放缓冲区容量消融与 SAM 锐度感知域内/域外前向泛化结果；本轮只完成源码集成与版式核验，不将这些作者交付的统计标记表述为 Codex 独立复算结果。
+- XeLaTeX/BibTeX 完整构建成功，`main.pdf` 为 131 页，SHA-256 `1da42793df3256f1ebc2567f21835ecccdd166f182bd5de33e0a0f479f89984a`。最终日志无 undefined citation/reference、缺失文件、重复 label 或 LaTeX error；已渲染并视觉核验表 5-6 与图 5-4，未见裁切、重叠、乱码或图表异常。第五章状态继续为 `drafted_pending_review`，下一动作仍为作者/GPT Pro 全章复审。
+
+---
+
+# Codex 最新报告：作者提供最新版论文源码同步（2026-08-14）
+
+- 已在隔离的干净副本中导入 `PhD_Thesis_revised.zip`。此次源码包实际更新了 `main.tex`、第一至第三章、第五至第六章、第五章章节卡、`config/thesis_info.tex` 与 `Makefile`，并新增第五章图件 `figures/ch05/plot_sam_new.pdf`；没有修改 `sources/`、`evidence/`、`qa/`、`tasks/`、`prompts/`、`handoff/` 或 `experiments/` 中的作者既有材料。压缩包没有包含的仓库管理文件被保留，且未对作者提供的正文、数值、公式、引用或文献库作二次改写。
+- 完整 XeLaTeX/BibTeX 构建成功，生成 131 页 `main.pdf`，SHA-256 为 `88a58cb601a84f1fd0d512ddf36c798d31ab2a5d7fc95e877d8c494aca69c362`。最终 `main.log` 无 undefined citation/reference、missing file、duplicate label 或 LaTeX error；风格与参考论文重合审查亦已运行。已渲染并视觉核验目录、第五章配准结果表和新增的 SAMCL 锐度感知前向泛化图，未见裁切、重叠、乱码或图表异常。
+- 本轮只完成作者交付源码的集成、构建审查和远程同步；各章的 `drafted_*` 复审状态未因该同步自动升级或降级。下一动作仍是第五章作者/GPT Pro 全章复审，重点核对 ZSDERpp 公式、Domain-CL 表格与结果分析；Class-CL 与 Organ-CL 仅在其性能矩阵提供后补写结果。
+
+---
+
+# Codex 最新报告：中英文摘要与关键词更新（2026-08-13）
+
+- 已严格按 `CODEX_TASK_update_thesis_abstracts.md` 将任务中给出的中文 `abstract` 与英文 `abstract*` 定稿文本完整写入 `main.tex`，并只同步更新 `config/thesis_info.tex` 的中英文关键词。第一至第六章正文、题目、作者信息、模板、文献库、成果附录和 `sources/` 均未修改。
+- 中英文摘要均以相同顺序概括四项工作：持续分割场景与综合评测、FedSubMerge/FedSubMerge-AD 无回放联邦持续分类、ScribbleCL/ZSDERpp 涂鸦监督持续分割、SAMCL 有限回放持续配准。自动检查确认中文只含一次（1）--（4），两种语言均不含具体数值、引用、公式、编辑备注或 `ZScribbleSeg`；Class-CL/Organ-CL 未被写成已完成结果，FedSubMerge 未暗示形式化隐私保证。
+- 已运行 `bash scripts/build_and_audit.sh` 并完成 XeLaTeX/BibTeX 构建。PDF 为 129 页，SHA-256 `f98dc4acd7c2d217e7d0c400ee54e429910133f69d1bd4e6433a38b850b9b7d2`；无 undefined citation/reference、缺失文件、重复标签或 LaTeX 错误。摘要替换没有新增 `Overfull \\hbox`，且中英文摘要、关键词、目录和正文起始顺序均已核验。
+
+---
+
+# Codex 最新报告：作者提供整包 LaTeX 源码导入（2026-08-13）
+
+- 已将作者提供的 `PhD_Thesis_revised_clean_source_2026-08-12.zip` 解包到隔离副本，并以其 36 个文件作为全部 LaTeX 编译输入的唯一来源。逐项校验确认：所有仓库已跟踪的编译输入均与压缩包同路径文件逐字节一致；新增 `chapters/appendix_publications.tex` 与 `REVISION_REPORT.md`。仓库特有的 `sources/`、`evidence/`、`qa/`、`handoff/`、`prompts/`、`tasks/`、`drafts/` 与 `experiments/` 均未被删除或覆盖。
+- 本版补全中英文摘要、第六章“总结与展望”，并将内容完备的附录 A“在学期间学术成果与科研情况”置于参考文献之前；第一至第五章、文献库和图件均按用户交付版本更新。第六章状态更新为 `drafted_pending_review`，仍需作者/GPT Pro 全章复审。
+- 已在隔离副本运行 `bash scripts/build_and_audit.sh`，生成 129 页 `main.pdf`（SHA-256 `20b6997db61963771c6fa0c3ce3cb4f52bfad4425d7fc7a4d4ad35b0699d3b1b`）。日志无 undefined citation/reference、缺失文件、重复标签或 LaTeX 错误；风格审查未发现达到阈值的预设模式。参考论文文本重合审查仅命中成果附录与参考模板注释共同包含的会议名称 `Medical Image Computing and Computer Assisted Intervention--MICCAI`，未发现正文句段复制。
+- 已渲染并检查中文摘要、英文摘要、第六章、成果附录和参考文献首页，未见裁切、重叠、乱码或图表异常。英文摘要存在 3 处轻微 `Overfull \\hbox`（最大 9.25pt）提示；为忠实保留用户提供的整包源码，本轮没有自行改变作者正文。推送前需保留该已知非阻塞版式提示。
+
+---
+
+# Codex 最新报告：参考论文模板格式对齐（2026-08-13）
+
+- 已解包并核对参考论文 `651a9c0160c6e1a6ff00f86a.zip`。当前论文与参考论文的 `fduthesis.cls` 和 `fduthesis.def` SHA-256 完全一致，因此页边距、字号、章节层级、题注、页眉页脚和 GB/T 7714 数字制文献格式均由同一模板控制，无需替换类文件。
+- 删除当前配置中对 `font = lm` 的覆盖，恢复参考模板的默认 `times` 设置；实际嵌入的正文与参考文献西文字体均为 XITS。保留 `cjk-font = fandol`、`footnote-style = xits` 与 BibTeX 数字制设置，和参考模板的有效设置一致。
+- `main.tex` 已改为只保留目录和插图目录；将后置的空白“攻读博士学位期间取得的研究成果”和空白“致谢”移除，改为 `\appendix` 下的“附录 A 在学期间学术成果和参加科研情况”，并放在参考文献之前。未伪造或复制参考论文中的成果条目；待作者提供本人的论文、专利和科研活动信息后再填充该附录。
+- XeLaTeX 完整构建通过，最终 `main.pdf` 为 121 页、SHA-256 `f513cc1dc82c27210a06642e14d75a03dc06ec57de5d56690def5a844f9b200a`；目录顺序为附录 A（印刷页 95）后接参考文献（印刷页 97），无 undefined citation/reference、缺失文件或 LaTeX 错误。已视觉核验附录标题页与参考文献首页。
+
+---
+
+# Codex 最新报告：第五章 ZSDERpp 方法与 Domain-CL 结果更新（2026-08-12）
+
+- 已重写 `chapters/ch05_scribble_samcl.tex` 的 ScribbleCL 方法与实验部分。当前任务只保留部分交叉熵、全局一致性和空间先验；来源弱监督文献仅作为这两个组成部分的公式依据，并在方法段多处引用。
+- ZSDERpp 已包装为统一方法。缓冲区损失严格写为 `0.5 L_feature + 0.5 L_PCE^buffer + 1.0 L_global^buffer + 0.1 L_spatial^buffer`；Domain-CL、Class-CL 和 Organ-CL 共用方法主体，Class-CL 只在内部增加背景语义校正。
+- 已写入作者更新的 Domain-CL 表格。ZSDERpp 的 A-Dice/BWTR 为 `0.701/-0.152`，Dense-Sequential 的 RMA/E-FWT 为 `1.086/0.260`。正文逐项给出与 PCE-Sequential、ZS-Sequential、ZS-GPM 和 Dense-Sequential 的差值，并明确有限回放与无回放/当前密集监督之间的访问条件差异。
+- 当前归档未提供该表的重复次数、标准差或统计检验，因此全部结论限定为点估计；Class-CL 与 Organ-CL 仅写方法适配，不写结果方向。
+- 第一章研究内容、RQ、创新点和章节说明已同步为统一的 ZSDERpp 叙述。章节卡、协议、状态、证据账本和复审上下文同步更新，避免后续任务恢复旧的无回放边界。
+
+---
+
+# Codex 最新报告：第二章剩余内容整章工程集成（2026-08-01）
 
 ## 第五章 ZScribbleSeg、ScribbleCL 与 SAMCL 集成状态（2026-08-05）
 

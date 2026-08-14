@@ -1,8 +1,8 @@
 equation_id,chapter,section,name,source_file,source_equation,thesis_label,status,notes
-E2-001,2,2.1.2,"固定坐标到移动坐标的变换与图像重采样","sources/samcl/MICCAI 2024: Toward Universal Medical Image Registration/Paper-0150.tex;author notation","Section 3 lines 149--158; context formula F1","eq:foundations-reg-warp","drafted","采用phi:Omega_F到Omega_M的backward-warp约定"
-E2-002,2,2.1.2,"位移场形式的可变形变换","author mathematical definition","Context formula F2","eq:foundations-reg-displacement","drafted","仅在两幅图像采用同维物理坐标表示时使用"
-E2-003,2,2.1.2,"图像匹配项与变换正则项组成的经典配准目标","DOI:10.1109/42.796284;sources/samcl/MICCAI 2024: Toward Universal Medical Image Registration/Paper-0150.tex","Rueckert 1999 objective composition; context formula F3","eq:foundations-reg-objective","drafted","一般基础公式，不归为SAMCL创新"
-E2-004,2,2.1.2,"学习式配准映射及训练目标","DOI:10.1109/TMI.2019.2897538;sources/samcl/MICCAI 2024: Toward Universal Medical Image Registration/Paper-0150.tex","VoxelMorph learning formulation; context formula F4","eq:foundations-reg-learning","drafted","训练图像对分布记为mathcal D_reg，不包含持续学习目标"
+E2-001,2,2.1.2,固定坐标到移动坐标的变换与图像重采样,sources/samcl/MICCAI 2024: Toward Universal Medical Image Registration/Paper-0150.tex;author notation,Section 3 lines 149--158; context formula F1,eq:foundations-reg-warp,drafted,采用phi:Omega_F到Omega_M的backward-warp约定
+E2-002,2,2.1.2,位移场形式的可变形变换,author mathematical definition,Context formula F2,eq:foundations-reg-displacement,drafted,仅在两幅图像采用同维物理坐标表示时使用
+E2-003,2,2.1.2,图像匹配项与变换正则项组成的经典配准目标,DOI:10.1109/42.796284;sources/samcl/MICCAI 2024: Toward Universal Medical Image Registration/Paper-0150.tex,Rueckert 1999 objective composition; context formula F3,eq:foundations-reg-objective,drafted,一般基础公式，不归为SAMCL创新
+E2-004,2,2.1.2,学习式配准映射及训练目标,DOI:10.1109/TMI.2019.2897538;sources/samcl/MICCAI 2024: Toward Universal Medical Image Registration/Paper-0150.tex,VoxelMorph learning formulation; context formula F4,eq:foundations-reg-learning,drafted,训练图像对分布记为mathcal D_reg，不包含持续学习目标
 E3B-001,3,3.2,持续任务数据集与联合分布,sources/benchmark/Benchmark_pa/main.tex,Definitions lines 367--373,eq:benchmark-task-distribution,drafted,将同段定义合并为统一公式
 E3B-002,3,3.5,最终平均Dice,sources/benchmark/Benchmark_pa/main.tex,A-Dice formula lines 524--526,eq:benchmark-adice,drafted,越大越好
 E3B-003,3,3.5,后向迁移率,sources/benchmark/Benchmark_pa/main.tex,BWTR formula lines 529--531,eq:benchmark-bwtr,drafted,要求d_i_i大于0
@@ -13,7 +13,7 @@ E3B-007,3,3.5,模型参数扩展率,sources/benchmark/Benchmark_pa/main.tex,MPE 
 E3B-008,3,3.5,数据回放率,sources/benchmark/Benchmark_pa/main.tex,DRR formula lines 571--575,eq:benchmark-drr,drafted,星号另标原始图像回放
 E2-005,2,2.1.3,多分类softmax与多标签sigmoid概率,Goodfellow et al. 2016 Deep Learning,Softmax and sigmoid output definitions,eq:foundations-cls-probability,drafted,多分类与多标签采用不同概率约束
 E2-006,2,2.1.3,分类交叉熵与多标签二元交叉熵,Goodfellow et al. 2016 Deep Learning,Maximum likelihood and cross-entropy definitions,eq:foundations-cls-loss,drafted,不包含类别加权或重采样
-E2-007,2,2.1.3,二分类或one-vs-rest混淆矩阵评价指标组,DOI:10.1016/j.patrec.2005.10.010;DOI:10.1109/ICPR.2010.764,ROC and balanced accuracy metric definitions,eq:foundations-cls-metrics,drafted,适用于二分类或多分类指定类别的one-vs-rest评价；多分类汇总方式须单独声明
+E2-007,2,2.1.3,二分类混淆矩阵评价指标组,DOI:10.1016/j.patrec.2005.10.010;DOI:10.1109/ICPR.2010.764,ROC and balanced accuracy metric definitions,eq:foundations-cls-metrics,drafted,多分类与多标签需另行声明汇总方式
 E2-008,2,2.2.1,有限原始样本回放目标,NeurIPS 2019 Experience Replay;DOI:10.1109/TPAMI.2021.3057446,Replay objective author synthesis,eq:foundations-replay-objective,drafted,替代回放需按实际保存载体修改
 E2-009,2,2.2.2,联邦经验风险目标与FedAvg聚合,PMLR 54:1273--1282,Federated objective and iterative model averaging,eq:foundations-fed-learning,drafted,参与集合和样本数权重必须首次定义
 E2-010,2,2.2.3,稀疏标注位置上的部分交叉熵,DOI:10.1109/CVPR.2016.344;DOI:10.1007/978-3-030-00889-5_27,Partial-label loss formulation,eq:foundations-partial-ce,drafted,未标注位置不进入求和且不设为背景
@@ -23,11 +23,6 @@ E2-013,2,2.3.3,弹性权重巩固参数正则目标,DOI:10.1073/pnas.1611835114,
 E2-014,2,2.3.3,历史梯度约束与保护子空间正交投影,NeurIPS 2017 Gradient Episodic Memory;ICLR 2021 Gradient Projection Memory,GEM and GPM formulations,eq:foundations-gradient-projection,drafted,不包含FedSubMerge服务器端融合
 E2-015,2,2.3.3,梯度型元学习双层目标,PMLR 70:1126--1135,MAML inner and outer objectives,eq:foundations-maml,drafted,普通元学习不自动处理顺序遗忘
 E2-016,2,2.3.3,锐度感知最小化邻域目标,ICLR 2021 Sharpness-Aware Minimization,SAM min-max objective,eq:foundations-sam,drafted,局部邻域低损失不构成持续学习保证
-E2-017,2,2.1.1,边界点到集合距离及有向距离集合,DOI:10.1186/s12880-015-0068-x,Taha and Hanbury boundary metric definitions,eq:foundations-seg-directed-distance,drafted,边界距离在物理坐标中计算
-E2-018,2,2.1.1,标准豪斯多夫距离,DOI:10.1186/s12880-015-0068-x,Taha and Hanbury boundary metric definitions,eq:foundations-seg-hd,drafted,取双向边界距离的最大值；与HD95不同
-E2-019,2,2.1.1,95%豪斯多夫距离,DOI:10.1186/s12880-015-0068-x,Taha and Hanbury boundary metric definitions,eq:foundations-seg-hd95,drafted,取双向距离集合95%分位数的最大值；与HD不同
-E2-020,2,2.1.1,平均对称表面距离,DOI:10.1186/s12880-015-0068-x,Taha and Hanbury boundary metric definitions,eq:foundations-seg-assd,drafted,对双向最近边界距离取平均
-E2-021,2,2.1.3,单个分类任务的样本级总体准确率,author mathematical definition,Sample-level accuracy definition,eq:foundations-cls-accuracy,drafted,Acc不等同于第四章阶段--任务性能矩阵定义的最终平均准确率ACC
 E4-001,4,4,local dataset,sources/fedsubmerge/ Subspace Merging for Replay-Free Federated Continual Medical Image Classification 720/FedSubMerge_final.tex,Approved Chapter 4 / final manuscript and appendix,eq:fedsubmerge-local-dataset,drafted_pending_review,"Direct source formula, equivalent notation, or thesis-level grouping; not an ACC/BWT theorem"
 E4-002,4,4,fedavg,sources/fedsubmerge/ Subspace Merging for Replay-Free Federated Continual Medical Image Classification 720/FedSubMerge_final.tex,Approved Chapter 4 / final manuscript and appendix,eq:fedsubmerge-fedavg,drafted_pending_review,"Direct source formula, equivalent notation, or thesis-level grouping; not an ACC/BWT theorem"
 E4-003,4,4,objective,sources/fedsubmerge/ Subspace Merging for Replay-Free Federated Continual Medical Image Classification 720/FedSubMerge_final.tex,Approved Chapter 4 / final manuscript and appendix,eq:fedsubmerge-objective,drafted_pending_review,"Direct source formula, equivalent notation, or thesis-level grouping; not an ACC/BWT theorem"
@@ -60,20 +55,18 @@ E4-029,4,4,server storage,sources/fedsubmerge/ Subspace Merging for Replay-Free 
 E4-030,4,4,acc bwt,sources/fedsubmerge/ Subspace Merging for Replay-Free Federated Continual Medical Image Classification 720/FedSubMerge_final.tex,Approved Chapter 4 / final manuscript and appendix,eq:fedsubmerge-acc-bwt,drafted_pending_review,"Direct source formula, equivalent notation, or thesis-level grouping; not an ACC/BWT theorem"
 E5-001,5,5.2,静态涂鸦监督目标,sources/zscribble/Zscribble_MEDIA_arxiv/main_clean_new.tex,ZS objective,eq:scribble-static-objective,drafted_pending_review,ZS source-derived formulation
 E5-002,5,5.2,SAMCL 累积配准目标,sources/samcl/MICCAI 2024: Toward Universal Medical Image Registration/Paper-0150.tex,task objective,eq:samcl-cumulative-objective,drafted_pending_review,thesis-level task grouping
-E5-003,5,5.3.1,混合传输,sources/zscribble/Zscribble_MEDIA_arxiv/main_clean_new.tex,eq miximage/mixop,eq:zscribble-mix-transport,drafted_pending_review,direct source transcription
-E5-004,5,5.3.1,遮挡增强,sources/zscribble/Zscribble_MEDIA_arxiv/main_clean_new.tex,supervision augmentation,eq:zscribble-occlusion,drafted_pending_review,direct source transcription
-E5-005,5,5.3.1,一致性预测对,sources/zscribble/Zscribble_MEDIA_arxiv/main_clean_new.tex,global consistency,eq:zscribble-consistency-pairs,drafted_pending_review,direct source transcription
-E5-006,5,5.3.1,全局一致性损失,sources/zscribble/Zscribble_MEDIA_arxiv/main_clean_new.tex,global consistency,eq:zscribble-global-consistency,drafted_pending_review,direct source transcription
-E5-007,5,5.3.1,密度匹配条件,sources/zscribble/Zscribble_MEDIA_arxiv/main_clean_new.tex,Assumption density matching,eq:zscribble-density-matching,drafted_pending_review,condition rather than guarantee
-E5-008,5,5.3.1,EM E 步,sources/zscribble/Zscribble_MEDIA_arxiv/main_clean_new.tex,posterior estimation,eq:zscribble-em-estep,drafted_pending_review,direct source transcription
-E5-009,5,5.3.1,EM M 步,sources/zscribble/Zscribble_MEDIA_arxiv/main_clean_new.tex,mixture update,eq:zscribble-em-mstep,drafted_pending_review,direct source transcription
-E5-010,5,5.3.1,空间核,sources/zscribble/Zscribble_MEDIA_arxiv/main_clean_new.tex,spatial prior,eq:zscribble-spatial-kernel,drafted_pending_review,direct source transcription
-E5-011,5,5.3.1,局部空间能量,sources/zscribble/Zscribble_MEDIA_arxiv/main_clean_new.tex,spatial energy,eq:zscribble-spatial-energy,drafted_pending_review,direct source transcription
-E5-012,5,5.3.1,可信负样本空间损失,sources/zscribble/Zscribble_MEDIA_arxiv/main_clean_new.tex,spatial loss,eq:zscribble-spatial-loss,drafted_pending_review,positive candidates are not asserted ground truth
-E5-013,5,5.3.1,最大连通区域结构损失,sources/zscribble/Zscribble_MEDIA_arxiv/main_clean_new.tex,shape correction,eq:zscribble-shape-loss,drafted_pending_review,only for applicable connected targets
-E5-014,5,5.3.1,ZS 组合训练目标,sources/zscribble/Zscribble_MEDIA_arxiv/main_clean_new.tex,final loss,eq:zscribble-total-loss,drafted_pending_review,direct source transcription
-E5-015,5,5.3.2,监督与持续损失分解,author analysis;experiments/scribblecl/PROTOCOL.md,protocol analysis,eq:scribblecl-loss-decomposition,drafted_pending_review,TODO-EXPERIMENT outcome quantities
-E5-016,5,5.3.2,监督增强与持续保护交互量,author analysis;experiments/scribblecl/PROTOCOL.md,protocol analysis,eq:scribblecl-interaction,drafted_pending_review,descriptive only
+E5-003,5,5.3.1,涂鸦位置部分交叉熵,author formulation; sources/zscribble/Zscribble_MEDIA_arxiv/main_clean_new.tex,partial cross entropy,eq:scribblecl-pce,drafted_pending_review,仅在有效涂鸦位置监督
+E5-004,5,5.3.1,全局一致性预测对,sources/zscribble/Zscribble_MEDIA_arxiv/main_clean_new.tex,symmetric transformed prediction pairs,eq:scribblecl-global-pairs,drafted_pending_review,只保留来源方法的全局一致性组成
+E5-005,5,5.3.1,全局一致性损失,sources/zscribble/Zscribble_MEDIA_arxiv/main_clean_new.tex,global consistency loss,eq:scribblecl-global-loss,drafted_pending_review,对两个混合方向取平均
+E5-006,5,5.3.1,空间先验负证据损失,sources/zscribble/Zscribble_MEDIA_arxiv/main_clean_new.tex,spatial negative-set loss; simplified thesis formulation,eq:scribblecl-spatial-loss,drafted_pending_review,只介绍实现使用的空间先验
+E5-007,5,5.3.1,当前任务弱监督目标,author implementation specification,PCE plus global and spatial terms,eq:scribblecl-current-loss,drafted_pending_review,不包含来源工作的其他损失
+E5-008,5,5.3.2,历史特征保持损失,author implementation specification; method_replay_der,stored-reference feature matching,eq:scribblecl-feature-loss,drafted_pending_review,缓冲区保存参考特征
+E5-009,5,5.3.2,ZSDERpp 缓冲区损失,author implementation specification,0.5 feature + 0.5 buffer PCE + 1.0 buffer global + 0.1 buffer spatial,eq:scribblecl-buffer-loss,drafted_pending_review,系数严格按作者最新说明
+E5-010,5,5.3.2,ZSDERpp 统一训练目标,author implementation specification,current loss plus buffer loss,eq:scribblecl-zsderpp-total,drafted_pending_review,第一阶段缓冲区项为零
+E5-011,5,5.3.2,Class-CL 背景感知监督概率,DOI/CVPR: cermelli2020mib; thesis adaptation,background probability aggregation,eq:scribblecl-background-aware-probability,drafted_pending_review,避免当前背景压制旧类别
+E5-012,5,5.3.2,Class-CL 背景感知部分交叉熵,DOI/CVPR: cermelli2020mib; thesis adaptation,background-aware partial cross entropy,eq:scribblecl-background-aware-pce,drafted_pending_review,只在当前涂鸦位置计算
+E5-013,5,5.3.2,Class-CL 旧模型背景匹配概率,DOI/CVPR: cermelli2020mib; thesis adaptation,old-background aggregation for consistency,eq:scribblecl-background-aware-distillation-probability,drafted_pending_review,旧背景对应当前背景与新增类别之和
+E5-014,5,5.3.2,Class-CL 背景语义保持损失,DOI/CVPR: cermelli2020mib; thesis adaptation,old-model consistency objective,eq:scribblecl-background-aware-distillation,drafted_pending_review,ZSDERpp 的 Class-CL 内部组成
 E5-017,5,5.4.1,元持续学习目标,sources/samcl/MICCAI 2024: Toward Universal Medical Image Registration/Paper-0150.tex,MER objective,eq:samcl-meta-objective,drafted_pending_review,direct source transcription
 E5-018,5,5.4.2,SAM 邻域最坏损失,sources/samcl/MICCAI 2024: Toward Universal Medical Image Registration/Paper-0150.tex,SAM loss,eq:samcl-sharpness-loss,drafted_pending_review,direct source transcription
 E5-019,5,5.4.2,SAM 扰动近似,sources/samcl/MICCAI 2024: Toward Universal Medical Image Registration/Paper-0150.tex,SAM perturbation,eq:samcl-perturbation,drafted_pending_review,direct source transcription
