@@ -4,17 +4,20 @@
 
 ## 规则命中
 
-未发现达到阈值的预设模式。
+| 文件 | 类别 | 模式 | 次数 | 原因 |
+|---|---|---:|---:|---|
+| `chapters/ch03_benchmark.tex` | transition | `同时` | 14 | 过度依赖统一连接词 |
 
 ## 重复段落开头
 
 | 归一化开头 | 次数 |
 |---|---:|
-| `figure[htbp]` | 9 |
+| `figure[htbp]` | 11 |
 | `table[htbp]S` | 5 |
 | `enumerate[le` | 4 |
 | `table[htbp]P` | 4 |
 | `FedSubMerge-` | 3 |
+| `table[htbp]持` | 3 |
 
 ## 解释原则
 

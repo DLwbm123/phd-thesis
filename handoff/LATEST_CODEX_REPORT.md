@@ -1,3 +1,11 @@
+# Codex 最新报告：Benchmark 扩展版源码导入（2026-08-14）
+
+- 已在隔离干净副本中导入作者提供的 `PhD_Thesis_revised_Benchmark_expanded.zip`。相较上一已发布论文树，本包仅更新 `chapters/ch03_benchmark.tex`、`bibliography/references.bib` 与 `MANIFEST.sha256`，并新增 `figures/ch03/SAM_confusion_matrix.pdf` 和 `figures/ch03/plots_for_benchmark.pdf`；`sources/`、`evidence/`、`experiments/`、其他章节和既有图件均未被改动。
+- 第三章现补充相关工作和基准定位、覆盖范围比较表、十种随机 Domain-CL 任务顺序的图说明、基础分割模型与 LoRA 顺序适配的阶段--任务 Dice 矩阵，以及持续学习与联邦持续学习、测试时适应、少样本、无监督和持续新类发现等范式的关系说明。新增引用全部在文献库中解析，`MANIFEST.sha256` 的所有受管输入和图件均通过 SHA-256 校验。本轮只完成作者交付材料的集成与工程审查，不独立复算其模型结果或文献元数据。
+- XeLaTeX/BibTeX 完整构建成功，`main.pdf` 为 143 页，SHA-256 `f9ae30c4d878ded7adb429ca96d5060270e2168c5fc35b9b4e399cc011187ca6`。最终日志无 undefined citation/reference、missing file、duplicate label 或 LaTeX error；已渲染并视觉核验新增定位表、基础模型矩阵图与学习范式图，未见裁切、重叠、乱码或图表异常。风格审查记录第三章“同时”14 次；为了保留作者给定文本，本轮未进行自动同义改写。第三章仍为 `drafted_pending_review`，下一动作是作者/GPT Pro 全章复审。
+
+---
+
 # Codex 最新报告：SAMCL 扩展版源码导入（2026-08-14）
 
 - 已在隔离干净副本中导入作者提供的 `PhD_Thesis_revised_SAMCL_expanded.zip`。相较上一已发布论文树，本包仅更新 `chapters/ch05_scribble_samcl.tex`、`bibliography/references.bib` 与 `MANIFEST.sha256`；`sources/`、`evidence/`、`experiments/`、其他章节和既有图件均未被改动。风格报告仅随第五章新增表格环境更新统计计数。
