@@ -1,3 +1,11 @@
+# Codex 最新报告：SAMCL 扩展版源码导入（2026-08-14）
+
+- 已在隔离干净副本中导入作者提供的 `PhD_Thesis_revised_SAMCL_expanded.zip`。相较上一已发布论文树，本包仅更新 `chapters/ch05_scribble_samcl.tex`、`bibliography/references.bib` 与 `MANIFEST.sha256`；`sources/`、`evidence/`、`experiments/`、其他章节和既有图件均未被改动。风格报告仅随第五章新增表格环境更新统计计数。
+- 第五章 SAMCL 部分现补齐研究动机、正式问题定义、MER 一阶元持续学习、锐度感知目标、扰动近似、训练算法、LK-UNet/任务损失配置、四任务实验设置，以及配准精度、知识保持、定性配准、记忆容量消融和前向泛化分析。新增引用均已在文献库中解析；`MANIFEST.sha256` 的所有受管输入与图件均通过 SHA-256 检验。对作者交付的算法、数值和参考文献元数据，本轮未做独立实验或原文事实复算。
+- XeLaTeX/BibTeX 完整构建成功，`main.pdf` 为 137 页，SHA-256 `5f5c81ee6154df81f1771724772319aa5e520c370ed6a72ec00e24670e6089e0`。最终日志无 undefined citation/reference、missing file、duplicate label 或 LaTeX error；已渲染并视觉核验新增公式页、算法页、定性配准图与消融双子图，未见裁切、重叠、乱码或图表异常。第五章仍为 `drafted_pending_review`，下一动作继续是作者/GPT Pro 全章复审。
+
+---
+
 # Codex 最新报告：MICCAI 2024 SAMCL 消融更新（2026-08-14）
 
 - 已在隔离干净副本中导入作者提供的 `PhD_Thesis_revised_with_MICCAI2024_ablation.zip`。相较于上一已发布论文树，压缩包只修改 `chapters/ch05_scribble_samcl.tex` 并新增 `figures/ch05/plot_memory_nnn.pdf`；`sources/`、`evidence/`、`experiments/`、文献库、其他章节与作者既有任务材料均未改变。QA 风格报告仅因新增图环境而更新其统计计数。

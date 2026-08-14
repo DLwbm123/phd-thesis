@@ -420,116 +420,293 @@ ZSDERpp 的 RMA 和 E-FWT 分别为 $0.899$ 和 $0.225$，仍低于 Dense-Sequen
 \section{SAMCL：锐度感知元持续医学图像配准方法}
 \label{sec:samcl}
 
-SAMCL 面向解剖区域、成像模态和配准关系依次变化的顺序任务。该方法以有限经验回放为历史信息载体，以元持续学习协调当前与历史梯度，并用锐度感知目标改善参数邻域中的损失。其研究目标是获得一个能够在给定任务序列上保持多任务配准能力、并对后续未见任务具有一定前向泛化的单模型\cite{wang2024samcl}。
+\subsection{研究动机：从任务特定配准到通用配准}
+\label{subsec:samcl-motivation}
 
-\subsection{面向配准任务序列的元持续学习}
-\label{subsec:samcl-meta-continual}
+医学图像配准通过估计固定图像与移动图像之间的空间变换，使两幅图像中的对应解剖结构在同一坐标系下对齐，是疾病进展监测、术前规划、手术导航和多模态影像联合分析中的基础环节\cite{maintz1998registration,gupta2021registration,maes1997mutualinformation,sotiras2013deformable}。深度学习方法能够直接从图像对学习配准变换，在推理效率和任务内配准精度方面取得了较好结果\cite{haskins2020deepreg,balakrishnan2019voxelmorph}。然而，现有网络通常围绕特定解剖区域、成像模态和配准关系构建，例如脑部 MR--MR、肺部 CT--CT 或腹部 CT--CT 配准\cite{kang2022dual,che2023amnet,hering2021lungreg}。一旦测试数据的器官、外观、模态关系或采集条件偏离训练分布，任务特定模型的性能容易下降。
 
-直接顺序训练只根据当前任务梯度更新参数，容易使模型离开旧任务的低损失区域。经验回放从容量为 $b$ 的缓冲区
-$\mathcal{M}$ 中采样历史图像对，并与当前样本交替更新。仅把两类损失相加仍可能产生梯度冲突。Meta Experience Replay 的核心思想是通过一阶元学习，使来自不同样本或任务的梯度方向更加一致。对从缓冲区采样的批次
-$z_i=(I_{F,i},I_{M,i})$，其近似目标可以写为
-\begin{equation}
-\min_{\theta}
-\mathbb{E}_{z_1,\ldots,z_b\sim\mathcal{M}}
-\left[
-\sum_{i=1}^{b}
-\left(
-\mathcal{L}^{(t_i)}_i(\theta)
--
-\frac{\alpha}{2}
-\sum_{j=1}^{i-1}
-\nabla_{\theta}\mathcal{L}^{(t_i)}_i(\theta)^{\top}
-\nabla_{\theta}\mathcal{L}^{(t_j)}_j(\theta)
-\right)
-\right].
-\label{eq:samcl-meta-objective}
-\end{equation}
-当两个梯度内积为正时，沿一个样本下降也更可能降低另一任务的损失；内积为负则提示干扰。式\eqref{eq:samcl-meta-objective}通过元更新鼓励跨样本梯度对齐，从而在有限记忆下近似协调当前和历史任务。该机制依赖缓冲区对历史分布的代表性，不能等同于访问完整历史数据。
+真实临床数据还具有持续到达的特点。新设备投入使用、检查协议变化以及新的器官或模态进入分析流程，都会使配准任务随时间扩展。若为每个任务分别保存一套网络，模型数量和维护成本会随任务增加；若等待全部数据集中后再进行多任务训练，又要求不同阶段的数据能够被长期保存并集中访问，这在医疗数据治理和隐私要求下往往难以实现\cite{lee2020clinicalcl,vokinger2021medicaldevices}。直接使用当前任务继续更新同一网络虽然满足顺序训练条件，却会因分布变化破坏早期任务的参数解，产生灾难性遗忘\cite{thrun1995lifelong,mccloskey1989catastrophic,delange2022continual}。
 
-SAMCL 使用水库采样维护记忆，使顺序到达的图像对具有进入固定容量缓冲区的机会。每个当前样本先触发当前任务内层更新，随后从记忆中采样历史图像对执行回放更新，再进行一阶元更新。该流程使当前任务和历史任务在同一参数轨迹上产生作用。记忆中的样本是原始固定--移动图像对，因此方法的有效历史访问条件是有限回放，而非仅保存参数统计。
+基于上述观察，本研究把通用医学图像配准组织为持续学习问题：模型依次接收来自不同器官、模态和配准关系的数据集，在不能重新集中访问全部历史数据的条件下持续更新；训练结束后，单一模型应尽可能保持所有已见任务的配准能力，并对后续未见任务具有一定前向泛化。这里的“通用”并不表示对任意临床数据都具有无条件保证，而是指在给定任务序列和访问约束下，以一个持续更新的模型覆盖多项临床相关配准任务\cite{wang2024samcl}。
 
-\subsection{锐度感知优化与当前任务--历史任务联合更新}
-\label{subsec:samcl-sharpness-update}
-
-可变形配准目标通常具有高度非凸性。即使某一参数点在当前批次上损失较低，其邻域内损失仍可能快速上升，导致模型对采样噪声或新分布敏感。SAMCL 将元持续学习中的任务损失替换为锐度感知损失
-\begin{equation}
-\mathcal{L}^{(t)}_{\mathrm{sam}}(\theta)
-=
-\max_{\|\boldsymbol{\epsilon}\|_2\leq\rho}
-\mathcal{L}^{(t)}(\theta+\boldsymbol{\epsilon}),
-\label{eq:samcl-sharpness-loss}
-\end{equation}
-其中，$\rho$ 控制参数邻域半径。外层优化不只降低参数点 $\theta$ 的损失，还降低该邻域中的近似最坏损失，从而偏向相对平坦的局部区域\cite{foret2021sam}。
-
-对内层最大化在 $\boldsymbol{\epsilon}=0$ 处作一阶展开，可以得到扰动近似
-\begin{equation}
-\widehat{\boldsymbol{\epsilon}}(\theta)
-=
-\rho
-\frac{
-\nabla_{\theta}\mathcal{L}^{(t)}(\theta)
-}{
-\|\nabla_{\theta}\mathcal{L}^{(t)}(\theta)\|_2
-}.
-\label{eq:samcl-perturbation}
-\end{equation}
-实际更新使用扰动参数
-$\theta+\widehat{\boldsymbol{\epsilon}}(\theta)$ 处的梯度。把
-$\mathcal{L}^{(t)}_{\mathrm{sam}}$ 代入式\eqref{eq:samcl-meta-objective}后，当前样本和回放样本均采用锐度感知更新，元更新再协调两类轨迹。该组合针对的是损失几何和跨样本梯度关系：经验回放提供历史证据，元学习减小任务干扰，锐度感知优化改善局部邻域的稳健性。它并不直接约束形变的生物力学真实性，形变平滑与可逆性仍由配准模型和正则项决定。
-
-SAMCL 采用 LK-UNet 作为配准骨干，首层使用 16 个卷积核。配准变换由平稳速度场参数化，并采用对称微分同胚积分；膜能与弯曲能共同约束形变平滑性。每个任务训练 $10000$ 次迭代，优化器为 Adam，学习率为 $10^{-4}$，批大小为 $4$。记忆容量为 $200$，元学习率为 $0.25$，锐度邻域半径为 $0.05$。这些设置用于四任务顺序实验，其作用范围受任务顺序、骨干和记忆预算限制。
-
+图\ref{fig:samcl-framework}展示了这一设定。训练阶段依次到达脑部 MR--MR、腹部 CT--CT、肺部 CT--CT 和腹部 MR--CT 图像对，任务之间同时存在解剖区域、图像外观、模态关系和个体内/个体间配准方式的变化。部署阶段不再为各任务维护独立网络，而是使用顺序训练后得到的单一模型处理已见任务。SAMCL 以有限经验回放保存少量历史图像对，以一阶元持续学习协调当前和历史样本的更新方向，并进一步通过锐度感知优化改善参数邻域内的损失，从而同时面向历史保持和前向泛化。
 
 \IfFileExists{figures/ch05/samcl_framework.pdf}{%
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=\textwidth]{ch05/samcl_framework.pdf}
-\caption{SAMCL 面向顺序配准任务的训练与部署框架。训练阶段依次接收脑部 MR--MR、腹部 CT--CT、肺部 CT--CT 和腹部 MR--CT 图像对，并通过有限经验回放、元更新和锐度感知优化形成单一配准模型。}
+\caption[SAMCL 的持续医学图像配准设定]{SAMCL 的持续医学图像配准设定。训练阶段依次接收脑部 MR--MR、腹部 CT--CT、肺部 CT--CT 和腹部 MR--CT 图像对；不同任务在解剖区域、成像模态和配准关系上存在明显分布差异。完成顺序训练后，以一个模型处理已见任务，从而面向通用医学图像配准。}
 \label{fig:samcl-framework}
 \end{figure}
 }{}
 
+\subsection{配准网络与持续学习目标}
+\label{subsec:samcl-registration-objective}
+
+设固定图像为 $f:\Omega_F\rightarrow\mathbb{R}$，移动图像为 $m:\Omega_M\rightarrow\mathbb{R}$。医学图像配准需要估计从固定图像域到移动图像域的空间变换
+$\phi:\Omega_F\rightarrow\Omega_M$，使变形后的移动图像
+$m\circ\phi$ 与固定图像中的对应结构对齐。学习式配准网络以图像对为输入，并用参数 $\boldsymbol{\theta}$ 表示该变换：
+\begin{equation}
+\phi_{\boldsymbol{\theta}}
+=
+g(f,m;\boldsymbol{\theta}).
+\label{eq:samcl-registration-network}
+\end{equation}
+对单一数据集 $\mathcal{D}=\{(f_i,m_i)\}_{i=1}^{N}$，模型通过最小化经验风险学习参数：
+\begin{equation}
+\widehat{\boldsymbol{\theta}}
+=
+\operatorname*{arg\,min}_{\boldsymbol{\theta}}
+\mathbb{E}_{(f,m)\sim\mathcal{D}}
+\left[
+\mathcal{L}(\phi_{\boldsymbol{\theta}};f,m)
+\right],
+\label{eq:samcl-single-task-objective}
+\end{equation}
+其中，配准损失可统一写为
+\begin{equation}
+\mathcal{L}(\phi_{\boldsymbol{\theta}};f,m)
+=
+D\!\left(f,m\circ\phi_{\boldsymbol{\theta}}\right)
++
+R\!\left(\phi_{\boldsymbol{\theta}}\right).
+\label{eq:samcl-registration-loss}
+\end{equation}
+$D(\cdot,\cdot)$ 衡量固定图像与变形后移动图像的外观或解剖不一致，$R(\cdot)$ 用于约束形变的平滑性。不同任务能够提供的标签或地标不同，因此第 $t$ 个任务使用任务特定损失 $\mathcal{L}^{(t)}$。
+
+在持续配准中，数据集
+$\{\mathcal{D}^{(t)}\}_{t=1}^{T}$ 按顺序到达。若完成前 $K$ 个任务后仍能访问所有已见数据，则理想目标为式\eqref{eq:samcl-cumulative-objective}中的累积风险最小化。实际训练阶段通常只能完整访问当前数据集 $\mathcal{D}^{(K)}$，因此需要在有限历史访问条件下近似这一目标。SAMCL 保存容量受限的记忆缓冲区 $\mathcal{M}$，后续阶段能够重新读取其中的固定--移动图像对，但不能访问完整历史训练集。该设定介于集中式多任务训练和无回放持续学习之间。
+
+\subsection{有限经验回放下的元持续学习}
+\label{subsec:samcl-meta-continual}
+
+仅将当前任务损失与回放损失相加，不能保证两类更新方向相互兼容。当当前任务梯度与历史任务梯度方向相反时，一次有利于新任务的参数更新可能增大旧任务损失。元持续学习从过去知识保持和未来任务适应两个方向组织更新，通过一阶元学习鼓励不同样本或任务之间的迁移，并减小梯度干扰。SAMCL 以 Meta Experience Replay（MER）为基础，MER 结合经验回放与 Reptile 一阶元学习\cite{riemer2019mer,nichol2018firstorder,method_replay_er}。
+
+设从当前数据和记忆缓冲区形成的样本序列为
+$z_i=(f_i,m_i)$，对应任务为 $t_i$，内层学习率为 $\alpha$。MER 近似优化下式：
+\begin{equation}
+\begin{aligned}
+\min_{\boldsymbol{\theta}}
+\mathbb{E}_{z_1,\ldots,z_s\sim\mathcal{M}}
+\Bigg[
+\sum_{i=1}^{s}
+\Bigg(&
+\mathcal{L}^{(t_i)}_i(\boldsymbol{\theta})
+-
+\frac{\alpha}{2}
+\sum_{j=1}^{i-1}
+\nabla_{\boldsymbol{\theta}}
+\mathcal{L}^{(t_i)}_i(\boldsymbol{\theta})^{\top}
+\nabla_{\boldsymbol{\theta}}
+\mathcal{L}^{(t_j)}_j(\boldsymbol{\theta})
+\Bigg)
+\Bigg].
+\end{aligned}
+\label{eq:samcl-meta-objective}
+\end{equation}
+第一项降低各样本自身的配准损失；第二项显式体现梯度内积。若两个梯度的内积为正，沿其中一个样本的下降方向更新通常也有利于另一样本；若内积为负，则表明两次更新存在干扰。因此，一阶元更新不只追求当前批次损失下降，还通过训练轨迹近似增加跨任务梯度的一致性，使模型在有限记忆下兼顾新任务学习和历史任务保持。
+
+SAMCL 使用水库采样维护缓冲区。设到当前时刻已经观察到 $n$ 个图像对，缓冲区容量为 $B_M$。当缓冲区未满时，当前图像对直接写入；缓冲区填满后，第 $n$ 个样本以 $B_M/n$ 的概率进入缓冲区，并随机替换其中一个已有样本。由此，顺序数据流中的样本具有近似相同的保留机会，缓冲区不需要预先知道任务长度。水库采样只控制历史样本的进入方式，并不能保证不同器官、模态或任务在有限容量下完全均衡，因此元更新的效果仍依赖缓冲区对历史分布的代表性。
+
+\subsection{锐度感知元持续学习}
+\label{subsec:samcl-sharpness-update}
+
+可变形配准损失通常高度非凸，可能包含多个局部极小值\cite{hill2001registration}。在有限样本和顺序分布变化下，仅在当前参数点取得较低损失，并不意味着其邻域内的损失同样稳定；如果参数附近的损失曲面较尖锐，轻微的任务变化、批次采样差异或后续更新都可能导致性能明显下降。为此，SAMCL 将锐度感知最小化引入元持续学习\cite{foret2021sam}。
+
+对任务 $t$，锐度感知损失定义为
+\begin{equation}
+\mathcal{L}^{(t)}_{\mathrm{sam}}(\boldsymbol{\theta})
+=
+\max_{\|\boldsymbol{\epsilon}\|_2\leq\rho}
+\mathcal{L}^{(t)}
+\left(\phi_{\boldsymbol{\theta}+\boldsymbol{\epsilon}}\right),
+\label{eq:samcl-sharpness-loss}
+\end{equation}
+其中，$\rho$ 为参数邻域半径，$\boldsymbol{\epsilon}$ 表示邻域内的参数扰动。该目标不是只降低 $\boldsymbol{\theta}$ 处的损失，而是降低半径为 $\rho$ 的邻域内近似最坏损失，从而偏向具有较平坦损失曲面的参数区域。
+
+将式\eqref{eq:samcl-sharpness-loss}代入元持续学习目标，可得 SAMCL 的总体目标：
+\begin{equation}
+\begin{aligned}
+\min_{\boldsymbol{\theta}}
+\mathbb{E}_{z_1,\ldots,z_s\sim\mathcal{M}}
+\Bigg[
+\sum_{i=1}^{s}
+\Bigg(&
+\mathcal{L}^{(t_i)}_{\mathrm{sam},i}(\boldsymbol{\theta})
+-
+\frac{\alpha}{2}
+\sum_{j=1}^{i-1}
+\nabla_{\boldsymbol{\theta}}
+\mathcal{L}^{(t_i)}_{\mathrm{sam},i}(\boldsymbol{\theta})^{\top}
+\nabla_{\boldsymbol{\theta}}
+\mathcal{L}^{(t_j)}_{\mathrm{sam},j}(\boldsymbol{\theta})
+\Bigg)
+\Bigg].
+\end{aligned}
+\label{eq:samcl-full-objective}
+\end{equation}
+该式同时包含两个层面的约束：梯度内积项面向当前样本与历史样本之间的迁移和干扰，锐度感知损失则面向每个样本对应的局部损失几何。二者分别作用于跨样本更新关系和参数邻域稳定性。
+
+内层最大化无法直接求解。对
+$\mathcal{L}^{(t)}(\boldsymbol{\theta}+\boldsymbol{\epsilon})$
+在 $\boldsymbol{\epsilon}=\boldsymbol{0}$ 处作一阶泰勒展开：
+\begin{equation}
+\mathcal{L}^{(t)}(\boldsymbol{\theta}+\boldsymbol{\epsilon})
+\approx
+\mathcal{L}^{(t)}(\boldsymbol{\theta})
++
+\boldsymbol{\epsilon}^{\top}
+\nabla_{\boldsymbol{\theta}}
+\mathcal{L}^{(t)}(\boldsymbol{\theta}).
+\label{eq:samcl-taylor}
+\end{equation}
+在 $\ell_2$ 邻域约束下，上式的最大化可写为对偶范数问题，其近似最优扰动为
+\begin{equation}
+\widehat{\boldsymbol{\epsilon}}(\boldsymbol{\theta})
+=
+\rho
+\frac{
+\nabla_{\boldsymbol{\theta}}
+\mathcal{L}^{(t)}(\boldsymbol{\theta})
+}{
+\left\|
+\nabla_{\boldsymbol{\theta}}
+\mathcal{L}^{(t)}(\boldsymbol{\theta})
+\right\|_2
+}.
+\label{eq:samcl-perturbation}
+\end{equation}
+实际更新先在当前参数处计算梯度并构造
+$\widehat{\boldsymbol{\epsilon}}$，再在扰动参数
+$\boldsymbol{\theta}+\widehat{\boldsymbol{\epsilon}}$
+处计算用于下降的梯度，即
+$\nabla_{\boldsymbol{\theta}}\mathcal{L}^{(t)}_{\mathrm{sam}}$
+由扰动点的梯度进行近似。SAMCL 对当前样本和缓冲区回放样本均采用这一锐度感知更新，再通过元更新协调两条训练轨迹。经验回放提供历史任务证据，元持续学习减小任务间梯度干扰，锐度感知优化则提高局部参数邻域的稳健性。
+
+\subsection{训练流程与配准模型}
+\label{subsec:samcl-algorithm}
+
+算法\ref{alg:samcl}给出 SAMCL 的训练流程。第 $t$ 个数据集到达后，模型从上一任务参数
+$\widehat{\boldsymbol{\theta}}^{(t-1)}$ 继续训练。对当前图像对，算法首先保存更新前参数 $\boldsymbol{\theta}_0$，随后根据式\eqref{eq:samcl-perturbation}执行当前任务的锐度感知内层更新；当前图像对通过水库采样写入记忆缓冲区。然后，从缓冲区采样历史图像对，按照其所属任务损失再次执行锐度感知更新，最后使用元学习率 $\beta$ 完成一阶元更新。任务结束时保存
+$\widehat{\boldsymbol{\theta}}^{(t)}$，并作为下一任务的初始化。
+
+\begin{algorithm}[htbp]
+\caption{锐度感知元持续医学图像配准（SAMCL）}
+\label{alg:samcl}
+\KwData{顺序到达的训练集 $\mathcal{D}^{(t)}=\{(f_i,m_i)\}_{i=1}^{N_t}$，$t=1,\ldots,T$}
+\KwIn{内层学习率 $\alpha$，元学习率 $\beta$，邻域半径 $\rho$，内层批大小 $s$}
+\KwOut{完成全部任务后的参数 $\widehat{\boldsymbol{\theta}}^{(T)}$}
+随机初始化 $\widehat{\boldsymbol{\theta}}^{(0)}$，令记忆缓冲区 $\mathcal{M}\leftarrow\varnothing$\;
+\For{$t=1,\ldots,T$}{
+  将 $\mathcal{D}^{(t)}$ 组织为当前任务批次 $\mathcal{B}_t=\{B_i\}_{i=1}^{b_t}$，令 $\boldsymbol{\theta}\leftarrow\widehat{\boldsymbol{\theta}}^{(t-1)}$\;
+  \For{$i=1,\ldots,b_t$}{
+    $\boldsymbol{\theta}_0\leftarrow\boldsymbol{\theta}$\;
+    \For{$j=1,\ldots,s$}{
+      计算 $\widehat{\boldsymbol{\epsilon}}(\boldsymbol{\theta})=\rho\nabla_{\boldsymbol{\theta}}\mathcal{L}^{(t)}(\boldsymbol{\theta};B_i[j]) / \|\nabla_{\boldsymbol{\theta}}\mathcal{L}^{(t)}(\boldsymbol{\theta};B_i[j])\|_2$\;
+      $\boldsymbol{\theta}\leftarrow\boldsymbol{\theta}-\alpha\nabla_{\boldsymbol{\theta}}\mathcal{L}^{(t)}(\boldsymbol{\theta};B_i[j])\big|_{\boldsymbol{\theta}+\widehat{\boldsymbol{\epsilon}}(\boldsymbol{\theta})}$\;
+    }
+    使用水库采样将当前图像对写入 $\mathcal{M}$\;
+    从 $\mathcal{M}$ 中采样历史批次 $B_i^{\mathcal{M}}$，其所属任务记为 $t_i$\;
+    计算 $\widehat{\boldsymbol{\epsilon}}(\boldsymbol{\theta})=\rho\nabla_{\boldsymbol{\theta}}\mathcal{L}^{(t_i)}(\boldsymbol{\theta};B_i^{\mathcal{M}}) / \|\nabla_{\boldsymbol{\theta}}\mathcal{L}^{(t_i)}(\boldsymbol{\theta};B_i^{\mathcal{M}})\|_2$\;
+    $\boldsymbol{\theta}\leftarrow\boldsymbol{\theta}-\alpha\nabla_{\boldsymbol{\theta}}\mathcal{L}^{(t_i)}(\boldsymbol{\theta};B_i^{\mathcal{M}})\big|_{\boldsymbol{\theta}+\widehat{\boldsymbol{\epsilon}}(\boldsymbol{\theta})}$\;
+    $\boldsymbol{\theta}\leftarrow\boldsymbol{\theta}+\beta(\boldsymbol{\theta}-\boldsymbol{\theta}_0)$\tcp*{一阶元更新}
+  }
+  $\widehat{\boldsymbol{\theta}}^{(t)}\leftarrow\boldsymbol{\theta}$\;
+}
+\Return{$\widehat{\boldsymbol{\theta}}^{(T)}$}\;
+\end{algorithm}
+
+配准骨干采用 Large Kernel U-Net（LK-UNet），首层包含 16 个卷积核\cite{jia2022lkunet}。网络输出平稳速度场，并通过微分同胚积分获得空间变换；固定图像和移动图像之间采用对称配准。形变正则项由膜能和弯曲能组成，用于约束局部位移变化和形变曲率\cite{ashburner2007diffeomorphic}。这些正则项控制形变平滑性，而 SAMCL 的元更新和锐度感知目标分别面向跨任务干扰与损失曲面，两者不能替代配准模型自身的形变约束。
+
 \subsection{配准持续学习实验}
 \label{subsec:samcl-experiments}
 
-\subsubsection{跨器官与跨模态持续配准任务序列}
-\label{subsubsec:samcl-protocol}
+\subsubsection{实验材料与任务序列}
+\label{subsubsec:samcl-materials}
 
-实验按照 OASIS 脑部 MR--MR、腹部 CT--CT、NLST 肺部 CT--CT 和腹部 MR--CT 的顺序训练。四个任务叠加了解剖区域、模态关系和配准类型变化。OASIS 与腹部 CT--CT 为个体间配准，NLST 和腹部 MR--CT 为个体内配准。表\ref{tab:samcl-datasets}给出数据规模、重采样和评价指标。所有体数据裁剪或填充为
-$112\times96\times112$，OASIS 重采样到 $2\times2\times2$ mm，其余任务重采样到 $3\times3\times3$ mm。CT 强度裁剪到 $[-200,300]$ 后，所有输入线性归一化到 $[0,1]$；实验不使用额外数据增强。
+实验采用 Learn2Reg 挑战中的四项三维医学图像配准任务，并按照 OASIS 脑部 MR--MR、腹部 CT--CT、NLST 肺部 CT--CT 和腹部 MR--CT 的顺序到达\cite{hering2021learn2reg}。OASIS 来源于开放获取脑部 MRI 数据集，用于脑部个体间配准\cite{marcus2007oasis}；腹部 CT--CT 任务用于腹部个体间配准\cite{xu2016abdomenreg}；NLST 肺部 CT--CT 与腹部 MR--CT 数据来自公开影像资源，用于个体内肺部配准和跨模态腹部配准\cite{clark2013tcia,xu2016abdomenreg}。任务序列同时改变了解剖区域、图像外观、成像模态以及个体内/个体间关系，从而构成较强的连续分布变化。
+
+表\ref{tab:samcl-datasets}给出四项任务的数据组织。OASIS、腹部 CT--CT 和腹部 MR--CT 分别使用 35、13 和 9 个对应解剖标签评价配准后的结构重叠；NLST 使用对应地标评价目标配准误差。表中的训练、验证和测试数量沿用 MICCAI 2024 实验设置，计量单位为各任务用于训练或评价的三维图像数据。
 
 \begin{table}[htbp]
 \centering
-\caption{SAMCL 四个顺序配准任务的数据组织与评价}
+\caption{SAMCL 四个顺序配准任务的数据组织、预处理与评价}
 \label{tab:samcl-datasets}
 \small
 \renewcommand{\arraystretch}{1.14}
-\setlength{\tabcolsep}{4.2pt}
+\setlength{\tabcolsep}{3.8pt}
 \resizebox{\textwidth}{!}{%
-\begin{tabular}{llllll}
+\begin{tabular}{cllllll}
 \toprule
-顺序 & 数据集与任务 & 配准关系 & 训练/验证/测试 & 重采样间距 & 评价 \\
+顺序 & 数据集与任务 & 配准关系 & 训练/验证/测试 & 重采样间距 & 标签或地标 & 评价指标 \\
 \midrule
-1 & OASIS，脑部 MR--MR & 个体间 & 290/40/84 & $2\times2\times2$ mm & 35 类平均 Dice \\
-2 & Abdomen CT--CT & 个体间 & 21/3/6 & $3\times3\times3$ mm & 13 类平均 Dice \\
-3 & NLST，肺部 CT--CT & 个体内 & 294/42/84 & $3\times3\times3$ mm & 地标 TRE(mm) \\
-4 & Abdomen MR--CT & 个体内、跨模态 & 80/9/16 & $3\times3\times3$ mm & 9 类平均 Dice \\
+1 & OASIS，脑部 MR--MR & 个体间 & 290/40/84 & $2\times2\times2$ mm & 35 类解剖标签 & 平均 Dice \\
+2 & Abdomen CT--CT & 个体间 & 21/3/6 & $3\times3\times3$ mm & 13 类解剖标签 & 平均 Dice \\
+3 & NLST，肺部 CT--CT & 个体内 & 294/42/84 & $3\times3\times3$ mm & 对应地标 & TRE（mm） \\
+4 & Abdomen MR--CT & 个体内、跨模态 & 80/9/16 & $3\times3\times3$ mm & 9 类解剖标签 & 平均 Dice \\
 \bottomrule
 \end{tabular}}
 \end{table}
 
-OASIS、腹部 CT--CT 和腹部 MR--CT 的任务损失由负局部归一化互相关与软 Dice 损失构成，局部相关窗口大小为 $3$。NLST 使用负局部归一化互相关与基于对应地标的距离损失。由于四个任务可用的解剖标签和地标不同，任务损失并不完全相同；本章只在各任务自身的评价尺度上比较顺序训练前后的变化，不把不同任务的原始 Dice 和 TRE 直接求平均。
+所有体数据均裁剪或填充为
+$112\times96\times112$。OASIS 重采样到
+$2\times2\times2$ mm，其余任务重采样到
+$3\times3\times3$ mm。CT 图像强度裁剪到
+$[-200,300]$，以覆盖腹部软组织和器官的主要强度范围；随后，CT 和 MR 图像均线性归一化到 $[0,1]$。为避免不同方法因数据增强策略不同而获得额外收益，训练阶段不使用数据增强。
 
-比较方法包括未配准输入、独立任务训练、集中式多任务训练、直接顺序训练，以及 EWC、SI、GPM、MER 和 SAMCL。独立训练为每个任务使用单独模型，集中式多任务训练可以访问全部任务数据，因此二者与持续方法的历史访问条件不同，只作为任务特定和集中访问参考。EWC、SI 和 GPM 不回放原始历史图像；MER 与 SAMCL 使用有限回放。
+\subsubsection{对比方法与历史访问条件}
+\label{subsubsec:samcl-baselines}
 
-令 $R_{i,j}$ 表示完成任务 $i$ 后在任务 $j$ 上的评价。实验对每个任务报告最终性能
-$\mathrm{AVG}_j=R_{T,j}$ 和后向变化
-$\mathrm{BWT}_j=R_{T,j}-R_{j,j}$。对 Dice，数值越高越好，负 BWT 表示性能下降；对 TRE，数值越低越好，正 BWT 表示误差增大。因此，表中 Dice-BWT 应越接近零或越高越好，TRE-BWT 则越低越好。最后一个任务之后没有后续训练，其 BWT 按定义为零。
+实验从任务特定训练、集中式训练、直接顺序训练和持续学习四个层面设置对比方法。未配准输入用于给出固定图像与移动图像在变形前的基础差异；独立训练和集中式多任务训练分别作为任务特定参考与完整数据访问参考；直接顺序训练用于观察不采用抗遗忘机制时的性能变化。持续学习方法包括 EWC、SI、GPM 和 MER。
 
-\subsubsection{配准精度、知识保持、遗忘与前向泛化分析}
+EWC 根据旧任务估计参数重要性，并通过 Fisher 信息加权的二次惩罚限制重要参数偏移\cite{kirkpatrick2017ewc}。SI 在训练过程中累计参数对历史损失下降的贡献，以在线重要性约束后续更新\cite{method_regu_si}。GPM 从历史任务的表示中构建重要子空间，将新任务梯度投影到其正交补，以减小对旧任务方向的干扰\cite{saha2021gpm}。上述三种方法不回放历史原始图像。MER 使用有限经验回放和一阶元学习，通过增加跨样本梯度对齐来兼顾迁移与遗忘\cite{riemer2019mer}。SAMCL 与 MER 使用相同类型的有限历史图像对访问条件，其差别在于 SAMCL 将锐度感知更新嵌入当前和回放轨迹。
+
+表\ref{tab:samcl-baselines}汇总了各方法的训练组织和历史访问范围。独立训练为每项任务保存不同模型；集中式多任务训练在一个模型中同时访问全部任务数据。二者不满足持续学习中的顺序访问条件，因此仅用于说明任务特定上限和完整历史访问下的参考表现，不能与有限回放或无回放方法作完全等价的资源比较。
+
+\begin{table}[htbp]
+\centering
+\caption{SAMCL 实验中的对比方法及其训练信息访问条件}
+\label{tab:samcl-baselines}
+\small
+\renewcommand{\arraystretch}{1.16}
+\setlength{\tabcolsep}{3.6pt}
+\begin{tabular}{p{1.8cm}p{4.6cm}p{3.2cm}p{2.8cm}}
+\toprule
+方法 & 训练组织 & 历史原始图像访问 & 模型组织 \\
+\midrule
+未配准 & 不估计空间变换，直接评价固定图像与移动图像 & 不涉及 & 不涉及 \\
+独立训练 & 每个任务仅使用本任务数据单独训练 & 不跨任务访问 & 每任务一个模型 \\
+集中式多任务 & 所有任务数据同时参与联合训练 & 完整访问全部任务数据 & 单一模型 \\
+直接顺序训练 & 当前任务到达后直接继续优化 & 不访问历史图像 & 单一持续模型 \\
+EWC & 以参数重要性正则限制重要参数变化 & 不访问历史图像 & 单一持续模型 \\
+SI & 以在线累计的重要性约束参数变化 & 不访问历史图像 & 单一持续模型 \\
+GPM & 通过历史重要子空间投影新任务梯度 & 不访问历史图像 & 单一持续模型 \\
+MER & 有限经验回放与一阶元持续学习 & 容量受限的历史图像对 & 单一持续模型 \\
+SAMCL & 有限经验回放、元持续学习与锐度感知更新 & 容量受限的历史图像对 & 单一持续模型 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection{评价指标与实现细节}
+\label{subsubsec:samcl-implementation}
+
+对于 OASIS、腹部 CT--CT 和腹部 MR--CT，实验在相应解剖标签上计算平均 Dice；对于 NLST，在对应地标上计算以毫米为单位的目标配准误差（target registration error, TRE）。令 $R_{i,j}$ 表示完成任务 $i$ 后在任务 $j$ 测试集上的评价，则任务 $j$ 在全部任务训练结束后的最终性能和后向变化定义为
+\begin{equation}
+\mathrm{AVG}_j=R_{T,j},
+\qquad
+\mathrm{BWT}_j=R_{T,j}-R_{j,j}.
+\label{eq:samcl-avg-bwt}
+\end{equation}
+对 Dice，数值越高越好，负 BWT 表示后续任务导致性能下降；对 TRE，数值越低越好，正 BWT 表示误差增大。因此，Dice-BWT 越高或越接近零越好，TRE-BWT 越低或越接近零越好。最后一个任务之后没有新的训练阶段，其 BWT 按定义为零。由于 Dice 和 TRE 的方向及量纲不同，本节不将四项任务的原始指标直接求平均。
+
+所有方法使用相同的 LK-UNet 骨干。实验在 PyTorch 中实现，并在 NVIDIA RTX 3090 GPU 上运行。每个任务训练 $10000$ 次迭代，采用 Adam 优化器\cite{kingma2015adam}，学习率为 $1\times10^{-4}$，批大小为 $4$。SAMCL 的记忆缓冲区容量设为 $200$，元学习率 $\beta$ 设为 $0.25$，锐度邻域半径 $\rho$ 设为 $0.05$；其中，$\rho=0.05$ 是实验中表现最好的设置。
+
+四项任务的标注形式不同，因此训练损失随任务变化。OASIS、腹部 CT--CT 和腹部 MR--CT 的损失由窗口大小为 $3$ 的负局部归一化互相关（local normalized cross-correlation, LNCC）和软 Dice 损失组成\cite{avants2008syn,hu2018weakreg}；NLST 的损失由负 LNCC 和基于对应地标的距离损失组成。所有任务均加入膜能和弯曲能构成的形变正则项，两项正则权重均设为 $1$。配准在固定图像与移动图像之间对称执行，并使用由平稳速度场参数化的微分同胚变换。
+
+\subsubsection{配准精度与知识保持分析}
 \label{subsubsec:samcl-analysis}
 
-表\ref{tab:samcl-main-results}转录四任务顺序结束后的主要结果。直接顺序训练在前三个任务上出现较明显的知识损失：OASIS 和腹部 CT--CT 的 Dice-BWT 分别为 $-0.395$ 和 $-0.129$，NLST 的 TRE-BWT 为 $3.508$ mm。SAMCL 将三项后向变化改善为 $-0.037$、$-0.039$ 和 $0.306$ mm，说明有限回放与元持续更新能够缓解直接顺序训练的遗忘。
+表\ref{tab:samcl-main-results}给出四任务顺序训练结束后的最终性能和后向变化。直接顺序训练在前三个任务上出现明显知识损失：OASIS 和腹部 CT--CT 的 Dice-BWT 分别为 $-0.395$ 和 $-0.129$，NLST 的 TRE-BWT 为 $3.508$ mm。SAMCL 将三项后向变化改善为 $-0.037$、$-0.039$ 和 $0.306$ mm，说明有限回放、元持续更新与锐度感知训练的组合能够显著缓解直接顺序训练的遗忘。
 
 \begin{table}[htbp]
 \centering
@@ -558,22 +735,29 @@ SAMCL & 0.697 & 0.352 & 3.855 & 0.563 & $-0.037$ & $-0.039$ & 0.306 & 0 \\
 \end{tabular}}
 \end{table}
 
-与不使用回放的 SI 和 GPM 相比，SAMCL 在 OASIS 与腹部 CT--CT 上取得更高的最终 Dice，并具有更小的后向下降。与 EWC 相比，SAMCL 在 OASIS 上具有更高的最终 Dice 和更小的后向下降；在腹部 CT--CT 上，SAMCL 的最终 Dice 略低于 EWC，且 EWC 的后向下降更小。与同样使用有限回放的 MER 相比，SAMCL 的表现更接近：OASIS 的最终 Dice 和前两个任务的 BWT 基本相当，SAMCL 在腹部 CT--CT 与第四个到达的 MR--CT 上取得更高 Dice，而 MER 在 NLST 上具有更低的最终 TRE 和更小的 TRE-BWT。该结果不支持“在所有任务上统一优于 MER”的表述，更合适的解释是锐度感知元持续学习在多项任务上保持了竞争性，并改变了不同任务之间的稳定性--可塑性取舍。
+从最终配准精度看，SAMCL 在 OASIS、腹部 CT--CT 和腹部 MR--CT 上分别取得 $0.697$、$0.352$ 和 $0.563$ 的 Dice，在 NLST 上取得 $3.855$ mm 的 TRE。相较 SI 和 GPM，SAMCL 在 OASIS 与腹部 CT--CT 上具有更高 Dice，并明显减小早期任务的后向下降。与 EWC 相比，SAMCL 在 OASIS 上具有更高最终 Dice 和更小后向下降；腹部 CT--CT 上 EWC 的最终 Dice 略高，且后向下降更小。该结果说明参数正则化在某一任务上仍可能有效，但其表现会随器官和损失形式变化。
 
-SAMCL 在腹部 MR--CT 上取得 0.563 的最终 Dice，高于独立训练的 0.550 和集中式多任务训练的 0.506，但直接顺序训练在最后任务上为 0.568。最后任务没有后续遗忘，因此该结果主要反映当前任务适应，而不能用于说明历史保持。OASIS 和腹部 CT--CT 上，SAMCL 仍低于集中式多任务或独立训练参考，说明有限记忆不能完全恢复完整历史访问条件。
+MER 与 SAMCL 具有相同类型的有限回放访问条件，因此二者的比较更直接。两种方法在 OASIS 最终 Dice 和前两个任务 BWT 上接近；SAMCL 在腹部 CT--CT 与第四个到达的腹部 MR--CT 上取得更高 Dice，MER 则在 NLST 上取得更低 TRE 和更小 TRE-BWT。由此可见，锐度感知元持续学习并未在所有任务上统一超过 MER，而是在不同任务之间形成了不同的稳定性--可塑性取舍。
 
-图\ref{fig:samcl-ablation-generalization}(a)比较了 SAMCL 在经验回放缓冲区容量分别为 50、100 和 200 时的配准结果。对于前三个任务 OASIS、腹部 CT--CT 和腹部 MR--CT，增大缓冲区容量总体上能够提高配准精度。这是因为更大的缓冲区能够保存更多历史任务样本，从而有利于保留先前任务知识。
+独立训练和集中式多任务训练可以分别访问单一任务完整数据或全部任务数据。SAMCL 在 OASIS 上低于两项参考，在腹部 CT--CT 上接近集中式多任务训练，并在腹部 MR--CT 上高于独立训练和集中式多任务训练。直接顺序训练在最后任务上取得 $0.568$ 的 Dice，略高于 SAMCL 的 $0.563$；由于最后一个任务之后没有进一步训练，该差异反映当前任务适应，而不能用于评价历史保持。整体来看，SAMCL 显著缩小了直接顺序训练与完整数据访问参考之间的差距，但有限缓冲区不能完全替代集中式访问全部历史任务。
 
-图\ref{fig:samcl-ablation-generalization}(b)比较了带有和不带有 SAM 的元持续模型在域内与域外前向泛化任务上的表现，其中模型由先到达任务训练，并直接测试于后续未见数据。对于域内的 CTCT$\rightarrow$CTCT 和 MRCT$\rightarrow$MRCT，以及域外的 CTCT$\rightarrow$MRCT、CTCT$\rightarrow$NLST 和 OASIS$\rightarrow$NLST，加入 SAM 后均取得了更好的结果：前三个方向的 Dice 提高，后两个方向的 TRE 降低。该结果表明，锐度感知优化在这些预设方向上改善了前向泛化，但实验覆盖的任务和方向有限，不能外推为任意器官、模态或配准关系上的通用保证。
+图\ref{fig:samcl-qualitative}给出 OASIS 与腹部 CT--CT 的代表性图像对。每个任务的上排显示固定图像与配准后移动图像之间的差异图，下排显示不同方法得到的配准结果及对应 Dice。直接顺序训练、SI 和 GPM 在早期任务上出现较明显差异，而 SAMCL 的差异图和变形后图像更接近独立训练与集中式多任务训练。该可视化与表\ref{tab:samcl-main-results}中的早期任务保持结果一致。
 
 \IfFileExists{figures/ch05/samcl_qualitative.pdf}{%
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=\textwidth]{ch05/samcl_qualitative.pdf}
-\caption{不同训练策略在 OASIS 与腹部 CT 图像对上的代表性配准结果。}
+\caption[不同训练策略的代表性配准结果]{不同训练策略在 OASIS 与腹部 CT--CT 代表性图像对上的配准结果。每个任务左侧给出固定图像与移动图像；各方法的上排为固定图像与配准后移动图像之间的差异图，下排为配准结果及对应 Dice。CT 图像显示时将强度裁剪到 $[-200,300]$。}
 \label{fig:samcl-qualitative}
 \end{figure}
 }{}
+
+\subsubsection{记忆容量消融与前向泛化分析}
+\label{subsubsec:samcl-ablation-generalization}
+
+图\ref{fig:samcl-ablation-generalization}(a)比较了 SAMCL 在经验回放缓冲区容量分别为 $50$、$100$ 和 $200$ 时的配准结果。对于 OASIS、腹部 CT--CT 和腹部 MR--CT 三项以 Dice 评价的任务，增大缓冲区容量总体上提高了最终配准精度。更大的缓冲区能够保存更多历史图像对，使早期任务在后续阶段被重新采样的覆盖范围增加，因此有利于历史知识保持。该结果也表明，SAMCL 的性能依赖可保存的历史原始图像数量，不能被解释为无回放方法的收益。
+
+图\ref{fig:samcl-ablation-generalization}(b)考察锐度感知最小化对域内与域外前向泛化的影响。模型只在较早到达的任务上完成训练，随后直接在未参与训练的数据上测试。域内设置包括 CTCT$\rightarrow$CTCT 和 MRCT$\rightarrow$MRCT；域外设置包括 CTCT$\rightarrow$MRCT、CTCT$\rightarrow$NLST 和 OASIS$\rightarrow$NLST。加入 SAM 后，前三个以 Dice 评价的方向均取得更高结果，后两个以 TRE 评价的方向均取得更低误差。该结果支持锐度感知更新能够在这些预设方向上改善前向泛化，并说明平坦参数邻域不仅影响已见任务保持，也会影响模型面对后续分布时的直接适用性。
 
 \begin{figure}[htbp]
 \centering
@@ -591,7 +775,7 @@ SAMCL 在腹部 MR--CT 上取得 0.563 的最终 Dice，高于独立训练的 0.
 \label{fig:samcl-ablation-generalization}
 \end{figure}
 
-实验采用固定任务顺序和单一主要骨干，未系统交换任务到达次序，也未覆盖更广泛的成像设备、解剖区域或配准损失。有限回放需要保存历史原始图像对，其存储规模和治理要求不同于无回放方法。表中给出测试样本上的点估计与配对检验标记，但未报告多随机种子训练的均值和标准差。因此，本节结论限定于该四任务序列与既定实现。
+本节实验采用固定任务顺序和单一主要骨干，没有系统交换四项任务的到达次序。MICCAI 2024 的结果表明，SAMCL 在既定顺序下能够缓解遗忘并改善多项前向泛化方向，但任务顺序仍可能改变最终通用配准表现。有限回放还要求保存历史固定--移动图像对，其存储和数据治理条件不同于只保存参数统计的无回放方法。主结果报告测试样本上的点估计与配对检验标记，未报告多随机种子训练的均值和标准差，因此结论限定于该四任务序列、数据划分和实现配置。
 
 \section{综合讨论}
 \label{sec:task-cl-discussion}
