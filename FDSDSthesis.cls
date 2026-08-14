@@ -255,20 +255,13 @@ subsection={
     headsep=5mm,
     footskip=7.5mm}
 
-% Head: University Code and Student No
+% Head: University Code
 \begin{flushright}
     \zihao{-5}
-    \ifnum\FDt@value@blindreview=0%
     \begin{tabular}{rl}
     学校代码:&10246\\
-    学\phantom{占位}号:&\FDt@value@stuid\\
+    \phantom{学校代码:}&\\
     \end{tabular}
-    \else%
-    \begin{tabular}{rl}
-    学校代码:&10246\\
-    \phantom{学占位号:}&\phantom{\FDt@value@stuid}\\
-    \end{tabular}
-    \fi
 \end{flushright}
 
 \vskip 2\baselineskip
@@ -301,6 +294,7 @@ subsection={
 \ifnum\FDt@value@blindreview=0%
     \ifnum\FDt@value@degreeMoP=0%
         \begin{tabular}{rl}
+        \makebox[5.5em][s]{编号}:\quad &\FDt@value@stuid\\
         \makebox[5.5em][s]{院系}:\quad &\FDt@value@faculty\\
         \makebox[5.5em][s]{专业}:\quad &\FDt@value@major\\
         \makebox[5.5em][s]{姓名}:\quad &\FDt@value@author\\
@@ -310,6 +304,7 @@ subsection={
         \end{tabular}
     \else%
         \begin{tabular}{rl}
+        \makebox[10.5em][s]{编号}:\quad &\FDt@value@stuid\\
         \makebox[10.5em][s]{院系}:\quad &\FDt@value@faculty\\
         \makebox[10.5em][s]{专业学位类别（领域）}:\quad &\FDt@value@major\\
         \makebox[10.5em][s]{姓名}:\quad &\FDt@value@author\\

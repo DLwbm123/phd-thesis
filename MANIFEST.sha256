@@ -1,5 +1,5 @@
 1489b5eff8f84a417861a19baa1570fd8e0afe5a59fe7a000dc882cc5e89f1a2  ./.gitignore
-a12fe7fc27f7c18bf03f91fe2b66c7f75828132e8a1e00536a7f0e034dcf2dca  ./FDSDSthesis.cls
+2d79252d7958d1ebb6423298e1c52565dfbe8cee2daec9b116a3e8af72b23cb2  ./FDSDSthesis.cls
 0ee6f6723c29dbf427d12d58ffc11d58e9aa89adda0ab6b06468ee765b1eadf8  ./FontStyle/SimHei.ttf
 fc404ac9b112c0c1d3de5d3c0a567dcc845626dc34a0c8c90838e2474ca47fe8  ./FontStyle/SimKai.ttf
 ca4da082cd970f0c8abaa79f213ddcbc475f7b5afabcb81b385998f9ebfbb53f  ./FontStyle/SimSun.ttf
@@ -22,7 +22,7 @@ c30f42addc9d462259301cefeaeb55aedfbe6ac8ce3ce38127e38a0c40fe6da0  ./chapters/ch0
 d7c7e10a0ba15d8c410afa3f3dd3257135f71746c5d3e4e457c8384c8508242f  ./chapters/ch04_fedsubmerge.tex
 8b2496226d84827488584fdcc0d20cda7a3ccbec734bf24814292b49ffd14614  ./chapters/ch05_scribble_samcl.tex
 424c2e18d622904e598dea111092cfa7bfdac35fdfbca81adf2b24c7928afe26  ./chapters/ch06_conclusion.tex
-27bab19dc912ddcd0e55a24536301c4f8e73e1a984493d62cf89de8b084ec6e0  ./chapters/publications.tex
+6043f44482ee434d9099105fa986a583236c97079adda88e0859abc4710720f8  ./chapters/publications.tex
 070a1872612adf14416d8f8273b7386ceb4c846a4ba4488f751d072fbd08a77a  ./fig/FudanLOGO.pdf
 883049ddfa16a036e311fe71e77b03a0aacb3af21ee6bee28cd27deb83f7ae4e  ./fig/GPUmem.pdf
 e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  ./figures/.gitkeep
