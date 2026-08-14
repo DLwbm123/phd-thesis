@@ -1065,11 +1065,6 @@
   {
     \group_begin:
       \zihao { 4 }
-      \tl_if_eq:NnT \l__fdu_info_degree_type_tl { professional }
-        {
-          \tl_set_eq:NN
-            \c__fdu_name_major_tl \c__fdu_name_major_professional_tl
-        }
       \clist_clear:N \l__fdu_tmpa_clist
       \clist_map_inline:nn { department, major, author, supervisor, date }
         {
@@ -1090,9 +1085,7 @@
   { c @ { \c__fdu_fwid_colon_tl } c }
 \cs_new_protected:Npn \__fdu_cover_info_left:n #1
   {
-    \tl_if_eq:NnTF \l__fdu_info_degree_type_tl { professional }
-      { \__fdu_spread_box:nn { 9 em } {#1} }
-      { \__fdu_spread_box:nn { 6 em } {#1} }
+    \__fdu_spread_box:nn { 6 em } {#1}
   }
 \cs_new_protected:Npn \__fdu_cover_signature:N #1
   {

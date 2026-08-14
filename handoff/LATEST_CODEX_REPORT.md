@@ -1,7 +1,7 @@
 # Codex 最新报告：封面学号与专业学位信息更新（2026-08-14）
 
-- 已将 `config/thesis_info.tex` 中的学号更新为 `21110980022`，并将 `degree` 从 `academic` 改为模板支持的 `professional`。模板随之在封面显示“博士学位论文（专业学位）”，且原有 `major = {电子信息}` 被正确标为“专业学位类别（领域）”。除此之外，正文、参考文献、图件、证据、任务与实验材料均未改动。
-- 已同步更新 `MANIFEST.sha256` 内 `config/thesis_info.tex` 的 SHA-256，并验证全量清单。XeLaTeX/BibTeX 完整构建成功，`main.pdf` 为 143 页，SHA-256 `4a5472f1f47de17807b55cbfb5cdabf750643f8c8620e2b6f5b7483e7eff0b88`；最终日志无 undefined citation/reference、missing file、duplicate label 或 LaTeX error。已渲染并视觉核验中文封面，学号、专业学位标记及“专业学位类别（领域）：电子信息”均显示正确，无裁切或重叠。
+- 已将 `config/thesis_info.tex` 中的学号更新为 `21110980022`，并将 `degree` 从 `academic` 改为模板支持的 `professional`，封面正确显示“博士学位论文（专业学位）”。按作者后续要求，已在 `fduthesis.cls` 仅覆盖专业学位封面字段的标签/间距分支，使原有 `major = {电子信息}` 仍显示为“专业：电子信息”，不显示“专业学位类别（领域）”。除此之外，正文、参考文献、图件、证据、任务与实验材料均未改动。
+- 已同步更新 `MANIFEST.sha256` 内 `config/thesis_info.tex` 与 `fduthesis.cls` 的 SHA-256，并验证全量清单。XeLaTeX/BibTeX 完整构建成功，`main.pdf` 为 143 页，SHA-256 `93ca95552db719cc71439d944a96f6dc3a9733342b4094ad86035321f8283a29`；最终日志无 undefined citation/reference、missing file、duplicate label 或 LaTeX error。已渲染并视觉核验中文封面，学号、专业学位标记及“专业：电子信息”均显示正确，无裁切或重叠。
 
 ---
 
