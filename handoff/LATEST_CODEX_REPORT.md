@@ -1,5 +1,13 @@
 # Codex 最新报告：PhD_Thesis_revised_round2 源码同步（2026-08-14）
 
+## Codex 最新报告：模板独创性与授权声明页恢复（2026-08-14）
+
+- 已先合并作者在 Overleaf 对 `chapters/publications.tex` 的最新修改，再加入模板原有的 `SRC/statement.tex`。声明页被置于“致谢”之后，包含“复旦大学学位论文独创性声明”和“学位论文使用授权声明”，作者、导师签名和日期线均保留为空白待签署。
+- `SRC/statement.tex` 已与 `template-v1.1/SRC/statement.tex` 逐字节核对一致；它按模板设置空白页眉页脚与独立页边距。声明页已渲染并视觉检查，未见裁切、重叠或页眉页脚残留。
+- XeLaTeX/BibTeX 完整构建为 159 页，`main.pdf` SHA-256 为 `a5dee7091d793a986a0faa66302a4bfddb7c0cf8e5fa74d4306558e8524ee93d`；最终日志无 undefined citation/reference、LaTeX error 或 Overfull 警告。
+
+---
+
 ## Codex 最新报告：论文末尾结构调整（2026-08-14）
 
 - 已将末尾顺序调整为“参考文献 → 在学期间学术成果与科研情况 → 致谢”。成果内容文件已从 `appendix_publications.tex` 更名为 `publications.tex`，主文件不再调用 `\appendix`，故成果部分的正文、目录和页眉中均不显示“附录”或章节编号。
