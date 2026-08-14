@@ -1,5 +1,13 @@
 # Codex 最新报告：PhD_Thesis_revised_round2 源码同步（2026-08-14）
 
+## Codex 最新报告：论文末尾结构调整（2026-08-14）
+
+- 已将末尾顺序调整为“参考文献 → 在学期间学术成果与科研情况 → 致谢”。成果内容文件已从 `appendix_publications.tex` 更名为 `publications.tex`，主文件不再调用 `\appendix`，故成果部分的正文、目录和页眉中均不显示“附录”或章节编号。
+- 原有成果条目与分组内容未改写；其内部三项分组标题保留但改为无编号标题，以避免在第六章后出现“6.5”等错误编号。新增 `chapters/acknowledgements.tex`，仅保留“致谢”章节标题，正文为空。
+- XeLaTeX/BibTeX 完整构建为 159 页，`main.pdf` SHA-256 为 `924d9ce69b8a7fef109b7234b5d27e8c42e5f6f5dc689ba55191c80b5eb4d810`；最终日志无 undefined citation/reference、LaTeX error 或 Overfull 警告。已渲染并视觉检查成果首页和空致谢页。
+
+---
+
 ## Codex 最新报告：严格恢复 FDSDSthesis v1.1 模板字体与封面（2026-08-14）
 
 - 已以作者提供的 `template-v1.1.tar.xz` 为唯一模板基准，恢复随模板分发的 `FontStyle/SimSun.ttf`、`SimHei.ttf` 和 `SimKai.ttf`，并将模板的字体加载规则恢复至 `FDSDSthesis.cls`。三份字体文件的 SHA-256 均与模板一致，且已纳入清单、编译输入指纹与 Overleaf 部署范围。
