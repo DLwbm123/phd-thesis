@@ -10,6 +10,7 @@
 
 ## 当前阶段
 
+- 已导入作者提供的 `PhD_Thesis_revised_linkage.zip`（2026-08-14）作为最新 LaTeX 源码：统一更新摘要、第一至第六章和第一章研究逻辑图中的跨章衔接表述，保留仓库内既有的审读报告、证据、QA、任务、提示词、handoff 与实验目录。完整构建为 163 页；最终 `main.log` 无未解析引用/交叉引用、重复标签、缺失文件、LaTeX error 或 Overfull 警告。同步前的 Overleaf 编辑与新源码重叠时，以作者提供的 ZIP 为准。
 - 已导入作者提供的 `PhD_Thesis_final.zip`（2026-08-14）作为最终 LaTeX 源码：更新中英文摘要、第一章和第五章措辞及全文审读报告。中文摘要按核心问题、三项贡献和总体总结重组；当前完整构建为 163 页，最终 `main.log` 无未解析引用/交叉引用、重复标签、缺失文件、LaTeX error 或 Overfull 警告。未改动压缩包之外的仓库专有证据、QA、任务、提示词、handoff 或实验目录。
 - 已导入作者提供的 `PhD_Thesis_revised_v2.zip`（2026-08-14）作为完整 LaTeX 源码：更新中英文摘要、第一至第六章、附录、模板构建配置与 `REVISION_REPORT.md`，并移除随工程分发的 CJK 字体文件，改由 ctex/TeX Live 提供字体。编译为 163 页；最终 `main.log` 无未解析引用/交叉引用、重复标签、缺失文件、LaTeX error 或 Overfull 警告。压缩包未包含的仓库专有证据、QA、任务、提示词、handoff 与实验目录保持不变。Overleaf 在同步前的附录编辑已被最新版源稿覆盖并扩展（成果分组为“已发表或录用论文”，ConceptIL 标注为“已录用”）。
 - 已迁移到用户提供的 FDSDSthesis v1.1 模板：根入口改为 `FDSDSthesis.cls`，并加入模板字体、复旦标识、摘要输入与宏文件；中英文摘要、连续六章、附录 A、已引用图表和 `bibliography/references.bib` 均保持本论文内容。封面显示博士专业学位、学号 `21110980022`、院系“大数据学院”和“专业：电子信息”。已保留 Overleaf 随后更新的附录范围：第二部分标题为“其他参与论文”，不含“学术服务”小节。FDSDSthesis 的必要兼容调整仅包括 `algorithm2e` 支持和专业学位封面的“专业”字段标签；未重写学术正文、数字、公式、图表或文献条目。XeLaTeX/BibTeX 完整构建为 167 页（PDF SHA-256 `2ea8ff5b95c3cf780d2dc2bb483fec1e2fd4d4265cb557233f5bab399eaae9cc`），最终日志无未定义引用/交叉引用、重复标签、缺失文件或 LaTeX 错误，封面、摘要、目录、正文、附录 A 和参考文献已视觉核验。

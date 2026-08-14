@@ -13,22 +13,50 @@
     inner xsep=7pt,
     inner ysep=5pt
   },
-  band/.style={box, fill=black!5, text width=13.8cm, minimum height=1.05cm},
-  widebox/.style={box, text width=13.8cm, minimum height=1.08cm},
-  methodbox/.style={box, text width=4.15cm, minimum height=1.55cm},
-  arrow/.style={-{Latex[length=2.0mm,width=1.3mm]}, draw=black, line width=0.65pt},
-  relation/.style={draw=black, line width=0.65pt},
+  band/.style={
+    box,
+    fill=black!5,
+    text width=13.8cm,
+    minimum height=1.05cm
+  },
+  widebox/.style={
+    box,
+    text width=13.8cm,
+    minimum height=1.08cm
+  },
+  methodbox/.style={
+    box,
+    text width=4.15cm,
+    minimum height=2.35cm,
+    inner ysep=4pt
+  },
+  arrow/.style={
+    -{Latex[length=2.0mm,width=1.3mm]},
+    draw=black,
+    line width=0.65pt
+  },
+  relation/.style={
+    draw=black,
+    line width=0.65pt
+  },
   node distance=6.5mm and 6mm
 ]
 
 \node[band] (constraints) {
   \textbf{现实约束}\\[2pt]
-  \footnotesize 部分监督 \quad｜\quad 历史访问受限 \quad｜\quad 原始数据不可集中 \quad｜\quad 任务与分布持续演化
+  \footnotesize
+  部分监督
+  \quad｜\quad
+  历史访问受限
+  \quad｜\quad
+  原始数据不可集中
+  \quad｜\quad
+  任务与分布持续演化
 };
 
 \node[widebox, below=of constraints] (question) {
   \textbf{核心问题}\\[2pt]
-  在明确训练信息访问边界的条件下，持续积累医学影像分析能力
+  在训练信息受限条件下，如何使医学影像分析模型持续获取新知识并保持既有能力？
 };
 
 \node[widebox, below=of question] (benchmark) {
@@ -36,49 +64,80 @@
   持续医学图像分割的场景定义、实验设定与综合评价
 };
 
-% 以第 5 章节点为中轴放置三个方法框，使整行严格居中。
+% 以第 5 章分割节点为中轴放置三个方法框，使整行严格居中。
 \node[methodbox, below=9mm of benchmark] (scribble) {
-  \textbf{第 5 章：分割}\\[4pt]
-  \footnotesize ScribbleCL
+  \textbf{\strut 第 5 章：分割}\\[2pt]
+  {\scriptsize\strut 当前标注稀疏}\\[-1pt]
+  {\scriptsize\strut 历史样本有限保留}\\[3pt]
+  \strut 涂鸦监督持续分割\\[2pt]
+  {\footnotesize\strut ScribbleCL}
 };
 
 \node[methodbox, left=of scribble] (fed) {
-  \textbf{第 4 章}\\[2pt]
-  无回放联邦持续分类\\[2pt]
-  \footnotesize FedSubMerge
+  \textbf{\strut 第 4 章：分类}\\[2pt]
+  {\scriptsize\strut 数据不可集中}\\[-1pt]
+  {\scriptsize\strut 历史样本不可回放}\\[3pt]
+  \strut 联邦持续分类\\[2pt]
+  {\footnotesize\strut FedSubMerge}
 };
 
 \node[methodbox, right=of scribble] (samcl) {
-  \textbf{第 5 章：配准}\\[2pt]
-  有限回放持续配准\\[2pt]
-  \footnotesize SAMCL
+  \textbf{\strut 第 5 章：配准}\\[2pt]
+  {\scriptsize\strut 器官与模态持续变化}\\[-1pt]
+  {\scriptsize\strut 历史图像对有限保留}\\[3pt]
+  \strut 持续医学图像配准\\[2pt]
+  {\footnotesize\strut SAMCL}
 };
 
 \coordinate (branch) at ($(benchmark.south)+(0,-4mm)$);
+
 \draw[arrow] (constraints) -- (question);
 \draw[arrow] (question) -- (benchmark);
 \draw[relation] (benchmark.south) -- (branch);
-% 对称的分支横线与三条竖直箭头，避免原布局整体向右偏移。
-\draw[relation] (fed.north |- branch) -- (samcl.north |- branch);
-\draw[arrow] (fed.north |- branch) -- (fed.north);
-\draw[arrow] (scribble.north |- branch) -- (scribble.north);
-\draw[arrow] (samcl.north |- branch) -- (samcl.north);
 
-\coordinate (merge) at ($(scribble.south)+(0,-7mm)$);
-% 对称汇合，保证下方“共同分析主线”位于整图中轴。
-\draw[relation] (fed.south) -- (fed.south |- merge);
-\draw[relation] (scribble.south) -- (scribble.south |- merge);
-\draw[relation] (samcl.south) -- (samcl.south |- merge);
-\draw[relation] (fed.south |- merge) -- (samcl.south |- merge);
+% 上方分支：横线距 benchmark 4mm，箭头长度为 5mm。
+\draw[relation]
+  (fed.north |- branch) --
+  (samcl.north |- branch);
 
-\node[band, below=12mm of merge] (goal) {
+\draw[arrow]
+  (fed.north |- branch) --
+  (fed.north);
+
+\draw[arrow]
+  (scribble.north |- branch) --
+  (scribble.north);
+
+\draw[arrow]
+  (samcl.north |- branch) --
+  (samcl.north);
+
+% 下方汇合与上方分支保持对称。
+\coordinate (merge) at ($(scribble.south)+(0,-4mm)$);
+
+\draw[relation]
+  (fed.south) --
+  (fed.south |- merge);
+
+\draw[relation]
+  (scribble.south) --
+  (scribble.south |- merge);
+
+\draw[relation]
+  (samcl.south) --
+  (samcl.south |- merge);
+
+\draw[relation]
+  (fed.south |- merge) --
+  (samcl.south |- merge);
+
+\node[band, below=5mm of merge] (goal) {
   \textbf{共同分析主线}\\[2pt]
-  \footnotesize 在各自任务与访问条件下，分析稳定性、可塑性、泛化及资源开销的取舍
+  \footnotesize
+  在不同任务与信息访问条件下，平衡持续学习的稳定性、可塑性与泛化能力
 };
-\draw[arrow] (merge) -- (goal.north);
 
-\node[font=\scriptsize, align=center, text width=13.5cm, below=3.5mm of goal]
-  {箭头表示论文组织和问题承接关系，不表示各章方法构成同一算法链。};
+\draw[arrow] (merge) -- (goal.north);
 
 \end{tikzpicture}
 \par
