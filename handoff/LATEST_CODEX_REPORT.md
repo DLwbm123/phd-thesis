@@ -1,3 +1,11 @@
+# Codex 最新报告：MICCAI 2024 SAMCL 消融更新（2026-08-14）
+
+- 已在隔离干净副本中导入作者提供的 `PhD_Thesis_revised_with_MICCAI2024_ablation.zip`。相较于上一已发布论文树，压缩包只修改 `chapters/ch05_scribble_samcl.tex` 并新增 `figures/ch05/plot_memory_nnn.pdf`；`sources/`、`evidence/`、`experiments/`、文献库、其他章节与作者既有任务材料均未改变。QA 风格报告仅因新增图环境而更新其统计计数。
+- 表 5-6 的数值保持作者交付值不变，新增“若 SAMCL 优于对比方法则加下划线”和“与 SAMCL 配对 $t$ 检验 $p<0.05$ 以星号标记”的呈现说明。图 5-4 现以双子图并列作者提供的回放缓冲区容量消融与 SAM 锐度感知域内/域外前向泛化结果；本轮只完成源码集成与版式核验，不将这些作者交付的统计标记表述为 Codex 独立复算结果。
+- XeLaTeX/BibTeX 完整构建成功，`main.pdf` 为 131 页，SHA-256 `1da42793df3256f1ebc2567f21835ecccdd166f182bd5de33e0a0f479f89984a`。最终日志无 undefined citation/reference、缺失文件、重复 label 或 LaTeX error；已渲染并视觉核验表 5-6 与图 5-4，未见裁切、重叠、乱码或图表异常。第五章状态继续为 `drafted_pending_review`，下一动作仍为作者/GPT Pro 全章复审。
+
+---
+
 # Codex 最新报告：作者提供最新版论文源码同步（2026-08-14）
 
 - 已在隔离的干净副本中导入 `PhD_Thesis_revised.zip`。此次源码包实际更新了 `main.tex`、第一至第三章、第五至第六章、第五章章节卡、`config/thesis_info.tex` 与 `Makefile`，并新增第五章图件 `figures/ch05/plot_sam_new.pdf`；没有修改 `sources/`、`evidence/`、`qa/`、`tasks/`、`prompts/`、`handoff/` 或 `experiments/` 中的作者既有材料。压缩包没有包含的仓库管理文件被保留，且未对作者提供的正文、数值、公式、引用或文献库作二次改写。

@@ -10,12 +10,11 @@
 
 | 归一化开头 | 次数 |
 |---|---:|
-| `figure[htbp]` | 8 |
+| `figure[htbp]` | 9 |
 | `enumerate[le` | 4 |
 | `table[htbp]P` | 4 |
 | `table[htbp]S` | 4 |
 | `FedSubMerge-` | 3 |
-| `figures/ch05` | 3 |
 
 ## 解释原则
 

@@ -533,7 +533,7 @@ $\mathrm{BWT}_j=R_{T,j}-R_{j,j}$。对 Dice，数值越高越好，负 BWT 表�
 
 \begin{table}[htbp]
 \centering
-\caption{SAMCL 四任务顺序实验的最终性能与后向变化。OASIS、Abd CT 和 Abd MR--CT 报告 Dice（越高越好），NLST 报告 TRE（越低越好）。}
+\caption{SAMCL 四任务顺序实验的最终性能与后向变化。OASIS、Abd CT 和 Abd MR--CT 报告 Dice（越高越好），NLST 报告 TRE（越低越好）。若 SAMCL 优于某一对比方法，则在该方法的对应数值下加下划线；星号表示该方法与 SAMCL 之间的配对 $t$ 检验达到 $p<0.05$。}
 \label{tab:samcl-main-results}
 \scriptsize
 \renewcommand{\arraystretch}{1.12}
@@ -545,14 +545,14 @@ $\mathrm{BWT}_j=R_{T,j}-R_{j,j}$。对 Dice，数值越高越好，负 BWT 表�
 \cmidrule(lr){2-5}\cmidrule(lr){6-9}
 方法 & OASIS & Abd CT & NLST TRE & Abd MR--CT & OASIS & Abd CT & NLST TRE & Abd MR--CT \\
 \midrule
-未配准 & 0.598 & 0.311 & 7.932 & 0.353 & -- & -- & -- & -- \\
-独立训练 & 0.738 & 0.335 & 3.259 & 0.550 & -- & -- & -- & -- \\
-集中式多任务 & 0.743 & 0.358 & 2.662 & 0.506 & -- & -- & -- & -- \\
-直接顺序训练 & 0.348 & 0.270 & 6.922 & 0.568 & $-0.395$ & $-0.129$ & 3.508 & 0 \\
-EWC & 0.659 & 0.364 & 3.836 & 0.506 & $-0.083$ & $-0.011$ & 0.386 & 0 \\
-SI & 0.461 & 0.303 & 8.186 & 0.555 & $-0.281$ & $-0.084$ & 4.685 & 0 \\
-GPM & 0.458 & 0.290 & 7.095 & 0.556 & $-0.281$ & $-0.085$ & 3.574 & 0 \\
-MER & 0.698 & 0.331 & 3.611 & 0.532 & $-0.036$ & $-0.040$ & 0.077 & 0 \\
+未配准 & $\underline{0.598}^{*}$ & $\underline{0.311}^{*}$ & $\underline{7.932}^{*}$ & $\underline{0.353}^{*}$ & -- & -- & -- & -- \\
+独立训练 & $0.738^{*}$ & $\underline{0.335}^{*}$ & $3.259^{*}$ & $\underline{0.550}$ & -- & -- & -- & -- \\
+集中式多任务 & $0.743^{*}$ & 0.358 & $2.662^{*}$ & $\underline{0.506}$ & -- & -- & -- & -- \\
+直接顺序训练 & $\underline{0.348}^{*}$ & $\underline{0.270}$ & $\underline{6.922}^{*}$ & 0.568 & $\underline{-0.395}^{*}$ & $\underline{-0.129}^{*}$ & $\underline{3.508}^{*}$ & 0 \\
+EWC & $\underline{0.659}^{*}$ & $0.364^{*}$ & 3.836 & $\underline{0.506}$ & $\underline{-0.083}^{*}$ & $-0.011^{*}$ & $\underline{0.386}$ & 0 \\
+SI & $\underline{0.461}^{*}$ & $\underline{0.303}^{*}$ & $\underline{8.186}^{*}$ & $\underline{0.555}^{*}$ & $\underline{-0.281}^{*}$ & $\underline{-0.084}^{*}$ & $\underline{4.685}^{*}$ & 0 \\
+GPM & $\underline{0.458}^{*}$ & $\underline{0.290}^{*}$ & $\underline{7.095}^{*}$ & $\underline{0.556}^{*}$ & $\underline{-0.281}^{*}$ & $\underline{-0.085}^{*}$ & $\underline{3.574}^{*}$ & 0 \\
+MER & 0.698 & $\underline{0.331}^{*}$ & $3.611^{*}$ & $\underline{0.532}$ & $-0.036$ & $\underline{-0.040}$ & $0.077^{*}$ & 0 \\
 SAMCL & 0.697 & 0.352 & 3.855 & 0.563 & $-0.037$ & $-0.039$ & 0.306 & 0 \\
 \bottomrule
 \end{tabular}}
@@ -562,7 +562,9 @@ SAMCL & 0.697 & 0.352 & 3.855 & 0.563 & $-0.037$ & $-0.039$ & 0.306 & 0 \\
 
 SAMCL 在腹部 MR--CT 上取得 0.563 的最终 Dice，高于独立训练的 0.550 和集中式多任务训练的 0.506，但直接顺序训练在最后任务上为 0.568。最后任务没有后续遗忘，因此该结果主要反映当前任务适应，而不能用于说明历史保持。OASIS 和腹部 CT--CT 上，SAMCL 仍低于集中式多任务或独立训练参考，说明有限记忆不能完全恢复完整历史访问条件。
 
-图\ref{fig:samcl-forward-generalization}比较了带有和不带有 SAM 的元持续模型在五个预设方向上的前向泛化。对于以 Dice 评价的 CTCT$\rightarrow$CTCT、MRCT$\rightarrow$MRCT 和 CTCT$\rightarrow$MRCT，加入 SAM 后的点估计均有所提高；对于以 TRE 评价的 CTCT$\rightarrow$NLST 和 OASIS$\rightarrow$NLST，加入 SAM 后的误差均有所降低。该结果表明，锐度感知优化在这些预设方向上改善了前向泛化，但实验覆盖的任务和前向泛化方向有限，不能外推为任意器官、模态或配准关系上的通用保证。
+图\ref{fig:samcl-ablation-generalization}(a)比较了 SAMCL 在经验回放缓冲区容量分别为 50、100 和 200 时的配准结果。对于前三个任务 OASIS、腹部 CT--CT 和腹部 MR--CT，增大缓冲区容量总体上能够提高配准精度。这是因为更大的缓冲区能够保存更多历史任务样本，从而有利于保留先前任务知识。
+
+图\ref{fig:samcl-ablation-generalization}(b)比较了带有和不带有 SAM 的元持续模型在域内与域外前向泛化任务上的表现，其中模型由先到达任务训练，并直接测试于后续未见数据。对于域内的 CTCT$\rightarrow$CTCT 和 MRCT$\rightarrow$MRCT，以及域外的 CTCT$\rightarrow$MRCT、CTCT$\rightarrow$NLST 和 OASIS$\rightarrow$NLST，加入 SAM 后均取得了更好的结果：前三个方向的 Dice 提高，后两个方向的 TRE 降低。该结果表明，锐度感知优化在这些预设方向上改善了前向泛化，但实验覆盖的任务和方向有限，不能外推为任意器官、模态或配准关系上的通用保证。
 
 \IfFileExists{figures/ch05/samcl_qualitative.pdf}{%
 \begin{figure}[htbp]
@@ -573,14 +575,21 @@ SAMCL 在腹部 MR--CT 上取得 0.563 的最终 Dice，高于独立训练的 0.
 \end{figure}
 }{}
 
-\IfFileExists{figures/ch05/plot_sam_new.pdf}{%
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.96\textwidth]{ch05/plot_sam_new.pdf}
-\caption{SAMCL 中锐度感知优化对前向泛化的影响。CTCT 表示腹部 CT--CT 配准，MRCT 表示腹部 MR--CT 配准；左侧三个方向报告 Dice（越高越好），右侧两个方向报告 TRE（越低越好）。}
-\label{fig:samcl-forward-generalization}
+\begin{minipage}[t]{0.45\textwidth}
+\centering
+\includegraphics[width=\linewidth]{ch05/plot_memory_nnn.pdf}\\[-0.2em]
+{\small (a) 记忆容量消融实验}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.52\textwidth}
+\centering
+\includegraphics[width=\linewidth]{ch05/plot_sam_new.pdf}\\[-0.2em]
+{\small (b) 域内与域外前向泛化实验}
+\end{minipage}
+\caption[SAMCL 的消融与前向泛化实验]{SAMCL 的消融与前向泛化实验。（a）经验回放采用不同缓冲区容量时的配准结果，其中 OASIS、CTCT 和 MRCT 报告 Dice（越高越好），NLST 报告 TRE（越低越好）；（b）采用或不采用锐度感知最小化时的域内与域外前向泛化结果。CTCT 表示腹部 CT--CT 配准，MRCT 表示腹部 MR--CT 配准。}
+\label{fig:samcl-ablation-generalization}
 \end{figure}
-}{}
 
 实验采用固定任务顺序和单一主要骨干，未系统交换任务到达次序，也未覆盖更广泛的成像设备、解剖区域或配准损失。有限回放需要保存历史原始图像对，其存储规模和治理要求不同于无回放方法。表中给出测试样本上的点估计与配对检验标记，但未报告多随机种子训练的均值和标准差。因此，本节结论限定于该四任务序列与既定实现。
 
