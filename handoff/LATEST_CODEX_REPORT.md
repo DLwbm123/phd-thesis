@@ -1,3 +1,13 @@
+# Codex 最新报告：FDSDSthesis v1.1 模板迁移（2026-08-14）
+
+- 已将论文编译入口整体迁移至用户提供的 FDSDSthesis v1.1 模板。根目录新增 `FDSDSthesis.cls`、`FontStyle/`、`fig/`、`SRC/` 和 `macros.tex`，旧 `fduthesis` 类文件、旧封面配置和旧模板标识资源不再作为编译输入。
+- 本论文的中英文摘要、第一至第六章、附录 A、已引用图表及 `bibliography/references.bib` 已逐项迁入；外部 `sources/`、证据、QA、任务、提示词、handoff 与实验目录仍保留在 GitHub 工程中，未被模板迁移覆盖。Overleaf 在上次同步后对附录的更新亦已合并：章节“其他参与论文与著作”改为“其他参与论文”，并去除了“学术服务”小节。
+- 封面显示博士专业学位、学号 `21110980022`、院系“大数据学院”与“专业：电子信息”。为保留既有算法内容与已确认的封面字段，类文件仅移除了和 `algorithm2e` 冲突的旧算法包设置，并统一专业学位封面的“专业”字段标签；未改写学术正文、数值、公式、图表或文献条目。
+- 已执行 XeLaTeX/BibTeX 完整构建，`main.pdf` 为 167 页，SHA-256 为 `2ea8ff5b95c3cf780d2dc2bb483fec1e2fd4d4265cb557233f5bab399eaae9cc`。最终日志无 undefined citation/reference、重复标签、缺失文件或 LaTeX error；已视觉核验封面、摘要、目录、正文图表、附录 A 和参考文献。
+- 已将 Overleaf 同步脚本和输入指纹更新为 FDSDSthesis 的完整编译输入范围，保留非强制推送和本地部署编译门禁。
+
+---
+
 # Codex 最新报告：封面学号与专业学位信息更新（2026-08-14）
 
 - 已将 `config/thesis_info.tex` 中的学号更新为 `21110980022`，并将 `degree` 从 `academic` 改为模板支持的 `professional`，封面正确显示“博士学位论文（专业学位）”。按作者后续要求，已在 `fduthesis.cls` 仅覆盖专业学位封面字段的标签/间距分支，使原有 `major = {电子信息}` 仍显示为“专业：电子信息”，不显示“专业学位类别（领域）”。除此之外，正文、参考文献、图件、证据、任务与实验材料均未改动。

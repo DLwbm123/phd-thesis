@@ -1,62 +1,49 @@
-\documentclass[type=doctor]{fduthesis}
+\documentclass{FDSDSthesis}
 
-\input{config/thesis_info}
-\input{config/build_flags}
-
+% Packages required by the migrated thesis content.
+\usepackage{amsmath,amssymb,amsthm,bm}
 \usepackage[ruled,noline]{algorithm2e}
 \usepackage{threeparttable}
 \usepackage{multirow}
 \usepackage{booktabs}
 \usepackage{array}
-\usepackage{graphicx}
 \usepackage{float}
 \usepackage{tikz}
 \usetikzlibrary{arrows.meta,positioning,calc}
-\usepackage{enumitem}
-\graphicspath{{figures/}}
+
+% Paths of template and thesis figures.
+\graphicspath{{fig/}{figures/}}
+
+% User macros.
+\input macros
 
 \SetKwFor{For}{for }{\textbf{do}}{\textbf{end for}}
 \SetKwFor{If}{if }{\textbf{then}}{\textbf{end if}}
 \renewcommand{\algorithmcfname}{算法}
 
+% Thesis information migrated from the current synchronized dissertation.
+\ctitle{面向任务持续演化与训练信息受限的医学影像持续学习研究}
+\etitle{Continual Learning for Medical Image Analysis under Evolving Tasks and Limited Training Information}
+\author{王波民}
+\supervisor{庄吓海~教授}
+\faculty{大数据学院}
+\major{电子信息}
+\stuid{21110980022}
+\mail{}
+\pubdate{\today}
+\degreePoA{0} % 0: 博士 or 1: 硕士
+\degreeMoP{1} % 0: 学术 or 1: 专业
+\blindreview{0} % 0: 非盲审 or 1: 盲审
+
 \begin{document}
 
+\makecover
+
 \frontmatter
+\include{SRC/abstract}
 \tableofcontents
 \listoffigures
 \listoftables
-
-\begin{abstract}
-医学影像智能分析通过对器官、病灶及组织形态进行定量建模，为疾病诊断、治疗规划和疗效评估提供重要依据。近年来，深度学习在医学图像分割、分类和配准等任务中取得了较好的性能，但多数方法建立在训练数据能够集中获取、标注信息相对完整以及数据分布基本稳定的假设之上。真实临床环境并不满足这些条件：不同医疗中心和成像设备产生的数据会持续到达，新的疾病类别、解剖结构和成像模态也会不断进入分析流程；与此同时，受数据隐私、治理规范、存储成本和标注成本限制，多中心原始数据通常不能直接集中，历史样本难以长期完整保留，当前任务还可能只提供稀疏标注。任务持续演化与训练信息受限相互叠加，使模型在学习新知识时容易破坏已有能力，也使当前任务学习、历史知识保持和前向泛化之间产生更复杂的制约关系。
-
-针对上述问题，本文以面向任务持续演化与训练信息受限的医学影像持续学习为主线，围绕持续医学图像分割的场景与评价、无回放联邦持续医学图像分类、涂鸦监督持续医学图像分割以及持续医学图像配准展开研究，主要工作如下。
-
-（1）针对持续医学图像分割中场景定义、历史信息访问条件和评价口径不统一的问题，本文构建了一套系统性的综合评测框架。根据输入分布、标签空间和分割对象的变化，将持续分割组织为跨中心或设备变化的 Domain-CL、类别逐步扩展的 Class-CL，以及跨器官和模态变化的 Organ-CL，并统一任务序列、模型输出、训练预算和测试协议。在最终平均性能与遗忘之外，该框架进一步评价当前任务建模、历史知识保持、前向泛化和资源开销。系统实验表明，不同持续学习方法在这些能力维度上的表现并不一致，较小的遗忘不必然对应更好的当前任务学习或前向泛化，回放和参数扩展带来的收益也需要结合资源代价进行解释。该研究为持续医学图像分割方法的公平比较和结论边界提供了统一基础。
-
-（2）针对多中心原始数据不能集中、历史原始样本不能回放且诊断任务持续到达的联邦学习场景，本文提出基于梯度子空间融合的 FedSubMerge。该方法由客户端根据当前任务的样本级梯度递归构建低秩主梯度子空间，服务器对不同客户端的历史保护方向进行融合，并在后续本地训练中将梯度投影到保护子空间的正交补，以减小新任务更新对跨客户端历史知识的干扰。在此基础上，FedSubMerge-AD 根据不同网络层的子空间距离选择相关客户端，为各客户端构建更具针对性的保护空间，从而在历史知识覆盖与新任务可塑性之间进行调节。多种医学影像模态、数据异质性、客户端规模和参与率条件下的实验表明，所提方法能够在不回放历史原始样本的条件下改善联邦模型的总体性能与知识保持，并将额外的子空间交互限制在任务边界处。
-
-（3）针对稀疏涂鸦监督与持续任务演化同时存在时监督覆盖不足和历史知识遗忘的问题，本文构建 ScribbleCL，并提出适用于不同持续分割场景的 ZSDERpp。对于当前任务，该方法在部分交叉熵基础上，利用全局一致性和空间先验约束未标注区域；对于历史任务，则在容量受限的缓冲区中保存少量图像--涂鸦对、参考特征和任务信息，并联合采用特征保持、缓冲区部分交叉熵、全局一致性和空间先验约束后续更新。针对类别增量分割中背景语义随任务变化的问题，方法进一步通过背景概率重组和旧模型一致性约束，减少旧类别被错误吸收到背景中的情况。跨中心域增量实验表明，弱监督约束能够改善稀疏标注条件下的分割学习，有限历史回放则进一步增强最终多域分割性能和旧域知识保持。相关结果也说明，历史保持、当前任务建模和前向泛化仍需分别评价。
-
-（4）针对解剖区域、成像模态和配准关系顺序变化时旧任务遗忘与前向泛化不足的问题，本文提出锐度感知元持续医学图像配准方法 SAMCL。该方法使用容量受限的历史图像对进行经验回放，在一阶元持续学习过程中协调当前任务与历史任务的更新方向，并将锐度感知优化嵌入两类更新。由此，有限回放为历史任务提供训练证据，元更新缓解不同任务之间的梯度干扰，锐度感知目标则改善参数解在局部邻域内的稳健性。跨器官、跨模态和不同配准类型的顺序实验表明，SAMCL 能够缓解直接顺序训练造成的历史任务性能下降，并在当前任务、历史任务和前向泛化评价中保持较好的综合表现。
-
-本文从问题定义、评价方法和学习算法三个层面研究了动态临床环境中的医学影像持续学习。研究结果表明，持续学习方法的有效性不仅取决于是否降低遗忘，还取决于任务如何变化、当前监督是否完整、历史信息以何种形式保留，以及多中心数据能够如何参与协同训练。只有明确这些访问条件，并同时考察稳定性、可塑性、前向泛化和资源成本，才能对医学影像持续学习模型作出较为准确的评价。本文的研究为在不同训练信息受限条件下构建可持续更新的医学影像智能分析模型提供了方法与实验基础。
-\end{abstract}
-
-\begin{abstract*}
-Medical image analysis provides quantitative support for disease diagnosis, treatment planning, and outcome assessment by modeling organs, lesions, and tissue morphology. Deep learning has achieved strong performance in medical image segmentation, classification, and registration. Most existing methods, however, assume that training data can be collected centrally, annotations are sufficiently complete, and data distributions remain largely stationary. These assumptions are often violated in clinical practice. Data from different medical centers and scanners arrive over time, while new disease categories, anatomical structures, and imaging modalities are continually introduced. At the same time, privacy requirements, data-governance rules, storage constraints, and annotation costs restrict the information available for model updates. Multi-center raw data usually cannot be centralized, historical samples may not be retained indefinitely, and current tasks may provide only sparse annotations. The combination of evolving tasks and limited training information makes a model prone to losing previously acquired capabilities when learning new knowledge and creates complex trade-offs among current-task learning, historical knowledge retention, and forward generalization.
-
-To address these challenges, this thesis investigates continual learning for medical image analysis under evolving tasks and limited training information. The study covers scenario definition and evaluation for continual medical image segmentation, replay-free federated continual medical image classification, continual segmentation with scribble supervision, and continual medical image registration. The main contributions are summarized as follows.
-
-(1) To resolve inconsistencies in scenario definitions, historical-information access, and evaluation protocols for continual medical image segmentation, this thesis establishes a systematic benchmark. According to changes in the input distribution, label space, and segmentation target, continual segmentation is organized into Domain-CL for sequential changes across institutions or acquisition domains, Class-CL for incremental expansion of the label space, and Organ-CL for changes across anatomical targets and imaging modalities. The benchmark standardizes task sequences, model outputs, training budgets, and test protocols. Beyond final average performance and forgetting, it evaluates current-task modeling, historical knowledge retention, forward generalization to future tasks, and resource cost. The experiments show that methods behave differently across these dimensions. Lower forgetting does not necessarily imply stronger current-task learning or forward generalization, and gains from replay or parameter expansion must be interpreted together with their resource costs. This study provides a common basis for fair comparison and for defining the scope of conclusions in continual medical image segmentation.
-
-(2) For federated learning in which multi-center raw data cannot be centralized, historical raw samples cannot be replayed, and diagnostic tasks arrive sequentially, this thesis proposes FedSubMerge based on gradient-subspace fusion. Each client recursively constructs a low-rank principal gradient subspace from sample-wise gradients of the current task. The server merges historical protection directions from different clients, and subsequent local training projects gradients onto the orthogonal complement of the protected subspace to reduce interference between new-task updates and knowledge accumulated across clients. FedSubMerge-AD further selects related clients according to layer-wise subspace distances and constructs client-specific protection spaces, thereby regulating the balance between historical knowledge coverage and plasticity for new tasks. Experiments across multiple medical imaging modalities, data-heterogeneity settings, client scales, and participation rates show that the proposed methods improve overall federated performance and knowledge retention without replaying historical raw samples, while confining additional subspace exchange to task boundaries.
-
-(3) To address limited supervision coverage and historical forgetting when sparse scribble annotations are combined with evolving tasks, this thesis develops ScribbleCL and proposes ZSDERpp for different continual segmentation scenarios. For the current task, the method augments partial cross-entropy with global consistency and a spatial prior to constrain unlabeled regions. For historical tasks, a capacity-limited buffer stores a small number of image--scribble pairs, reference features, and task information, and subsequent updates jointly use feature preservation, buffer partial cross-entropy, global consistency, and the spatial prior. For class-incremental segmentation, background-probability regrouping and consistency with the previous model are introduced to reduce the risk that old classes are incorrectly absorbed into the changing background semantics. Experiments in a cross-center domain-incremental setting show that the weak-supervision constraints improve learning from sparse annotations and that limited historical replay further enhances final multi-domain segmentation and retention of previous domains. The results also indicate that historical retention, current-task modeling, and forward generalization to future domains should be evaluated separately.
-
-(4) To mitigate forgetting and insufficient forward generalization when anatomical regions, imaging modalities, and registration relationships change sequentially, this thesis proposes SAMCL, a sharpness-aware meta-continual learning method for medical image registration. The method performs experience replay using a capacity-limited set of historical image pairs, coordinates update directions from current and historical tasks through first-order meta-continual learning, and incorporates sharpness-aware optimization into both update paths. Finite replay therefore provides evidence from previous tasks, the meta-update reduces gradient interference across tasks, and the sharpness-aware objective improves local robustness around the learned solution. Sequential experiments involving different organs, modalities, and registration types show that SAMCL alleviates the degradation of historical-task performance caused by direct sequential training and maintains balanced performance across evaluations of current-task learning, historical-task retention, and forward generalization.
-
-Overall, this thesis studies continual learning for medical image analysis at the levels of problem formulation, evaluation methodology, and learning algorithms. The results show that the effectiveness of a continual learning method depends not only on whether it reduces forgetting, but also on how tasks evolve, whether current supervision is complete, how historical information is retained, and how multi-center data can participate in collaborative training. Reliable evaluation therefore requires explicit access conditions and a joint analysis of stability, plasticity, forward generalization, and resource cost. The studies in this thesis provide methodological and experimental foundations for building medical image analysis models that can be updated continually under different forms of limited training information.
-\end{abstract*}
 
 \mainmatter
 \include{chapters/ch01_introduction}
@@ -70,8 +57,7 @@ Overall, this thesis studies continual learning for medical image analysis at th
 \include{chapters/appendix_publications}
 
 \backmatter
-\ifthesisbibliography
-\printbibliography
-\fi
+\bibliographystyle{plainurl}
+\bibliography{bibliography/references}
 
 \end{document}
