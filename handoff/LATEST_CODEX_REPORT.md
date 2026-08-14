@@ -1,3 +1,11 @@
+# Codex 最新报告：作者提供最新版论文源码同步（2026-08-14）
+
+- 已在隔离的干净副本中导入 `PhD_Thesis_revised.zip`。此次源码包实际更新了 `main.tex`、第一至第三章、第五至第六章、第五章章节卡、`config/thesis_info.tex` 与 `Makefile`，并新增第五章图件 `figures/ch05/plot_sam_new.pdf`；没有修改 `sources/`、`evidence/`、`qa/`、`tasks/`、`prompts/`、`handoff/` 或 `experiments/` 中的作者既有材料。压缩包没有包含的仓库管理文件被保留，且未对作者提供的正文、数值、公式、引用或文献库作二次改写。
+- 完整 XeLaTeX/BibTeX 构建成功，生成 131 页 `main.pdf`，SHA-256 为 `88a58cb601a84f1fd0d512ddf36c798d31ab2a5d7fc95e877d8c494aca69c362`。最终 `main.log` 无 undefined citation/reference、missing file、duplicate label 或 LaTeX error；风格与参考论文重合审查亦已运行。已渲染并视觉核验目录、第五章配准结果表和新增的 SAMCL 锐度感知前向泛化图，未见裁切、重叠、乱码或图表异常。
+- 本轮只完成作者交付源码的集成、构建审查和远程同步；各章的 `drafted_*` 复审状态未因该同步自动升级或降级。下一动作仍是第五章作者/GPT Pro 全章复审，重点核对 ZSDERpp 公式、Domain-CL 表格与结果分析；Class-CL 与 Organ-CL 仅在其性能矩阵提供后补写结果。
+
+---
+
 # Codex 最新报告：中英文摘要与关键词更新（2026-08-13）
 
 - 已严格按 `CODEX_TASK_update_thesis_abstracts.md` 将任务中给出的中文 `abstract` 与英文 `abstract*` 定稿文本完整写入 `main.tex`，并只同步更新 `config/thesis_info.tex` 的中英文关键词。第一至第六章正文、题目、作者信息、模板、文献库、成果附录和 `sources/` 均未修改。
