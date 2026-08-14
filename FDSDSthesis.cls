@@ -20,7 +20,9 @@
 \LoadClass[UTF8,scheme=chinese,zihao=-4,openany,linespread=1.383705]{ctexbook}
 
 %\setmainfont[Mapping=tex-text]{Times New Roman} %可选择以 Times New Roman 作为西文字体
-% Use the CJK font set supplied by ctex/TeX Live. No font files are bundled.
+\setCJKmainfont[ExternalLocation=./FontStyle/,AutoFakeBold,
+    ItalicFont=SimKai.ttf]{SimSun.ttf}
+\setCJKsansfont[ExternalLocation=./FontStyle/]{SimHei.ttf}
 
 \ctexset{punct=CCT} %可选择 quanjiao/banjiao/kaiming/CCT
 \ctexset{today=small} %可选择 small/big/old
@@ -46,7 +48,6 @@
         CJKbookmarks=true,
         bookmarks=true,
         bookmarksnumbered=true,
-        hypertexnames=false,
         pdfstartview=FitH]{hyperref}
 \RequirePackage{enumitem}
 \RequirePackage{ifthen}
@@ -260,12 +261,12 @@ subsection={
     \ifnum\FDt@value@blindreview=0%
     \begin{tabular}{rl}
     学校代码:&10246\\
-    学\phantom{校代}号:&\FDt@value@stuid\\
+    学\phantom{占位}号:&\FDt@value@stuid\\
     \end{tabular}
     \else%
     \begin{tabular}{rl}
     学校代码:&10246\\
-    \phantom{学校代码:}&\phantom{\FDt@value@stuid}\\
+    \phantom{学占位号:}&\phantom{\FDt@value@stuid}\\
     \end{tabular}
     \fi
 \end{flushright}
@@ -281,12 +282,11 @@ subsection={
 \vskip 2\baselineskip
 
 % Title
-\providecommand{\coverctitle}{\FDt@value@ctitle}
 \begin{center}
 {\zihao{2} {\ifnum\FDt@value@degreePoA=0{博士}\else{硕士}\fi{}学位论文}\par}
 {\zihao{-3} {（\ifnum\FDt@value@degreeMoP=0{学术}\else{专业}\fi{}学位）}\par}
 \vskip 2\baselineskip
-{\zihao{-2} \textbf{\coverctitle}\par}
+{\zihao{-2} \textbf{\FDt@value@ctitle}\par}
 \vskip 1\baselineskip
 {\zihao{4} \textbf{\FDt@value@etitle}\par}
 \end{center}
@@ -310,12 +310,12 @@ subsection={
         \end{tabular}
     \else%
         \begin{tabular}{rl}
-        \makebox[5.5em][s]{院系}:\quad &\FDt@value@faculty\\
-        \makebox[5.5em][s]{专业}:\quad &\FDt@value@major\\
-        \makebox[5.5em][s]{姓名}:\quad &\FDt@value@author\\
-        \makebox[5.5em][s]{指导教师}:\quad &\FDt@value@supervisor
+        \makebox[10.5em][s]{院系}:\quad &\FDt@value@faculty\\
+        \makebox[10.5em][s]{专业学位类别（领域）}:\quad &\FDt@value@major\\
+        \makebox[10.5em][s]{姓名}:\quad &\FDt@value@author\\
+        \makebox[10.5em][s]{指导教师}:\quad &\FDt@value@supervisor
         \ifx\FDt@value@secondsupervisor\relax\\\else\\[-0.5em]&\FDt@value@secondsupervisor\\\fi
-        \makebox[5.5em][s]{完成日期}:\quad &\FDt@value@pubdate\\
+        \makebox[10.5em][s]{完成日期}:\quad &\FDt@value@pubdate\\
         \end{tabular}
     \fi
 \else%
@@ -328,10 +328,10 @@ subsection={
         \end{tabular}
     \else%
         \begin{tabular}{rl}
-        \makebox[5.5em][s]{编号}:\quad &\FDt@value@stuid\\
-        \makebox[5.5em][s]{院系}:\quad &\FDt@value@faculty\\
-        \makebox[5.5em][s]{专业}:\quad &\FDt@value@major\\
-        \makebox[5.5em][s]{完成日期}:\quad &\FDt@value@pubdate\\
+        \makebox[10.5em][s]{编号}:\quad &\FDt@value@stuid\\
+        \makebox[10.5em][s]{院系}:\quad &\FDt@value@faculty\\
+        \makebox[10.5em][s]{专业学位类别（领域）}:\quad &\FDt@value@major\\
+        \makebox[10.5em][s]{完成日期}:\quad &\FDt@value@pubdate\\
         \end{tabular}
     \fi
 \fi

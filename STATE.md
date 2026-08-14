@@ -10,6 +10,7 @@
 
 ## 当前阶段
 
+- 已按作者“严格按模板”要求以所提供的 `template-v1.1.tar.xz` 为基准恢复 FDSDSthesis v1.1 的排版：`FontStyle/SimSun.ttf`、`SimHei.ttf`、`SimKai.ttf` 已逐字节恢复为模板随附文件，专业学位封面恢复模板原始的“专业学位类别（领域）”字段与 10.5em 对齐布局；“博士学位论文”、大数据学院与电子信息均由模板原始字体和居中规则生成。此前为显示“专业：电子信息”作出的字段定制已撤销。类文件仅保留两处不影响版式的兼容调整，以避免模板旧 `algorithm` 环境与正文现用 `algorithm2e` 冲突；论文正文、数值、公式、图表及文献均未重写。作者刚在 Overleaf 更新的第六章已合入。完整 XeLaTeX/BibTeX 构建为 159 页（PDF SHA-256 `61cd38554e53c78750200406647e718fb7080b79a5b45c80b015af7a0c48e774`）；最终 `main.log` 无未解析引用/交叉引用、重复标签、缺失文件、LaTeX error 或 Overfull 警告，`pdffonts` 确认嵌入 SimSun/SimHei 模板字体，封面已视觉核验。`MANIFEST.sha256` 全量校验通过，部署脚本与输入指纹已将 `FontStyle/` 纳入受管编译输入。
 - 已导入作者提供的 `PhD_Thesis_revised_round2.zip`（2026-08-14）作为最新 LaTeX 源码：更新中英文摘要、第一至第六章、附录 A 及相关章节卡。同步前 Overleaf 对摘要、附录、第一章和第六章的并发编辑与该 ZIP 重叠，按作者最新交付稿覆盖；ZIP 未包含的仓库专有审读报告、证据、QA、任务、提示词、handoff 与实验目录均保持不变。完整 XeLaTeX/BibTeX 构建为 161 页（PDF SHA-256 `881896ed0b87df308e7b38b011e6c79cac5863de781a71456c54a0221bfd90b0`）；最终 `main.log` 无未解析引用/交叉引用、重复标签、缺失文件、LaTeX error 或 Overfull 警告。已视觉核验封面、中英文摘要、正文、结论与附录；未将本次源码同步视为独立的学术事实复核或章节复审批准。
 - 已导入作者提供的 `PhD_Thesis_revised_linkage.zip`（2026-08-14）作为最新 LaTeX 源码：统一更新摘要、第一至第六章和第一章研究逻辑图中的跨章衔接表述，保留仓库内既有的审读报告、证据、QA、任务、提示词、handoff 与实验目录。完整构建为 163 页；最终 `main.log` 无未解析引用/交叉引用、重复标签、缺失文件、LaTeX error 或 Overfull 警告。同步前的 Overleaf 编辑与新源码重叠时，以作者提供的 ZIP 为准。
 - 已导入作者提供的 `PhD_Thesis_final.zip`（2026-08-14）作为最终 LaTeX 源码：更新中英文摘要、第一章和第五章措辞及全文审读报告。中文摘要按核心问题、三项贡献和总体总结重组；当前完整构建为 163 页，最终 `main.log` 无未解析引用/交叉引用、重复标签、缺失文件、LaTeX error 或 Overfull 警告。未改动压缩包之外的仓库专有证据、QA、任务、提示词、handoff 或实验目录。

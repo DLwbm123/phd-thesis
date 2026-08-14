@@ -53,6 +53,7 @@ git -C "$deploy_repo" rm -rq --ignore-unmatch -- \
   latexmkrc \
   Makefile \
   FDSDSthesis.cls \
+  FontStyle \
   fig \
   macros.tex \
   SRC \
@@ -70,6 +71,7 @@ git -C "$deploy_repo" rm -rq --ignore-unmatch -- \
   scripts/run_bibtex.sh
 install -d \
   "$deploy_repo/fig" \
+  "$deploy_repo/FontStyle" \
   "$deploy_repo/SRC" \
   "$deploy_repo/chapters" \
   "$deploy_repo/bibliography" \
@@ -85,6 +87,7 @@ rsync -a \
   "$project_root/FDSDSthesis.cls" \
   "$project_root/macros.tex" \
   "$deploy_repo/"
+rsync -a "$project_root/FontStyle/" "$deploy_repo/FontStyle/"
 rsync -a "$project_root/fig/" "$deploy_repo/fig/"
 rsync -a --include='*.tex' --exclude='*' "$project_root/SRC/" "$deploy_repo/SRC/"
 rsync -a --include='*.tex' --exclude='*' "$project_root/chapters/" "$deploy_repo/chapters/"

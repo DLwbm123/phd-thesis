@@ -1,5 +1,14 @@
 # Codex 最新报告：PhD_Thesis_revised_round2 源码同步（2026-08-14）
 
+## Codex 最新报告：严格恢复 FDSDSthesis v1.1 模板字体与封面（2026-08-14）
+
+- 已以作者提供的 `template-v1.1.tar.xz` 为唯一模板基准，恢复随模板分发的 `FontStyle/SimSun.ttf`、`SimHei.ttf` 和 `SimKai.ttf`，并将模板的字体加载规则恢复至 `FDSDSthesis.cls`。三份字体文件的 SHA-256 均与模板一致，且已纳入清单、编译输入指纹与 Overleaf 部署范围。
+- 专业学位封面已恢复模板原始字段文字和 10.5em 的布局：“专业学位类别（领域）：电子信息”。这取代了早先按作者旧指示覆盖的“专业：电子信息”定制；博士学位论文标题、大数据学院和电子信息均使用模板原始字距、字体与居中机制。作者在 Overleaf 之后刚更新的 `chapters/ch06_conclusion.tex` 已原样合入。
+- 与模板类文件相比，仅保留两处不影响版式的必要兼容修改：不加载会和正文 `algorithm2e` 产生同名浮动体冲突的旧 `algorithm`/`algorithmic` 包，并不执行其对应的旧算法命名命令。未改写论文正文、数值、公式、图表或文献。
+- XeLaTeX/BibTeX 完整构建成功，`main.pdf` 为 159 页，SHA-256 `61cd38554e53c78750200406647e718fb7080b79a5b45c80b015af7a0c48e774`。最终日志无 undefined citation/reference、重复标签、缺失文件、LaTeX error 或 Overfull 警告；`pdffonts` 确认 SimSun/SimHei 嵌入，且封面已渲染并视觉核验。
+
+---
+
 - 已在隔离发布副本中导入作者提供的 `PhD_Thesis_revised_round2.zip`。该包更新中英文摘要、第一至第六章、附录 A 及第三、五、六章章节卡；仓库专有的审读报告、证据、QA、任务、提示词、handoff 与实验目录没有被压缩包覆盖。
 - 同步前 Overleaf 有一笔涉及中英文摘要、附录 A、第一章和第六章的并发编辑；这些路径均被作者 ZIP 覆盖，因此以 ZIP 内容作为最终版本。仅删除英文摘要文件末尾的一个空白行，不改变正文语义。
 - XeLaTeX/BibTeX 完整构建为 161 页，`main.pdf` SHA-256 为 `881896ed0b87df308e7b38b011e6c79cac5863de781a71456c54a0221bfd90b0`。最终 `main.log` 无 unresolved citation/reference、重复标签、缺失文件、LaTeX error 或 Overfull 警告；已视觉核验封面、中英文摘要、正文、结论及附录，未见裁切、重叠或乱码。本轮为作者交付源码的集成与工程验证，不构成对新增学术表述、数值或结论的独立复核。
