@@ -7,7 +7,7 @@
 
 前述章节从持续医学图像分割的场景与评价出发，建立了任务序列、历史访问和能力维度之间的对应关系，并进一步研究了多中心环境下无回放联邦持续医学图像分类。上述研究表明，任务持续演化并不是唯一需要处理的变化。模型在每个阶段能够获得的监督形式，以及后续训练能否重新调用历史样本，同样决定了学习问题的性质。尤其在医学图像分割和配准中，密集标注或成对训练数据的获取成本较高，当前任务监督受限与历史任务持续到达往往会同时出现。
 
-本章关注两类输出形式不同、但均受到训练信息访问条件约束的医学影像任务。第一类是 ScribbleCL。该研究将第三章的 Domain-CL、Class-CL 和 Organ-CL 扩展到当前阶段仅提供涂鸦、历史阶段只允许容量受限回放的条件。当前任务只采用 Zhang 等\cite{zhang2026zscribbleseg}工作中的全局一致性损失和空间先验损失。本文进一步把当前任务目标、历史特征保持和缓冲区弱监督回放整合为 ZSDERpp，并在 Class-CL 中通过背景概率聚合和旧模型一致性约束处理背景语义变化\cite{method_replay_der,cermelli2020mib}。三类场景使用相同的数据划分、涂鸦构建方式和训练预算，以分别考察当前任务分割、历史知识保持和前向泛化。
+本章关注两类输出形式不同、但均受到训练信息访问条件约束的医学影像任务。第一类是 ScribbleCL。该研究将第三章的 Domain-CL、Class-CL 和 Organ-CL 扩展到当前阶段仅提供涂鸦、历史阶段只允许容量受限回放的条件。当前任务采用全局一致性与空间先验补充部分交叉熵；ZSDERpp 进一步结合历史特征保持和缓冲区弱监督回放，并在 Class-CL 中校正背景语义\cite{zhang2026zscribbleseg,cermelli2020mib}。三类场景采用一致的数据构建与训练原则，本文的定量分析集中于 Domain-CL。
 
 
 第二类是持续医学图像配准。与分割预测离散语义标签不同，配准模型需要从固定图像和移动图像估计连续空间变换。当脑部 MRI、腹部 CT、肺部 CT 和腹部 MR--CT 等任务依次到达时，图像外观、解剖区域、模态关系和损失定义均可能发生变化。SAMCL 采用有限经验回放保存少量历史图像对，并通过元持续学习协调当前样本与历史样本的更新方向；在此基础上，锐度感知优化进一步约束参数邻域中的最坏损失，以改善顺序训练中的前向泛化\cite{wang2024samcl,foret2021sam}。因此，SAMCL 属于有限回放的集中式持续学习方法，不能表述为无回放方法，也不提供形式化隐私保证。
@@ -113,7 +113,7 @@ SAMCL &
 \section{ScribbleCL：面向涂鸦监督的持续医学图像分割研究}
 \label{sec:scribblecl}
 
-ScribbleCL 研究稀疏涂鸦监督与任务顺序变化叠加时的医学图像分割。当前阶段只利用涂鸦标签进行优化，历史任务则通过容量受限的缓冲区参与后续训练。当前任务的弱监督目标只采用 Zhang 等\cite{zhang2026zscribbleseg}工作中的全局一致性损失和空间先验损失，不引入该工作中的其他损失项。在此基础上，本文将当前任务学习、历史特征保持和缓冲区弱监督回放整合为 ZSDERpp。该方法使用同一总体目标处理 Domain-CL、Class-CL 和 Organ-CL；其中，Class-CL 在统一目标内部增加背景语义校正，以避免新增类别到达后旧类别被错误压入背景\cite{cermelli2020mib}。
+ScribbleCL 研究稀疏涂鸦监督与任务顺序变化叠加时的医学图像分割。当前阶段只利用涂鸦标签进行优化，历史任务则通过容量受限的缓冲区参与后续训练。当前任务的弱监督目标只采用 Zhang 等\cite{zhang2026zscribbleseg}工作中的全局一致性损失和空间先验损失，不引入该工作中的其他损失项。在此基础上，本文将当前任务学习、历史特征保持和缓冲区弱监督回放整合，并将这一组合方法记为 ZSDERpp。该方法使用同一总体目标处理 Domain-CL、Class-CL 和 Organ-CL；其中，Class-CL 在统一目标内部增加背景语义校正，以避免新增类别到达后旧类别被错误压入背景\cite{cermelli2020mib}。
 
 \subsection{涂鸦监督下的全局一致性与空间先验}
 \label{subsec:prior-scribble-foundation}
@@ -199,7 +199,7 @@ $(X_m,Y_m^{\mathrm{scr}},\widetilde{\mathbf h}_m,\tau_m)$。任务标识用于�
 \right\|_2^2,
 \label{eq:scribblecl-feature-loss}
 \end{equation}
-其中，$\mathcal{B}_t\subseteq\mathcal{M}_{t-1}$ 为当前更新采样的历史小批次，回放 batch size 固定为 8，即 $|\mathcal{B}_t|=8$。该项限制历史样本的表征漂移；缓冲区中的涂鸦标签仍用于重新计算部分交叉熵、全局一致性和空间先验。历史回放既利用保存的响应，也使用稀疏标签，其基本设计参考了经验回放中联合约束历史输出和真实标签的思路\cite{method_replay_der}。
+其中，$\mathcal{B}_t\subseteq\mathcal{M}_{t-1}$ 为当前更新采样的历史小批次，回放批大小固定为 8，即 $|\mathcal{B}_t|=8$。该项限制历史样本的表征漂移；缓冲区中的涂鸦标签仍用于重新计算部分交叉熵、全局一致性和空间先验。历史回放同时利用参考特征和稀疏涂鸦标签，以约束旧任务表征并重新优化缓冲区样本。
 
 按照本章实验实现，缓冲区损失固定为
 \begin{equation}
@@ -289,7 +289,7 @@ PCE-Sequential & 涂鸦与部分交叉熵 & 无 & 基础弱监督参照 \\
 ZS-Sequential & 涂鸦、全局一致性与空间先验 & 无 & 增强弱监督顺序参照 \\
 ZS-EWC & 与 ZS-Sequential 相同 & 参数重要性正则 & 无原始样本回放比较 \\
 ZS-GPM & 与 ZS-Sequential 相同 & 梯度子空间投影 & 无原始样本回放比较 \\
-ZSDERpp & 与 ZS-Sequential 相同 & 64 幅图像；水库采样；回放 batch size 为 8；保存涂鸦与参考特征 & Domain-CL、Class-CL、Organ-CL \\
+ZSDERpp & 与 ZS-Sequential 相同 & 64 幅图像；水库采样；回放批大小为 8；保存涂鸦与参考特征 & Domain-CL、Class-CL、Organ-CL \\
 \bottomrule
 \end{tabular}}
 \end{table}
@@ -355,11 +355,11 @@ Class-CL 先按照当前阶段的标签空间完成类别重映射，再调用�
 \subsubsection{训练与评价设置}
 \label{subsubsec:scribblecl-training-evaluation}
 
-所有实验采用 ResUNet32。每个任务训练 150 个 epoch，优化器为 SGD，初始学习率为 0.008，在第 80 个 epoch 后乘以 0.5，batch size 为 8。Dense-Sequential、PCE-Sequential、ZS-Sequential、ZS-EWC、ZS-GPM 和 ZSDERpp 使用相同的数据划分、任务顺序、网络与训练预算。当前任务损失中的权重设置为 $\lambda_g=0.05$ 和 $\lambda_s=1$；前 15 个 epoch 不启用空间先验，自第 16 个 epoch 起加入 $\mathcal{L}_{\mathrm{spatial}}$。上述设置在所有使用全局一致性与空间先验的比较方法中保持一致\cite{zhang2026zscribbleseg}。
+所有实验采用 ResUNet32。每个任务训练 150 个 epoch，优化器为 SGD，初始学习率为 0.008，在第 80 个 epoch 后乘以 0.5，批大小为 8。Dense-Sequential、PCE-Sequential、ZS-Sequential、ZS-EWC、ZS-GPM 和 ZSDERpp 使用相同的数据划分、任务顺序、网络与训练预算。当前任务损失中的权重设置为 $\lambda_g=0.05$ 和 $\lambda_s=1$；前 15 个 epoch 不启用空间先验，自第 16 个 epoch 起加入 $\mathcal{L}_{\mathrm{spatial}}$。上述设置在所有使用全局一致性与空间先验的比较方法中保持一致\cite{zhang2026zscribbleseg}。
 
-ZS-EWC 和 ZS-GPM 的持续学习参数沿用第三章相应基线设置\cite{kirkpatrick2017ewc,saha2021gpm}。ZSDERpp 在每个后续阶段从容量为 64 幅图像的历史缓冲区采样图像--涂鸦对及参考特征，采用水库采样维护缓冲区，回放 batch size 为 8，并固定随机种子为 42。缓冲区损失严格采用式\eqref{eq:scribblecl-buffer-loss}中的 $0.5/0.5/1.0/0.1$ 系数。Class-CL 额外启用式\eqref{eq:scribblecl-background-aware-probability}--\eqref{eq:scribblecl-background-aware-distillation}所示的背景语义校正；Domain-CL 和 Organ-CL 不使用该调整。
+ZS-EWC 和 ZS-GPM 的持续学习参数沿用第三章相应基线设置\cite{kirkpatrick2017ewc,saha2021gpm}。ZSDERpp 在每个后续阶段从容量为 64 幅图像的历史缓冲区采样图像--涂鸦对及参考特征，采用水库采样维护缓冲区，回放批大小为 8，并固定随机种子为 42。缓冲区损失严格采用式\eqref{eq:scribblecl-buffer-loss}中的 $0.5/0.5/1.0/0.1$ 系数。Class-CL 额外启用式\eqref{eq:scribblecl-background-aware-probability}--\eqref{eq:scribblecl-background-aware-distillation}所示的背景语义校正；Domain-CL 和 Organ-CL 不使用该调整。
 
-评价使用第三章定义的阶段--任务性能矩阵。Domain-CL 报告 A-Dice、BWTR、RMA 和 E-FWT；Class-CL 报告 A-Dice、BWTR、RMA 和 WCD；Organ-CL 报告 A-Dice、BWTR 和 RMA。所有指标均在密集测试标签上计算。鉴于现有定量证据仅覆盖 Domain-CL，结果分析限定于该场景；Class-CL 与 Organ-CL 保留方法和实验协议，不作性能判断。
+评价使用第三章定义的阶段--任务性能矩阵。Domain-CL 报告 A-Dice、BWTR、RMA 和 E-FWT；Class-CL 报告 A-Dice、BWTR、RMA 和 WCD；Organ-CL 报告 A-Dice、BWTR 和 RMA。所有指标均在密集测试标签上计算。鉴于现有定量证据仅覆盖 Domain-CL，结果分析限定于该场景；Class-CL 与 Organ-CL 保留方法和实验设置，不作性能判断。
 
 \subsection{实验结果}
 \label{subsec:scribblecl-results}
@@ -394,7 +394,7 @@ Dense-Sequential 的 A-Dice、BWTR、RMA 和 E-FWT 分别为 $0.676$、$-0.237$�
 
 PCE-Sequential 只在涂鸦位置计算部分交叉熵。与其相比，ZS-Sequential 的 A-Dice 提高 $0.262$，BWTR 提高 $0.221$，E-FWT 提高 $0.101$，而 RMA 降低 $0.044$。在相同涂鸦、骨干和训练预算下，全局一致性与空间先验改善了最终多域性能、旧域保持和前向泛化表现，但没有同步提高当前任务相对于独立训练参照的建模能力。这一差异说明，弱监督持续分割仍需联合观察主对角线、历史任务和未来任务条目。
 
-两种无原始样本回放的持续学习比较方法表现出不同取舍。ZS-EWC 相较 ZS-Sequential 将 A-Dice、BWTR 和 RMA 分别提高 $0.033$、$0.026$ 和 $0.029$，但 E-FWT 降低 $0.018$。ZS-GPM 的对应变化为 $+0.102$、$+0.118$、$+0.076$ 和 $+0.007$，在四项指标上均高于 ZS-Sequential，并在无回放弱监督方法中取得最高 A-Dice、BWTR、RMA 和 E-FWT。该结果表明，在当前 Domain-CL 序列中，梯度方向保护比单纯参数重要性约束获得了更平衡的稳定性--可塑性结果。
+两种无原始样本回放的持续学习比较方法表现出不同取舍。ZS-EWC 相较 ZS-Sequential 将 A-Dice、BWTR 和 RMA 分别提高 $0.033$、$0.026$ 和 $0.029$，但 E-FWT 降低 $0.018$。ZS-GPM 的对应变化为 $+0.102$、$+0.118$、$+0.076$ 和 $+0.007$，在四项指标上均高于 ZS-Sequential，并在无回放弱监督方法中取得最高 A-Dice、BWTR、RMA 和 E-FWT。在当前 Domain-CL 序列的点估计下，梯度方向保护呈现出比单纯参数重要性约束更平衡的稳定性--可塑性结果。
 
 ZSDERpp 的 A-Dice 和 BWTR 分别为 $0.701$ 和 $-0.152$，均为表中最高值。与 ZS-Sequential 相比，两项指标分别提高 $0.191$ 和 $0.172$，RMA 提高 $0.167$，E-FWT 降低 $0.009$；与 ZS-GPM 相比，A-Dice、BWTR 和 RMA 分别提高 $0.089$、$0.054$ 和 $0.091$，E-FWT 降低 $0.016$。有限历史回放、特征保持以及缓冲区上的弱监督重新优化共同提高了最终多域性能和旧域保持，但更强的历史约束没有带来最高的前向泛化。
 
@@ -407,16 +407,10 @@ ZSDERpp 的 A-Dice 和 BWTR 分别为 $0.701$ 和 $-0.152$，均为表中最高�
 
 ZSDERpp 与无回放方法的主要区别是历史信息载体。ZS-EWC 和 ZS-GPM 只保存参数重要性或梯度子空间，ZSDERpp 则保存容量受限的历史图像--涂鸦对和参考特征。式\eqref{eq:scribblecl-buffer-loss}共同约束历史表征、已标注像素和未标注区域，使后续阶段可以直接重新优化旧域样本。其 A-Dice 与 BWTR 改善符合这一访问优势，但也引入额外存储、计算和医学数据治理成本。因此，表\ref{tab:scribblecl-domain-results}反映的是性能与历史访问之间的取舍，不能把回放方法对无回放方法的差值全部归因于某一个损失项。
 
-Class-CL 与 Organ-CL 使用同一 ZSDERpp 总体目标，但输出组织不同。Class-CL 需要在当前监督和旧模型约束中重新解释背景概率，Organ-CL 则依靠任务标识路由至对应输出头。三类协议因而可以共享总体训练框架；不过，现有定量证据不足以判断 Class-CL 与 Organ-CL 的实际性能。
+Class-CL 与 Organ-CL 使用同一 ZSDERpp 总体目标，但输出组织不同。Class-CL 需要在当前监督和旧模型约束中重新解释背景概率，Organ-CL 则依靠任务标识路由至对应输出头。三类设定共享总体训练框架；值得说明的是，现有定量证据不足以判断 Class-CL 与 Organ-CL 的实际性能。
 
 本节结论限定于 A 到 F 的六中心前列腺 MRI 顺序、固定数据划分、由密集训练标签模拟得到的涂鸦、ResUNet32 骨干、统一的 150-epoch 训练预算和当前缓冲区配置。模拟涂鸦不能覆盖真实标注者在位置、长度和类别选择上的差异。表中未报告多随机种子的均值、标准差或统计检验，因此本节只分析点估计的相对关系，不使用统计显著性表述。
 
-\subsection{结论}
-\label{subsec:scribblecl-conclusion}
-
-在六中心 Domain-CL 序列中，只使用部分交叉熵的 PCE-Sequential 表现较弱；加入全局一致性与空间先验后，ZS-Sequential 的 A-Dice 从 $0.248$ 提高到 $0.510$，BWTR 从 $-0.545$ 提高到 $-0.324$。无回放比较中，ZS-GPM 取得 $0.612$ 的 A-Dice 和 $-0.206$ 的 BWTR。进一步加入有限缓冲区、特征保持和缓冲区弱监督回放后，ZSDERpp 的 A-Dice 达到 $0.701$，BWTR 达到 $-0.152$，在表中两项指标上均为最高值。
-
-ZSDERpp 的 RMA 和 E-FWT 分别为 $0.899$ 和 $0.225$，仍低于 Dense-Sequential 的 $1.086$ 和 $0.260$，其 E-FWT 也低于 ZS-GPM 的 $0.241$。因此，当前结果支持 ZSDERpp 在给定历史缓冲区条件下改善最终多域性能和旧域保持，但不支持其在当前任务建模或前向泛化上统一占优。该结论只针对已完成的 Domain-CL 实验，Class-CL 与 Organ-CL 需要依据各自性能矩阵另行验证。
 \section{SAMCL：锐度感知元持续医学图像配准方法}
 \label{sec:samcl}
 
@@ -425,7 +419,7 @@ ZSDERpp 的 RMA 和 E-FWT 分别为 $0.899$ 和 $0.225$，仍低于 Dense-Sequen
 
 医学图像配准通过估计固定图像与移动图像之间的空间变换，使两幅图像中的对应解剖结构在同一坐标系下对齐，是疾病进展监测、术前规划、手术导航和多模态影像联合分析中的基础环节\cite{maintz1998registration,gupta2021registration,maes1997mutualinformation,sotiras2013deformable}。深度学习方法能够直接从图像对学习配准变换，在推理效率和任务内配准精度方面取得了较好结果\cite{haskins2020deepreg,balakrishnan2019voxelmorph}。然而，现有网络通常围绕特定解剖区域、成像模态和配准关系构建，例如脑部 MR--MR、肺部 CT--CT 或腹部 CT--CT 配准\cite{kang2022dual,che2023amnet,hering2021lungreg}。一旦测试数据的器官、外观、模态关系或采集条件偏离训练分布，任务特定模型的性能容易下降。
 
-真实临床数据还具有持续到达的特点。新设备投入使用、检查协议变化以及新的器官或模态进入分析流程，都会使配准任务随时间扩展。若为每个任务分别保存一套网络，模型数量和维护成本会随任务增加；若等待全部数据集中后再进行多任务训练，又要求不同阶段的数据能够被长期保存并集中访问，这在医疗数据治理和隐私要求下往往难以实现\cite{lee2020clinicalcl,vokinger2021medicaldevices}。直接使用当前任务继续更新同一网络虽然满足顺序训练条件，却会因分布变化破坏早期任务的参数解，产生灾难性遗忘\cite{thrun1995lifelong,mccloskey1989catastrophic,delange2022continual}。
+真实临床数据还具有持续到达的特点。新设备投入使用、检查方案变化以及新的器官或模态进入分析流程，都会使配准任务随时间扩展。若为每个任务分别保存一套网络，模型数量和维护成本会随任务增加；若等待全部数据集中后再进行多任务训练，又要求不同阶段的数据能够被长期保存并集中访问，这在医疗数据治理和隐私要求下往往难以实现\cite{lee2020clinicalcl,vokinger2021medicaldevices}。直接使用当前任务继续更新同一网络虽然满足顺序训练条件，却会因分布变化破坏早期任务的参数解，产生灾难性遗忘\cite{thrun1995lifelong,mccloskey1989catastrophic,delange2022continual}。
 
 基于上述观察，本研究把通用医学图像配准组织为持续学习问题：模型依次接收来自不同器官、模态和配准关系的数据集，在不能重新集中访问全部历史数据的条件下持续更新；训练结束后，单一模型应尽可能保持所有已见任务的配准能力，并对后续未见任务具有一定前向泛化。这里的“通用”并不表示对任意临床数据都具有无条件保证，而是指在给定任务序列和访问约束下，以一个持续更新的模型覆盖多项临床相关配准任务\cite{wang2024samcl}。
 
@@ -482,12 +476,12 @@ $\{\mathcal{D}^{(t)}\}_{t=1}^{T}$ 按顺序到达。若完成前 $K$ 个任务�
 
 仅将当前任务损失与回放损失相加，不能保证两类更新方向相互兼容。当当前任务梯度与历史任务梯度方向相反时，一次有利于新任务的参数更新可能增大旧任务损失。元持续学习从过去知识保持和未来任务适应两个方向组织更新，通过一阶元学习鼓励不同样本或任务之间的迁移，并减小梯度干扰。SAMCL 以 Meta Experience Replay（MER）为基础，MER 结合经验回放与 Reptile 一阶元学习\cite{riemer2019mer,nichol2018firstorder,method_replay_er}。
 
-设从当前数据和记忆缓冲区形成的样本序列为
-$z_i=(f_i,m_i)$，对应任务为 $t_i$，内层学习率为 $\alpha$。MER 近似优化下式：
+令 $\mathcal{Q}_t$ 表示由当前任务数据与记忆缓冲区共同形成的采样分布，并从中得到样本序列
+$z_i=(f_i,m_i)$。样本对应任务记为 $t_i$，内层学习率为 $\alpha$。MER 近似优化下式：
 \begin{equation}
 \begin{aligned}
 \min_{\boldsymbol{\theta}}
-\mathbb{E}_{z_1,\ldots,z_s\sim\mathcal{M}}
+\mathbb{E}_{z_1,\ldots,z_s\sim\mathcal{Q}_t}
 \Bigg[
 \sum_{i=1}^{s}
 \Bigg(&
@@ -528,7 +522,7 @@ SAMCL 使用水库采样维护缓冲区。设到当前时刻已经观察到 $n$ 
 \begin{equation}
 \begin{aligned}
 \min_{\boldsymbol{\theta}}
-\mathbb{E}_{z_1,\ldots,z_s\sim\mathcal{M}}
+\mathbb{E}_{z_1,\ldots,z_s\sim\mathcal{Q}_t}
 \Bigg[
 \sum_{i=1}^{s}
 \Bigg(&
@@ -587,7 +581,7 @@ $\nabla_{\boldsymbol{\theta}}\mathcal{L}^{(t)}_{\mathrm{sam}}$
 \label{subsec:samcl-algorithm}
 
 算法\ref{alg:samcl}给出 SAMCL 的训练流程。第 $t$ 个数据集到达后，模型从上一任务参数
-$\widehat{\boldsymbol{\theta}}^{(t-1)}$ 继续训练。对当前图像对，算法首先保存更新前参数 $\boldsymbol{\theta}_0$，随后根据式\eqref{eq:samcl-perturbation}执行当前任务的锐度感知内层更新；当前图像对通过水库采样写入记忆缓冲区。然后，从缓冲区采样历史图像对，按照其所属任务损失再次执行锐度感知更新，最后使用元学习率 $\beta$ 完成一阶元更新。任务结束时保存
+$\widehat{\boldsymbol{\theta}}^{(t-1)}$ 继续训练。对当前图像对，算法首先保存更新前参数 $\boldsymbol{\theta}_0$，随后根据式\eqref{eq:samcl-perturbation}执行当前任务的锐度感知内层更新；当前图像对通过水库采样写入记忆缓冲区。然后，从缓冲区采样历史图像对，按照其所属任务损失再次执行锐度感知更新。最后使用元学习率 $\beta$，从更新前参数 $\boldsymbol{\theta}_0$ 向内层更新后的参数 $\boldsymbol{\theta}$ 插值，完成一阶元更新。任务结束时保存
 $\widehat{\boldsymbol{\theta}}^{(t)}$，并作为下一任务的初始化。
 
 \begin{algorithm}[htbp]
@@ -602,14 +596,14 @@ $\widehat{\boldsymbol{\theta}}^{(t)}$，并作为下一任务的初始化。
   \For{$i=1,\ldots,b_t$}{
     $\boldsymbol{\theta}_0\leftarrow\boldsymbol{\theta}$\;
     \For{$j=1,\ldots,s$}{
-      计算 $\widehat{\boldsymbol{\epsilon}}(\boldsymbol{\theta})=\rho\nabla_{\boldsymbol{\theta}}\mathcal{L}^{(t)}(\boldsymbol{\theta};B_i[j]) / \|\nabla_{\boldsymbol{\theta}}\mathcal{L}^{(t)}(\boldsymbol{\theta};B_i[j])\|_2$\;
-      $\boldsymbol{\theta}\leftarrow\boldsymbol{\theta}-\alpha\nabla_{\boldsymbol{\theta}}\mathcal{L}^{(t)}(\boldsymbol{\theta};B_i[j])\big|_{\boldsymbol{\theta}+\widehat{\boldsymbol{\epsilon}}(\boldsymbol{\theta})}$\;
+      $\boldsymbol{g}\leftarrow\nabla_{\boldsymbol{\theta}}\mathcal{L}^{(t)}(\boldsymbol{\theta};B_i[j])$，$\widehat{\boldsymbol{\epsilon}}\leftarrow\rho\boldsymbol{g}/\|\boldsymbol{g}\|_2$\;
+      $\boldsymbol{\theta}\leftarrow\boldsymbol{\theta}-\alpha\nabla_{\boldsymbol{\theta}}\mathcal{L}^{(t)}(\boldsymbol{\theta}+\widehat{\boldsymbol{\epsilon}};B_i[j])$\;
     }
     使用水库采样将当前图像对写入 $\mathcal{M}$\;
     从 $\mathcal{M}$ 中采样历史批次 $B_i^{\mathcal{M}}$，其所属任务记为 $t_i$\;
-    计算 $\widehat{\boldsymbol{\epsilon}}(\boldsymbol{\theta})=\rho\nabla_{\boldsymbol{\theta}}\mathcal{L}^{(t_i)}(\boldsymbol{\theta};B_i^{\mathcal{M}}) / \|\nabla_{\boldsymbol{\theta}}\mathcal{L}^{(t_i)}(\boldsymbol{\theta};B_i^{\mathcal{M}})\|_2$\;
-    $\boldsymbol{\theta}\leftarrow\boldsymbol{\theta}-\alpha\nabla_{\boldsymbol{\theta}}\mathcal{L}^{(t_i)}(\boldsymbol{\theta};B_i^{\mathcal{M}})\big|_{\boldsymbol{\theta}+\widehat{\boldsymbol{\epsilon}}(\boldsymbol{\theta})}$\;
-    $\boldsymbol{\theta}\leftarrow\boldsymbol{\theta}+\beta(\boldsymbol{\theta}-\boldsymbol{\theta}_0)$\tcp*{一阶元更新}
+    $\boldsymbol{g}_{\mathcal{M}}\leftarrow\nabla_{\boldsymbol{\theta}}\mathcal{L}^{(t_i)}(\boldsymbol{\theta};B_i^{\mathcal{M}})$，$\widehat{\boldsymbol{\epsilon}}_{\mathcal{M}}\leftarrow\rho\boldsymbol{g}_{\mathcal{M}}/\|\boldsymbol{g}_{\mathcal{M}}\|_2$\;
+    $\boldsymbol{\theta}\leftarrow\boldsymbol{\theta}-\alpha\nabla_{\boldsymbol{\theta}}\mathcal{L}^{(t_i)}(\boldsymbol{\theta}+\widehat{\boldsymbol{\epsilon}}_{\mathcal{M}};B_i^{\mathcal{M}})$\;
+    $\boldsymbol{\theta}\leftarrow\boldsymbol{\theta}_0+\beta(\boldsymbol{\theta}-\boldsymbol{\theta}_0)$\tcp*{一阶元更新}
   }
   $\widehat{\boldsymbol{\theta}}^{(t)}\leftarrow\boldsymbol{\theta}$\;
 }
@@ -706,7 +700,7 @@ SAMCL & 有限经验回放、元持续学习与锐度感知更新 & 容量受限
 \subsubsection{配准精度与知识保持分析}
 \label{subsubsec:samcl-analysis}
 
-表\ref{tab:samcl-main-results}给出四任务顺序训练结束后的最终性能和后向变化。直接顺序训练在前三个任务上出现明显知识损失：OASIS 和腹部 CT--CT 的 Dice-BWT 分别为 $-0.395$ 和 $-0.129$，NLST 的 TRE-BWT 为 $3.508$ mm。SAMCL 将三项后向变化改善为 $-0.037$、$-0.039$ 和 $0.306$ mm，说明有限回放、元持续更新与锐度感知训练的组合能够显著缓解直接顺序训练的遗忘。
+表\ref{tab:samcl-main-results}给出四任务顺序训练结束后的最终性能和后向变化。直接顺序训练在前三个任务上出现明显知识损失：OASIS 和腹部 CT--CT 的 Dice-BWT 分别为 $-0.395$ 和 $-0.129$，NLST 的 TRE-BWT 为 $3.508$ mm。SAMCL 将三项后向变化改善为 $-0.037$、$-0.039$ 和 $0.306$ mm，说明有限回放、元持续更新与锐度感知训练的组合能够明显缓解直接顺序训练的遗忘。
 
 \begin{table}[htbp]
 \centering
@@ -739,7 +733,7 @@ SAMCL & 0.697 & 0.352 & 3.855 & 0.563 & $-0.037$ & $-0.039$ & 0.306 & 0 \\
 
 MER 与 SAMCL 具有相同类型的有限回放访问条件，因此二者的比较更直接。两种方法在 OASIS 最终 Dice 和前两个任务 BWT 上接近；SAMCL 在腹部 CT--CT 与第四个到达的腹部 MR--CT 上取得更高 Dice，MER 则在 NLST 上取得更低 TRE 和更小 TRE-BWT。由此可见，锐度感知元持续学习并未在所有任务上统一超过 MER，而是在不同任务之间形成了不同的稳定性--可塑性取舍。
 
-独立训练和集中式多任务训练可以分别访问单一任务完整数据或全部任务数据。SAMCL 在 OASIS 上低于两项参考，在腹部 CT--CT 上接近集中式多任务训练，并在腹部 MR--CT 上高于独立训练和集中式多任务训练。直接顺序训练在最后任务上取得 $0.568$ 的 Dice，略高于 SAMCL 的 $0.563$；由于最后一个任务之后没有进一步训练，该差异反映当前任务适应，而不能用于评价历史保持。整体来看，SAMCL 显著缩小了直接顺序训练与完整数据访问参考之间的差距，但有限缓冲区不能完全替代集中式访问全部历史任务。
+独立训练和集中式多任务训练可以分别访问单一任务完整数据或全部任务数据。SAMCL 在 OASIS 上低于两项参考，在腹部 CT--CT 上接近集中式多任务训练，并在腹部 MR--CT 上高于独立训练和集中式多任务训练。直接顺序训练在最后任务上取得 $0.568$ 的 Dice，略高于 SAMCL 的 $0.563$；由于最后一个任务之后没有进一步训练，该差异反映当前任务适应，而不能用于评价历史保持。在前三个历史任务上，SAMCL 缩小了直接顺序训练与完整数据访问参考之间的差距；有限缓冲区仍不能替代集中式访问全部历史任务。
 
 图\ref{fig:samcl-qualitative}给出 OASIS 与腹部 CT--CT 的代表性图像对。每个任务的上排显示固定图像与配准后移动图像之间的差异图，下排显示不同方法得到的配准结果及对应 Dice。直接顺序训练、SI 和 GPM 在早期任务上出现较明显差异，而 SAMCL 的差异图和变形后图像更接近独立训练与集中式多任务训练。该可视化与表\ref{tab:samcl-main-results}中的早期任务保持结果一致。
 
@@ -780,19 +774,12 @@ MER 与 SAMCL 具有相同类型的有限回放访问条件，因此二者的比
 \section{综合讨论}
 \label{sec:task-cl-discussion}
 
-本章两项研究均采用有限历史回放，但保存对象和任务监督不同。ScribbleCL 的当前阶段只有涂鸦，ZSDERpp 缓冲少量历史图像--涂鸦对及参考特征；SAMCL 的当前任务图像对相对完整，缓冲区保存历史固定--移动图像对。两类研究都需要报告当前监督、历史信息载体和可访问范围，但不能据此认为二者共享同一算法。
+ScribbleCL 与 SAMCL 都允许有限历史回放，但保存对象和监督结构不同。ZSDERpp 缓冲历史图像--涂鸦对及参考特征，并以弱监督损失重新约束旧域；SAMCL 缓冲固定--移动图像对，通过元更新和锐度感知优化协调当前与历史配准任务。两类方法都需要说明历史信息载体及其治理成本，不能因为都使用缓冲区就视为同一算法。
 
-第\ref{subsec:prior-scribble-foundation}节只使用文献\cite{zhang2026zscribbleseg}中的全局一致性与空间先验，以改善当前任务的稀疏监督。ZSDERpp 进一步在缓冲区上联合特征保持、部分交叉熵和上述两项弱监督损失；Class-CL 在同一总体目标内调整背景语义\cite{method_replay_der,cermelli2020mib}。SAMCL 则通过有限图像对回放、元持续更新和锐度感知优化处理顺序配准。两部分针对不同输出空间和损失结构，不共享同一训练目标。
-
-Domain-CL 结果表明，历史访问范围会改变不同能力维度之间的取舍。ZSDERpp 在六种分割方法中取得最高 A-Dice 和 BWTR，Dense-Sequential 则保持最高 RMA 和 E-FWT。前者可以重新读取有限历史样本，后者只使用当前阶段密集标签，因此二者的差异不能被解释为弱监督与密集监督本身的直接优劣。与 SAMCL 类似，ScribbleCL 的回放方法通过更直接的历史证据改善知识保持，但也增加存储、计算和数据治理成本，并可能降低前向泛化。
-
-SAMCL 则在同一训练循环中联合使用当前和历史图像对。经验回放提供历史梯度，元更新减少跨样本干扰，锐度感知目标偏向邻域损失较平坦的参数。该组合可以共同影响稳定性与可塑性，但仍受记忆容量限制。更大的缓冲区可能改善旧任务覆盖，但也增加存储和治理成本；较强的历史约束也可能降低新任务适应。四任务实验结果中，SAMCL 在若干 Dice 任务上优于 MER，但在 NLST 的 TRE 和后向变化上不及 MER，正体现了不同任务之间的取舍，而不是单一指标上的统一优势。
+从现有结果看，直接历史证据通常有利于知识保持，却不保证当前任务学习或前向泛化同步改善。ZSDERpp 在 Domain-CL 中取得最高 A-Dice 和 BWTR，但 Dense-Sequential 的 RMA 与 E-FWT 更高；SAMCL 在若干 Dice 任务上优于 MER，却在 NLST 的 TRE 和后向变化上不及 MER。这里需要区分的是，稳定性、可塑性和前向泛化对应不同能力，任何单一指标都不足以概括方法行为。
 
 
 \section{本章小结}
 \label{sec:task-cl-summary}
 
-本章研究了任务持续演化与训练信息受限在医学图像分割和配准中的两种具体表现。对于涂鸦监督持续分割，本章沿用第三章的 Domain-CL、Class-CL 和 Organ-CL 数据场景，当前任务只采用全局一致性与空间先验补充部分交叉熵\cite{zhang2026zscribbleseg}。ZSDERpp 将当前任务学习、历史特征保持以及缓冲区上的部分交叉熵、全局一致性和空间先验统一起来，并在 Class-CL 中通过背景概率聚合与旧模型一致性约束处理背景语义变化\cite{method_replay_der,cermelli2020mib}。Domain-CL 实验中，ZS-Sequential 相较 PCE-Sequential 将 A-Dice 从 $0.248$ 提高到 $0.510$；ZSDERpp 进一步取得 $0.701$ 的 A-Dice 和 $-0.152$ 的 BWTR，两项均为表中最高值。Dense-Sequential 的 RMA 和 E-FWT 仍最高，说明有限回放改善了最终多域性能和旧域保持，但没有使当前任务建模与前向泛化统一达到最优。
-
-
-对于持续医学图像配准，本章介绍了 SAMCL。该方法在容量受限的经验回放基础上使用一阶元持续学习协调当前与历史梯度，并将锐度感知损失应用于两类更新，以改善参数邻域中的稳健性。四个顺序配准任务表明，SAMCL 相较直接顺序训练明显缓解了早期任务性能下降，并在多个任务上与 MER、独立训练和集中式多任务参考保持竞争性；NLST 结果、记忆依赖和单一任务顺序也限定了其结论范围。通过上述两类研究，本章进一步说明，医学影像持续学习方法必须明确报告任务如何变化、当前监督提供什么信息、历史数据以何种形式可访问，以及相应结果能够支持何种范围的结论。
+本章分别研究了涂鸦监督持续分割与持续医学图像配准。ZSDERpp 将当前任务弱监督、历史特征保持和缓冲区回放纳入同一目标，并在 Class-CL 中处理背景语义变化；已完成的 Domain-CL 实验支持其改善最终多域性能与旧域保持，但未显示当前任务建模和前向迁移上的统一优势。SAMCL 结合有限图像对回放、一阶元更新与锐度感知优化，在四任务序列中缓解了直接顺序训练的早期任务性能下降。两项研究共同说明，方法结论必须与当前监督、历史访问方式和具体任务序列对应。

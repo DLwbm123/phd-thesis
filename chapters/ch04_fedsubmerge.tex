@@ -13,9 +13,9 @@
 
 将全部客户端方向统一加入保护空间也会产生新的约束。不同机构在标签分布、扫描仪、采集条件和任务历史上存在差异，同一历史方向对不同客户端或不同网络层的重要性并不一致。若服务器无差别地保留所有方向，可用于学习当前任务的参数更新空间会随之收缩，模型的可塑性可能下降。这里的可塑性指模型保留有效更新方向并学习新到达任务的能力。直观地说，服务器既要知道哪些历史方向值得保护，也不能把所有更新方向都锁死。因此，无回放联邦持续学习需要同时覆盖分散在不同机构的旧任务知识，并避免与目标客户端无关的过度约束。
 
-针对上述问题，本章提出联邦子空间融合方法 FedSubMerge。每个客户端在任务边界利用当前任务的样本级梯度与服务器此前返回的历史摘要，递归构建低秩主梯度子空间（principal gradient subspace，PGS）。服务器对客户端上传的 PGS 基和奇异值进行融合，形成覆盖跨客户端历史方向的共享保护子空间。后续任务训练时，客户端将共享特征提取器的梯度投影到该子空间的正交补，以降低更新对旧任务损失的一阶干扰。在此基础上，本章提出 FedSubMerge-AD。该方法按网络层计算客户端 PGS 的投影距离，为每个目标客户端选择相关节点，并构建客户端特定的保护子空间，以减少不必要的方向约束。
+针对上述问题，本章提出联邦子空间融合方法 FedSubMerge。每个客户端在任务边界利用当前任务的样本级梯度与服务器此前返回的历史摘要，递归构建低秩主梯度子空间（principal gradient subspace，PGS）。服务器对客户端上传的 PGS 基和奇异值进行融合，形成覆盖跨客户端历史方向的共享保护子空间。后续任务训练时，客户端将共享特征提取器的梯度投影到该子空间的正交补，以降低更新对旧任务损失的一阶干扰。在此基础上，本章提出 FedSubMerge-AD。该方法按网络层计算客户端 PGS 的投影距离，为每个目标客户端选择相关客户端，并构建客户端特定的保护子空间，以减少不必要的方向约束。
 
-围绕上述问题，本章建立无回放联邦持续医学图像分类的任务模型，提出由客户端 PGS 构建、服务器统一融合和正交补梯度投影组成的 FedSubMerge，并通过按层选邻和个性化融合得到 FedSubMerge-AD，以调节跨机构知识利用与当前任务可塑性。方法分析覆盖旧任务损失变化、递归子空间压缩、稳定性--可塑性关系和通信开销，实验则使用病理图像、腹部 CT、消化道内镜和多中心皮肤镜数据。相关理论解释局部作用机制，不构成对准确率、后向迁移或形式化隐私的无条件保证。
+围绕上述问题，本章建立无回放联邦持续医学图像分类的任务模型，提出由客户端 PGS 构建、服务器统一融合和正交补梯度投影组成的 FedSubMerge，并通过逐层选择相关客户端和个性化融合得到 FedSubMerge-AD，以调节跨机构知识利用与当前任务可塑性。方法分析覆盖旧任务损失变化、递归子空间压缩、稳定性--可塑性关系和通信开销，实验则使用病理图像、腹部 CT、消化道内镜和多中心皮肤镜数据。相关理论解释局部作用机制，不构成对准确率、后向迁移或形式化隐私的无条件保证。
 
 \section{问题定义与研究动机}
 \label{sec:fedsubmerge-motivation}
@@ -87,7 +87,7 @@ W^{(t,r)}
 \subsection{方法总体框架}
 \label{subsec:fedsubmerge-overview}
 
-FedSubMerge 的核心对象是逐层 PGS。客户端用少量当前任务样本构造样本级梯度矩阵，通过奇异值分解提取主要方向；服务器接收各客户端的子空间基和奇异值，并再次执行拼接与压缩。统一版本向所有客户端返回同一个 PGS，强调跨机构历史覆盖。自适应版本按目标客户端和网络层选择相似节点，返回客户端特定 PGS，强调在异质性下保留优化自由度。
+FedSubMerge 的核心对象是逐层 PGS。客户端用少量当前任务样本构造样本级梯度矩阵，通过奇异值分解提取主要方向；服务器接收各客户端的子空间基和奇异值，并再次执行拼接与压缩。统一版本向所有客户端返回同一个 PGS，强调跨机构历史覆盖。自适应版本按目标客户端和网络层选择相似客户端，返回客户端特定 PGS，强调在异质性下保留优化自由度。
 
 从任务边界看，方法包含“接收--投影--更新--融合”四个连续步骤。任务 $t$ 开始前，客户端接收任务 $t-1$ 后服务器返回的共享或个性化 PGS；训练任务 $t$ 时，将共享特征提取器的梯度投影到该 PGS 的正交补；任务结束后，把此前返回的加权基与当前任务梯度矩阵共同压缩，得到新的客户端 PGS；服务器最后对这些 PGS 进行统一或自适应融合，为任务 $t+1$ 生成保护空间。首个任务没有历史 PGS，因而采用常规本地更新。
 
@@ -188,7 +188,7 @@ P_{\bar U_c^{(t-1)}}^{\perp}g_c
 \subsection{自适应逐层客户端选择}
 \label{subsec:fedsubmerge-adaptive-selection}
 
-统一融合能够扩大历史覆盖范围，但可能把与目标客户端无关的方向加入保护空间。FedSubMerge-AD 对每个目标客户端和每个受保护层分别选择相关节点。设客户端 $C_c$ 和 $C_{c'}$ 在某层的 PGS 秩为 $k_c^{(t)}$ 和 $k_{c'}^{(t)}$，两子空间的主角由
+统一融合能够扩大历史覆盖范围，但可能把与目标客户端无关的方向加入保护空间。FedSubMerge-AD 对每个目标客户端和每个受保护层分别选择相关客户端。设客户端 $C_c$ 和 $C_{c'}$ 在某层的 PGS 秩为 $k_c^{(t)}$ 和 $k_{c'}^{(t)}$，两子空间的主角由
 \begin{equation}
 \cos\theta_{c,c',i}^{(t)}
 =
@@ -226,12 +226,12 @@ D_{c,c'}^{(t)}
 \mathcal{N}_c^{(t)}=\{c\}\cup\mathcal{P}_c^{(t)}.
 \label{eq:fedsubmerge-neighbor-set}
 \end{equation}
-选邻操作在各网络层独立执行，因为浅层和深层的子空间相似性可能不同。
+相关客户端选择在各网络层独立执行，因为浅层和深层的子空间相似性可能不同。
 
 \subsection{客户端特定保护子空间构建}
 \label{subsec:fedsubmerge-personalized-subspace}
 
-基于逐层邻居集合，FedSubMerge-AD 构造
+基于逐层相关客户端集合，FedSubMerge-AD 构造
 \begin{equation}
 M_c^{(t)}
 =
@@ -246,7 +246,7 @@ U_j^{(t)}\Sigma_j^{(t)}\mid j\in\mathcal{N}_c^{(t)}
 \end{equation}
 该过程与统一融合使用相同的奇异值加权、拼接和重新压缩，只改变参与融合的客户端集合。目标客户端自身始终包含在 $\mathcal{N}_c^{(t)}$ 中，因此个性化 PGS 至少利用其本地历史摘要。
 
-邻居数 $n$ 控制跨客户端共享程度。当 $n=0$ 时，只使用目标客户端的 PGS；当 $n=K-1$ 时，所有客户端均被选中，方法退化为 FedSubMerge。中间值排除距离较大的方向，为当前任务保留更多更新空间。该选择不能保证每层最终返回的 PGS 秩一定更低，因为服务器重新压缩后的秩还取决于奇异值谱和 $\gamma$。
+相关客户端数 $n$ 控制跨客户端共享程度。当 $n=0$ 时，只使用目标客户端的 PGS；当 $n=K-1$ 时，所有客户端均被选中，方法退化为 FedSubMerge。中间值排除距离较大的方向，为当前任务保留更多更新空间。该选择不能保证每层最终返回的 PGS 秩一定更低，因为服务器重新压缩后的秩还取决于奇异值谱和 $\gamma$。
 
 \subsection{算法流程与实现细节}
 \label{subsec:fedsubmerge-algorithm}
@@ -273,7 +273,7 @@ G_c^{(t)}
 
 \begin{algorithm}[htbp]
 \DontPrintSemicolon
-\KwIn{客户端 $\{C_c\}_{c=1}^{K}$，任务序列 $\{\mathcal{T}^{(t)}\}_{t=1}^{T}$，通信轮数 $R$，本地周期数 $E$，服务器阈值 $\gamma$，客户端阈值 $\epsilon_{\mathrm{th}}$，邻居数 $n$}
+\KwIn{客户端 $\{C_c\}_{c=1}^{K}$，任务序列 $\{\mathcal{T}^{(t)}\}_{t=1}^{T}$，通信轮数 $R$，本地周期数 $E$，服务器阈值 $\gamma$，客户端阈值 $\epsilon_{\mathrm{th}}$，相关客户端数 $n$}
 \KwOut{最终全局模型 $W^{(T)}$ 与任务边界返回的 PGS}
 初始化 $W^{(0)}$，并将全部客户端 PGS 置为空\;
 \For{$t=1,\ldots,T$}{
@@ -287,7 +287,7 @@ G_c^{(t)}
   \eIf{$n=K-1$}{
     服务器按式\eqref{eq:fedsubmerge-uniform-merge}构建共享 PGS，并返回全部客户端\;
   }{
-    服务器按式\eqref{eq:fedsubmerge-subspace-distance}--\eqref{eq:fedsubmerge-neighbor-set}逐层选邻，并按式\eqref{eq:fedsubmerge-personalized-merge}返回个性化 PGS\;
+    服务器按式\eqref{eq:fedsubmerge-subspace-distance}--\eqref{eq:fedsubmerge-neighbor-set}逐层选择相关客户端，并按式\eqref{eq:fedsubmerge-personalized-merge}返回个性化 PGS\;
   }
 }
 \caption{FedSubMerge 与 FedSubMerge-AD}
@@ -395,7 +395,7 @@ B_{\mathcal{A}}B_{\mathcal{A}}^{\top}
 M_{\mathcal{A}}M_{\mathcal{A}}^{\top}.
 \label{eq:fedsubmerge-covariance-equivalence}
 \end{equation}
-因此，在客户端不截断的理想条件下，服务器通过奇异值加权基可恢复 pooled recursive proxies 的左主子空间，而无需接收代理矩阵本身。这一协方差恒等式与分布式 SVD 和联邦主成分分析中的汇总思想一致\cite{iwen2016distributedSVD,grammenos2020federatedPCA}。
+因此，在客户端不截断的理想条件下，服务器通过奇异值加权基可恢复 合并后的递归代理矩阵 的左主子空间，而无需接收代理矩阵本身。这一协方差恒等式与分布式 SVD 和联邦主成分分析中的汇总思想一致\cite{iwen2016distributedSVD,grammenos2020federatedPCA}。
 
 式\eqref{eq:fedsubmerge-covariance-equivalence}不等价于对全部未压缩历史梯度执行一次全局 SVD。统一融合时，每个客户端都接收同一个上一任务共享摘要，因而该摘要会在多个 $B_c^{(t)}$ 中重复出现。该递归结构强化已融合历史方向的影响，但其权重不能解释为每个原始历史梯度只出现一次。
 
@@ -440,7 +440,7 @@ L_{\tau}\|w-w_0\|.
 \end{equation}
 该关系说明，模型漂移可能增加历史梯度未覆盖部分，也是本节结论应解释为局部机制而非全局准确率保证的原因。
 
-\subsection{稳定性--可塑性与选邻依据}
+\subsection{稳定性--可塑性与相关客户端选择依据}
 \label{subsec:fedsubmerge-theory-plasticity}
 
 在某个任务边界和受保护层上，记统一融合候选矩阵为
@@ -461,7 +461,7 @@ $\mathcal{R}(\mathcal{V};v)=\|P_{\mathcal{V}}^{\perp}v\|^2$，则
 
 该排序只对服务器重新压缩前的候选列空间严格成立。使用 $\gamma<1$ 后，统一和自适应候选矩阵会依据各自奇异值谱截断，最终返回子空间不一定保持嵌套。因此，理论不要求任意任务、任意层或任意数据设置下 FedSubMerge 的 BWT 必然更高，也不要求 FedSubMerge-AD 的 ACC 必然更高。
 
-投影距离还可与待合并方向中落在目标子空间之外的能量联系起来。设候选节点 $C_j$ 相对目标 $C_c$ 的加权外部能量为
+投影距离还可与待合并方向中落在目标子空间之外的能量联系起来。设候选客户端 $C_j$ 相对目标 $C_c$ 的加权外部能量为
 $E_{j\mid c}=\|P_{U_c}^{\perp}U_j\Sigma_j\|_F^2$，则
 \begin{equation}
 E_{j\mid c}
@@ -472,7 +472,7 @@ D_{c,j}^2+\frac{k_j-k_c}{2}
 \right).
 \label{eq:fedsubmerge-peer-energy-bound}
 \end{equation}
-当候选节点的保留秩和谱权重相同时，选择最小投影距离的 $n$ 个节点能够最小化该上界；谱权重在有限范围内变化时，距离选择可视为受控的无权近似。该结果解释了选邻准则为何能够减少与目标子空间差异较大的方向，但不保证服务器截断后的最终秩或当前任务能量排序。
+当候选客户端的保留秩和谱权重相同时，选择最小投影距离的 $n$ 个客户端能够最小化该上界；谱权重在有限范围内变化时，距离选择可视为受控的无权近似。该结果解释了客户端选择准则为何能够减少与目标子空间差异较大的方向，但不保证服务器截断后的最终秩或当前任务能量排序。
 
 \subsection{通信与存储开销}
 \label{subsec:fedsubmerge-theory-communication}
@@ -505,7 +505,7 @@ b\sum_{c=1}^{K}
 (d_{\ell}+1)k_{c,\ell}.
 \label{eq:fedsubmerge-server-storage}
 \end{equation}
-这些摘要不包含原始图像、标签、logit、生成样本或 exemplar buffer。该存储形式支持无原始样本回放，但不能据此推导形式化隐私性质。
+这些摘要不包含原始图像、标签、未归一化输出（logits）、生成样本或样本缓冲区。该存储形式支持无原始样本回放，但不能据此推导形式化隐私性质。
 
 \section{实验设计与结果分析}
 \label{sec:fedsubmerge-experiments}
@@ -513,7 +513,7 @@ b\sum_{c=1}^{K}
 \subsection{实验设置}
 \label{subsec:fedsubmerge-experimental-setup}
 
-本章在 PathMNIST、OrganAMNIST、Hyper-Kvasir 和由四个来源数据集构成的多中心皮肤病变基准上评价方法\cite{yang2023medmnist,borgli2020hyperkvasir,tschandl2018ham10000,kawahara2019derm7pt,combalia2019bcn20000,ballerini2013dermofit}。表\ref{tab:fedsubmerge-setup}给出七个联邦设置。PathMNIST 和 Hyper-Kvasir 分别在 $\alpha=0.1$ 与 $0.3$ 的 Dirichlet 划分下形成四个分布偏斜设置；OrganAMNIST 和 Hyper-Kvasir 形成两个数量偏斜设置；四个皮肤病变数据源共同构成一个四客户端特征偏斜设置。
+本章在 PathMNIST、OrganAMNIST、Hyper-Kvasir 和由四个来源数据集构成的多中心皮肤病变基准上评价方法\cite{yang2023medmnist,borgli2020hyperkvasir,tschandl2018ham10000,kawahara2019derm7pt,combalia2019bcn20000,ballerini2013dermofit}。表\ref{tab:fedsubmerge-setup}给出七个联邦设置。PathMNIST 和 Hyper-Kvasir 分别在 $\alpha=0.1$ 与 $0.3$ 的 Dirichlet 划分下形成四个分布偏斜设置；OrganAMNIST 和 Hyper-Kvasir 形成两个标签数量偏斜设置；四个皮肤病变数据源共同构成一个四客户端特征偏斜设置。
 
 \begin{table}[htbp]
 \centering
@@ -530,7 +530,7 @@ b\sum_{c=1}^{K}
 & \multirow{2}{*}{分布偏斜}
 & PathMNIST & 9 & Dirichlet $\alpha\in\{0.1,0.3\}$ & $[2,2,2,3]$ & 10 & 107180 \\
 & & Hyper-Kvasir & 20 & Dirichlet $\alpha\in\{0.1,0.3\}$ & $[2]\times10$ & 10 & 10662 \\
-& \multirow{2}{*}{数量偏斜}
+& \multirow{2}{*}{标签数量偏斜}
 & OrganAMNIST & 11 & 每客户端随机两类子集 & $[3,4,4]$ & 10 & 58830 \\
 & & Hyper-Kvasir & 20 & 每客户端随机 $50\%$ 类别子集 & $[4,4,4,4,4]$ & 10 & 10662 \\
 \midrule
@@ -545,13 +545,13 @@ b\sum_{c=1}^{K}
 }
 \end{table}
 
-分布偏斜（distribution-based label skew）指客户端共享标签空间，但本地类别比例不同，本章采用 Dirichlet 划分模拟该情况\cite{hsu2019dirichlet}。数量偏斜（quantity-based label skew）指不同客户端在任务内观察到的类别子集或类别样本量不同。特征偏斜（feature skew）指标签空间保持一致，而中心特定设备、采集条件或人群构成使图像分布不同。多中心皮肤病变实验将 HAM10000、Derm7pt、BCN20000 和 DMF 分别视为一个客户端，并统一保留六个共享类别。
+分布偏斜（distribution-based label skew）指客户端共享标签空间，但本地类别比例不同，本章采用 Dirichlet 划分模拟该情况\cite{hsu2019dirichlet}。标签数量偏斜（quantity-based label skew）指不同客户端在任务内观察到的类别子集或类别样本量不同。特征偏斜（feature skew）指标签空间保持一致，而中心特定设备、采集条件或人群构成使图像分布不同。多中心皮肤病变实验将 HAM10000、Derm7pt、BCN20000 和 DMF 分别视为一个客户端，并统一保留六个共享类别。
 
 PathMNIST 和 OrganAMNIST 使用官方训练集进行模型训练、官方验证集进行超参数选择、官方测试集进行全局测试。Hyper-Kvasir 按 $70\%/10\%/20\%$ 划分训练、全局验证和全局测试数据。每个皮肤病变中心在本地按相同比例划分，并将各中心验证子集和测试子集分别合并为全局验证集与测试集。测试集不参与超参数选择。
 
 所有方法使用相同任务顺序、数据划分、ResNet-18 主干和评价时点\cite{he2016resnet}。模型从头初始化，采用 SGD，批次大小为 64。PathMNIST 与 OrganAMNIST 输入分辨率为 $128\times128$，Hyper-Kvasir 与皮肤病变图像调整为 $256\times256$。每个任务训练 20 个通信轮次，每轮执行 3 个本地周期；初始学习率为 $10^{-2}$，在任务训练进度的 $50\%$ 和 $75\%$ 处分别衰减为原来的十分之一。每个客户端在任务边界采样 $n_s=256$ 个当前任务样本。客户端阈值为 $\epsilon_{\mathrm{th}}=0.99$，服务器阈值为 $\gamma=0.97$。
 
-FedSubMerge-AD 的邻居数在每个设置的全局验证集上一次性选择，不针对单个客户端或单个任务单独调参。PathMNIST、Hyper-Kvasir 分布偏斜、OrganAMNIST、Hyper-Kvasir 数量偏斜和多中心皮肤病变分别采用 $n=4,5,3,6,2$。实验使用 PyTorch 1.13，在单张 NVIDIA A100 GPU 上完成。
+FedSubMerge-AD 的相关客户端数在每个设置的全局验证集上一次性选择，不针对单个客户端或单个任务单独调参。PathMNIST、Hyper-Kvasir 分布偏斜、OrganAMNIST、Hyper-Kvasir 标签数量偏斜和多中心皮肤病变分别采用 $n=4,5,3,6,2$。实验使用 PyTorch 1.13，在单张 NVIDIA A100 GPU 上完成。
 
 比较方法包括三类。通用联邦学习方法为 FedAvg、FedProx 和 SCAFFOLD\cite{mcmahan2017fedavg,li2020fedprox,karimireddy2020scaffold}；适配到联邦环境的持续学习方法为 Fed-EWC、Fed-SI、Fed-GPM 和 Fed-DER\cite{kirkpatrick2017ewc,method_regu_si,saha2021gpm,method_replay_der}；联邦持续学习方法为 FOT、GLFC、Re-Fed、TARGET 和 DDDR\cite{bakman2024fot,dong2022glfc,li2024Refed,zhang2023target,liang2024dddr}。FedAvg、FedProx、SCAFFOLD、Fed-EWC、Fed-SI、Fed-GPM 与 FOT 不使用历史样本回放。Fed-DER、GLFC 和 Re-Fed 使用大小为 256 的历史样本缓存；TARGET 与 DDDR 生成旧任务样本。为统一任务增量评价，GLFC、TARGET、DDDR 和 Re-Fed 在推理时采用任务特定分类头。
 
@@ -609,14 +609,14 @@ FedSubMerge-AD & 93.42 & -3.37 & 79.40 & -16.85 & 78.12 & -10.95 & 76.16 & -13.0
 
 \begin{table}[htbp]
 \centering
-\caption{数量偏斜与真实多中心特征偏斜设置上的 ACC 和 BWT（\%，越高越好）。$^{\ast}$ 表示回放方法。}
+\caption{标签数量偏斜与真实多中心特征偏斜设置上的 ACC 和 BWT（\%，越高越好）。$^{\ast}$ 表示回放方法。}
 \label{tab:fedsubmerge-main-other}
 \scriptsize
 \renewcommand{\arraystretch}{1.10}
 \resizebox{\textwidth}{!}{%
 \begin{tabular}{lrrrrrr}
 \toprule
-& \multicolumn{2}{c}{OrganAMNIST 数量偏斜} & \multicolumn{2}{c}{Hyper-Kvasir 数量偏斜} & \multicolumn{2}{c}{皮肤病变特征偏斜} \\
+& \multicolumn{2}{c}{OrganAMNIST 标签数量偏斜} & \multicolumn{2}{c}{Hyper-Kvasir 标签数量偏斜} & \multicolumn{2}{c}{皮肤病变特征偏斜} \\
 方法 & ACC & BWT & ACC & BWT & ACC & BWT \\
 \midrule
 FedAvg & 40.20 & -45.74 & 48.15 & -35.66 & 64.45 & -20.63 \\
@@ -640,7 +640,7 @@ FedSubMerge-AD & 74.42 & -15.92 & 70.97 & -1.47 & 85.75 & -5.20 \\
 
 在七个设置中，FedSubMerge 或 FedSubMerge-AD 均取得无回放方法中的最高 ACC。与各设置中最强的无回放比较方法相比，两种方法中较高的 ACC 提升为 1.61--8.61 个百分点。把回放方法也纳入后，所提方法在五个设置中取得最高 ACC，在 PathMNIST $\alpha=0.1$ 和 Hyper-Kvasir $\alpha=0.1$ 中位于第二。该比较表明，跨客户端梯度子空间融合在不重新使用历史原始样本的条件下仍能获得有竞争力的最终平均性能；但回放方法具有不同的历史信息访问条件，结果不能解释为所有方法在完全相同资源约束下的统一排名。
 
-FedSubMerge-AD 在七个设置中的五个取得高于 FedSubMerge 的 ACC。PathMNIST $\alpha=0.3$ 上，FedSubMerge-AD 的 ACC 为 $93.42\%$，而统一融合为 $90.97\%$；OrganAMNIST 数量偏斜和皮肤病变特征偏斜上也分别达到 $74.42\%$ 和 $85.75\%$。这些结果与自适应选邻保留更多当前任务更新方向的设计一致。
+FedSubMerge-AD 在七个设置中的五个取得高于 FedSubMerge 的 ACC。PathMNIST $\alpha=0.3$ 上，FedSubMerge-AD 的 ACC 为 $93.42\%$，而统一融合为 $90.97\%$；OrganAMNIST 标签数量偏斜和皮肤病变特征偏斜上也分别达到 $74.42\%$ 和 $85.75\%$。这些结果与自适应客户端选择保留更多当前任务更新方向的设计一致。
 
 BWT 呈现不同趋势。FedSubMerge 在全部七个设置中的 BWT 均高于 FedSubMerge-AD，并在其中五个取得全部方法中的最高 BWT。例如，Hyper-Kvasir 分布偏斜 $\alpha=0.3$ 上，统一融合的 BWT 为 $-6.55\%$，自适应融合为 $-10.95\%$。统一融合覆盖更广的跨客户端历史方向，因而在多数设置中表现出更强的旧任务保持；自适应方法则以部分稳定性换取更高可塑性。该排序是实验中的总体观察，不是理论要求。
 
@@ -672,7 +672,7 @@ FedSubMerge-AD & 75.20 & -21.95 & 79.40 & -16.85 & 93.42 & -3.37 & 93.65 & -2.45
 }
 \end{table}
 
-表\ref{tab:fedsubmerge-scalability}在 PathMNIST $\alpha=0.3$、固定 $n=4$ 下改变客户端总数与参与率。参与率从 1.00 降至 0.30 时，三个客户端规模上的 ACC 与 BWT 均下降。以 $K=40$ 为例，ACC 从 $90.20\%$ 降至 $84.85\%$，BWT 从 $-6.95\%$ 变为 $-12.40\%$。更少客户端参与意味着每轮聚合观察到的当前任务信息减少，同时跨客户端历史方向的更新频率也下降。由于 $n$ 在不同 $K$ 下固定为 4，该实验反映客户端规模、参与程度和固定邻居预算的共同影响，不能把变化单独归因于客户端总数。
+表\ref{tab:fedsubmerge-scalability}在 PathMNIST $\alpha=0.3$、固定 $n=4$ 下改变客户端总数与参与率。参与率从 1.00 降至 0.30 时，三个客户端规模上的 ACC 与 BWT 均下降。以 $K=40$ 为例，ACC 从 $90.20\%$ 降至 $84.85\%$，BWT 从 $-6.95\%$ 变为 $-12.40\%$。更少客户端参与意味着每轮聚合观察到的当前任务信息减少，同时跨客户端历史方向的更新频率也下降。由于 $n$ 在不同 $K$ 下固定为 4，该实验反映客户端规模、参与程度和固定相关客户端预算的共同影响，不能把变化单独归因于客户端总数。
 
 \begin{table}[htbp]
 \centering
@@ -716,21 +716,21 @@ FedSubMerge-AD & 75.20 & -21.95 & 79.40 & -16.85 & 93.42 & -3.37 & 93.65 & -2.45
 仅本地 PGS（$n=0$） & 82.05 & -11.37 & -17.60 & -14.23 \\
 统一 PGS 融合（$n=K-1$） & 90.97 & -2.45 & -0.86 & +2.51 \\
 激活 PGS & 87.80 & -5.62 & -7.23 & -3.86 \\
-随机选邻 & 88.55 & -4.87 & -3.24 & +0.13 \\
+随机选择客户端 & 88.55 & -4.87 & -3.24 & +0.13 \\
 不使用奇异值加权 & 89.60 & -3.82 & -4.97 & -1.60 \\
 FedSubMerge-AD（$n=4$） & 93.42 & 0.00 & -3.37 & 0.00 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-梯度 PGS 的 ACC 和 BWT 均高于激活 PGS，说明直接记录影响损失的参数方向更适合本章的投影目标。相似性选邻的 ACC 比随机选邻高 4.87 个百分点，而二者 BWT 接近，表明节点相关性主要影响当前任务学习。去除奇异值加权后，ACC 和 BWT 均下降，说明服务器融合时不能把所有方向等权处理。统一融合的 BWT 比自适应版本高 2.51 个百分点，而 ACC 低 2.45 个百分点，与两种方法分别偏向稳定性和可塑性的设计一致。
+梯度 PGS 的 ACC 和 BWT 均高于激活 PGS，说明直接记录影响损失的参数方向更适合本章的投影目标。基于相似性的客户端选择的 ACC 比随机选择客户端高 4.87 个百分点，而二者 BWT 接近，表明客户端相关性主要影响当前任务学习。去除奇异值加权后，ACC 和 BWT 均下降，说明服务器融合时不能把所有方向等权处理。统一融合的 BWT 比自适应版本高 2.51 个百分点，而 ACC 低 2.45 个百分点，与两种方法分别偏向稳定性和可塑性的设计一致。
 
-图\ref{fig:fedsubmerge-hyperparameter}给出真实多中心皮肤病变设置上的邻居数和服务器能量阈值敏感性。$K=4$ 时，$n=0$ 仅使用目标客户端 PGS，跨机构共享不足；$n=3$ 使用全部节点，与统一融合对应，BWT 略有改善但 ACC 下降；$n=2$ 在两项指标之间取得本实验采用的平衡。提高 $\gamma$ 通常保留更多旧方向并改善 BWT，也会增加投影约束。$\gamma=0.97$ 获得最高 ACC，因而与 $n=2$ 共同作为默认配置。该选择来自当前验证设置，不应解释为所有数据和任务长度下的通用最优值。
+图\ref{fig:fedsubmerge-hyperparameter}给出真实多中心皮肤病变设置上的相关客户端数和服务器能量阈值敏感性。$K=4$ 时，$n=0$ 仅使用目标客户端 PGS，跨机构共享不足；$n=3$ 使用全部客户端，与统一融合对应，BWT 略有改善但 ACC 下降；$n=2$ 在两项指标之间取得本实验采用的平衡。提高 $\gamma$ 通常保留更多旧方向并改善 BWT，也会增加投影约束。$\gamma=0.97$ 获得最高 ACC，因而与 $n=2$ 共同作为默认配置。该选择来自当前验证设置，不应解释为所有数据和任务长度下的通用最优值。
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.72\textwidth]{ch04/fedsubmerge_hyperparameter.pdf}
-\caption{真实多中心皮肤病变特征偏斜设置上的 FedSubMerge-AD 参数敏感性。（a）邻居数 $n$；当 $K=4$ 时，$n=0$ 只使用目标客户端 PGS，$n=3$ 使用全部其他客户端。（b）服务器能量阈值 $\gamma$。星号表示默认配置 $n=2$、$\gamma=0.97$。}
+\caption{真实多中心皮肤病变特征偏斜设置上的 FedSubMerge-AD 参数敏感性。（a）相关客户端数 $n$；当 $K=4$ 时，$n=0$ 只使用目标客户端 PGS，$n=3$ 使用全部其他客户端。（b）服务器能量阈值 $\gamma$。星号表示默认配置 $n=2$、$\gamma=0.97$。}
 \label{fig:fedsubmerge-hyperparameter}
 \end{figure}
 
@@ -748,7 +748,7 @@ FedSubMerge-AD（$n=4$） & 93.42 & 0.00 & -3.37 & 0.00 \\
 
 FedSubMerge 和 FedSubMerge-AD 在每个常规通信轮中仍执行完整模型下发、本地训练和完整模型上传，因此轮次模型通信量与相同参与集合下的 FedAvg 相同。额外操作包括任务边界的样本级梯度计算、逐层 SVD、PGS 上传、服务器融合以及 PGS 返回。表\ref{tab:fedsubmerge-scalability}中的开销按照实际逐层秩计算，而不是假设所有层具有固定秩。
 
-客户端的主要附加计算集中在任务边界。每个受保护层使用 $n_s=256$ 个当前任务样本构造梯度矩阵并进行截断 SVD；服务器对各层加权基进行拼接和重新压缩。FedSubMerge-AD 还需计算客户端两两投影距离并逐层选邻。该开销不会在每个本地 mini-batch 重复执行，但随客户端数、受保护层维度和实际 PGS 秩增加。
+客户端的主要附加计算集中在任务边界。每个受保护层使用 $n_s=256$ 个当前任务样本构造梯度矩阵并进行截断 SVD；服务器对各层加权基进行拼接和重新压缩。FedSubMerge-AD 还需计算客户端两两投影距离并逐层选择相关客户端。该开销不会在每个本地小批量 重复执行，但随客户端数、受保护层维度和实际 PGS 秩增加。
 
 持久存储仅包含客户端最近 PGS 和服务器返回 PGS 的基与奇异值，不保存回放图像或生成样本。低秩摘要使存储量由逐层秩而非历史样本数量直接决定，但任务增长仍可能改变奇异值谱和保留秩。服务器重新压缩能够限制秩增长，不构成固定存储上界。对更长任务流和更大主干网络，实际秩、任务边界计算时间和通信量仍需单独测量。
 
@@ -763,7 +763,7 @@ FedSubMerge 和 FedSubMerge-AD 在每个常规通信轮中仍执行完整模型�
 
 理论分析也受局部条件限制。PGS 由有限当前样本和历史递归代理构建，其覆盖会随模型漂移变化；客户端和服务器两次能量截断均会遗漏方向；分类头和其他未投影参数仍可能干扰旧任务；动量与权重衰减的实现也可能引入未投影残差。因而，旧任务损失上界解释的是一阶作用机制，不能被改写为 ACC 或 BWT 的确定性保证。
 
-服务器在本章中被假设能够接收客户端 PGS 并执行融合。PGS 由梯度衍生，传输低秩基和奇异值并不自动消除信息泄露风险。真实部署仍需根据威胁模型结合安全聚合、加密或隐私扰动\cite{dwork2014algorithmic}，并评估这些机制对距离计算、子空间融合和分类性能的影响。后续工作还可研究异步及更长任务流、更大视觉主干、动态邻居预算，以及将跨客户端子空间保护扩展到医学图像分割等密集预测任务。
+服务器在本章中被假设能够接收客户端 PGS 并执行融合。PGS 由梯度衍生，传输低秩基和奇异值并不自动消除信息泄露风险。真实部署仍需根据威胁模型结合安全聚合、加密或隐私扰动\cite{dwork2014algorithmic}，并评估这些机制对距离计算、子空间融合和分类性能的影响。后续工作还可研究异步及更长任务流、更大视觉主干、动态相关客户端数，以及将跨客户端子空间保护扩展到医学图像分割等密集预测任务。
 
 \section{本章小结}
 \label{sec:fedsubmerge-summary}

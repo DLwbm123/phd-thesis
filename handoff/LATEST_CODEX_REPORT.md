@@ -1,3 +1,11 @@
+# Codex 最新报告：PhD_Thesis_revised_v2 源码同步（2026-08-14）
+
+- 已将作者提供的完整 FDSDSthesis 源码导入隔离发布副本：更新摘要、第一至第六章、附录、构建配置、图表与 `REVISION_REPORT.md`；仓库专有证据、QA、任务、提示词、handoff 和实验目录保持不变。
+- 最新源码不再携带 SimSun、SimHei 或 SimKai 字体文件，改用 ctex/TeX Live CJK 字体；Overleaf 部署脚本和输入指纹已同步去除 `FontStyle/`。
+- XeLaTeX/BibTeX 完整构建为 163 页，最终 `main.log` 无 unresolved citation/reference、重复标签、缺失文件、LaTeX error 或 Overfull 警告。同步前发现的 Overleaf 附录更新已与最新交付稿比较，最新版保留其作者加粗与投稿措辞，并进一步将相应成果标为“已发表或录用”“已录用”。
+
+---
+
 # Codex 最新报告：FDSDSthesis v1.1 模板迁移（2026-08-14）
 
 - 已将论文编译入口整体迁移至用户提供的 FDSDSthesis v1.1 模板。根目录新增 `FDSDSthesis.cls`、`FontStyle/`、`fig/`、`SRC/` 和 `macros.tex`，旧 `fduthesis` 类文件、旧封面配置和旧模板标识资源不再作为编译输入。

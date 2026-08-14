@@ -20,9 +20,7 @@
 \LoadClass[UTF8,scheme=chinese,zihao=-4,openany,linespread=1.383705]{ctexbook}
 
 %\setmainfont[Mapping=tex-text]{Times New Roman} %可选择以 Times New Roman 作为西文字体
-\setCJKmainfont[ExternalLocation=./FontStyle/,AutoFakeBold,
-    ItalicFont=SimKai.ttf]{SimSun.ttf}
-\setCJKsansfont[ExternalLocation=./FontStyle/]{SimHei.ttf}
+% Use the CJK font set supplied by ctex/TeX Live. No font files are bundled.
 
 \ctexset{punct=CCT} %可选择 quanjiao/banjiao/kaiming/CCT
 \ctexset{today=small} %可选择 small/big/old
@@ -48,6 +46,7 @@
         CJKbookmarks=true,
         bookmarks=true,
         bookmarksnumbered=true,
+        hypertexnames=false,
         pdfstartview=FitH]{hyperref}
 \RequirePackage{enumitem}
 \RequirePackage{ifthen}
@@ -58,8 +57,8 @@
 \RequirePackage{amsmath,amsfonts,amssymb,amsthm,bm}
 %\RequirePackage{newtxmath} %使用 Times New Roman 字体时可配套使用该数学字体
 \RequirePackage{zhnumber}
-% The migrated thesis uses algorithm2e.  Loading the legacy algorithm package
-% here would define the same floating environment and cause a package conflict.
+% The thesis uses algorithm2e; loading the legacy algorithm package here
+% would define the same floating environment and cause a package conflict.
 \RequirePackage{bibentry}
 % \RequirePackage{natbib}
 
@@ -261,12 +260,12 @@ subsection={
     \ifnum\FDt@value@blindreview=0%
     \begin{tabular}{rl}
     学校代码:&10246\\
-    学\phantom{占位}号:&\FDt@value@stuid\\
+    学\phantom{校代}号:&\FDt@value@stuid\\
     \end{tabular}
     \else%
     \begin{tabular}{rl}
     学校代码:&10246\\
-    \phantom{学占位号:}&\phantom{\FDt@value@stuid}\\
+    \phantom{学校代码:}&\phantom{\FDt@value@stuid}\\
     \end{tabular}
     \fi
 \end{flushright}
@@ -282,11 +281,12 @@ subsection={
 \vskip 2\baselineskip
 
 % Title
+\providecommand{\coverctitle}{\FDt@value@ctitle}
 \begin{center}
 {\zihao{2} {\ifnum\FDt@value@degreePoA=0{博士}\else{硕士}\fi{}学位论文}\par}
 {\zihao{-3} {（\ifnum\FDt@value@degreeMoP=0{学术}\else{专业}\fi{}学位）}\par}
 \vskip 2\baselineskip
-{\zihao{-2} \textbf{\FDt@value@ctitle}\par}
+{\zihao{-2} \textbf{\coverctitle}\par}
 \vskip 1\baselineskip
 {\zihao{4} \textbf{\FDt@value@etitle}\par}
 \end{center}

@@ -2,7 +2,7 @@
 
 - 干净模板：FDSDSthesis v1.1 使用 XeLaTeX + BibTeX 编译成功；
 - 六章与附录 A：全部可被 `main.tex` 正确包含；
-- 字体设置：使用模板随附的 SimSun、SimHei 与 SimKai；
+- 字体设置：使用 ctex/TeX Live 提供的 CJK 字体，不随工程分发字体文件；
 - 参考文献：`bibliography/references.bib` 由 `plainurl` BibTeX 样式输出；
 - Python QA 脚本：语法检查通过；
 - 作者表达基线：空章节未命中预设套话规则；

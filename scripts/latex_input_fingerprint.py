@@ -18,7 +18,6 @@ EXPLICIT = (
     "scripts/run_bibtex.sh",
 )
 TREE_EXTENSIONS = {
-    "FontStyle": None,
     "fig": None,
     "SRC": {".tex"},
     "chapters": {".tex"},
