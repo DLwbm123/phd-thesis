@@ -1,7 +1,7 @@
 \begingroup
 \centering
 \begin{tikzpicture}[
-  font=\small,
+  font=\thesisfigurefont,
   box/.style={draw,rounded corners=2pt,align=center,inner sep=6pt,line width=.6pt},
   module/.style={box,text width=3.5cm,minimum height=2.25cm,fill=black!3},
   planned/.style={box,dashed,text width=12.5cm,fill=white},
@@ -9,12 +9,12 @@
   node distance=8mm and 8mm
 ]
 \node[module] (client) {\textbf{客户端逻辑模块}\\[3pt]当前任务数据\\本地训练与梯度投影\\任务结束后构建 PGS};
-\node[module,right=of client] (server) {\textbf{服务器逻辑模块}\\[3pt]每轮聚合模型\\任务结束后融合 PGS\\返回共享或个性化子空间};
+\node[module,right=of client] (server) {\textbf{服务器逻辑模块}\\[3pt]每轮聚合模型\\任务结束后融合 PGS\\返回共享或个性化\\保护子空间};
 \node[module,right=of server] (eval) {\textbf{阶段评价模块}\\[3pt]逐任务测试\\保存准确率矩阵\\计算 ACC、BWT 与开销};
 \draw[flow] ([yshift=4mm]client.east) -- ([yshift=4mm]server.west);
 \draw[flow] ([yshift=-4mm]server.west) -- ([yshift=-4mm]client.east);
 \draw[flow] (server) -- (eval);
-\node[font=\footnotesize,align=center,above=3mm of server,text width=12.6cm]
+\node[align=center,above=3mm of server,text width=12.6cm]
   {已有实验：单机模拟联邦角色，原始影像不作为客户端间交换对象};
 \node[planned,below=10mm of server] (management)
   {\textbf{拟集成：统一实验与模型管理}\\[3pt]

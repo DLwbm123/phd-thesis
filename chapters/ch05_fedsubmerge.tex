@@ -32,12 +32,12 @@
 
 \begin{figure}[htbp]
 \centering
-\input{figures/ch05/fedsubmerge_overview_zh.tex}
+\includegraphics[width=\textwidth]{ch05/fedsubmerge_overview.pdf}
 \caption{FedSubMerge 与 FedSubMerge-AD 的整体流程。客户端在轮次联邦训练后构建逐层主梯度子空间；服务器将全部客户端子空间统一融合，或按层选择相似客户端并进行个性化融合；后续任务中，客户端把新任务梯度投影到返回子空间的正交补，并在每个任务结束时递归更新本地子空间。}
 \label{fig:fedsubmerge-overview}
 \end{figure}
 
-图中“原始数据不上传”表示本章设定不直接传输医学图像和回放样本。PGS 仍由模型梯度构成，因此本章不将子空间交换视为形式化隐私机制。
+图中划去的历史影像表示后续任务不回放历史原始样本；各医院的原始影像也不直接上传至服务器。PGS 仍由模型梯度构成，因此本章不将子空间交换视为形式化隐私机制。
 
 \section{无回放联邦持续学习问题建模}
 \label{sec:fedsubmerge-formulation}
@@ -729,7 +729,7 @@ FedSubMerge-AD（$n=4$） & \best{93.42} & 0.00 & -3.37 & 0.00 \\
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.72\textwidth]{ch05/fedsubmerge_hyperparameter.pdf}
+\includegraphics[width=0.94\textwidth]{ch05/fedsubmerge_hyperparameter.pdf}
 \caption{真实多中心皮肤病变特征偏斜设置上的 FedSubMerge-AD 参数敏感性。（a）相关客户端数 $n$；当 $K=4$ 时，$n=0$ 只使用目标客户端 PGS，$n=3$ 使用全部其他客户端。（b）服务器能量阈值 $\gamma$。星号表示默认配置 $n=2$、$\gamma=0.97$。}
 \label{fig:fedsubmerge-hyperparameter}
 \end{figure}
@@ -738,7 +738,7 @@ FedSubMerge-AD（$n=4$） & \best{93.42} & 0.00 & -3.37 & 0.00 \\
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.72\textwidth]{ch05/fedsubmerge_accuracy_matrix.pdf}
+\includegraphics[width=0.94\textwidth]{ch05/fedsubmerge_accuracy_matrix.pdf}
 \caption{Hyper-Kvasir（$\alpha=0.3$）上 FedSubMerge 与 FedSubMerge-AD 的任务准确率矩阵。单元格表示完成任务 $t$ 后在任务 $\tau$ 上的准确率；对角线刻画新任务刚学习后的性能，对角线到最终行的变化刻画随后任务训练造成的旧任务下降。}
 \label{fig:fedsubmerge-accuracy-matrix}
 \end{figure}

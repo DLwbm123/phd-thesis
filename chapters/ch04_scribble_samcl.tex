@@ -783,16 +783,10 @@ SAMCL & $-0.037$ & $-0.039$ & 0.306 & 0 \\
 
 \begin{figure}[htbp]
 \centering
-\begin{minipage}[t]{0.45\textwidth}
-\centering
-\includegraphics[width=\linewidth]{ch04/plot_memory_nnn.pdf}\\[-0.2em]
-{\small (a) 记忆容量消融实验}
-\end{minipage}\hfill
-\begin{minipage}[t]{0.52\textwidth}
-\centering
-\includegraphics[width=\linewidth]{ch04/plot_sam_new.pdf}\\[-0.2em]
-{\small (b) 域内与域外前向泛化实验}
-\end{minipage}
+\includegraphics[width=0.90\textwidth]{ch04/plot_memory_nnn.pdf}\\[-0.2em]
+{\thesisfigurefont (a) 记忆容量消融实验}\par\vspace{5pt}
+\includegraphics[width=0.90\textwidth]{ch04/plot_sam_new.pdf}\\[-0.2em]
+{\thesisfigurefont (b) 域内与域外前向泛化实验}
 \caption[SAMCL 的消融与前向泛化实验]{SAMCL 的消融与前向泛化实验。（a）采用不同回放容量时的配准结果，其中 OASIS、CTCT 和 MRCT 报告 Dice（越高越好），NLST 报告 TRE（越低越好）；（b）采用或不采用锐度感知最小化时的域内与域外前向泛化结果。CTCT 表示腹部 CT--CT 配准，MRCT 表示腹部 MR--CT 配准。}
 \label{fig:samcl-ablation-generalization}
 \end{figure}

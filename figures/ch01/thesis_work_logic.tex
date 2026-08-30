@@ -1,7 +1,7 @@
 \begingroup
 \centering
 \begin{tikzpicture}[
-  font=\small,
+  font=\thesisfigurefont,
   box/.style={draw,rounded corners=2pt,align=center,inner sep=4pt,line width=.6pt},
   wide/.style={box,text width=12.7cm,fill=black!3},
   task/.style={box,text width=5.85cm,minimum height=1.35cm},
@@ -20,8 +20,8 @@
  {\textbf{涂鸦监督持续分割}\\[2pt]复用第三章的病例、任务与指标\\改变当前监督和历史回放目标};
 \node[task,below=of replay.south east,anchor=north east,xshift=-1mm] (reg)
  {\textbf{跨器官、跨模态持续配准}\\[2pt]继承学习、保持与泛化的评价原则\\独立定义空间变换、Dice 与 TRE};
-\node[align=center,font=\footnotesize,below=3mm of seg.south east,anchor=north,xshift=4mm,text width=12.5cm] (relation)
- {两项研究并列回答有限回放问题；不共享损失，不构成分割--配准串联算法};
+\node[align=center,below=3mm of seg.south east,anchor=north,xshift=4mm,text width=12.5cm] (relation)
+ {两项研究并列回答有限回放问题；\\不共享损失，不构成分割--配准串联算法};
 \node[wide,below=3mm of relation] (federated)
  {\textbf{第五章：无回放条件下的联邦医学影像持续学习}\\[2pt]
 收紧历史访问：不回放原始样本\quad 增加空间约束：多客户端协作\\[2pt]
@@ -33,7 +33,7 @@
 \node[wide,below=of federated] (future)
  {\textbf{第六章：结论、适用边界与未来研究}\\[2pt]
 持续预训练\quad 持续领域适配\quad 持续知识编辑\\[2pt]
-\footnotesize 实验结果与工程设计分开陈述，真实部署和新增实验另行验证};
+实验结果与工程设计分开陈述，真实部署和新增实验另行验证};
 \draw[flow] (federated) -- (future);
 \end{tikzpicture}
 \par

@@ -5,6 +5,7 @@
 - 框架：预答辩修订 V4；连续六章，论文总题目与原模板封面保持不变。
 - 本轮授权：作者要求整合三版预答辩意见，完成写作、格式和 GitHub/Overleaf 同步；新实验、新程序和真实系统部署暂缓。
 - 修订分支：`agent/predefense-writing-20260830`。
+- 图件二次修订：按作者反馈恢复 FedSubMerge 和 Benchmark 原始框架图，仅替换文字；同类中文标签使用固定字号，取消逐框自动缩字。
 - 基线：GitHub `20eef4c29ae68f94b977d2c0a2e6d22f973b6573`，保留 Overleaf `e7be5a4a23cf1047c696be8f1602e63fdca2e18b` 的四项更新后形成 `b34b0e4a702dd429981a50a48f0435735e288682`。
 - 六章和摘要已经完成本轮修订，状态为 `predefense_revised_pending_author_review`；工程验收不代替作者学术终审。
 - 原第四章联邦学习移至第五章，原第五章分割与配准移至第四章；最新标题、论证关系和内容边界见总契约。
@@ -20,6 +21,7 @@
 - `scripts/verify_predefense_revision.py` 通过：83 个公式数学内容、10 张结果表中的 103 行数值、687 条实验记录与基线一致，实验账本只重映射章节路径。
 - 237 个源材料文件及原工作区 7 个未提交实验文件的 SHA-256 与修订前一致。
 - 全部页面已渲染巡检，重点检查摘要、目录、原反馈页附近、中文图、结果表和系统图。
+- 二次图件修订已逐图及逐页复核：14 个 PDF 图件的 124 个图像实例像素与位置、1289 条原始矢量路径及数字标签保持不变；所有中文标签均在页面内。SAMCL 两个消融子图上下排放，FedSubMerge 结果图适当放大；新增逻辑图与工程图统一使用 9.5 bp 中文字体。
 - 风格规则命中经人工检查保留；参考重合唯一命中为 MICCAI 会议名称，不涉及参考论文正文借用。
 
 ## 发布与证据
@@ -27,6 +29,8 @@
 按“GitHub 提交 → Overleaf 部署副本完整编译 → 非强制推送 → 远端逐文件核验”发布。发布提交、远端 SHA、PDF 校验和与原工作区保护结果由本轮外部发布回执记录，避免在提交内容内自引用自身哈希。
 
 本地交付目录：`/Users/bominwang/Desktop/codes/PhD thesis/predefense_revision_20260830/`。其中保存基线 PDF、修订 PDF、修订报告、发布回执与渲染/核验材料。仓库内说明见 `handoff/PREDEFENSE_REVISION_20260830.md`。
+
+最新图件修订交付目录：`/Users/bominwang/Desktop/codes/PhD thesis/predefense_figures_v2_20260830/`，包含新版全文、FedSubMerge 原图中文版、逐图检查和独立发布回执。前次交付不覆盖；本次变更见 `handoff/LATEST_CODEX_REPORT.md`。
 
 ## 尚未执行的研究或个人内容
 
