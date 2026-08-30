@@ -1,13 +1,13 @@
 symbol,meaning,scope,first_definition,source,status,notes
-L_pce,部分交叉熵损失,第二章与第五章,2.2.3/5.3.1,author_definition;zhang2026zscribbleseg,defined,第五章仅在有效涂鸦位置计算
-L_global,全局一致性损失,第五章,5.3.1,zhang2026zscribbleseg,defined,全局一致性损失
-pi,类别混合比例向量,第三章,,ZScribbleSeg,pending,向量格式需统一
-L_spatial,空间先验损失,第五章,5.3.1,zhang2026zscribbleseg,defined,空间先验负证据损失
-L_shape,形状正则化损失,第三章,,ZScribbleSeg,pending,
+L_pce,部分交叉熵损失,第二章与第四章,2.2.3/4.3.1,author_definition;zhang2026zscribbleseg,defined,第四章仅在有效涂鸦位置计算
+L_global,全局一致性损失,第四章,4.3.1,zhang2026zscribbleseg,defined,全局一致性损失
+pi,类别混合比例向量,来源 ZScribbleSeg；当前正文不使用,,ZScribbleSeg,source_only_not_used,不属于当前 ScribbleCL 目标，不引入正文。
+L_spatial,空间先验损失,第四章,4.3.1,zhang2026zscribbleseg,defined,空间先验负证据损失
+L_shape,形状正则化损失,来源 ZScribbleSeg；当前正文不使用,,ZScribbleSeg,source_only_not_used,不属于当前 ScribbleCL 目标，不引入正文。
 theta,模型参数,跨章节,2.1.1,all,defined,各章可带上下标但含义需一致
-rho,SAM 邻域半径,第五章,,SAMCL,pending,
-U,子空间正交基,第六章,,FedSubMerge,pending,需区分客户端与层索引
-Sigma,奇异值对角矩阵,第六章,,FedSubMerge,pending,
+rho,SAM 邻域半径,第四章,4.4.4,SAMCL,defined,
+U,子空间正交基,第五章,5.4.2,FedSubMerge,defined,需区分客户端与层索引
+Sigma,奇异值对角矩阵,第五章,5.4.2,FedSubMerge,defined,
 Omega,离散图像域,第二至六章,2.1.1,author_definition,defined,d取2或3分别表示二维或三维
 I,输入医学图像,第二至四章,2.1.1,author_definition,defined,配准小节使用带F和M下标的图像记号
 Y,参考标签图,第二至四章,2.1.1,author_definition,defined,空间位置取0至K减1的离散类别
@@ -33,25 +33,25 @@ D,图像匹配项,第二章,2.1.2,author_definition,defined,衡量固定图像�
 mathcal_R,变换正则项,第二章,2.1.2,author_definition,defined,约束变换空间性质
 lambda,正则化权重,第二章,2.1.2,author_definition,defined,控制匹配项与正则项的相对权重
 mathcal_D_reg,训练图像对分布,第二章,2.1.2,author_definition,defined,学习式配准的训练图像对分布
-mathcal{T},任务集合,第三章,3.2,Benchmark,defined,顺序到达任务的索引集合
-T,任务总数,第三章,3.2,Benchmark,defined,正整数
-t,任务或训练阶段索引,第三章,3.2,Benchmark,defined,取值属于mathcal{T}
-mathcal{D}_t,第t阶段训练集,第三章,3.2,Benchmark,defined,由图像标签对构成
-N_t,第t阶段训练样本数,第三章,3.2,Benchmark,defined,源稿未报告具体数值
-x_i^t,第t阶段第i个医学图像,第三章,3.2,Benchmark,defined,
-y_i^t,第t阶段第i个分割标签,第三章,3.2,Benchmark,defined,
-mathbb{D}_t,第t任务图像标签联合分布,第三章,3.2,Benchmark,defined,等于P(mathcal{X}_t mathcal{Y}_t)
-mathcal{X}_t,第t任务图像空间随机变量,第三章,3.2,Benchmark,defined,
-mathcal{Y}_t,第t任务标签空间随机变量,第三章,3.2,Benchmark,defined,
-Y_t,第t任务标签类别集合,第三章,3.2,Benchmark,defined,是否含背景随场景协议解释
-theta_t,完成第t阶段训练后的模型参数,第三章,3.2,Benchmark,defined,theta的阶段化记号
-"d_{t,i}",完成阶段t后在任务i测试集的平均Dice,第三章,3.2,Benchmark,defined,与正文 LaTeX 记号一致
-d_i^{NC},任务i独立训练参考的Dice,第三章,3.5,Benchmark,defined,RMA分母
-"d_{0,i}",随机初始化模型在任务i上的Dice,第三章,3.5,Benchmark,defined,E-FWT基线
-d_{\mathrm{all}},全部已见类别的Dice,第三章,3.5,Benchmark,defined,WCD
-\\mathrm{Param}(\\theta_t),模型theta_t的参数量,第三章,3.5,Benchmark,defined,模型参数量
-N_t^{\mathrm{replay}},回放数据量,第三章,3.5,Benchmark,defined,DRR分子
-N_t^{\mathrm{train}},训练数据量,第三章,3.5,Benchmark,defined,DRR分母
+mathcal{T},任务集合,第三章,3.3,Benchmark,defined,顺序到达任务的索引集合
+T,任务总数,第三章,3.3,Benchmark,defined,正整数
+t,任务或训练阶段索引,第三章,3.3,Benchmark,defined,取值属于mathcal{T}
+mathcal{D}_t,第t阶段训练集,第三章,3.3,Benchmark,defined,由图像标签对构成
+N_t,第t阶段训练样本数,第三章,3.3,Benchmark,defined,源稿未报告具体数值
+x_i^t,第t阶段第i个医学图像,第三章,3.3,Benchmark,defined,
+y_i^t,第t阶段第i个分割标签,第三章,3.3,Benchmark,defined,
+mathbb{D}_t,第t任务图像标签联合分布,第三章,3.3,Benchmark,defined,等于P(mathcal{X}_t mathcal{Y}_t)
+mathcal{X}_t,第t任务图像空间随机变量,第三章,3.3,Benchmark,defined,
+mathcal{Y}_t,第t任务标签空间随机变量,第三章,3.3,Benchmark,defined,
+Y_t,第t任务标签类别集合,第三章,3.3,Benchmark,defined,是否含背景随场景协议解释
+theta_t,完成第t阶段训练后的模型参数,第三章,3.3,Benchmark,defined,theta的阶段化记号
+"d_{t,i}",完成阶段t后在任务i测试集的平均Dice,第三章,3.3,Benchmark,defined,与正文 LaTeX 记号一致
+d_i^{NC},任务i独立训练参考的Dice,第三章,3.6,Benchmark,defined,RMA分母
+"d_{0,i}",随机初始化模型在任务i上的Dice,第三章,3.6,Benchmark,defined,E-FWT基线
+d_{\mathrm{all}},全部已见类别的Dice,第三章,3.6,Benchmark,defined,WCD
+\\mathrm{Param}(\\theta_t),模型theta_t的参数量,第三章,3.6,Benchmark,defined,模型参数量
+N_t^{\mathrm{replay}},回放数据量,第三章,3.6,Benchmark,defined,DRR分子
+N_t^{\mathrm{train}},训练数据量,第三章,3.6,Benchmark,defined,DRR分母
 h_theta,分类模型,第二章,2.1.3,author_definition,defined,输出分类得分向量
 z_theta,分类模型输出的得分向量,第二章,2.1.3,Goodfellow2016,defined,logits
 q_theta_c,样本属于类别c的分类概率,第二章,2.1.3,Goodfellow2016,defined,多分类或多标签须以正文上标区分
@@ -78,24 +78,24 @@ theta_star,先前阶段参数,第二章,2.3.3,EWC,defined,正文写作theta_{t-1
 g_m,第m个历史任务梯度估计,第二章,2.3.3,GEM,defined,来自历史记忆
 I_d,d维单位矩阵,第二章,2.3.3,author_definition,defined,不与医学图像I混淆
 epsilon,参数扰动,第二章,2.3.3,SAM,defined,二范数受rho约束
-C_t,第t个任务参与客户端集合,第四章,4.3,FedSubMerge,defined,Chapter 4
-D_c^(t),客户端c在任务t的本地数据集,第四章,4.3,FedSubMerge,defined,Chapter 4
-w_c^r,第r轮客户端模型,第四章,4.3,FedSubMerge,defined,Chapter 4
-"U_c,Sigma_c",客户端主梯度子空间基与奇异值,第四章,4.4,FedSubMerge,defined,Chapter 4
-"epsilon_th,gamma",客户端与服务器能量阈值,第四章,4.4,FedSubMerge,defined,Chapter 4
-"P_U,P_U^perp",保护子空间投影及其正交补,第四章,4.4,FedSubMerge,defined,Chapter 4
-N_c,目标客户端c的选邻集合,第四章,4.4,FedSubMerge,defined,Chapter 4
-epsilon_tau,旧任务梯度未覆盖残差,第四章,4.5,FedSubMerge,defined,Chapter 4
-B_c^(t),递归客户端历史代理,第四章,4.5,FedSubMerge,defined,Chapter 4
-"R_j,R_srv",客户端和服务器截断残差,第四章,4.5,FedSubMerge,defined,Chapter 4
-"C_model,C_PGS",模型和 PGS 通信量,第四章,4.5,FedSubMerge,defined,Chapter 4
-"Omega_L,Omega_U",已标注与未标注像素集合,第五章,5.2,author_definition;zhang2026zscribbleseg,defined,已标注与未标注位置；未标注位置不等于背景
-"M,rho,epsilon",SAMCL 记忆缓冲区及锐度邻域参数,第五章,5.2/5.4,SAMCL,defined,
-L_cur^(t),第 t 阶段当前任务损失,第五章,5.3.1,author_method,defined,PCE、全局一致性和空间先验之和
-M_(t-1),第 t 阶段开始前的容量受限历史缓冲区,第五章,5.3.2,author_method,defined,保存图像、涂鸦、参考特征和任务标识
-h_theta(X),分割网络为输入 X 计算的选定中间特征,第五章,5.3.2,author_method,defined,用于历史特征保持
-h_tilde_m,样本进入缓冲区时保存的参考特征,第五章,5.3.2,author_method,defined,固定历史目标
-L_feature,缓冲区历史特征保持损失,第五章,5.3.2,author_method,defined,当前特征与参考特征的平方距离
-L_buffer^(t),ZSDERpp 的缓冲区损失,第五章,5.3.2,author_method,defined,系数为 0.5/0.5/1.0/0.1
-L_ZSDERpp^(t),ZSDERpp 在第 t 阶段的统一训练目标,第五章,5.3.2,author_method,defined,当前任务损失与缓冲区损失之和
-L_bg^(t),Class-CL 的背景语义保持损失,第五章,5.3.2,cermelli2020mib;author adaptation,defined,同一方法内部的类别增量校正
+C_t,第t个任务参与客户端集合,第五章,5.3,FedSubMerge,defined,Chapter 4
+D_c^(t),客户端c在任务t的本地数据集,第五章,5.3,FedSubMerge,defined,Chapter 4
+w_c^r,第r轮客户端模型,第五章,5.3,FedSubMerge,defined,Chapter 4
+"U_c,Sigma_c",客户端主梯度子空间基与奇异值,第五章,5.4,FedSubMerge,defined,Chapter 4
+"epsilon_th,gamma",客户端与服务器能量阈值,第五章,5.4,FedSubMerge,defined,Chapter 4
+"P_U,P_U^perp",保护子空间投影及其正交补,第五章,5.4,FedSubMerge,defined,Chapter 4
+N_c,目标客户端c的选邻集合,第五章,5.4,FedSubMerge,defined,Chapter 4
+epsilon_tau,旧任务梯度未覆盖残差,第五章,5.5,FedSubMerge,defined,Chapter 4
+B_c^(t),递归客户端历史代理,第五章,5.5,FedSubMerge,defined,Chapter 4
+"R_j,R_srv",客户端和服务器截断残差,第五章,5.5,FedSubMerge,defined,Chapter 4
+"C_model,C_PGS",模型和 PGS 通信量,第五章,5.5,FedSubMerge,defined,Chapter 4
+"Omega_L,Omega_U",已标注与未标注像素集合,第四章,4.2,author_definition;zhang2026zscribbleseg,defined,已标注与未标注位置；未标注位置不等于背景
+"M,rho,epsilon",SAMCL 记忆缓冲区及锐度邻域参数,第四章,4.2/4.4,SAMCL,defined,
+L_cur^(t),第 t 阶段当前任务损失,第四章,4.3.1,author_method,defined,PCE、全局一致性和空间先验之和
+M_(t-1),第 t 阶段开始前的容量受限历史缓冲区,第四章,4.3.2,author_method,defined,保存图像、涂鸦、参考特征和任务标识
+h_theta(X),分割网络为输入 X 计算的选定中间特征,第四章,4.3.2,author_method,defined,用于历史特征保持
+h_tilde_m,样本进入缓冲区时保存的参考特征,第四章,4.3.2,author_method,defined,固定历史目标
+L_feature,缓冲区历史特征保持损失,第四章,4.3.2,author_method,defined,当前特征与参考特征的平方距离
+L_replay^(t),ZSDERpp 的缓冲区损失,第四章,4.3.2,author_method,defined,对应 eq:scribblecl-replay-loss；系数不变。
+L_ZSDERpp^(t),ZSDERpp 在第 t 阶段的统一训练目标,第四章,4.3.2,author_method,defined,当前任务损失与缓冲区损失之和
+L_bg^(t),Class-CL 的背景语义保持损失,第四章,4.3.2,cermelli2020mib;author adaptation,defined,同一方法内部的类别增量校正

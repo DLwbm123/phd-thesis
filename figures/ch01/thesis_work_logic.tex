@@ -2,143 +2,39 @@
 \centering
 \begin{tikzpicture}[
   font=\small,
-  box/.style={
-    rectangle,
-    rounded corners=2pt,
-    draw=black,
-    fill=white,
-    text=black,
-    line width=0.65pt,
-    align=center,
-    inner xsep=7pt,
-    inner ysep=5pt
-  },
-  band/.style={
-    box,
-    fill=black!5,
-    text width=13.8cm,
-    minimum height=1.05cm
-  },
-  widebox/.style={
-    box,
-    text width=13.8cm,
-    minimum height=1.08cm
-  },
-  methodbox/.style={
-    box,
-    text width=4.15cm,
-    minimum height=2.35cm,
-    inner ysep=4pt
-  },
-  arrow/.style={
-    -{Latex[length=2.0mm,width=1.3mm]},
-    draw=black,
-    line width=0.65pt
-  },
-  relation/.style={
-    draw=black,
-    line width=0.65pt
-  },
-  node distance=6.5mm and 6mm
+  box/.style={draw,rounded corners=2pt,align=center,inner sep=4pt,line width=.6pt},
+  wide/.style={box,text width=12.7cm,fill=black!3},
+  task/.style={box,text width=5.85cm,minimum height=1.35cm},
+  flow/.style={-{Latex[length=2mm]},line width=.7pt},
+  node distance=3mm
 ]
-
-\node[band] (constraints) {
-  \textbf{现实约束}\\[2pt]
-  \footnotesize
-  部分监督
-  \quad｜\quad
-  历史访问受限
-  \quad｜\quad
-  原始数据不可集中
-  \quad｜\quad
-  任务与分布持续演化
-};
-
-\node[widebox, below=of constraints] (question) {
-  \textbf{核心问题}\\[2pt]
-  在训练信息受限条件下，如何使医学影像分析模型持续获取新知识并保持既有能力？
-};
-
-\node[widebox, below=of question] (benchmark) {
-  \textbf{第 3 章：场景与评价基础}\\[2pt]
-  持续医学图像分割的场景定义、实验设定与综合评价
-};
-
-% 以第 5 章分割节点为中轴放置三个方法框，使整行严格居中。
-\node[methodbox, below=9mm of benchmark] (scribble) {
-  \textbf{\strut 第 5 章：分割}\\[2pt]
-  {\scriptsize\strut 当前标注稀疏}\\[-1pt]
-  {\scriptsize\strut 历史样本有限保留}\\[3pt]
-  \strut 涂鸦监督持续分割\\[2pt]
-  {\footnotesize\strut ScribbleCL}
-};
-
-\node[methodbox, left=of scribble] (fed) {
-  \textbf{\strut 第 4 章：分类}\\[2pt]
-  {\scriptsize\strut 数据不可集中}\\[-1pt]
-  {\scriptsize\strut 历史样本不可回放}\\[3pt]
-  \strut 联邦持续分类\\[2pt]
-  {\footnotesize\strut FedSubMerge}
-};
-
-\node[methodbox, right=of scribble] (samcl) {
-  \textbf{\strut 第 5 章：配准}\\[2pt]
-  {\scriptsize\strut 器官与模态持续变化}\\[-1pt]
-  {\scriptsize\strut 历史图像对有限保留}\\[3pt]
-  \strut 持续医学图像配准\\[2pt]
-  {\footnotesize\strut SAMCL}
-};
-
-\coordinate (branch) at ($(benchmark.south)+(0,-4mm)$);
-
-\draw[arrow] (constraints) -- (question);
-\draw[arrow] (question) -- (benchmark);
-\draw[relation] (benchmark.south) -- (branch);
-
-% 上方分支：横线距 benchmark 4mm，箭头长度为 5mm。
-\draw[relation]
-  (fed.north |- branch) --
-  (samcl.north |- branch);
-
-\draw[arrow]
-  (fed.north |- branch) --
-  (fed.north);
-
-\draw[arrow]
-  (scribble.north |- branch) --
-  (scribble.north);
-
-\draw[arrow]
-  (samcl.north |- branch) --
-  (samcl.north);
-
-% 下方汇合与上方分支保持对称。
-\coordinate (merge) at ($(scribble.south)+(0,-4mm)$);
-
-\draw[relation]
-  (fed.south) --
-  (fed.south |- merge);
-
-\draw[relation]
-  (scribble.south) --
-  (scribble.south |- merge);
-
-\draw[relation]
-  (samcl.south) --
-  (samcl.south |- merge);
-
-\draw[relation]
-  (fed.south |- merge) --
-  (samcl.south |- merge);
-
-\node[band, below=5mm of merge] (goal) {
-  \textbf{共同分析主线}\\[2pt]
-  \footnotesize
-  在不同任务与信息访问条件下，平衡持续学习的稳定性、可塑性与泛化能力
-};
-
-\draw[arrow] (merge) -- (goal.north);
-
- \end{tikzpicture}
+\node[wide] (problem) {\textbf{共同问题：任务依次到达，训练信息无法完整调用}\\[2pt]
+当前标注可能稀疏\quad 历史样本访问受限\quad 跨中心原始数据不能集中};
+\node[wide,below=of problem] (benchmark) {\textbf{第三章：持续分割基准与问题发现}\\[2pt]
+域、类别与器官变化\quad 当前学习、历史保持、前向泛化与资源开销};
+\draw[flow] (problem) -- (benchmark);
+\node[wide,below=of benchmark] (replay) {\textbf{第四章：有限回放条件下的医学影像持续学习}\\[2pt]
+共同约束：只保留少量历史样本\quad 共同问题：历史样本如何参与更新};
+\draw[flow] (benchmark) -- (replay);
+\node[task,below=of replay.south west,anchor=north west,xshift=1mm] (seg)
+ {\textbf{涂鸦监督持续分割}\\[2pt]复用第三章的病例、任务与指标\\改变当前监督和历史回放目标};
+\node[task,below=of replay.south east,anchor=north east,xshift=-1mm] (reg)
+ {\textbf{跨器官、跨模态持续配准}\\[2pt]继承学习、保持与泛化的评价原则\\独立定义空间变换、Dice 与 TRE};
+\node[align=center,font=\footnotesize,below=3mm of seg.south east,anchor=north,xshift=4mm,text width=12.5cm] (relation)
+ {两项研究并列回答有限回放问题；不共享损失，不构成分割--配准串联算法};
+\node[wide,below=3mm of relation] (federated)
+ {\textbf{第五章：无回放条件下的联邦医学影像持续学习}\\[2pt]
+收紧历史访问：不回放原始样本\quad 增加空间约束：多客户端协作\\[2pt]
+\textbf{算法研究：}跨客户端子空间融合与梯度投影\\
+\textbf{工程流程：}客户端训练、服务器融合、阶段评价与集成设计};
+\draw[flow] (seg.south) -- (seg.south |- relation.north);
+\draw[flow] (reg.south) -- (reg.south |- relation.north);
+\draw[flow] (relation) -- (federated);
+\node[wide,below=of federated] (future)
+ {\textbf{第六章：结论、适用边界与未来研究}\\[2pt]
+持续预训练\quad 持续领域适配\quad 持续知识编辑\\[2pt]
+\footnotesize 实验结果与工程设计分开陈述，真实部署和新增实验另行验证};
+\draw[flow] (federated) -- (future);
+\end{tikzpicture}
 \par
 \endgroup

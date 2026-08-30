@@ -1,0 +1,32 @@
+\begingroup
+\centering
+\begin{tikzpicture}[
+  font=\small,
+  box/.style={draw,rounded corners=2pt,align=center,inner sep=5pt,line width=.6pt},
+  cell/.style={box,text width=3.8cm,minimum height=2.3cm},
+  band/.style={box,text width=12.65cm,fill=black!3},
+  flow/.style={-{Latex[length=2mm]},line width=.7pt},
+  node distance=6mm and 4mm
+]
+\node[cell] (domain) {\textbf{域增量}\\[3pt]前列腺标签保持不变\\六中心依次到达\\A $\rightarrow$ B $\rightarrow\cdots\rightarrow$ F};
+\node[cell,right=of domain] (class) {\textbf{类别增量}\\[3pt]心脏结构分三阶段加入\\左心结构 $\rightarrow$ 右心结构\\$\rightarrow$ 升主动脉与肺动脉};
+\node[cell,right=of class] (organ) {\textbf{器官增量}\\[3pt]分割目标与模态变化\\左心房 $\rightarrow$ 前列腺\\$\rightarrow$ 肝脏 $\rightarrow$ 脑肿瘤};
+\node[band,below=8mm of class] (protocol) {\textbf{统一顺序训练与测试}\\[3pt]
+病例划分\quad 任务顺序\quad 输出头\quad 网络与训练轮数\quad 阶段性能矩阵\\[3pt]
+正则化\quad 回放与历史信息约束\quad 参数隔离\quad 类别增量专项方法};
+\draw[flow] (domain.south) -- (domain.south |- protocol.north);
+\draw[flow] (class) -- (protocol);
+\draw[flow] (organ.south) -- (organ.south |- protocol.north);
+\node[cell,below=8mm of protocol.south west,anchor=north west] (retention)
+ {\textbf{最终性能与历史保持}\\[3pt]A-Dice：最终平均分割\\BWTR：后向变化\\WCD：全类别分割};
+\node[cell,right=of retention] (learning)
+ {\textbf{学习与前向泛化}\\[3pt]RMA：当前任务相对性能\\E-FWT：未来域直接表现\\按适用场景分别计算};
+\node[cell,right=of learning] (resource)
+ {\textbf{资源条件}\\[3pt]MPE：参数增长\\DRR：历史信息回访\\结果与访问条件共同解释};
+\draw[flow] (protocol.south) -- (learning.north);
+\node[band,below=6mm of learning] (finding)
+ {\textbf{问题发现}\\[2pt]低遗忘不等于新任务学得好；较高最终性能不等于更强前向泛化};
+\draw[flow] (learning) -- (finding);
+\end{tikzpicture}
+\par
+\endgroup

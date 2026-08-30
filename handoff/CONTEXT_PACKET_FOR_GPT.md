@@ -1,30 +1,28 @@
-# GPT Pro 复审上下文包：第五章优先（2026-08-05）
+# 后续复审上下文（预答辩修订 V4，2026-08-30）
 
-> 第五章完整边界与可用事实见 `handoff/CH05_AVAILABLE_CONTENT_CONTEXT_FOR_GPT.md`。第五章已集成且待作者/GPT Pro 复审；静态 ZScribbleSeg 与 SAMCL 的来源内容可审，ScribbleCL 仍无可核验实验结果，必须保持 `TODO-EXPERIMENT` / `blocked_by_experiments`。MuPDF 已逐页确认中文正常显示，Fandol 字体嵌入；不得因 Poppler 的 CJK 渲染限制改用 macOS 专用字体。第四章完整复审信息仍见 `handoff/CH04_FEDSUBMERGE_CONTEXT_FOR_GPT.md`。
+本轮作者已授权一次完成三版预答辩意见中的写作和格式修改，并同步 GitHub 与 Overleaf。稿件已完成修改与工程核验，仍待作者学术终审。不要按旧 2026-07/08 上下文包重启已完成的小节或恢复旧章节顺序。
 
-# GPT Pro 复审上下文包：第二章整章（2026-08-01）
+## 当前结构与论证
 
-## 当前任务与批准边界
+1. 绪论：医学任务演化和训练信息访问受限，四个研究问题与图 1.2 对应。
+2. 共同基础：任务、持续学习及 2.4 数据集组织、Non-IID 和访问条件。
+3. 基准：定义三类持续分割场景和综合评价；3.9 明确对后续工作的启示。
+4. 有限回放：4.3 涂鸦持续分割；4.4 持续配准；4.5 解释共享约束及任务差异。
+5. 无回放联邦学习：算法及实验；5.7 工程流程与拟集成管理/部署功能。
+6. 总结与展望：证据、限制、持续预训练/领域适配/知识编辑三个层次。
 
-- 第二章已完整集成，整体状态为 `drafted_pending_review`；本包只支持作者/GPT Pro 整章复审，不生成新正文。
-- 2.1.1“医学图像分割”和 2.1.2“医学图像配准”均为 `drafted_and_verified`，本轮未修改；2.1.3 至 2.4 是本轮新增且待复审的正文。
-- 第二章结构为：2.1 三类医学图像任务；2.2 训练信息受限条件；2.3 持续学习定义、遗忘与方法路线；2.4 总结。2.2 首段已明确“数据不全”只是训练信息受限的概括。
+## 复审时不得越过的边界
 
-## 新增且应复核的内容
+- ScribbleCL 直接复用第三章数据与病例划分；SAMCL、FedSubMerge 仅继承评价原则，不能直接比较各章排名和数字。
+- ScribbleCL 仅有当前 Domain-CL 点估计；不得添加 Class-CL/Organ-CL 结果、置信区间或新显著性。
+- 公开密集参考标签离线生成训练涂鸦；弱监督训练不读取完整训练掩膜，但验证和测试使用密集参考标签。
+- 当前标注不是新组织的医生共识标注；未测真实人工耗时或跨标注者一致性。
+- SAMCL 保留历史原始图像对，且不在全部任务优于 MER。
+- FedSubMerge 交换低秩梯度子空间不等于形式化隐私保证；现有实验是单机模拟联邦角色。
+- 图 5.4 的实线框为已有实验环节，虚线框为未来集成与真实部署功能，不是已运行平台的截图。
 
-- 12 个公式标签：`eq:foundations-cls-probability`、`eq:foundations-cls-loss`、`eq:foundations-cls-metrics`、`eq:foundations-replay-objective`、`eq:foundations-fed-learning`、`eq:foundations-partial-ce`、`eq:foundations-cl-update`、`eq:foundations-gradient-interference`、`eq:foundations-ewc`、`eq:foundations-gradient-projection`、`eq:foundations-maml`、`eq:foundations-sam`。
-- 两张表：`tab:foundations-information-access` 与 `tab:foundations-cl-method-families`。
-- 复用既有引用，并新增 Goodfellow、Fawcett、Brodersen、Geiping、Bonawitz、Abadi、Finn、Foret 八项文献。
+## 可追溯验证
 
-## 复审重点
+对照基线 `b34b0e4`，83 个公式、10 张结果表的 103 行数据及 687 条实验记录保持。中英文摘要数字一致，增益由已有表内数值计算。完整稿件 165 页，无未定义引用、重复标签或 Overfull；全部页面已经巡检。图表中文化保留实验曲线和影像内容。详见修订报告及现有验证脚本。
 
-- 分类中多分类/多标签的概率、损失、阈值、指标汇总与患者级划分边界。
-- 无回放、有限回放、原始数据不可集中和部分监督不可混写；未标注位置不等于背景；普通 FedAvg 不等于形式化隐私保证。
-- MAML、SAM 与梯度子空间只作为通用基础，不泄露第四、第五章方法或性能；MAML/SAM 不自动保证抗遗忘。
-- 不得重复第三章的场景细则、A-Dice、BWTR、RMA、E-FWT 或实验数字。
-
-## 全文状态
-
-- 第三章继续 `drafted_pending_review`，本轮未复审或修改；不得开始第四章。
-- ScribbleCL 继续 `TODO-EXPERIMENT` / `blocked_by_experiments`。
-- `TODO-EVIDENCE-REG-001/002`（TRE 与非正 Jacobian 统计）保持开放，未写入本轮正文。
+后续只处理作者明确的新反馈，或经授权实施报告中的实验/系统待办；不将工程验收标记为作者批准。

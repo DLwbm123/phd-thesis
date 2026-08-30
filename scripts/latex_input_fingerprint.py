@@ -15,6 +15,7 @@ EXPLICIT = (
     "FDSDSthesis.cls",
     "macros.tex",
     "bibliography/references.bib",
+    "bibliography/gbt7714-2025-numeric.bst",
     "scripts/run_bibtex.sh",
 )
 TREE_EXTENSIONS = {

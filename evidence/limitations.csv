@@ -1,30 +1,31 @@
 limitation_id,work,limitation,evidence_source,thesis_section,status,notes
-LIM-ZS-001,ZScribbleSeg,原始工作为静态弱监督分割而非持续学习,problem setting,6.3,confirmed,全文不得改写为持续学习
-LIM-SAM-001,SAMCL,依赖有限历史样本回放,method setting,5.6/6.3,confirmed,
-LIM-BM-001,Benchmark,三类场景不覆盖任务边界未知、连续漂移、中心重访、开放世界类别或多种变化因素同时发生的条件,sources/benchmark/Benchmark_pa/main.tex;author scope analysis,3.7,confirmed,不得宣称穷尽持续医学影像问题
-LIM-BM-002,Benchmark,全部实验采用ResUNet32和固定训练预算，结果不能直接外推到其他网络、三维模型或医学基础模型,sources/benchmark/Benchmark_pa/supplementary.tex,3.7,confirmed,方法排序限于当前设置
-LIM-BM-003,Benchmark,当前材料未报告完整样本数、随机种子、重复次数、硬件、早停和代码版本,sources/benchmark/Benchmark_pa/main.tex;sources/benchmark/Benchmark_pa/supplementary.tex,3.4/3.7,confirmed,不得补写或声称完整复现
-LIM-BM-004,Benchmark,Class-CL旧类标签访问、背景处理细节和任务身份供给未完整形式化,sources/benchmark/Benchmark_pa/main.tex,3.3.2/3.7,confirmed,限制与其他标签协议的严格比较
-LIM-BM-005,Benchmark,结果表给出均值和标准差但未报告重复数与统计检验,sources/benchmark/Benchmark_pa/main.tex,3.4/3.7,confirmed,不得使用统计显著表述
-LIM-BM-006,Benchmark,当前归档没有指标实现代码或逐运行日志，RMA和E-FWT等只能完成公式与表格核对,handoff/CH03_BENCHMARK_CONTEXT_FOR_GPT.md,3.5/3.7,confirmed,不得声称公式代码一致性已复现
-LIM-BM-007,Benchmark,MPE和DRR未覆盖训练时间、显存、能耗和通信成本,sources/benchmark/Benchmark_pa/main.tex;author metric analysis,3.5/3.7,confirmed,资源评价仍不完整
-LIM-BM-008,Benchmark,JointTrain可访问全部历史数据，与受限持续学习方法的访问条件不同,sources/benchmark/Benchmark_pa/main.tex,3.2/3.6/3.7,confirmed,仅作为参照而非同条件基线
-LIM-FSM-001,FedSubMerge,同步且已知任务边界与已知测试任务身份,sources/fedsubmerge/ Subspace Merging for Replay-Free Federated Continual Medical Image Classification 720/FedSubMerge_final.tex,4.5/4.7,confirmed,Discussion limitations
-LIM-FSM-002,FedSubMerge,实证范围限于 ResNet-18、当前任务流长度和医学图像分类,sources/fedsubmerge/ Subspace Merging for Replay-Free Federated Continual Medical Image Classification 720/FedSubMerge_final.tex,4.5/4.7,confirmed,Discussion limitations
-LIM-FSM-003,FedSubMerge,原始结果为点估计，未报告多随机种子区间或统计检验,sources/fedsubmerge/ Subspace Merging for Replay-Free Federated Continual Medical Image Classification 720/FedSubMerge_final.tex,4.5/4.7,confirmed,Discussion limitations
-LIM-FSM-004,FedSubMerge,理论为局部旧任务损失机制，受模型漂移、截断和有效投影条件限制,sources/fedsubmerge/ Subspace Merging for Replay-Free Federated Continual Medical Image Classification 720/FedSubMerge_final.tex,4.5/4.7,confirmed,Appendix theory
-LIM-FSM-005,FedSubMerge,未投影参数、动量和解耦权重衰减可能引入残差,sources/fedsubmerge/ Subspace Merging for Replay-Free Federated Continual Medical Image Classification 720/FedSubMerge_final.tex,4.5/4.7,confirmed,Appendix theory
-LIM-FSM-006,FedSubMerge,最终能量截断后的统一和自适应子空间不保证嵌套,sources/fedsubmerge/ Subspace Merging for Replay-Free Federated Continual Medical Image Classification 720/FedSubMerge_final.tex,4.5/4.7,confirmed,Appendix theory
-LIM-FSM-007,FedSubMerge,PGS 交换无形式化隐私保证，也未评估威胁模型,sources/fedsubmerge/ Subspace Merging for Replay-Free Federated Continual Medical Image Classification 720/FedSubMerge_final.tex,4.5/4.7,confirmed,Discussion privacy boundary
-LIM-FSM-008,FedSubMerge,计算、存储和通信随逐层秩、层维度和客户端数变化,sources/fedsubmerge/ Subspace Merging for Replay-Free Federated Continual Medical Image Classification 720/FedSubMerge_final.tex,4.5/4.7,confirmed,Appendix communication
-LIM-ZS-002,ZScribbleSeg,不同数据集的涂鸦来源不统一且部分跨论文比较不完全同条件,sources/zscribble/Zscribble_MEDIA_arxiv/main_clean_new.tex,5.3.1,confirmed,不得作严格统一排名
-LIM-ZS-003,ZScribbleSeg,原始论文 Table 9 前列腺两类 Dice 的表内平均为 0.706 而相邻正文写为 0.726,sources/zscribble/Zscribble_MEDIA_arxiv/main_clean_new.tex,5.3.1,confirmed,正文和账本采用表格与算术一致的 0.706
-LIM-ZS-004,ZScribbleSeg,前列腺输入通道在材料段与效率表之间不一致,sources/zscribble/Zscribble_MEDIA_arxiv/main_clean_new.tex,5.3.1,open,不声明具体通道数
-LIM-SAM-002,SAMCL,Algorithm 1 的元更新印刷形式尚未与最终代码核对,sources/samcl/MICCAI 2024: Toward Universal Medical Image Registration/Paper-0150.tex,5.4.2,open,不重写完整伪代码
-LIM-SAM-003,SAMCL,单一任务顺序、有限数据集、有限记忆和单一主要骨干限制结论外推,sources/samcl/MICCAI 2024: Toward Universal Medical Image Registration/Paper-0150.tex,5.4.3/5.5,confirmed,
-LIM-SAM-004,SAMCL,原始结果未报告多随机种子训练均值和标准差,sources/samcl/MICCAI 2024: Toward Universal Medical Image Registration/Paper-0150.tex,5.4.3,confirmed,点估计和配对检验不等于多种子统计
-LIM-SAM-005,SAMCL,保存历史固定--移动原始图像对且未给出形式化隐私保证,sources/samcl/MICCAI 2024: Toward Universal Medical Image Registration/Paper-0150.tex,5.4/5.5,confirmed,
-LIM-SCR-001,ScribbleCL,当前 Domain-CL 表只提供点估计，未提供重复次数、标准差或统计检验,chapters/ch05_scribble_samcl.tex,5.3.5/5.3.6,confirmed,不得使用统计显著性表述
-LIM-SCR-002,ScribbleCL,ZSDERpp 依赖容量受限的历史图像--涂鸦与参考特征缓冲区，增加存储、计算和医学数据治理成本,method setting;eq:scribblecl-buffer-loss,5.3.6/5.5,confirmed,与无回放方法的访问条件不同
-LIM-SCR-003,ScribbleCL,Class-CL 与 Organ-CL 仅完成方法适配说明，当前归档未提供其结果矩阵,chapters/ch05_scribble_samcl.tex,5.3.6,open,不得从 Domain-CL 外推
-LIM-SCR-004,ScribbleCL,训练涂鸦由密集标签模拟生成，不能覆盖真实标注者在位置、长度和类别选择上的差异,chapters/ch05_scribble_samcl.tex,5.3.6,confirmed,结论限于当前模拟标注协议
+LIM-ZS-001,ZScribbleSeg,原始工作为静态弱监督分割而非持续学习,problem setting,6.2,confirmed,全文不得改写为持续学习
+LIM-SAM-001,SAMCL,依赖有限历史样本回放,method setting,4.6/6.2,confirmed,
+LIM-BM-001,Benchmark,三类场景不覆盖任务边界未知、连续漂移、中心重访、开放世界类别或多种变化因素同时发生的条件,sources/benchmark/Benchmark_pa/main.tex;author scope analysis,3.9,confirmed,不得宣称穷尽持续医学影像问题
+LIM-BM-002,Benchmark,全部实验采用ResUNet32和固定训练预算，结果不能直接外推到其他网络、三维模型或医学基础模型,sources/benchmark/Benchmark_pa/supplementary.tex,3.9,confirmed,方法排序限于当前设置
+LIM-BM-003,Benchmark,原始稿未完整报告所有任务的样本数、多次重复的种子列表、硬件和代码版本；本轮未重新运行实验。,sources/benchmark/Benchmark_pa/main.tex;sources/benchmark/Benchmark_pa/supplementary.tex,3.5/3.9,confirmed,不得补写或声称完整复现
+LIM-BM-004,Benchmark,类别增量结论依赖阶段标签和背景语义协议；采用不同旧类标签访问条件的论文不能直接作严格排名。,sources/benchmark/Benchmark_pa/main.tex,3.4.2/3.9,confirmed,限制与其他标签协议的严格比较
+LIM-BM-005,Benchmark,结果表给出均值和标准差但未报告重复数与统计检验,sources/benchmark/Benchmark_pa/main.tex,3.5/3.9,confirmed,不得使用统计显著表述
+LIM-BM-006,Benchmark,当前归档没有指标实现代码或逐运行日志，RMA和E-FWT等只能完成公式与表格核对,handoff/CH03_BENCHMARK_CONTEXT_FOR_GPT.md,3.6/3.9,confirmed,不得声称公式代码一致性已复现
+LIM-BM-007,Benchmark,MPE和DRR未覆盖训练时间、显存、能耗和通信成本,sources/benchmark/Benchmark_pa/main.tex;author metric analysis,3.6/3.9,confirmed,资源评价仍不完整
+LIM-BM-008,Benchmark,JointTrain可访问全部历史数据，与受限持续学习方法的访问条件不同,sources/benchmark/Benchmark_pa/main.tex,3.3/3.7/3.9,confirmed,仅作为参照而非同条件基线
+LIM-FSM-001,FedSubMerge,同步且已知任务边界与已知测试任务身份,sources/fedsubmerge/ Subspace Merging for Replay-Free Federated Continual Medical Image Classification 720/FedSubMerge_final.tex,5.5/5.8,confirmed,Discussion limitations
+LIM-FSM-002,FedSubMerge,实证范围限于 ResNet-18、当前任务流长度和医学图像分类,sources/fedsubmerge/ Subspace Merging for Replay-Free Federated Continual Medical Image Classification 720/FedSubMerge_final.tex,5.5/5.8,confirmed,Discussion limitations
+LIM-FSM-003,FedSubMerge,原始结果为点估计，未报告多随机种子区间或统计检验,sources/fedsubmerge/ Subspace Merging for Replay-Free Federated Continual Medical Image Classification 720/FedSubMerge_final.tex,5.5/5.8,confirmed,Discussion limitations
+LIM-FSM-004,FedSubMerge,理论为局部旧任务损失机制，受模型漂移、截断和有效投影条件限制,sources/fedsubmerge/ Subspace Merging for Replay-Free Federated Continual Medical Image Classification 720/FedSubMerge_final.tex,5.5/5.8,confirmed,Appendix theory
+LIM-FSM-005,FedSubMerge,未投影参数、动量和解耦权重衰减可能引入残差,sources/fedsubmerge/ Subspace Merging for Replay-Free Federated Continual Medical Image Classification 720/FedSubMerge_final.tex,5.5/5.8,confirmed,Appendix theory
+LIM-FSM-006,FedSubMerge,最终能量截断后的统一和自适应子空间不保证嵌套,sources/fedsubmerge/ Subspace Merging for Replay-Free Federated Continual Medical Image Classification 720/FedSubMerge_final.tex,5.5/5.8,confirmed,Appendix theory
+LIM-FSM-007,FedSubMerge,PGS 交换无形式化隐私保证，也未评估威胁模型,sources/fedsubmerge/ Subspace Merging for Replay-Free Federated Continual Medical Image Classification 720/FedSubMerge_final.tex,5.5/5.8,confirmed,Discussion privacy boundary
+LIM-FSM-008,FedSubMerge,计算、存储和通信随逐层秩、层维度和客户端数变化,sources/fedsubmerge/ Subspace Merging for Replay-Free Federated Continual Medical Image Classification 720/FedSubMerge_final.tex,5.5/5.8,confirmed,Appendix communication
+LIM-ZS-002,ZScribbleSeg,不同数据集的涂鸦来源不统一且部分跨论文比较不完全同条件,sources/zscribble/Zscribble_MEDIA_arxiv/main_clean_new.tex,4.3.1,source_only_not_used_in_current_results,保留来源审计记录；本轮正文未转录原静态实验，不作为持续学习结果。
+LIM-ZS-003,ZScribbleSeg,原始论文 Table 9 前列腺两类 Dice 的表内平均为 0.706 而相邻正文写为 0.726,sources/zscribble/Zscribble_MEDIA_arxiv/main_clean_new.tex,4.3.1,source_only_not_used_in_current_results,保留来源审计记录；本轮正文未转录原静态实验，不作为持续学习结果。
+LIM-ZS-004,ZScribbleSeg,前列腺输入通道在材料段与效率表之间不一致,sources/zscribble/Zscribble_MEDIA_arxiv/main_clean_new.tex,4.3.1,source_only_not_used_in_current_results,保留来源审计记录；本轮正文未转录原静态实验，不作为持续学习结果。
+LIM-SAM-002,SAMCL,Algorithm 1 的元更新印刷形式尚未与最终代码核对,sources/samcl/MICCAI 2024: Toward Universal Medical Image Registration/Paper-0150.tex,4.4.5,open,不重写完整伪代码
+LIM-SAM-003,SAMCL,单一任务顺序、有限数据集、有限记忆和单一主要骨干限制结论外推,sources/samcl/MICCAI 2024: Toward Universal Medical Image Registration/Paper-0150.tex,4.4.6/4.5,confirmed,
+LIM-SAM-004,SAMCL,原始结果未报告多随机种子训练均值和标准差,sources/samcl/MICCAI 2024: Toward Universal Medical Image Registration/Paper-0150.tex,4.4.6,confirmed,点估计和配对检验不等于多种子统计
+LIM-SAM-005,SAMCL,保存历史固定--移动原始图像对且未给出形式化隐私保证,sources/samcl/MICCAI 2024: Toward Universal Medical Image Registration/Paper-0150.tex,4.4/4.5,confirmed,
+LIM-SCR-001,ScribbleCL,当前 Domain-CL 表只提供点估计，未提供重复次数、标准差或统计检验,chapters/ch04_scribble_samcl.tex,4.3.5/4.3.6,confirmed,不得使用统计显著性表述
+LIM-SCR-002,ScribbleCL,ZSDERpp 依赖容量受限的历史图像--涂鸦与参考特征缓冲区，增加存储、计算和医学数据治理成本,method setting;eq:scribblecl-replay-loss,4.3.6/4.5,confirmed,与无回放方法的访问条件不同
+LIM-SCR-003,ScribbleCL,Class-CL 与 Organ-CL 仅完成方法适配说明，当前归档未提供其结果矩阵,chapters/ch04_scribble_samcl.tex,4.3.6,open,不得从 Domain-CL 外推
+LIM-SCR-004,ScribbleCL,训练涂鸦由密集标签模拟生成，不能覆盖真实标注者在位置、长度和类别选择上的差异,chapters/ch04_scribble_samcl.tex,4.3.6,confirmed,结论限于当前模拟标注协议
+LIM-PRE20260830-001,Engineering,现有联邦结果来自单GPU模拟；真实跨机构部署、统一管理界面、访问控制和安全验证尚未完成。,chapters/ch05_fedsubmerge.tex,5.7/6.2,deferred_by_user,本轮只完善流程说明与设计图，不编写部署程序或虚构系统结果。

@@ -23,6 +23,7 @@
 \setCJKmainfont[ExternalLocation=./FontStyle/,AutoFakeBold,
     ItalicFont=SimKai.ttf]{SimSun.ttf}
 \setCJKsansfont[ExternalLocation=./FontStyle/]{SimHei.ttf}
+\setCJKfamilyfont{hei}[ExternalLocation=./FontStyle/]{SimHei.ttf}
 
 \ctexset{punct=CCT} %可选择 quanjiao/banjiao/kaiming/CCT
 \ctexset{today=small} %可选择 small/big/old

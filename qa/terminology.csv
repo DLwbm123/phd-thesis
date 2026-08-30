@@ -1,42 +1,42 @@
 term_en,preferred_zh,scope,avoid,notes
 medical imaging,医学影像,领域与体系,医学成像（除非强调成像过程）,
 medical image,医学图像,具体数据与任务,医学影像图像,
-annotation-efficient learning,标注高效学习,第一章与第三章,高效监督学习,
-weakly supervised segmentation,弱监督医学图像分割,第一章与第三章,弱标注分割（可作解释但非首选）,
-scribble supervision,涂鸦监督,第一章、第三章与第五章,草图监督/划线监督,未标注像素不得直接视为背景
-supervision augmentation,监督增强,第一章与第三章,监督增广（避免混用）,
-global consistency,全局一致性,第一章与第五章,整体一致性（避免混用）,
-class mixture ratio,类别混合比例,第一章与第三章,类别占比先验（首次说明后可简称比例先验）,
-spatial prior,空间先验,第一章与第五章,,
-shape regularization,形状正则化,第一章与第三章,,
+annotation-efficient learning,标注高效学习,第一章、第二章与第四章,高效监督学习,
+weakly supervised segmentation,弱监督医学图像分割,第一章、第二章与第四章,弱标注分割（可作解释但非首选）,
+scribble supervision,涂鸦监督,第一章、第三章与第四章,草图监督/划线监督,未标注像素不得直接视为背景
+supervision augmentation,监督增强,第一章、第二章与第四章,监督增广（避免混用）,
+global consistency,全局一致性,第一章与第四章,整体一致性（避免混用）,
+class mixture ratio,类别混合比例,来源方法；当前 ScribbleCL 正文不使用,类别占比先验（首次说明后可简称比例先验）,不能把来源方法全部组成作为当前实现。
+spatial prior,空间先验,第一章与第四章,,
+shape regularization,形状正则化,来源方法；当前 ScribbleCL 正文不使用,,不能把来源方法全部组成作为当前实现。
 continual learning,持续学习,第一章与第四至六章,连续学习（避免混用）,
 catastrophic forgetting,灾难性遗忘,第一章与第四至六章,,
 stability-plasticity trade-off,稳定性—可塑性权衡,第一章与第四至六章,稳定塑性平衡（避免混用）,
 forward transfer,前向迁移,第一章与第四至六章,,
 forward generalization,前向泛化,第一章与第四至六章,未来泛化（可作解释）,
 experience replay,经验回放,第一章与第四至五章,样本重放（避免混用）,
-replay-free,无回放,第一章与第六章,免回放（避免混用）,
-federated continual learning,联邦持续学习,第一章、第四章与第六章,,
-principal gradient subspace,主梯度子空间,第一章、第四章与第六章,主要梯度子空间,
-subspace merging,子空间融合,第一章与第六章,子空间合并（避免混用）,
-sharpness-aware minimization,锐度感知最小化,第一章与第五章,锐度感知优化（可用作上位描述）,
-meta-continual learning,元持续学习,第一章与第五章,锐度感知优化,SAMCL 中与 SAM 分工不同
+replay-free,无回放,第一章、第二章、第五章与第六章,免回放（避免混用）,
+federated continual learning,联邦持续学习,第一章、第五章与第六章,,
+principal gradient subspace,主梯度子空间,第一章、第五章与第六章,主要梯度子空间,
+subspace merging,子空间融合,第一章、第二章、第五章与第六章,子空间合并（避免混用）,
+sharpness-aware minimization,锐度感知最小化,第一章与第四章,锐度感知优化（可用作上位描述）,
+meta-continual learning,元持续学习,第一章与第四章,锐度感知优化,SAMCL 中与 SAM 分工不同
 medical image classification,医学图像分类,全文,医学影像分类（具体任务中避免混用）,领域总称可写医学影像智能分析
 medical image segmentation,医学图像分割,全文,医学影像分割（具体任务中避免混用）,用于具体图像和算法任务
 medical image registration,医学图像配准,全文,医学影像配准（具体任务中避免混用）,用于具体图像和算法任务
 training information,训练信息,全文,训练数据（两者范围不完全等同）,指特定训练阶段可实际调用的图像标签及其访问和共享条件
 weak annotation,弱标注,第一至三章,弱监督（方法范式与标签形式不可混用）,指稀疏噪声图像级等不完整监督形式
 historical data access,历史数据访问,第一章与第四至六章,历史数据可用性（首次定义后可作解释）,指后续训练阶段能否重新调用旧样本
-limited replay,有限回放,第一章与第五章,受限回放（避免混用）,允许访问有限历史样本或其受控替代信息
+limited replay,有限回放,第一章与第四章,受限回放（避免混用）,允许访问有限历史样本或其受控替代信息
 data silo,数据孤岛,第一章与第六章,信息孤岛（避免混用）,指数据由不同机构独立保存和治理
-federated learning,联邦学习,第一章与第六章,分布式学习（不可等同）,数据不出中心不代表参数交换本身提供形式化隐私保证
+federated learning,联邦学习,第一章、第二章、第五章与第六章,分布式学习（不可等同）,数据不出中心不代表参数交换本身提供形式化隐私保证
 data distribution evolution,数据分布演化,第一章与第四至六章,数据漂移（范围不完全等同）,指数据生成分布随顺序阶段发生变化
 task evolution,任务演化,第一章与第四至六章,任务变化（可作一般解释）,指输出空间输入输出映射或任务目标随阶段变化
 non-stationary data stream,非平稳数据流,第一章与第四至六章,动态数据流（可作解释但非首选）,指数据分布或任务关系随时间或阶段变化的数据流
 domain shift,域偏移,第一章与第四至六章,领域偏移（避免混用）,静态域差异不自动等同于持续学习
 task-incremental learning,任务增量学习,第一章与第四至六章,任务递增学习（避免混用）,可区分任务按顺序到达且测试阶段上下文身份假设必须明确
 domain-incremental learning,域增量学习,第一章与第四至六章,领域增量学习（避免混用）,输出语义保持而输入域或上下文按顺序变化
-class-incremental learning,类增量学习,第一章与第四至六章,类别增量学习（避免混用）,标签空间随阶段扩展且通常要求统一判别
+class-incremental learning,类别增量学习,第一章与第四至六章,类增量学习（统一用类别增量）,标签空间随阶段扩展且通常要求统一判别
 context identity,上下文身份,第一章与第四至六章,任务标签（两者不总等同）,指模型在训练或测试时是否获知样本所属域或任务上下文
 partial cross-entropy,部分交叉熵,第一章与第三章,局部交叉熵（避免混用）,只在有标注像素上计算监督误差
 label propagation,标签传播,第一章与第三章,标注传播（避免混用）,依据图像或特征关系将稀疏标签扩展至未标注区域
@@ -48,10 +48,10 @@ efficient scribble,高效涂鸦,第一章与第三章,高效标注（范围更�
 rehearsal-based continual learning,回放式持续学习,第一章与第四至六章,重放式持续学习（避免混用）,通过旧样本特征或生成信息近似历史分布
 regularization-based continual learning,正则化持续学习,第一章与第四至六章,正则式持续学习（避免混用）,通过参数函数或表示约束保护已有知识
 parameter isolation,参数隔离,第一章与第四至六章,参数分离（避免混用）,为不同任务保留独立或部分独立参数
-background semantic drift,背景语义变化,第一章、第三章与第五章,背景漂移（首次定义后可简称）,当前标注协议使背景包含旧类未来类与真实背景的语义变化
-Domain-CL,域持续学习场景,第一章与第四章,域增量学习（两者按具体定义区分）,第四章基准中面向顺序跨中心域变化的场景名
-Class-CL,类别持续学习场景,第一章与第四章,类增量学习（两者按具体定义区分）,第四章基准中面向顺序新增分割结构的场景名
-Organ-CL,器官持续学习场景,第一章与第四章,器官增量学习（避免视为统一标准术语）,第四章基准中面向跨器官分割任务的场景名
+background semantic drift,背景语义变化,第一章、第三章与第四章,背景漂移（首次定义后可简称）,当前标注协议使背景包含旧类未来类与真实背景的语义变化
+Domain-CL,域持续学习场景,第一章与第五章,域增量学习（两者按具体定义区分）,第五章基准中面向顺序跨中心域变化的场景名
+Class-CL,类别持续学习场景,第一章与第五章,类增量学习（两者按具体定义区分）,第五章基准中面向顺序新增分割结构的场景名
+Organ-CL,器官持续学习场景,第一章与第五章,器官增量学习（避免视为统一标准术语）,第五章基准中面向跨器官分割任务的场景名
 replay burden,回放负担,第一章与第四至六章,回放开销（可作解释）,由保存或生成历史信息带来的存储计算与治理成本
 global performance,总体性能,第一章与第四至六章,全局性能（在联邦语境中含义不同）,对已学习任务整体能力的汇总评价
 synchronous federated continual learning,同步联邦持续学习,第一章与第六章,同步持续联邦学习（避免混用）,客户端按照共同任务顺序或共同阶段推进
@@ -67,16 +67,16 @@ annotation class-proportion bias,标注类别比例偏差,第一章与第三章,
 label-noise amplification,标签噪声放大,第一章与第三章,噪声累积（可作解释）,错误伪标签在后续迭代中被重复作为监督
 under-segmentation,欠分割,第一章与第三章,分割不足（避免混用）,预测区域系统性遗漏目标的一部分
 structural fragmentation,结构碎片化,第一章与第三章,预测碎片化（可作解释）,同一目标被预测为不合理的离散或断裂区域
-scenario completeness,场景完备性,第一章与第四章,场景完整性（避免混用）,场景定义是否明确覆盖变化对象顺序标签和测试条件
-stage-task performance matrix,阶段—任务性能矩阵,第一章与第四章,准确率矩阵（任务指标不一定为准确率）,以训练阶段为行测试任务为列记录基础性能
+scenario completeness,场景完备性,第一章与第五章,场景完整性（避免混用）,场景定义是否明确覆盖变化对象顺序标签和测试条件
+stage-task performance matrix,阶段—任务性能矩阵,第一章与第五章,准确率矩阵（任务指标不一定为准确率）,以训练阶段为行测试任务为列记录基础性能
 current-task plasticity,当前任务可塑性,第一章与第四至六章,新任务性能（仅作观测量时使用）,模型在当前阶段吸收新知识的能力
 resource-aware evaluation,资源约束评价,第一章与第四至六章,资源效率评价（范围较窄）,在数据存储参数计算通信等条件下解释模型表现
 protocol-aware comparison,协议感知比较,第一章与第四至六章,公平比较（范围更宽）,比较时显式核对任务身份历史访问输出空间和资源条件
-registration task sequence,配准任务序列,第一章与第五章,配准数据序列（范围不完全等同）,按解剖模态数据源或映射目标顺序组织的配准任务
+registration task sequence,配准任务序列,第一章与第四章,配准数据序列（范围不完全等同）,按解剖模态数据源或映射目标顺序组织的配准任务
 task interference,任务干扰,第一章与第四至六章,任务冲突（可作机制解释）,不同任务更新在共享参数或表示上产生的不利相互作用
-cross-task generalization,跨任务泛化,第一章与第五章,跨域泛化（范围不同）,已见任务学习形成对未参与持续优化任务的适应能力
-meta-initialization,元初始化,第一章与第五章,元模型（不完全等同）,通过元学习获得并可经少量更新适应新任务的初始参数
-loss-landscape flatness,损失景观平坦性,第一章与第五章,平坦最小值（仅指具体解时使用）,模型损失对邻域参数扰动的敏感程度
+cross-task generalization,跨任务泛化,第一章与第四章,跨域泛化（范围不同）,已见任务学习形成对未参与持续优化任务的适应能力
+meta-initialization,元初始化,第一章与第四章,元模型（不完全等同）,通过元学习获得并可经少量更新适应新任务的初始参数
+loss-landscape flatness,损失景观平坦性,第一章与第四章,平坦最小值（仅指具体解时使用）,模型损失对邻域参数扰动的敏感程度
 local-history protection,本地历史知识保护,第一章与第六章,本地知识保护（范围更宽）,仅基于单个客户端已观察任务形成的保护
 semantic segmentation,语义分割,第二至四章,语义图像分割（避免混用）,为每个空间位置赋予类别语义且不区分同类实例身份
 binary segmentation,二值分割,第二至四章,二分类分割（避免混用）,前景与背景两类的空间预测任务
@@ -87,17 +87,17 @@ Dice similarity coefficient,Dice相似系数,第二至四章,Dice系数（首次
 intersection over union,交并比,第二至四章,Jaccard系数（首次可说明同义）,预测与参考区域交集占并集的比例
 95th-percentile Hausdorff distance,95%豪斯多夫距离,第二至四章,HD95（首次定义后可用缩写）,双向边界距离的95%分位数最大值
 average symmetric surface distance,平均对称表面距离,第二至四章,平均表面距离（范围可能不同）,两个边界点集双向最近距离的平均值
-cross-client history,跨客户端历史知识,第一章与第六章,全局历史（可能包含服务器历史）,分散在不同客户端任务序列中的既有知识
-global protective subspace,全局保护子空间,第一章与第六章,共享子空间（用途不明确）,用于约束后续更新以保护跨客户端历史的梯度子空间
-over-constraint,过度约束,第一章与第六章,过保护（避免混用）,保护条件过强导致当前任务可行更新空间过度收缩
-layer-wise relatedness,逐层相关性,第一章与第六章,层相关性（避免混用）,客户端历史子空间在不同网络层上的相关程度
-subspace distance,子空间距离,第一章与第六章,空间距离（避免混用）,衡量两个线性子空间关系的距离量
-compact gradient summary,紧凑梯度摘要,第一章与第六章,梯度压缩（机制不同）,由低秩基或相关统计概括历史梯度方向的信息
-spatial randomness,空间随机性,第一章与第三章,空间分布随机性（可作解释）,稀疏涂鸦在目标区域内分散覆盖而非集中于少量位置的程度
-restricted modeling ability,受限建模能力,第一章与第四章,受限学习能力（避免混用）,RMA；比较持续约束下当前任务表现与独立训练参考以衡量可塑性
-extended forward transfer,扩展前向迁移,第一章与第四章,扩展前向泛化（不是指标原名）,E-FWT；在Domain-CL中汇总多个尚未训练域上的直接表现并用于评价前向泛化
-orthogonal-complement projection,正交补投影,第一章与第六章,正交投影（范围不完全等同）,移除梯度在保护子空间内的分量并保留其正交补分量
-first-order interference,一阶干扰,第一章与第六章,一级干扰（错误）,一阶近似下当前参数更新对历史任务损失的影响
+cross-client history,跨客户端历史知识,第一章、第二章、第五章与第六章,全局历史（可能包含服务器历史）,分散在不同客户端任务序列中的既有知识
+global protective subspace,全局保护子空间,第一章、第二章、第五章与第六章,共享子空间（用途不明确）,用于约束后续更新以保护跨客户端历史的梯度子空间
+over-constraint,过度约束,第一章、第二章、第五章与第六章,过保护（避免混用）,保护条件过强导致当前任务可行更新空间过度收缩
+layer-wise relatedness,逐层相关性,第一章、第二章、第五章与第六章,层相关性（避免混用）,客户端历史子空间在不同网络层上的相关程度
+subspace distance,子空间距离,第一章、第二章、第五章与第六章,空间距离（避免混用）,衡量两个线性子空间关系的距离量
+compact gradient summary,紧凑梯度摘要,第一章、第二章、第五章与第六章,梯度压缩（机制不同）,由低秩基或相关统计概括历史梯度方向的信息
+spatial randomness,空间随机性,第一章、第二章与第四章,空间分布随机性（可作解释）,稀疏涂鸦在目标区域内分散覆盖而非集中于少量位置的程度
+restricted modeling ability,受限建模能力,第一至第四章,受限学习能力（避免混用）,RMA；比较持续约束下当前任务表现与独立训练参考以衡量可塑性
+extended forward transfer,扩展前向迁移,第一至第四章,扩展前向泛化（不是指标原名）,E-FWT；在Domain-CL中汇总多个尚未训练域上的直接表现并用于评价前向泛化
+orthogonal-complement projection,正交补投影,第一章、第二章、第五章与第六章,正交投影（范围不完全等同）,移除梯度在保护子空间内的分量并保留其正交补分量
+first-order interference,一阶干扰,第一章、第二章、第五章与第六章,一级干扰（错误）,一阶近似下当前参数更新对历史任务损失的影响
 domain-incremental continual learning,域增量持续学习,第三章,无,第三章 Benchmark
 class-incremental continual learning,类别增量持续学习,第三章,无,第三章 Benchmark
 organ-level continual learning,跨器官任务持续学习,第三章,无,第三章 Benchmark
@@ -120,21 +120,26 @@ parameter regularization,参数正则化,第二章,无,2.3.3
 function regularization,函数正则化,第二章,无,2.3.3
 gradient projection,梯度投影,第二章,无,2.3.3
 meta-learning,元学习,第二章,无,2.3.3
-replay-free FCL,无回放联邦持续学习,第四章,无回放等于形式化隐私,FedSubMerge
-global catastrophic forgetting,全局灾难性遗忘,第四章,局部遗忘,FedSubMerge
-local forgetting,局部遗忘,第四章,全局遗忘,FedSubMerge
-distribution-based label skew,分布偏斜,第四章,,
-quantity-based label skew,数量偏斜,第四章,,
-feature skew,特征偏斜,第四章,,
-stability--plasticity trade-off,稳定性--可塑性权衡,第四章,,
-plasticity,可塑性,第四章,,
-shared PGS,共享 PGS,第四章,,
-personalized PGS,个性化 PGS,第四章,,
-recursive client history proxy,递归客户端历史代理,第四章,原始全历史梯度,
-projection distance,投影距离,第四章,语义相关性,
-finite replay,有限回放,第五章,无回放,
-static weak supervision,静态弱监督,第五章,持续学习,
-sharpness-aware optimization,锐度感知优化,第五章,SAMCL 的元学习,
-ZSDERpp,ZSDERpp,第一章与第五章,拆分为两个方法,统一当前任务损失、历史特征保持和缓冲区弱监督回放
-feature consistency loss,特征保持损失,第五章,特征蒸馏（除非严格定义）,当前特征与缓冲区参考特征的平方距离
-capacity-limited replay buffer,容量受限的历史缓冲区,第五章,完整历史数据回放,保存图像、涂鸦、参考特征和任务标识
+replay-free FCL,无回放联邦持续学习,第五章,无回放等于形式化隐私,FedSubMerge
+global catastrophic forgetting,全局灾难性遗忘,第五章,局部遗忘,FedSubMerge
+local forgetting,局部遗忘,第五章,全局遗忘,FedSubMerge
+distribution-based label skew,分布偏斜,第五章,,
+quantity-based label skew,数量偏斜,第五章,,
+feature skew,特征偏斜,第五章,,
+stability--plasticity trade-off,稳定性--可塑性权衡,第五章,,
+plasticity,可塑性,第五章,,
+shared PGS,共享 PGS,第五章,,
+personalized PGS,个性化 PGS,第五章,,
+recursive client history proxy,递归客户端历史代理,第五章,原始全历史梯度,
+projection distance,投影距离,第五章,语义相关性,
+finite replay,有限回放,第四章,无回放,
+static weak supervision,静态弱监督,第四章,持续学习,
+sharpness-aware optimization,锐度感知优化,第四章,SAMCL 的元学习,
+ZSDERpp,ZSDERpp,第一章与第四章,拆分为两个方法,统一当前任务损失、历史特征保持和缓冲区弱监督回放
+feature consistency loss,特征保持损失,第四章,特征蒸馏（除非严格定义）,当前特征与缓冲区参考特征的平方距离
+capacity-limited replay buffer,容量受限的历史缓冲区,第四章,完整历史数据回放,保存图像、涂鸦、参考特征和任务标识
+non-independent and identically distributed,非独立同分布（Non-IID）,第二章与第五章,Non-ID,区分时间维度域偏移与同一阶段客户端异质性。
+reference standard,参考标准（金标准）,第四章,模型伪标签等同金标准,公开密集参考掩膜；仅训练子集用于生成模拟涂鸦。
+continual pretraining,持续预训练,第六章,,未来研究的数据与表征层。
+continual domain adaptation,持续领域适配,第六章,,未来研究的任务与场景层。
+continual knowledge editing,持续知识编辑,第六章,,未来研究的知识与行为层。

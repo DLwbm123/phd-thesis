@@ -12,17 +12,17 @@
 
 具体而言，从临床数据演化方式看，至少存在三类具有不同技术含义的变化。第一，同一分割目标在不同中心、设备或采集方案下依次到达，标签语义保持不变而输入分布发生偏移；第二，同一成像区域中的解剖类别逐步扩展，统一输出空间随阶段增加，并伴随背景语义变化；第三，器官、模态和分割目标同时改变，任务之间的标签集合可能互不重叠。这些变化分别对应本章定义的 Domain-CL、Class-CL 和 Organ-CL。三者都要求顺序学习，但可比较的性能矩阵条目、输出头形式和适用指标并不相同。
 
-然而，现有持续学习研究通常从域增量、类增量或任务增量等角度描述顺序学习问题，但不同医学分割工作在场景命名、标签设定、输出头、历史数据访问和测试方式上并不一致\cite{wang2024continualsurvey,kumari2025medicalcl,yuan2024continualseg,gonzalez2023lifelong,whatwrong}。相同的“跨中心分割”可能被组织为顺序域学习，也可能在训练阶段共同使用多个中心；新增器官既可能被视为类别扩展，也可能采用任务特定输出头。若这些条件没有被明确区分，方法间即使报告相同指标，其结果也未必具有可比性。
+然而，现有持续学习研究通常从域增量、类别增量或任务增量等角度描述顺序学习问题，但不同医学分割工作在场景命名、标签设定、输出头、历史数据访问和测试方式上并不一致\cite{wang2024continualsurvey,kumari2025medicalcl,yuan2024continualseg,gonzalez2023lifelong,whatwrong}。相同的“跨中心分割”可能被组织为顺序域学习，也可能在训练阶段共同使用多个中心；新增器官既可能被视为类别扩展，也可能采用任务特定输出头。若这些条件没有被明确区分，方法间即使报告相同指标，其结果也未必具有可比性。
 
 除场景定义外，评价维度的不完整会进一步影响结论。最终阶段的平均 Dice 可以反映模型结束训练后的总体分割能力，却不能区分该结果来自历史任务保持还是当前任务学习。两个最终平均 Dice 相同的模型，可能一个较好地保持了旧任务，另一个只是最后一个任务学得更充分。遗忘量能够描述旧任务性能下降，但过强的历史保护也可能压低当前任务性能。参数隔离方法可以减少遗忘，却以模型容量增长为代价；回放方法利用旧样本缓解知识损失，但引入额外存储和历史数据访问。对于尚未参与训练的未来域，模型是否形成了可直接迁移的表示，也不能由最终平均性能和遗忘单独刻画。因此，评价应同时覆盖稳定性、可塑性、前向泛化、参数效率和回放负担，而不是把“降低遗忘”视为唯一目标。
 
 据此，本章构建持续医学图像分割的场景定义与综合评测框架。框架按照输入分布、标签空间和分割对象的变化组织 Domain-CL、Class-CL 和 Organ-CL 三类场景，并在统一网络、训练预算和数据划分下比较正则化、回放与参数隔离等代表性方法。评价指标覆盖最终性能、历史知识保持、当前任务建模、前向泛化和资源条件。其中，受限建模能力（restricted modeling ability，RMA）衡量持续约束下当前任务性能相对于独立训练参考的比例；扩展前向迁移（Extended Forward Transfer，E-FWT）汇总 Domain-CL 中模型对多个尚未参与优化域的直接表现。本章还考察任务顺序、回放容量以及基础分割模型顺序适配的影响，并讨论持续学习与联邦学习、测试时适应等相关范式的联系。所有观察均限定于相应数据、网络、访问条件和任务设定。
 
-本章建立的三类场景也作为第五章 ScribbleCL 的实验基础。第五章沿用本章的数据集、任务顺序、病例级划分、预处理、输出组织和阶段--任务性能矩阵，将当前训练标注由密集标签改为涂鸦；在所提 ZSDERpp 中，历史信息仅通过容量受限的图像--涂鸦回放集合和参考特征参与后续训练。由此，两章可以在相同数据和评价口径下比较密集监督与涂鸦监督条件下的持续学习表现。
+本章建立的三类场景也作为第四章 ScribbleCL 的实验基础。第四章沿用本章的数据集、任务顺序、病例级划分、预处理、输出组织和阶段--任务性能矩阵，将当前训练标注由密集标签改为涂鸦；在所提 ZSDERpp 中，历史信息仅通过容量受限的图像--涂鸦回放集合和参考特征参与后续训练。由此，两章可以在相同数据和评价口径下比较密集监督与涂鸦监督条件下的持续学习表现。
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=\textwidth]{ch03/benchmark_overview_new.pdf}
+\input{figures/ch03/benchmark_overview_zh.tex}
 \caption[持续医学图像分割基准的整体构成]{持续医学图像分割基准的整体构成。基准由临床驱动的 Domain-CL、Class-CL 和 Organ-CL 场景、统一的顺序训练设置以及超越遗忘的综合评价三部分组成；评价同时考虑总体性能、稳定性、可塑性、前向泛化、参数效率和回放负担。}
 \label{fig:benchmark-overview}
 \end{figure}
@@ -50,15 +50,14 @@
 \centering
 \caption{持续医学图像分割相关综述与评测基准的覆盖范围比较}
 \label{tab:benchmark-related-work}
-\scriptsize
+\thesistablefont
 \renewcommand{\arraystretch}{1.12}
-\setlength{\tabcolsep}{2.8pt}
-\resizebox{\textwidth}{!}{%
-\begin{tabular}{lcccccccccc}
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}p{2.4cm}p{2.0cm}*{8}{>{\centering\arraybackslash}p{0.8cm}}>{\centering\arraybackslash}p{1.0cm}@{}}
 \toprule
-\multirow{2}{*}{工作} & \multirow{2}{*}{类型} & \multicolumn{3}{c}{场景} & \multicolumn{5}{c}{评价维度} & \multirow{2}{*}{统一设置} \\
+\multirow{2}{*}{工作} & \multirow{2}{*}{类型} & \multicolumn{3}{c}{场景} & \multicolumn{5}{c}{评价维度} & \multirow{2}{1.0cm}{统一设置} \\
 \cmidrule(lr){3-5}\cmidrule(lr){6-10}
- & & D-CL & C-CL & O-CL & 稳定性 & 可塑性 & 前向泛化 & 参数 & 回放 & \\
+ & & 域增量 & 类别增量 & 器官增量 & 稳定性 & 可塑性 & 前向泛化 & 参数 & 回放 & \\
 \midrule
 Yuan 等\cite{yuan2024continualseg} & 自然图像综述 & 讨论 & 讨论 & -- & -- & -- & -- & -- & -- & -- \\
 Kumari 等\cite{kumari2025medicalcl} & 医学影像综述 & 讨论 & 讨论 & 讨论 & -- & -- & -- & -- & -- & -- \\
@@ -67,7 +66,7 @@ Gonzalez 等\cite{whatwrong} & 基准研究 & 实验 & -- & -- & 实验 & -- & -
 本章 & 综合基准 & 实验 & 实验 & 实验 & 实验 & 实验 & 实验 & 实验 & 实验 & 实验 \\
 \bottomrule
 \end{tabular}%
-}
+
 \end{table}
 
 \section{持续医学图像分割的问题定义}
@@ -101,10 +100,10 @@ $\mathbf{D}=[d_{t,i}]_{t,i=1}^{T}$。矩阵的第 $t$ 行描述模型完成第 $
 \centering
 \caption{持续医学图像分割三类基准场景的定义与实验设定差异}
 \label{tab:benchmark-scenarios}
-\small
+\thesistablefont
+\setlength{\tabcolsep}{3pt}
 \renewcommand{\arraystretch}{1.18}
-\resizebox{\textwidth}{!}{%
-\begin{tabular}{p{2.0cm}p{2.8cm}p{2.8cm}p{3.0cm}p{3.2cm}}
+\begin{tabularx}{\textwidth}{@{}p{1.85cm}XXXX@{}}
 \toprule
 场景 & 输入分布与标签空间 & 输出组织 & 任务序列实例 & 主要评价重点 \\
 \midrule
@@ -126,8 +125,8 @@ $P(\mathcal{X}_{t_1})\neq P(\mathcal{X}_{t_2})$，且 $Y^{+}_{t_1}\cap Y^{+}_{t_
 左心房 MRI、前列腺 MRI、肝 CT、脑肿瘤 FLAIR MRI &
 跨任务知识保持、当前任务学习与参数扩展 \\
 \bottomrule
-\end{tabular}
-}
+\end{tabularx}
+
 \end{table}
 
 \subsection{Domain-CL：跨中心与设备域增量分割}
@@ -178,17 +177,17 @@ Organ-CL 依次使用 LAScarQS 左心房 LGE MRI、PROMISE12 中心 D 的前列�
 \centering
 \caption{三类场景的数据组织与任务序列}
 \label{tab:benchmark-datasets}
-\small
+\thesistablefont
+\setlength{\tabcolsep}{3pt}
 \renewcommand{\arraystretch}{1.16}
-\resizebox{\textwidth}{!}{%
-\begin{tabular}{p{1.8cm}p{3.2cm}p{2.1cm}p{4.0cm}p{3.1cm}}
+\begin{tabularx}{\textwidth}{@{}p{1.85cm}Xp{2.0cm}XX@{}}
 \toprule
 场景 & 数据与模态 & 阶段数 & 任务顺序 & 输出与预处理 \\
 \midrule
 Domain-CL &
 NCI-ISBI 2013、I2CVB、PROMISE12 前列腺 T2 MRI &
 6 &
-中心 A$\rightarrow$B$\rightarrow$C$\rightarrow$D$\rightarrow$E$\rightarrow$F &
+中心 A$\rightarrow$B$\rightarrow$C$\rightarrow$\allowbreak D$\rightarrow$E$\rightarrow$F &
 共享二通道头；轴位 $256\times256$；非零体素归一化 \\
 \addlinespace
 Class-CL &
@@ -203,11 +202,11 @@ LAScarQS、PROMISE12 中心 D、LiTS、FeTS 2021 &
 左心房 MRI $\rightarrow$ 前列腺 MRI $\rightarrow$ 肝 CT $\rightarrow$ 脑肿瘤 FLAIR MRI &
 每任务二通道头；零均值单位方差归一化；$256\times256$ \\
 \bottomrule
-\end{tabular}
-}
+\end{tabularx}
+
 \end{table}
 
-为保持章节间可比性，表~\ref{tab:benchmark-datasets}中的数据、任务顺序和病例级划分将在第五章 ScribbleCL 中直接复用。第五章不重新抽样，也不改变中心、类别或器官的到达次序；训练集的密集标签仅用于生成固定涂鸦，验证集和测试集仍采用本章相同的密集标签。因而，两章共享同一数据基础，差别主要来自训练监督形式和历史信息使用方式。
+为保持章节间可比性，表~\ref{tab:benchmark-datasets}中的数据、任务顺序和病例级划分将在第四章 ScribbleCL 中直接复用。第四章不重新抽样，也不改变中心、类别或器官的到达次序；训练集的密集标签仅用于生成固定涂鸦，验证集和测试集仍采用本章相同的密集标签。因而，两章共享同一数据基础，差别主要来自训练监督形式和历史信息使用方式。
 
 \subsection*{网络与训练设置}
 
@@ -219,9 +218,9 @@ LAScarQS、PROMISE12 中心 D、LiTS、FeTS 2021 &
 \centering
 \caption{基准对比方法的实现配置与方法特定超参数}
 \label{tab:benchmark-baseline-config}
-\scriptsize
+\thesistablefont
 \renewcommand{\arraystretch}{1.08}
-\setlength{\tabcolsep}{3.0pt}
+\setlength{\tabcolsep}{3pt}
 \begin{tabular}{p{2.45cm}p{8.70cm}p{2.20cm}}
 \toprule
 方法 & 实现配置与方法特定超参数 & 适用范围 \\
@@ -264,9 +263,9 @@ Class-CL 回放方法按照阶段标签空间处理回放监督，相关结果�
 \centering
 \caption{基准中比较的方法类别及其主要历史信息使用方式}
 \label{tab:benchmark-methods}
-\small
+\thesistablefont
+\setlength{\tabcolsep}{3pt}
 \renewcommand{\arraystretch}{1.15}
-\resizebox{\textwidth}{!}{%
 \begin{tabular}{p{2.0cm}p{4.0cm}p{4.0cm}p{3.6cm}}
 \toprule
 类别 & 代表方法 & 历史知识形式或约束方式 & 主要附加代价 \\
@@ -297,14 +296,14 @@ Non-CL、JointTrain &
 JointTrain 使用完整历史数据，访问条件不同 \\
 \bottomrule
 \end{tabular}
-}
+
 \end{table}
 
 
 \section{综合评价指标}
 \label{sec:benchmark-metrics}
 
-设 $d_{t,i}$ 为完成第 $t$ 个任务训练后的模型在任务 $i$ 测试集上的平均 Dice。传统评价通常只报告最终模型在所有任务上的平均性能或遗忘量。本章保留这两类指标，并进一步引入当前任务建模、前向泛化和资源开销指标。不同指标对应性能矩阵中的不同位置，不能相互替代。第五章评价 ScribbleCL 时直接使用同一性能矩阵及本节的 A-Dice、BWTR、RMA、E-FWT 和 WCD 定义，从而保持两章对总体性能、知识保持、当前任务学习和前向泛化的解释一致。
+设 $d_{t,i}$ 为完成第 $t$ 个任务训练后的模型在任务 $i$ 测试集上的平均 Dice。传统评价通常只报告最终模型在所有任务上的平均性能或遗忘量。本章保留这两类指标，并进一步引入当前任务建模、前向泛化和资源开销指标。不同指标对应性能矩阵中的不同位置，不能相互替代。第四章评价 ScribbleCL 时直接使用同一性能矩阵及本节的 A-Dice、BWTR、RMA、E-FWT 和 WCD 定义，从而保持两章对总体性能、知识保持、当前任务学习和前向泛化的解释一致。
 
 \subsection*{最终平均性能}
 
@@ -416,16 +415,15 @@ E-FWT 进一步揭示前向泛化表现。Non-CL 的 E-FWT 为 $0.260\pm0.151$�
 \centering
 \caption{Domain-CL 场景下不同持续学习方法的综合结果}
 \label{tab:benchmark-domain-results}
-\scriptsize
-\setlength{\tabcolsep}{3.8pt}
+\thesistablefont
+\setlength{\tabcolsep}{3pt}
 \renewcommand{\arraystretch}{1.12}
-\resizebox{\textwidth}{!}{%
 \begin{tabular}{lcccccc}
 \toprule
 方法 & A-Dice & BWTR & RMA & E-FWT & MPE & DRR \\
 \midrule
 \multicolumn{7}{l}{\textit{正则化方法}} \\
-Regu-EWC & $.672\pm.021$ & $-.242\pm.039$ & $1.086\pm.014$ & $.255\pm.152$ & $0$ & $0$ \\
+Regu-EWC & $.672\pm.021$ & $-.242\pm.039$ & $\best{1.086\pm.014}$ & $.255\pm.152$ & $0$ & $0$ \\
 Regu-SI & $.676\pm.024$ & $-.236\pm.042$ & $1.084\pm.008$ & $.259\pm.151$ & $0$ & $0$ \\
 Regu-LwF & $.663\pm.029$ & $-.090\pm.027$ & $.894\pm.021$ & $.224\pm.153$ & $0$ & $0$ \\
 \addlinespace[2pt]
@@ -440,18 +438,18 @@ Repl-DER++ & $.725\pm.013$ & $-.105\pm.018$ & $1.012\pm.013$ & $.251\pm.149$ & $
 Repl-FDR & $.728\pm.015$ & $-.111\pm.028$ & $1.025\pm.033$ & $.252\pm.136$ & $0$ & $.042^{*}$ \\
 \addlinespace[2pt]
 \multicolumn{7}{l}{\textit{参数隔离方法}} \\
-ParIso-PNN & $.789\pm.002$ & $0\pm0$ & $1.003\pm.014$ & $.235\pm.148$ & $1.112$ & $0$ \\
-ParIso-DAN & $.786\pm.008$ & $0\pm0$ & $1.016\pm.021$ & $.312\pm.210$ & $.111$ & $0$ \\
+ParIso-PNN & $\best{.789\pm.002}$ & $\best{0\pm0}$ & $1.003\pm.014$ & $.235\pm.148$ & $1.112$ & $0$ \\
+ParIso-DAN & $.786\pm.008$ & $\best{0\pm0}$ & $1.016\pm.021$ & $\best{.312\pm.210}$ & $.111$ & $0$ \\
 \addlinespace[2pt]
 \multicolumn{7}{l}{\textit{参照方法}} \\
 Non-CL & $.676\pm.021$ & $-.237\pm.038$ & $1.086\pm.008$ & $.260\pm.151$ & $0$ & $0$ \\
 JointTrain & $.830\pm.040$ & -- & -- & -- & $0$ & $0$ \\
 \bottomrule
 \end{tabular}%
-}
+
 \vspace{2pt}
 \begin{minipage}{0.98\textwidth}
-\footnotesize 注：数值为均值$\pm$标准差；“--”表示不适用或未报告；DRR 中带“$^{*}$”的数值表示回放原始图像。JointTrain 可访问全部任务数据，其结果仅作为不同访问条件下的参照。
+\footnotesize 注：红色粗体表示持续学习方法中的列最高均值，不含参照方法；MPE 与 DRR 为资源条件，不参与性能排名。数值为均值$\pm$标准差；“--”表示不适用或未报告；DRR 中带“$^{*}$”的数值表示回放原始图像。JointTrain 可访问全部任务数据，其结果仅作为不同访问条件下的参照。
 \end{minipage}
 \end{table}
 
@@ -467,10 +465,9 @@ JointTrain & $.830\pm.040$ & -- & -- & -- & $0$ & $0$ \\
 \centering
 \caption{Class-CL 场景下不同持续学习方法的综合结果}
 \label{tab:benchmark-class-results}
-\scriptsize
-\setlength{\tabcolsep}{3.8pt}
+\thesistablefont
+\setlength{\tabcolsep}{3pt}
 \renewcommand{\arraystretch}{1.12}
-\resizebox{\textwidth}{!}{%
 \begin{tabular}{lcccccc}
 \toprule
 方法 & A-Dice & BWTR & RMA & WCD & MPE & DRR \\
@@ -485,17 +482,17 @@ Repl-ER & $.654\pm.034$ & $-.243\pm.068$ & $1.015\pm.029$ & $.596\pm.019$ & $0$ 
 Repl-GSS & $.456\pm.003$ & $-.611\pm.016$ & $.991\pm.038$ & $.600\pm.006$ & $0$ & $.018^{*}$ \\
 Repl-GEM & $.684\pm.036$ & $-.304\pm.038$ & $1.014\pm.031$ & $.622\pm.031$ & $0$ & $.010^{*}$ \\
 Repl-GPM & $.575\pm.023$ & $-.219\pm.033$ & $.892\pm.014$ & $.513\pm.014$ & $0$ & $.068$ \\
-Repl-AGEM & $.595\pm.017$ & $-.370\pm.032$ & $1.020\pm.019$ & $.562\pm.026$ & $0$ & $.010^{*}$ \\
+Repl-AGEM & $.595\pm.017$ & $-.370\pm.032$ & $\best{1.020\pm.019}$ & $.562\pm.026$ & $0$ & $.010^{*}$ \\
 Repl-DER & $.628\pm.027$ & $-.219\pm.070$ & $.913\pm.029$ & $.622\pm.029$ & $0$ & $.011^{*}$ \\
 Repl-DER++ & $.638\pm.036$ & $-.208\pm.056$ & $.932\pm.034$ & $.633\pm.043$ & $0$ & $.011^{*}$ \\
 Repl-FDR & $.666\pm.012$ & $-.146\pm.046$ & $.917\pm.035$ & $.627\pm.015$ & $0$ & $.010^{*}$ \\
 \addlinespace[2pt]
 \multicolumn{7}{l}{\textit{参数隔离方法}} \\
-ParIso-PNN & $.770\pm.012$ & $0\pm0$ & $.976\pm.021$ & $.620\pm.020$ & $1.056$ & $0$ \\
-ParIso-DAN & $.729\pm.009$ & $0\pm0$ & $.897\pm.022$ & $.543\pm.127$ & $.111$ & $0$ \\
+ParIso-PNN & $\best{.770\pm.012}$ & $\best{0\pm0}$ & $.976\pm.021$ & $.620\pm.020$ & $1.056$ & $0$ \\
+ParIso-DAN & $.729\pm.009$ & $\best{0\pm0}$ & $.897\pm.022$ & $.543\pm.127$ & $.111$ & $0$ \\
 \addlinespace[2pt]
 \multicolumn{7}{l}{\textit{类别增量专项方法}} \\
-ClassCL-PLOP & $.708\pm.025$ & $-.104\pm.026$ & $.986\pm.038$ & $.707\pm.009$ & $0$ & $0$ \\
+ClassCL-PLOP & $.708\pm.025$ & $-.104\pm.026$ & $.986\pm.038$ & $\best{.707\pm.009}$ & $0$ & $0$ \\
 ClassCL-MiB & $.751\pm.008$ & $-.039\pm.003$ & $1.004\pm.018$ & $.697\pm.008$ & $0$ & $0$ \\
 \addlinespace[2pt]
 \multicolumn{7}{l}{\textit{参照方法}} \\
@@ -503,10 +500,10 @@ Non-CL & $.471\pm.012$ & $-.598\pm.015$ & $1.014\pm.028$ & $.572\pm.023$ & $0$ &
 JointTrain & $.810\pm.023$ & -- & -- & -- & $0$ & $0$ \\
 \bottomrule
 \end{tabular}%
-}
+
 \vspace{2pt}
 \begin{minipage}{0.98\textwidth}
-\footnotesize 注：数值为均值$\pm$标准差；“--”表示不适用或未报告；DRR 中带“$^{*}$”的数值表示回放原始图像。JointTrain 可访问全部任务数据，其结果仅作为不同访问条件下的参照。
+\footnotesize 注：红色粗体表示持续学习方法中的列最高均值，不含参照方法；MPE 与 DRR 为资源条件，不参与性能排名。数值为均值$\pm$标准差；“--”表示不适用或未报告；DRR 中带“$^{*}$”的数值表示回放原始图像。JointTrain 可访问全部任务数据，其结果仅作为不同访问条件下的参照。
 \end{minipage}
 \end{table}
 
@@ -522,16 +519,15 @@ JointTrain & $.810\pm.023$ & -- & -- & -- & $0$ & $0$ \\
 \centering
 \caption{Organ-CL 场景下不同持续学习方法的综合结果}
 \label{tab:benchmark-organ-results}
-\scriptsize
-\setlength{\tabcolsep}{4.5pt}
+\thesistablefont
+\setlength{\tabcolsep}{3pt}
 \renewcommand{\arraystretch}{1.12}
-\resizebox{0.90\textwidth}{!}{%
 \begin{tabular}{lccccc}
 \toprule
 方法 & A-Dice & BWTR & RMA & MPE & DRR \\
 \midrule
 \multicolumn{6}{l}{\textit{正则化方法}} \\
-Regu-EWC & $.601\pm.008$ & $-.371\pm.014$ & $1.004\pm.012$ & $0$ & $0$ \\
+Regu-EWC & $.601\pm.008$ & $-.371\pm.014$ & $\best{1.004\pm.012}$ & $0$ & $0$ \\
 Regu-SI & $.621\pm.024$ & $-.343\pm.025$ & $1.003\pm.009$ & $0$ & $0$ \\
 Regu-LwF & $.594\pm.018$ & $-.308\pm.044$ & $.916\pm.004$ & $0$ & $0$ \\
 \addlinespace[2pt]
@@ -545,18 +541,17 @@ Repl-DER & $.717\pm.005$ & $-.157\pm.022$ & $.953\pm.013$ & $0$ & $.012^{*}$ \\
 Repl-FDR & $.631\pm.008$ & $-.217\pm.008$ & $.885\pm.013$ & $0$ & $.023^{*}$ \\
 \addlinespace[2pt]
 \multicolumn{6}{l}{\textit{参数隔离方法}} \\
-ParIso-PNN & $.839\pm.004$ & $0\pm0$ & $1.001\pm.006$ & $1.074$ & $0$ \\
-ParIso-DAN & $.824\pm.005$ & $0\pm0$ & $.972\pm.016$ & $.166$ & $0$ \\
+ParIso-PNN & $\best{.839\pm.004}$ & $\best{0\pm0}$ & $1.001\pm.006$ & $1.074$ & $0$ \\
+ParIso-DAN & $.824\pm.005$ & $\best{0\pm0}$ & $.972\pm.016$ & $.166$ & $0$ \\
 \addlinespace[2pt]
 \multicolumn{6}{l}{\textit{参照方法}} \\
 Non-CL & $.603\pm.008$ & $-.369\pm.005$ & $1.006\pm.008$ & $0$ & $0$ \\
 JointTrain & $.881\pm.010$ & -- & -- & $0$ & $0$ \\
 \bottomrule
-\end{tabular}%
-}
+\end{tabular}
 \vspace{2pt}
-\begin{minipage}{0.90\textwidth}
-\footnotesize 注：数值为均值$\pm$标准差；“--”表示不适用或未报告；DRR 中带“$^{*}$”的数值表示回放原始图像。JointTrain 可访问全部任务数据，其结果仅作为不同访问条件下的参照。
+\begin{minipage}{0.98\textwidth}
+\footnotesize 注：红色粗体表示持续学习方法中的列最高均值，不含参照方法；MPE 与 DRR 为资源条件，不参与性能排名。数值为均值$\pm$标准差；“--”表示不适用或未报告；DRR 中带“$^{*}$”的数值表示回放原始图像。JointTrain 可访问全部任务数据，其结果仅作为不同访问条件下的参照。
 \end{minipage}
 \end{table}
 
@@ -600,7 +595,7 @@ JointTrain & $.881\pm.010$ & -- & -- & $0$ & $0$ \\
 \subsection{基础分割模型的顺序适配分析}
 \label{subsec:benchmark-foundation-model}
 
-前述实验表明，现有持续学习方法在 Domain-CL 中的前向泛化仍然有限。由此产生一个直接问题：大规模预训练获得的通用表征，能否在中心域连续到达时同时改善适应、保持和未来域泛化。为对此进行初步观察，本章进一步在六中心 Domain-CL 上考察 Segment Anything Model（SAM）\cite{kirillov2023sam} 的两种顺序适配方式。需要说明的是，本小节中的 SAM 指基础分割模型 Segment Anything Model，与第五章持续配准方法中使用的锐度感知最小化并非同一概念。
+前述实验表明，现有持续学习方法在 Domain-CL 中的前向泛化仍然有限。由此产生一个直接问题：大规模预训练获得的通用表征，能否在中心域连续到达时同时改善适应、保持和未来域泛化。为对此进行初步观察，本章进一步在六中心 Domain-CL 上考察 Segment Anything Model（SAM）\cite{kirillov2023sam} 的两种顺序适配方式。需要说明的是，本小节中的 SAM 指基础分割模型 Segment Anything Model，与第四章持续配准方法中使用的锐度感知最小化并非同一概念。
 
 第一种方式从相同的 SAM 初始化出发，按照任务 1 至任务 6 的顺序更新编码器和解码器；第二种方式冻结编码器主体，仅顺序更新低秩适配模块和解码器。低秩适配通过在预训练网络中引入可训练的低秩增量矩阵，减少需要改变的参数范围\cite{hu2022lora,ding2023peft}。该分析不把基础模型视为新的主表基线，而是用于观察强预训练表征和参数高效适配是否会改变阶段--任务性能矩阵的结构。
 
@@ -620,7 +615,7 @@ JointTrain & $.881\pm.010$ & -- & -- & $0$ & $0$ \\
 
 持续医学图像分割中的任务演化、数据访问和标注条件往往同时发生，因此持续学习还会与多种机器学习范式形成交叉。图\ref{fig:benchmark-related-paradigms}概括了这些联系。本章的实证研究仍以监督式、阶段划分预先给定的持续分割为主，图中其他方向用于说明基准结论可以延伸到哪些更复杂的部署问题，而不表示本章已经对所有交叉场景完成实验验证。
 
-\textbf{联邦持续学习。} 联邦学习解决数据在不同中心间不能直接集中共享的问题，持续学习则处理同一中心内部数据或任务随时间变化的问题。二者结合后，模型需要同时面对空间异质性和时间演化，并在不交换原始数据的条件下保留跨客户端历史知识\cite{yang2024fclsurvey,yoon2021fedweit}。传统同步联邦训练还可能受到不同中心任务进度和计算条件不一致的影响。第三章对场景、稳定性、可塑性和资源条件的划分，为第四章进一步研究无回放联邦持续学习提供了评价基础。
+\textbf{联邦持续学习。} 联邦学习解决数据在不同中心间不能直接集中共享的问题，持续学习则处理同一中心内部数据或任务随时间变化的问题。二者结合后，模型需要同时面对空间异质性和时间演化，并在不交换原始数据的条件下保留跨客户端历史知识\cite{yang2024fclsurvey,yoon2021fedweit}。传统同步联邦训练还可能受到不同中心任务进度和计算条件不一致的影响。第三章对场景、稳定性、可塑性和资源条件的划分，为第五章进一步研究无回放联邦持续学习提供了评价基础。
 
 \textbf{持续测试时适应。} 测试时适应利用无标签目标数据在部署阶段更新模型，不要求重新访问源训练集\cite{wang2021tent,hu2021fullytta}。这一条件与临床中“新中心数据已经到达，但像素级标注尚未获得”的情况相符。若目标分布继续变化，模型还需要在适应当前测试流的同时保持此前测试域和源域能力，从而形成持续测试时适应问题。本章发现多数方法的前向泛化提升有限，说明仅依赖训练阶段的历史保护不足以保证模型在未知中心直接有效；前向泛化评价、分布变化检测和无标签在线适应需要进一步结合。
 
@@ -650,6 +645,28 @@ JointTrain & $.881\pm.010$ & -- & -- & $0$ & $0$ \\
 
 第六，基础模型提供了更强的预训练起点，但不能替代持续学习机制。Domain-CL 的补充分析中，LoRA 顺序适配相较完整微调改善了总体和非对角 Dice，说明限制参数更新范围有助于保留共享表示；与此同时，历史域退化和适配参数累积仍然存在。基础模型持续适配仍需联合考虑参数效率、历史保持和未来域泛化。
 
+\subsection*{基准发现对后续研究的启示}
+
+本章并不把某一种方法的排名直接推广到后续任务，而是从已观察到的取舍中提出需要继续研究的问题。表\ref{tab:benchmark-followup}给出三条承接关系。第一条在相同分割基准上改变训练监督，第二条保留有限回放问题而改变预测对象，第三条进一步取消历史样本回放并增加客户端协作。这样，后续章节的研究动机来自本章暴露的评价与访问问题，而不是假定所有工作共享同一算法。
+
+\begin{table}[htbp]
+\centering
+\caption{基准发现与后续方法研究的承接关系}
+\label{tab:benchmark-followup}
+\thesistablefont
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.18}
+\begin{tabularx}{\textwidth}{@{}XXX@{}}
+\toprule
+本章观察 & 后续问题 & 承接内容与边界 \\
+\midrule
+当前任务学好与旧任务保持并不同步 & 训练标签进一步稀疏后，监督不足与遗忘如何叠加 & 第\ref{sec:scribblecl}节直接复用分割数据与指标，改变当前监督和回放目标 \\
+回放容量影响结果，低遗忘不保证前向泛化 & 少量历史图像对如何帮助学习新的空间匹配关系 & 第\ref{sec:samcl}节研究持续配准，保留评价原则，单独定义 Dice、TRE 与未见任务 \\
+固定参数方法仍受稳定性与可塑性冲突影响 & 无法回放旧图像时，如何保护其他中心贡献的历史知识 & 第\ref{chap:fedsubmerge}章研究跨客户端子空间融合，采用独立的分类任务和实验 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
 \subsection*{研究局限性}
 
 本章的结论受数据、网络和实验范围限制。三类场景覆盖中心域变化、类别扩展和跨器官任务，但没有研究任务划分未知、连续漂移、中心重访、开放世界类别或多种变化因素叠加发生的情况。主基准中的方法采用 ResUNet32 和固定基础训练预算，结果不能直接代表其他网络或三维模型上的排序。SAM 与 LoRA 的补充分析仅覆盖 Domain-CL 和两种顺序适配方式，反映的是当前设置下的持续学习表现。
@@ -666,4 +683,6 @@ Class-CL 的旧类标签访问、背景处理和任务身份设置与其他标�
 
 在评价方面，本章在 A-Dice 和 BWTR 的基础上，引入 RMA 描述持续约束下的当前任务建模能力，使用 E-FWT 评价 Domain-CL 对多个未来域的直接表现，并以 WCD、MPE 和 DRR 补充分类别输出及资源条件。实验结果表明，知识保持、当前任务学习、前向泛化和资源开销可能给出不同方法排序，任务顺序和回放容量也会影响实验结果。基础分割模型的补充实验进一步表明，预训练表征和参数高效适配能够改善顺序域学习的性能矩阵，但不会自动消除遗忘。因此，持续医学影像研究需要在明确任务设定和访问条件的基础上综合解释各项指标。
 
-为衔接第五章，本章定义的三类持续分割场景及其数据、任务序列和评价指标将在第五章 ScribbleCL 中直接沿用。第五章在相同基准上将当前训练标注改为涂鸦，并在 ZSDERpp 中引入容量受限的历史回放，使两章结果处于同一数据与评价坐标中。第三章提供场景和评测基础，第五章在此基础上考察训练监督进一步受限后的方法设计。
+为衔接第四章，本章定义的三类持续分割场景及其数据、任务序列和评价指标将在第四章 ScribbleCL 中直接沿用。第四章在相同基准上将当前训练标注改为涂鸦，并在 ZSDERpp 中引入容量受限的历史回放，使两章结果处于同一数据与评价坐标中。第三章提供场景和评测基础，第四章在此基础上考察训练监督进一步受限后的方法设计。
+
+对于第\ref{sec:samcl}节的配准和第\ref{chap:fedsubmerge}章的联邦分类，本章提供的是评价与访问条件的分析原则：分别检查当前任务、历史任务和资源成本。配准损失、分类准确率、任务身份及客户端划分均由相应章节定义，因此不直接移用分割指标或方法排名。
