@@ -8,7 +8,7 @@
 |---|---|---:|---:|---|
 | `chapters/ch02_foundations.tex` | transition | `同时` | 15 | 过度依赖统一连接词 |
 | `chapters/ch03_benchmark.tex` | transition | `同时` | 13 | 过度依赖统一连接词 |
-| `chapters/ch04_scribble_samcl.tex` | sequence | `最后` | 5 | 避免所有段落都采用固定枚举结构 |
+| `chapters/ch05_scribble_samcl.tex` | sequence | `最后` | 5 | 避免所有段落都采用固定枚举结构 |
 
 ## 重复段落开头
 

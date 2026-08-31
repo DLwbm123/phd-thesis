@@ -12,10 +12,8 @@ import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
 BASE = "b34b0e4"
-RENAME = {
-    "chapters/ch04_fedsubmerge.tex": "chapters/ch05_fedsubmerge.tex",
-    "chapters/ch05_scribble_samcl.tex": "chapters/ch04_scribble_samcl.tex",
-}
+# The author's 2026-08-31 ZIP restores the baseline's chapter filenames.
+RENAME = {}
 
 
 def previous(path):
@@ -94,7 +92,7 @@ def main():
     assert old_rows == new_rows, "Experiment ledger changed beyond chapter path remapping"
     includes = re.findall(r"\\include\{chapters/(ch\d\d_[^}]+)\}", (ROOT / "main.tex").read_text())
     assert [name[2:4] for name in includes] == [f"{i:02d}" for i in range(1, 7)]
-    assert "ch04_scribble_samcl" in includes and "ch05_fedsubmerge" in includes
+    assert "ch04_fedsubmerge" in includes and "ch05_scribble_samcl" in includes
     abstracts = [(ROOT / f"SRC/abstract_{lang}_body.tex").read_text() for lang in ("zh", "en")]
     math_values = [re.findall(r"[-+]?(?:\d*\.\d+|\d+)", " ".join(
         re.findall(r"\$(.*?)\$", abstract))) for abstract in abstracts]

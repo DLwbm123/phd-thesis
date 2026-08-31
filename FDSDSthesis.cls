@@ -20,10 +20,18 @@
 \LoadClass[UTF8,scheme=chinese,zihao=-4,openany,linespread=1.383705]{ctexbook}
 
 %\setmainfont[Mapping=tex-text]{Times New Roman} %可选择以 Times New Roman 作为西文字体
-\setCJKmainfont[ExternalLocation=./FontStyle/,AutoFakeBold,
-    ItalicFont=SimKai.ttf]{SimSun.ttf}
-\setCJKsansfont[ExternalLocation=./FontStyle/]{SimHei.ttf}
-\setCJKfamilyfont{hei}[ExternalLocation=./FontStyle/]{SimHei.ttf}
+% 优先使用原项目字体；若 Overleaf/GitHub 工作副本未包含字体文件，
+% 则回退到 TeX Live 自带的 Fandol 字体，保证 XeLaTeX 可直接编译。
+\IfFileExists{./FontStyle/SimSun.ttf}{%
+  \setCJKmainfont[ExternalLocation=./FontStyle/,AutoFakeBold,
+      ItalicFont=SimKai.ttf]{SimSun.ttf}
+  \setCJKsansfont[ExternalLocation=./FontStyle/]{SimHei.ttf}
+  \setCJKfamilyfont{hei}[ExternalLocation=./FontStyle/]{SimHei.ttf}
+}{%
+  \setCJKmainfont[AutoFakeBold,ItalicFont=FandolKai-Regular.otf]{FandolSong-Regular.otf}
+  \setCJKsansfont{FandolHei-Regular.otf}
+  \setCJKfamilyfont{hei}{FandolHei-Regular.otf}
+}
 
 \ctexset{punct=CCT} %可选择 quanjiao/banjiao/kaiming/CCT
 \ctexset{today=small} %可选择 small/big/old
