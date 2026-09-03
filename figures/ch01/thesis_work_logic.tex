@@ -1,85 +1,50 @@
 \begingroup
 \centering
 \begin{tikzpicture}[
-  font=\small,
-  box/.style={
-    rectangle,
-    rounded corners=2pt,
-    draw=black,
-    fill=white,
-    text=black,
-    line width=0.65pt,
-    align=center,
-    inner xsep=7pt,
-    inner ysep=5pt
-  },
-  band/.style={box, fill=black!5, text width=13.8cm, minimum height=1.05cm},
-  widebox/.style={box, text width=13.8cm, minimum height=1.08cm},
-  methodbox/.style={box, text width=4.15cm, minimum height=1.55cm},
-  arrow/.style={-{Latex[length=2.0mm,width=1.3mm]}, draw=black, line width=0.65pt},
-  relation/.style={draw=black, line width=0.65pt},
-  node distance=6.5mm and 6mm
+  font=\thesisfigurefont,
+  box/.style={draw,rounded corners=2pt,align=center,inner sep=4pt,line width=.6pt},
+  wide/.style={box,text width=12.8cm,fill=black!3},
+  branch/.style={box,text width=3.75cm,minimum height=3.05cm},
+  flow/.style={-{Latex[length=2mm]},line width=.7pt},
+  principle/.style={flow,dashed},
+  node distance=3mm
 ]
+\node[wide] (problem) {\textbf{共同问题：任务持续到达，训练信息无法完整调用}\\[2pt]
+当前监督可能稀疏\quad 历史样本访问受限\quad 跨中心原始数据不能集中};
+\node[wide,below=of problem] (benchmark) {\textbf{第三章：基准评测与平台建设接口}\\[2pt]
+分割数据与任务序列\quad 阶段--任务性能矩阵\quad 学习、保持、泛化与资源评价\\
+平台接口：数据适配、任务编排、方法注册、阶段评价与结果管理};
+\draw[flow] (problem) -- (benchmark);
 
-\node[band] (constraints) {
-  \textbf{现实约束}\\[2pt]
-  \footnotesize 部分监督 \quad｜\quad 历史访问受限 \quad｜\quad 原始数据不可集中 \quad｜\quad 任务与分布持续演化
-};
+\coordinate (row) at ($(benchmark.south)+(0,-2.25cm)$);
+\node[branch] (reg) at ($(row)+(-4.45cm,0)$)
+ {\textbf{第四章：持续配准}\\[3pt]
+历史图像对有限回放\\
+元持续学习\\
+锐度感知优化\\
+Dice、TRE 与前向泛化};
+\node[branch] (seg) at (row)
+ {\textbf{第五章：弱监督持续分割}\\[3pt]
+直接复用第三章数据与协议\\
+涂鸦监督与空间先验\\
+图像--涂鸦回放与特征约束};
+\node[branch] (fed) at ($(row)+(4.45cm,0)$)
+ {\textbf{第六章：联邦持续分类}\\[3pt]
+原始数据不集中\\
+历史原始样本不回放\\
+跨客户端子空间融合\\
+通信与平台接口};
 
-\node[widebox, below=of constraints] (question) {
-  \textbf{核心问题}\\[2pt]
-  在明确训练信息访问边界的条件下，持续积累医学影像分析能力
-};
+\draw[principle] (benchmark.south) -- ++(0,-3mm) -| (reg.north);
+\draw[flow] (benchmark.south) -- (seg.north);
+\draw[principle] (benchmark.south) -- ++(0,-3mm) -| (fed.north);
 
-\node[widebox, below=of question] (benchmark) {
-  \textbf{第 3 章：场景与评价基础}\\[2pt]
-  持续医学图像分割的场景定义、实验协议与综合评价
-};
-
-% 以第 5 章节点为中轴放置三个方法框，使整行严格居中。
-\node[methodbox, below=9mm of benchmark] (scribble) {
-  \textbf{第 5 章：分割}\\[4pt]
-  \footnotesize ScribbleCL
-};
-
-\node[methodbox, left=of scribble] (fed) {
-  \textbf{第 4 章}\\[2pt]
-  无回放联邦持续分类\\[2pt]
-  \footnotesize FedSubMerge
-};
-
-\node[methodbox, right=of scribble] (samcl) {
-  \textbf{第 5 章：配准}\\[2pt]
-  有限回放持续配准\\[2pt]
-  \footnotesize SAMCL
-};
-
-\coordinate (branch) at ($(benchmark.south)+(0,-4mm)$);
-\draw[arrow] (constraints) -- (question);
-\draw[arrow] (question) -- (benchmark);
-\draw[relation] (benchmark.south) -- (branch);
-% 对称的分支横线与三条竖直箭头，避免原布局整体向右偏移。
-\draw[relation] (fed.north |- branch) -- (samcl.north |- branch);
-\draw[arrow] (fed.north |- branch) -- (fed.north);
-\draw[arrow] (scribble.north |- branch) -- (scribble.north);
-\draw[arrow] (samcl.north |- branch) -- (samcl.north);
-
-\coordinate (merge) at ($(scribble.south)+(0,-7mm)$);
-% 对称汇合，保证下方“共同分析主线”位于整图中轴。
-\draw[relation] (fed.south) -- (fed.south |- merge);
-\draw[relation] (scribble.south) -- (scribble.south |- merge);
-\draw[relation] (samcl.south) -- (samcl.south |- merge);
-\draw[relation] (fed.south |- merge) -- (samcl.south |- merge);
-
-\node[band, below=12mm of merge] (goal) {
-  \textbf{共同分析主线}\\[2pt]
-  \footnotesize 在各自任务与访问条件下，分析稳定性、可塑性、泛化及资源开销的取舍
-};
-\draw[arrow] (merge) -- (goal.north);
-
-\node[font=\scriptsize, align=center, text width=13.5cm, below=3.5mm of goal]
-  {箭头表示论文组织和问题承接关系，不表示各章方法构成同一算法链。};
-
+\node[wide,below=5mm of seg] (future)
+ {\textbf{第七章：总结与医学多模态大模型持续学习展望}\\[2pt]
+数据与表征层：持续预训练\quad 任务与场景层：持续领域适配\quad 知识与行为层：持续知识编辑};
+\draw[flow] (reg.south) |- (future.west);
+\draw[flow] (seg.south) -- (future.north);
+\draw[flow] (fed.south) |- (future.east);
 \end{tikzpicture}
 \par
 \endgroup

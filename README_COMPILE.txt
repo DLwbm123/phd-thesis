@@ -1,7 +1,7 @@
 编译方式
 ========
 
-推荐在完整 TeX Live 环境中使用 XeLaTeX：
+本项目使用用户提供的 FDSDSthesis v1.1 模板。推荐在完整 TeX Live 环境中使用 XeLaTeX：
 
     latexmk -xelatex -interaction=nonstopmode -halt-on-error main.tex
 

@@ -35,8 +35,6 @@
   \draw[flow] (s-opt) -- (s-model);
   \draw[flow] (s-test) -- (4.05,1.35) -- (s-pred);
   \draw[flow] (s-model) -- (s-pred);
-  \node[note, text width=7.3cm] at (4.175,0.48)
-    {测试数据不参与训练；模型通常在训练完成后保持不变。};
 \end{scope}
 
 \begin{scope}[shift={(9.05,5.45)}]
@@ -60,8 +58,6 @@
   \draw[flow] (m-support) -- (m-adapt);
   \draw[flow] (m-init) -- (m-adapt);
   \draw[flow] (m-adapt) -- (m-task);
-  \node[note, text width=7.3cm] at (4.175,0.48)
-    {主要改变任务采样和适应方式，不自动规定任务是否按时间持续到达。};
 \end{scope}
 
 \begin{scope}[shift={(0,0)}]
@@ -81,25 +77,24 @@
   % 箭头在省略号之后、theta_t 方框之前结束，避免箭头侵入方框。
   \draw[flow] (6.72,2.85) -- ([xshift=-0.8mm]c-mt.west);
   \node[data, minimum width=2.55cm] (c-history) at (2.05,1.35)
-    {协议允许的历史信息\\完整／有限／无回放};
+    {可访问的历史信息\\完整／有限／无回放};
   \node[process, minimum width=2.55cm] (c-eval) at (6.20,1.35)
     {持续评价\\旧任务、当前任务与未来任务};
   \draw[flow] (c-history) -- (4.15,1.35) -- (c-eval);
   \draw[flow] (c-mt) -- (c-eval);
-  \node[note, text width=7.3cm] at (4.175,0.48)
-    {核心是顺序更新与能力累积；历史访问条件必须单独说明。};
+
 \end{scope}
 
 \begin{scope}[shift={(9.05,0)}]
   \draw[frame] (0,0) rectangle (8.35,4.75);
   \node[header, minimum width=7.75cm] at (4.175,4.28)
     {联邦学习：数据位置与协同优化};
-  \node[data, minimum width=1.75cm] (f-c1) at (1.05,3.00)
+  \node[data, minimum width=1.75cm] (f-c1) at (1.05,3.20)
     {客户端 1\\本地数据};
-  \node[data, minimum width=1.75cm] (f-c2) at (1.05,2.00)
+  \node[data, minimum width=1.75cm] (f-c2) at (1.05,2.05)
     {客户端 2\\本地数据};
   \node[note] at (1.05,1.20) {$\vdots$};
-  \node[data, minimum width=1.75cm] (f-ck) at (1.05,0.75)
+  \node[data, minimum width=1.75cm] (f-ck) at (1.05,0.95)
     {客户端 $K$\\本地数据};
   \node[process, minimum width=2.05cm, minimum height=10mm] (f-server) at (4.30,2.35)
     {服务器\\聚合与下发};
@@ -110,8 +105,7 @@
   \draw[exchange] (f-c2.east) -- (f-server.west);
   \draw[exchange] (f-ck.east) -- ([yshift=-3.0mm]f-server.west);
   \draw[exchange] (f-server) -- (f-global);
-  \node[note, text width=7.3cm] at (4.175,0.23)
-    {原始数据不集中；双向模型通信不自动等同形式化隐私。};
+
 \end{scope}
 
 

@@ -1,32 +1,19 @@
-# 当前写作状态
+# 作者最新七章版集成（2026-09-03）
 
-## 框架版本
+本轮按 `PhD_Thesis_restructured_7chapters.zip` 集成 59 个包内文件，移除 13 个被新章序替代的旧正文/图件路径，保留原字体。正文与图件直接复制，不另行润色或绘图。ZIP 中一个中文 README 文件名因编码标志缺失显示乱码，按原始 UTF-8 名称解码为 `README_编译与章节结构.md`。
 
-- 当前框架：导师讨论后 V3，生效日期 2026-07-31。
-- 当前作者复审工作题目：面向任务持续演化与训练信息受限的医学影像持续学习研究。
-- 术语层级：技术分析优先使用“训练信息受限”；“数据不全”仅为背景概括，不指缺失值或物理删除。
-- 正文章节：连续六章；不得保留空白第六章。
-- 总契约：`THESIS_CONTRACT.md`。
+第一章 绪论
+第二章 医学影像深度学习相关理论与关键技术
+第三章 医学影像持续学习的基准评测与平台建设
+第四章 有限回放条件下的医学影像持续配准研究
+第五章 有限回放条件下的弱监督医学图像持续分割研究
+第六章 无回放条件下的联邦医学影像持续分类研究
+第七章 总结与展望
 
-## 当前阶段
+本地完整 XeLaTeX/BibTeX 编译成功，共 171 页；最终日志无 LaTeX 错误、未定义引用、重复标签、缺失字符或 Overfull。原项目的 xdvipdfmx 对象提示继续保留。目录和新增图所在页面进行必要可读性检查，未重新逐字节核验整批文件。
 
-- 导师框架迁移与题目、第一章作者复审已于 2026-07-31 完成，连续六章结构已批准；第一章状态为 `drafted_and_verified`。2026-08-08 的 Mode B 对齐修订将 1.3 顺序统一为 Benchmark、FedSubMerge、ScribbleCL、SAMCL，并按批准稿更新图 1-1、图 1-2、1.1.4 与 1.2.1 的限定段落；RQ3、创新点（3）及其 TODO 保持逐字不变。
-- 第二章剩余内容（2.1.3、2.2、2.3、2.4）已完成工程集成；第二章整体为 `drafted_pending_review`。2.1.1“医学图像分割”与 2.1.2“医学图像配准”继续为 `drafted_and_verified`；本轮批准范围内更新了 2.1.1 的 HD、HD95、ASSD 定义，2.1.3 的 Acc/ACC 区分，2.2 严格术语、表 2-1 完整联合训练行及 2.3.3 的 $d$/$p$ 符号边界。
-- 第三章 Benchmark 继续为 `drafted_pending_review`，本轮不复审、不批准也不修改。作者已于本任务明确授权第四章开始并完成工程集成；旧的“第四章正文不得开始”限制已失效。
-- 第四章 FedSubMerge 已完成批准稿、最终图表、文献和证据账本的工程集成，状态为 `drafted_pending_review`；尚未获得作者/GPT Pro 全章复审批准。
-- 第五章已集成作者批准的 ZScribbleSeg 静态内容、ScribbleCL 协议与待实验分析、SAMCL 方法和原始实验，整体为 `drafted_pending_review`；5.3.2 的 ScribbleCL 结果仍为 `TODO-EXPERIMENT` / `blocked_by_experiments`。
-- TRE 通用数学定义（`TODO-EVIDENCE-REG-001`）与非正 Jacobian 比例具体统计形式（`TODO-EVIDENCE-REG-002`）尚未闭合，但二者均未作为公式写入 2.1.2 正文。
-- ScribbleCL 持续学习实验继续为 `TODO-EXPERIMENT` / `blocked_by_experiments`；任务、基线、指标、日志和结论均不得虚构。
+本轮更新当前章序约束、章节索引和交接说明；原始证据账本及未提交实验代码不改动。包内 MANIFEST 按作者提供版本保存，不重新计算。历史六章版专项校验脚本及证据账本的数字章节定位不代表当前结构，应按当前 TeX、方法名和稳定标签读取。
 
-## 当前分支与验证
+发布沿用 GitHub 两个既有论文分支，随后同步 Overleaf 的受管编译输入；不强推、不合并 `main`，不改变论文仓库可见性。具体推送结果记录在本地 `seven_chapter_sync_20260903/`。本轮没有运行实验或实现平台；Class-CL/Organ-CL、多种子、真实人工涂鸦和真实平台部署仍未补做。
 
-- 迁移分支：`framework/supervisor-2026-07-31`。
-- 迁移基线：`c74d0b2`。
-- FedSubMerge 的最高优先级事实源为作者确认的最终包：`FedSubMerge_final.tex`（SHA-256 `8a21c2fadc4c5bd0eac0fe48931f03d756e25a392ee9a12af143a13a7828fb6e`）、`FedSubMerge_appendix.tex`（`f0a4243107ee27b8815d79d5b56870282cb7793e768b40a040f5f307def4b455`）及其最终文献库和三张图；第四章只以该包为依据。
-- 未提交迁移补丁已保存于仓库外：`/Users/bominwang/Downloads/phd-thesis-framework-migration-20260731-162417.patch`，SHA-256 `38f301511f65a5bef35b4c254dd1eb12662d22dc292a05c051f3736015593d5a`。
-- 完整构建、PDF、引用、标签、风格与文本重合审查结果见 `handoff/LATEST_CODEX_REPORT.md`。
-- 最近的 Mode B 审查见 `handoff/MODE_B_CH01_CH02_ALIGNMENT_AUDIT.md`；审查基线为 `7d2950dcc86832044fd3489c59e1752a5be235ec`，其中 `sources/`、`chapters/ch05_scribble_samcl.tex`、`evidence/experiments.csv` 及 Chapter 1 ScribbleCL 保护块均已复核未变。
-
-## 下一动作
-
-下一动作是第四、五章作者/GPT Pro 全章复审与必要修订；ScribbleCL 仅在核心实验完成、日志和性能矩阵核验后补写 5.3.2 结果。
+本地 PyMuPDF 预览对部分嵌入字体显示异常；Poppler 可正常显示原图和正文标题。最终保留作者原始 PDF 图件与引用，不保留临时 PNG 替换。包内 MANIFEST 仅作为作者原包记录保存。

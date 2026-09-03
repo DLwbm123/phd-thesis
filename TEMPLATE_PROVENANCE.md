@@ -1,14 +1,10 @@
 # 模板来源说明
 
-本项目使用用户提供的参考毕业论文工程中的 `fduthesis` 模板实现文件：
+本项目使用用户提供的 `template-v1.1.tar.xz`（FDSDSthesis v1.1，2025-11-05）作为排版模板。工程中保留的模板实现和资源包括：
 
-- `fduthesis.cls`
-- `fduthesis-en.cls`
-- `fduthesis.def`
-- `fudan-emblem.pdf`
-- `fudan-emblem-new.pdf`
-- `fudan-name.pdf`
+- `FDSDSthesis.cls`
+- `fig/FudanLOGO.pdf`（及模板附带图件）
 
-这些文件保留原始版权和 LaTeX Project Public License 声明。
+模板文件保留原始版权和发行说明。当前版本不再分发字体文件，CJK 字体由 ctex/TeX Live 提供。为承载本论文的既有算法环境及已确认的封面字段，类文件仅作必要兼容调整：使用 `algorithm2e`，以及专业学位封面在“院系”下保留“专业：电子信息”的字段标签。
 
-本项目没有复制参考毕业论文的 `main.tex`、`chapter1.tex`—`chapter4.tex`、摘要、正文、图表、参考文献库或个人元数据。当前 `main.tex`、配置文件和七章骨架均为根据本论文需求重新创建。
+新模板的示例摘要、正文、附录、成果页、致谢和声明页均未参与编译。当前 `main.tex` 只接入本论文的中英文摘要、连续六章、附录 A、图表和参考文献库；未引入模板示例的正文、图表、参考文献或个人元数据。
