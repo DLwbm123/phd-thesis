@@ -1,10 +1,5 @@
-# 最新稿同步说明（2026-08-31）
+# 七章版发布说明（2026-09-03）
 
-本版本来自作者提供的 `PhD_Thesis_predefense_revised_source.zip`，SHA-256：`94f3c5226dc7d05f379f2ca8de0f770ba2ad74f513d33aa53e1b523f71838659`。
+当前稿件来自作者提供的 `PhD_Thesis_restructured_7chapters.zip`。已本地编译为 171 页；本轮通过既有 Git 连接发布到 GitHub 两个论文分支及 Overleaf 项目 `6a69ac75d6170c19b9e2711a`，不合并 GitHub `main`。最终推送记录见本地 `seven_chapter_sync_20260903/`，详细集成范围见 `STATE.md`。
 
-- 本地稿件已按包内正文、图件和章序集成，并完整编译为 165 页。保留原项目字体；三张 EPS 的本地转换依赖已补齐。
-- 发布目标为 GitHub 私有仓库 `DLwbm123/phd-thesis` 的既有 `agent/predefense-writing-20260830`、`agent/scribblecl-authorship-boundary` 分支，以及既有 Overleaf 项目 `6a69ac75d6170c19b9e2711a` 的 `main`。
-- 发布使用已核验的本地 Git 连接和项目现有同步脚本；先 GitHub、后 Overleaf，不强推，不合并 GitHub `main`。
-- 实际远端提交号、推送结果与逐文件核验保存在本地 `latest_zip_sync_20260831/release_receipt.json`，避免在提交内容内引用自身提交号。
-
-ZIP 内原有的“GitHub 403 / 未连接 Overleaf”是此前另一环境的历史记录，不是本地连接的当前状态；原文件完整保留在本地 `latest_zip_sync_20260831/incoming/SYNC_STATUS.md`。
+本地 PyMuPDF 预览对部分嵌入字体显示异常；Poppler 可正常显示原图和正文标题。最终保留作者原始 PDF 图件与引用，不保留临时 PNG 替换。包内 MANIFEST 仅作为作者原包记录保存。

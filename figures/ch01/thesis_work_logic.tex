@@ -3,41 +3,48 @@
 \begin{tikzpicture}[
   font=\thesisfigurefont,
   box/.style={draw,rounded corners=2pt,align=center,inner sep=4pt,line width=.6pt},
-  wide/.style={box,text width=12.7cm,fill=black!3},
-  branch/.style={box,text width=5.95cm,minimum height=2.55cm},
+  wide/.style={box,text width=12.8cm,fill=black!3},
+  branch/.style={box,text width=3.75cm,minimum height=3.05cm},
   flow/.style={-{Latex[length=2mm]},line width=.7pt},
+  principle/.style={flow,dashed},
   node distance=3mm
 ]
-\node[wide] (problem) {\textbf{共同问题：任务依次到达，训练信息无法完整调用}\\[2pt]
-当前标注可能稀疏\quad 历史样本访问受限\quad 跨中心原始数据不能集中};
-\node[wide,below=of problem] (benchmark) {\textbf{第三章：持续分割基准与问题发现}\\[2pt]
-域、类别与器官变化\quad 当前学习、历史保持、前向泛化与资源开销};
+\node[wide] (problem) {\textbf{共同问题：任务持续到达，训练信息无法完整调用}\\[2pt]
+当前监督可能稀疏\quad 历史样本访问受限\quad 跨中心原始数据不能集中};
+\node[wide,below=of problem] (benchmark) {\textbf{第三章：基准评测与平台建设接口}\\[2pt]
+分割数据与任务序列\quad 阶段--任务性能矩阵\quad 学习、保持、泛化与资源评价\\
+平台接口：数据适配、任务编排、方法注册、阶段评价与结果管理};
 \draw[flow] (problem) -- (benchmark);
 
-\node[branch,below left=4mm and 2mm of benchmark.south] (federated)
- {\textbf{第四章：无回放联邦持续分类与工程实现}\\[2pt]
-原始数据不集中，历史原始样本不回放\\
-跨客户端子空间融合与梯度投影\\
-客户端、服务器、阶段评价与集成边界};
-\node[branch,below right=4mm and 2mm of benchmark.south] (tasklevel)
- {\textbf{第五章：有限回放下的持续分割与配准}\\[2pt]
-\textbf{分割：}复用第三章病例、任务与指标，训练标签改为涂鸦\\
-\textbf{配准：}独立定义图像对、空间变换、Dice 与 TRE};
-\draw[flow] (benchmark.south) -- ++(0,-2mm) -| (federated.north);
-\draw[flow] (benchmark.south) -- ++(0,-2mm) -| (tasklevel.north);
+\coordinate (row) at ($(benchmark.south)+(0,-2.25cm)$);
+\node[branch] (reg) at ($(row)+(-4.45cm,0)$)
+ {\textbf{第四章：持续配准}\\[3pt]
+历史图像对有限回放\\
+元持续学习\\
+锐度感知优化\\
+Dice、TRE 与前向泛化};
+\node[branch] (seg) at (row)
+ {\textbf{第五章：弱监督持续分割}\\[3pt]
+直接复用第三章数据与协议\\
+涂鸦监督与空间先验\\
+图像--涂鸦回放与特征约束};
+\node[branch] (fed) at ($(row)+(4.45cm,0)$)
+ {\textbf{第六章：联邦持续分类}\\[3pt]
+原始数据不集中\\
+历史原始样本不回放\\
+跨客户端子空间融合\\
+通信与平台接口};
 
-\node[wide,below=4mm of $(federated.south)!0.5!(tasklevel.south)$] (relation)
- {\textbf{两条研究分支的关系}\\[2pt]
-共享任务顺序、当前学习、历史保持、前向能力与资源成本的评价主线；\\
-分别处理跨中心无回放和任务级有限回放，不共享损失，也不构成串联算法};
-\draw[flow] (federated.south) -- (federated.south |- relation.north);
-\draw[flow] (tasklevel.south) -- (tasklevel.south |- relation.north);
+\draw[principle] (benchmark.south) -- ++(0,-3mm) -| (reg.north);
+\draw[flow] (benchmark.south) -- (seg.north);
+\draw[principle] (benchmark.south) -- ++(0,-3mm) -| (fed.north);
 
-\node[wide,below=of relation] (future)
- {\textbf{第六章：结论、适用边界与未来研究}\\[2pt]
-持续预训练\quad 持续领域适配\quad 持续知识编辑\\[2pt]
-实验结果与工程设计分开陈述，真实部署和新增实验另行验证};
-\draw[flow] (relation) -- (future);
+\node[wide,below=5mm of seg] (future)
+ {\textbf{第七章：总结与医学多模态大模型持续学习展望}\\[2pt]
+数据与表征层：持续预训练\quad 任务与场景层：持续领域适配\quad 知识与行为层：持续知识编辑};
+\draw[flow] (reg.south) |- (future.west);
+\draw[flow] (seg.south) -- (future.north);
+\draw[flow] (fed.south) |- (future.east);
 \end{tikzpicture}
 \par
 \endgroup

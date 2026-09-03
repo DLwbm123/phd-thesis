@@ -1,0 +1,378 @@
+\chapter{有限回放条件下的弱监督医学图像持续分割研究}
+\label{chap:scribblecl}
+\setlength{\emergencystretch}{1em}
+
+\section{引言}
+\label{sec:scribblecl-introduction}
+
+第三章以密集标注为基础建立了 Domain-CL、Class-CL 和 Organ-CL 三类持续分割场景，并统一了病例划分、任务顺序、训练预算、输出组织和阶段--任务评价矩阵。本章在相同基准上进一步收紧当前训练监督：训练图像仍按原顺序到达，但每幅图像只提供少量涂鸦位置的类别标签；密集验证和测试标签保持不变，用于模型选择和独立评价。由此，本章可以在相同数据与评价口径下分析监督稀疏和顺序遗忘的叠加影响。
+
+涂鸦监督能够降低逐像素或逐体素勾画的负担，却不能直接给出目标的完整区域、轮廓和连通关系。部分交叉熵仅在已标注位置计算，能够避免把未知像素错误地当作背景，但未标注区域仍缺少直接约束。任务继续到达后，模型还需在有限历史访问条件下保持旧中心、旧类别或旧器官的分割能力。当前监督不足与历史知识遗忘因而不能分别解决后再简单相加，而需要在同一持续训练过程中协调。
+
+为此，本章首先采用本文前期工作中的全局一致性与空间先验，在不生成完整硬伪标签的条件下补充未标注区域约束\cite{zhang2026zscribbleseg}；随后提出 ZSDERpp，将容量受限的图像--涂鸦回放、参考特征约束和回放样本上的弱监督优化纳入同一目标。Domain-CL 使用共享输出头，Class-CL 处理新增类别引起的背景语义变化，Organ-CL 使用任务特定输出头。现有定量结果来自六中心前列腺 Domain-CL，Class-CL 与 Organ-CL 在本章中给出方法与实验协议，但不据此预设性能结论。
+
+本章与第四章均允许有限历史样本参与更新，但二者的预测对象和历史信息载体不同：第四章配准保存历史图像对并优化连续空间变换，本章保存图像--涂鸦对与参考特征并预测离散语义标签。第六章进一步取消历史原始样本回放，并在多客户端环境中研究跨中心知识保护。因此，三章共享第三章提出的能力分解和资源报告原则，但不共享同一损失或统一性能分数。
+
+\section{问题定义与研究动机}
+\label{sec:scribblecl-formulation}
+
+沿用第\ref{chap:foundations}章的分割记号，设医学图像为
+$\mathbf{I}:\Omega\rightarrow\mathbb{R}^{C}$，分割模型
+$f_{\theta}$ 在位置 $\mathbf{u}\in\Omega$ 输出类别概率
+$\mathbf{p}_{\theta}(\mathbf{u})$。在涂鸦监督条件下，只有位置集合
+$\Omega_L\subset\Omega$ 具有类别标签，未标注集合为
+$\Omega_U=\Omega\setminus\Omega_L$。式\eqref{eq:foundations-partial-ce}
+给出的部分交叉熵只在 $\Omega_L$ 上产生直接监督，避免把未知像素简单视为背景。然而，当 $|\Omega_L|\ll|\Omega|$ 时，已标注位置不能直接给出目标的完整区域、轮廓和连通关系。模型即使在涂鸦位置上预测正确，也可能在未标注区域形成欠分割、轮廓偏移或碎片化结果。
+
+静态涂鸦监督学习在固定训练分布上优化单一模型。设训练集为
+$\mathcal{D}^{\mathrm{scr}}=\{(\mathbf{I}_i,\mathbf{Y}^{\mathrm{scr}}_i)\}_{i=1}^{N}$，其中
+$\mathbf{Y}^{\mathrm{scr}}_i$ 只在 $\Omega_{L,i}$ 上定义。一般目标可以写为
+\begin{equation}
+\widehat{\theta}
+=
+\operatorname*{arg\,min}_{\theta}
+\frac{1}{N}\sum_{i=1}^{N}
+\left[
+\mathcal{L}_{\mathrm{PCE}}^{(i)}(\theta)
++
+\mathcal{R}_{\mathrm{scr}}^{(i)}(\theta)
+\right],
+\label{eq:scribble-static-objective}
+\end{equation}
+其中，$\mathcal{R}_{\mathrm{scr}}$ 表示从输入变换、预测一致性或空间结构中获得的附加约束。该目标的关键不是把未标注像素补写为确定标签，而是既保持涂鸦所提供的监督范围，又为未标注区域引入可解释且受条件限制的训练信号。
+
+在此基础上，ScribbleCL 进一步考虑任务按阶段到达。设任务序列为
+$\mathcal{T}=\{1,\ldots,T\}$，第 $t$ 个阶段获得涂鸦训练集
+$\mathcal{D}^{\mathrm{scr}}_t$，新增类别集合为 $\mathcal{C}_t$，截至该阶段的已见类别集合为
+$\mathcal{C}_{1:t}=\bigcup_{\tau=1}^{t}\mathcal{C}_{\tau}$。完成第 $t$ 个阶段后，模型参数记为 $\theta_t$。令
+$d_{t,j}$ 表示模型 $\theta_t$ 在任务 $j$ 测试集上的平均 Dice，则
+$\mathbf{D}^{\mathrm{scr}}=[d_{t,j}]$ 沿用第\ref{chap:benchmark}章的阶段--任务性能矩阵。矩阵中的测试任务、密集测试标签和评价时点均与第三章相同，区别在于 $\theta_t$ 是在涂鸦监督和相应历史访问条件下获得的。与密集监督 Class-CL 不同，此时主对角线 $d_{t,t}$ 既受到持续约束，也受到涂鸦监督不足的影响；旧任务条目则共同反映历史保持和早期弱监督模型本身的上限。因此，只报告最终平均 Dice 无法判断性能损失主要来自当前任务没有学好，还是来自后续训练遗忘了早期任务。
+
+在历史访问方面，ScribbleCL 不允许完整访问全部历史训练集，但 ZSDERpp 可以从容量受限的回放集合重新读取少量历史图像--涂鸦对及其参考特征。当前阶段的弱监督目标由第\ref{subsec:prior-scribble-foundation}节给出，历史阶段的损失由同一部分交叉熵、全局一致性和空间先验在回放样本上重新计算，并加入特征保持约束。Domain-CL 使用共享输出头，Organ-CL 依据任务标识选择独立输出头，Class-CL 在统一目标内调整背景概率的语义。完整的阶段--任务性能矩阵用于区分当前监督不足、历史保持与前向泛化。
+
+\section{ScribbleCL：面向涂鸦监督的持续医学图像分割方法}
+\label{sec:scribblecl}
+
+ScribbleCL 研究稀疏涂鸦监督与任务顺序变化叠加时的医学图像分割。当前阶段只利用涂鸦标签进行优化，历史任务则通过容量受限的回放集合参与后续训练。当前任务的弱监督目标采用本文前期工作中的全局一致性损失和空间先验损失\cite{zhang2026zscribbleseg}，不引入其他损失项。在此基础上，本文将当前任务学习、历史特征保持和回放样本上的弱监督优化整合，并将这一组合方法记为 ZSDERpp。该方法使用同一总体目标处理 Domain-CL、Class-CL 和 Organ-CL；其中，Class-CL 在统一目标内部增加背景语义校正，以避免新增类别到达后旧类别被错误压入背景\cite{cermelli2020mib}。
+
+\subsection{涂鸦监督下的全局一致性与空间先验}
+\label{subsec:prior-scribble-foundation}
+
+设医学图像为 $X:\Omega\rightarrow\mathbb{R}^{C}$，涂鸦标签为 $Y^{\mathrm{scr}}$，具有有效标签的位置集合为 $\Omega_L$。部分交叉熵只在涂鸦位置产生直接监督：
+\begin{equation}
+\mathcal{L}_{\mathrm{PCE}}
+=
+-\frac{1}{|\Omega_L|}
+\sum_{i\in\Omega_L}
+\sum_{k=0}^{K-1}
+y_{ik}\log p_{\theta,k}(x_i),
+\label{eq:scribblecl-pce}
+\end{equation}
+其中，$K$ 为类别数，$y_{ik}$ 为像素 $x_i$ 的涂鸦标签，$p_{\theta,k}(x_i)$ 为模型预测概率。该损失不把未标注像素直接视为背景，但仅依赖少量涂鸦位置时，仍难以约束完整区域和轮廓。
+
+\paragraph{全局一致性损失。}
+全局一致性要求图像变换与预测变换具有相容结果\cite{zhang2026zscribbleseg}。设 $(X_1,X_2)$ 为同一批次中的两个输入，$\mathcal{A}(\cdot,\cdot)$ 表示对两幅图像或两组预测执行相同参数的混合与遮挡变换，定义
+\begin{equation}
+\begin{aligned}
+u_{12}&=\mathcal{A}\!\left(f_{\theta}(X_1),f_{\theta}(X_2)\right),
+&v_{12}&=f_{\theta}\!\left(\mathcal{A}(X_1,X_2)\right),\\
+u_{21}&=\mathcal{A}\!\left(f_{\theta}(X_2),f_{\theta}(X_1)\right),
+&v_{21}&=f_{\theta}\!\left(\mathcal{A}(X_2,X_1)\right).
+\end{aligned}
+\label{eq:scribblecl-global-pairs}
+\end{equation}
+令
+$\ell_{\cos}(u,v)=-\langle u,v\rangle/(\|u\|_2\|v\|_2)$，则
+\begin{equation}
+\mathcal{L}_{\mathrm{global}}
+=
+\frac{1}{2}
+\left[
+\ell_{\cos}(u_{12},v_{12})
++
+\ell_{\cos}(u_{21},v_{21})
+\right].
+\label{eq:scribblecl-global-loss}
+\end{equation}
+该项约束“先预测后变换”和“先变换后预测”的输出关系，使未标注区域能够通过增强前后的整体响应获得附加约束，而不被写成确定伪标签\cite{zhang2026zscribbleseg}。
+
+\paragraph{空间先验损失。}
+空间先验根据局部位置、图像外观和当前预测，从未标注区域中筛选相对可信的类别负集合。令 $\overline{\Omega}_k$ 表示对前景类别 $k$ 得到的负候选位置，将除 $k$ 外的类别合并为 $\overline c_k$，则空间损失写为
+\begin{equation}
+\mathcal{L}_{\mathrm{spatial}}
+=
+-
+\sum_{k=1}^{K-1}
+\sum_{x_i\in\overline{\Omega}_k}
+\log p_{\theta}(\overline c_k\mid x_i).
+\label{eq:scribblecl-spatial-loss}
+\end{equation}
+由此，该项利用相对可信的负证据限制类别区域不合理扩张。候选正区域不被直接当作无噪声标签，因此空间约束主要用于排除不符合局部结构的类别归属\cite{zhang2026zscribbleseg}。
+
+本章当前任务只组合上述两项弱监督约束：
+\begin{equation}
+\mathcal{L}_{\mathrm{cur}}^{(t)}
+=
+\mathcal{L}_{\mathrm{PCE}}^{(t)}
++
+\lambda_{g}\mathcal{L}_{\mathrm{global}}^{(t)}
++
+\lambda_{s}\mathcal{L}_{\mathrm{spatial}}^{(t)}.
+\label{eq:scribblecl-current-loss}
+\end{equation}
+其中，$\lambda_g$ 和 $\lambda_s$ 分别控制全局一致性与空间先验的强度。本章采用的弱监督目标由部分交叉熵、全局一致性和空间先验构成\cite{zhang2026zscribbleseg}。
+
+\subsection{面向三类持续分割设定的 ZSDERpp}
+\label{subsec:scribblecl-methods}
+
+在历史信息组织上，设第 $t$ 个阶段的涂鸦训练集为 $\mathcal{D}^{\mathrm{scr}}_t$，历史回放集合为 $\mathcal{M}_{t-1}$，其容量固定为 64 幅图像，即 $|\mathcal{M}_{t-1}|\leq 64$。回放集合采用水库采样在线更新，使顺序到达的历史样本具有被保留的机会。每个回放条目包含历史图像、对应涂鸦标签、样本进入回放集合时保存的参考特征以及任务标识，可写为
+$(X_m,Y_m^{\mathrm{scr}},\widetilde{\mathbf h}_m,\tau_m)$。任务标识用于在 Organ-CL 中选择对应输出头，在 Class-CL 中解释样本所处阶段的标签空间。
+
+令 $\mathbf h_{\theta}(X)$ 表示实现中选定的中间特征，历史特征保持损失为
+\begin{equation}
+\mathcal{L}_{\mathrm{feature}}
+=
+\frac{1}{|\mathcal{B}_t|}
+\sum_{m\in\mathcal{B}_t}
+\left\|
+\mathbf h_{\theta}(X_m)-\widetilde{\mathbf h}_m
+\right\|_2^2,
+\label{eq:scribblecl-feature-loss}
+\end{equation}
+其中，$\mathcal{B}_t\subseteq\mathcal{M}_{t-1}$ 为当前更新采样的历史小批次，回放批大小固定为 8，即 $|\mathcal{B}_t|=8$。该项限制历史样本的表征漂移；回放样本的涂鸦标签仍用于重新计算部分交叉熵、全局一致性和空间先验。历史回放同时利用参考特征和稀疏涂鸦标签，以约束旧任务表征并重新优化回放样本。
+
+按照本章实验实现，回放损失固定为
+\begin{equation}
+\mathcal{L}_{\mathrm{replay}}^{(t)}
+=
+0.5\,\mathcal{L}_{\mathrm{feature}}^{(t)}
++
+0.5\,\mathcal{L}_{\mathrm{PCE}}^{\mathrm{replay},(t)}
++
+1.0\,\mathcal{L}_{\mathrm{global}}^{\mathrm{replay},(t)}
++
+0.1\,\mathcal{L}_{\mathrm{spatial}}^{\mathrm{replay},(t)}.
+\label{eq:scribblecl-replay-loss}
+\end{equation}
+由此，ZSDERpp 的统一训练目标为
+\begin{equation}
+\mathcal{L}_{\mathrm{ZSDERpp}}^{(t)}
+=
+\mathcal{L}_{\mathrm{cur}}^{(t)}
++
+\mathbb{I}[t>1]\mathcal{L}_{\mathrm{replay}}^{(t)},
+\label{eq:scribblecl-zsderpp-total}
+\end{equation}
+其中，第一阶段回放集合为空，历史损失取零。式\eqref{eq:scribblecl-replay-loss}把历史表征保持与回放样本上的稀疏监督重新优化置于同一目标中：特征项保持历史响应，部分交叉熵保留已标注像素的类别信息，全局一致性与空间先验则继续约束历史样本的未标注区域。
+
+\paragraph{三类持续设定的统一适配。}
+在 Domain-CL 中，标签语义和共享输出头保持不变，回放样本直接通过同一输出空间计算式\eqref{eq:scribblecl-replay-loss}。Organ-CL 为各任务保留独立输出头；历史条目的任务标识决定回放时使用的输出头，而共享编码器继续受到特征保持和弱监督回放约束。因此，两类设定不需要改变 ZSDERpp 的总体形式。
+
+相比之下，Class-CL 逐阶段扩展统一输出空间，当前标签中的背景还可能包含旧类别。为避免把未标注旧类别强制压入背景，当前阶段背景标签的监督概率定义为\cite{cermelli2020mib}
+\begin{equation}
+\overline{p}_{t}(y\mid\mathbf{u})
+=
+\begin{cases}
+p_t(y\mid\mathbf{u}), & y\in\mathcal{C}_t,\\[1mm]
+p_t(b\mid\mathbf{u})+
+\displaystyle\sum_{c\in\mathcal{C}_{1:t-1}}p_t(c\mid\mathbf{u}), & y=b,
+\end{cases}
+\label{eq:scribblecl-background-aware-probability}
+\end{equation}
+并以 $\overline p_t$ 计算背景感知的部分交叉熵
+\begin{equation}
+\mathcal{L}_{\mathrm{uPCE}}^{(t)}
+=
+-\frac{1}{|\Omega_L^{(t)}|}
+\sum_{\mathbf{u}\in\Omega_L^{(t)}}
+\log \overline p_t\!\left(y_{\mathbf{u}}^{(t)}\mid\mathbf{u}\right).
+\label{eq:scribblecl-background-aware-pce}
+\end{equation}
+旧模型提供历史类别的函数约束。对旧类别保持逐类匹配，并将旧模型背景概率与当前模型的背景及新增类别概率之和对应：
+\begin{equation}
+\widetilde p_t(c\mid\mathbf{u})
+=
+\begin{cases}
+p_t(c\mid\mathbf{u}), & c\in\mathcal{C}_{1:t-1},\\[1mm]
+p_t(b\mid\mathbf{u})+
+\displaystyle\sum_{k\in\mathcal{C}_t}p_t(k\mid\mathbf{u}), & c=b.
+\end{cases}
+\label{eq:scribblecl-background-aware-distillation-probability}
+\end{equation}
+相应的背景语义保持项为
+\begin{equation}
+\mathcal{L}_{\mathrm{bg}}^{(t)}
+=
+-\frac{1}{|\Omega|}
+\sum_{\mathbf{u}\in\Omega}
+\sum_{c\in\mathcal{C}_{1:t-1}\cup\{b\}}
+p_{t-1}(c\mid\mathbf{u})
+\log \widetilde p_t(c\mid\mathbf{u}).
+\label{eq:scribblecl-background-aware-distillation}
+\end{equation}
+在 Class-CL 中，式\eqref{eq:scribblecl-current-loss}的部分交叉熵由 $\mathcal{L}_{\mathrm{uPCE}}^{(t)}$ 替代，并加入 $\lambda_{\mathrm{bg}}\mathcal{L}_{\mathrm{bg}}^{(t)}$；回放监督在统一标签空间中采用相同的背景语义解释。该调整属于 ZSDERpp 在类别增量输出空间中的内部组成，不另行定义第二种方法。
+
+\begin{table}[htbp]
+\centering
+\caption{ScribbleCL 比较方法及其历史信息访问条件}
+\label{tab:scribblecl-methods}
+\thesistablefont
+\renewcommand{\arraystretch}{1.15}
+\setlength{\tabcolsep}{3pt}
+\begin{tabularx}{\textwidth}{@{}p{2.8cm}Xp{4.1cm}X@{}}
+\toprule
+方法 & 当前阶段监督 & 历史知识处理 & 本章用途 \\
+\midrule
+Dense-Sequential & 密集标签 & 无 & 密集监督顺序训练参照 \\
+PCE-Sequential & 涂鸦与部分交叉熵 & 无 & 基础弱监督参照 \\
+ZS-Sequential & 涂鸦、全局一致性与空间先验 & 无 & 增强弱监督顺序参照 \\
+ZS-EWC & 与 ZS-Sequential 相同 & 参数重要性正则 & 无原始样本回放比较 \\
+ZS-GPM & 与 ZS-Sequential 相同 & 梯度子空间投影 & 无原始样本回放比较 \\
+ZSDERpp & 与 ZS-Sequential 相同 & 64 幅图像；水库采样；回放批大小为 8；保存涂鸦与参考特征 & Domain-CL、Class-CL、Organ-CL \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{实验设计与结果分析}
+\label{sec:scribblecl-experiments}
+
+\subsection{实验设定}
+\label{subsec:scribblecl-experimental-settings}
+
+\subsubsection{数据集、任务序列与数据划分}
+\label{subsubsec:scribblecl-datasets}
+
+ScribbleCL 直接复用第\ref{chap:benchmark}章表~\ref{tab:benchmark-datasets}中的三个数据场景、任务顺序和病例级划分\cite{wang2026benchmark}。每个任务仍按 60\% 训练集、15\% 验证集和 25\% 测试集组织，不重新抽样，也不调整任务到达次序。唯一的数据标注变化发生在训练集：第三章使用阶段可访问的密集标签，本章从同一批密集标签生成固定涂鸦；验证集和测试集继续使用相同的密集标签。由此，Dense-Sequential、各弱监督方法以及第三章对应基准共享同一组训练、验证和测试病例。
+
+\begin{table}[htbp]
+\centering
+\caption{ScribbleCL 对第三章三类基准数据与任务序列的沿用关系}
+\label{tab:scribblecl-datasets}
+\thesistablefont
+\renewcommand{\arraystretch}{1.16}
+\setlength{\tabcolsep}{3pt}
+\begin{tabularx}{\textwidth}{@{}p{1.85cm}Xp{2.5cm}p{2.7cm}@{}}
+\toprule
+场景 & 数据集与任务顺序 & 输出组织 & 训练/验证/测试 \\
+\midrule
+Domain-CL &
+NCI-ISBI 2013 的 A、B 中心，I2CVB 的 C 中心，以及 PROMISE12 的 D、E、F 中心，按 A$\rightarrow$B$\rightarrow$C$\rightarrow$D$\rightarrow$E$\rightarrow$F 到达 &
+共享二通道输出头 &
+60\%/15\%/25\% \\
+\addlinespace
+Class-CL &
+MMWHS 心脏 CT，依次学习 LV、LA、MYO，第二阶段加入 RV、RA，第三阶段加入 AA、PA &
+共享八通道输出头 &
+60\%/15\%/25\% \\
+\addlinespace
+Organ-CL &
+LAScarQS 左心房 LGE MRI $\rightarrow$ PROMISE12 中心 D 前列腺 MRI $\rightarrow$ LiTS 肝脏 CT $\rightarrow$ FeTS 2021 脑肿瘤 FLAIR MRI &
+每个任务独立二通道输出头 &
+60\%/15\%/25\% \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Domain-CL 的 C 中心执行裁剪和空间对齐，所有轴位切片调整为 $256\times256$，并使用非零体素的均值和标准差进行归一化。Class-CL 将 MMWHS 图像的平面分辨率重采样为 $0.78\times0.78$ mm，平均层厚为 1.60 mm，随后调整为 $256\times256$。Organ-CL 对每幅图像进行零均值、单位方差归一化，并将轴位切片调整为 $256\times256$。这些处理、输出头设置和任务顺序均与第三章一致。表~\ref{tab:scribblecl-datasets}用于说明继承关系，不表示本章重新建立了独立的数据划分。
+
+\subsubsection{参考标注、金标准与数据使用边界}
+\label{subsubsec:scribblecl-reference-standard}
+
+本节的分割金标准是各公开数据集随影像提供的密集参考标签，而不是模型生成的伪标签，也不是从涂鸦反推的完整掩膜。Domain-CL 沿用 NCI-ISBI 2013、I2CVB 和 PROMISE12 的前列腺参考分割\cite{dataset_prostate2,dataset_prostate,dataset_prostate3}；Class-CL 沿用 MMWHS 的七类心脏结构标签，分别为左心室、左心房、心肌、右心室、右心房、升主动脉和肺动脉\cite{care25ASA1,discussion_inter_seg3,care25ASA2}；Organ-CL 则沿用各任务对应的左心房、前列腺、肝脏和脑肿瘤参考区域。各来源采用各自的标注与质量控制流程，本文没有重新组织一套跨数据集、多标注者共识标注。这里的“金标准”因此指实验中固定的评价参照，不意味着所有器官边界均不存在标注分歧。
+
+参考标签在不同数据子集中承担不同作用。训练集的密集标签用于离线构建模拟涂鸦，并供 Dense-Sequential 密集监督参照使用；弱监督方法训练时读取固定涂鸦及其忽略区域，不把完整训练掩膜加入损失。验证集保留密集标签，用于模型选择；测试集保留密集标签，只用于独立评价。因此，本节研究的是训练阶段监督受限，而不是验证与测试阶段也只拥有涂鸦。相同病例的切片随病例级划分归属同一子集，避免把切片数量误当成独立病例数量。
+
+标签语义也随场景明确限定。Domain-CL 共享前列腺与背景两类语义。Class-CL 在同一八通道输出中保留背景和七类心脏结构，但训练阶段只开放当前协议允许的类别，其余区域按阶段背景规则处理；这种训练标签重映射不能改变测试参考标签的原始解剖含义。Organ-CL 分别使用任务对应的二通道输出头，依靠任务标识确定当前前景。各方法在同一测试标签上评价，才能把模型变化与参考标签变化区分开来。
+
+涂鸦是由训练参考掩膜模拟生成的，因此其类别正确性继承自参考掩膜，而其位置、长度和形态由生成过程决定。该设计控制了不同方法之间的监督差异，却没有测量医生实际绘制涂鸦的时间，也没有覆盖漏标、错标和不同标注者习惯。现有结果不能据此换算为临床标注工时节约或真实标注者之间的一致性；这些问题需要额外的标注研究。
+
+\subsubsection{涂鸦数据集构建}
+\label{subsubsec:scribblecl-scribble-construction}
+
+训练集涂鸦采用 WSL4MIS 开源实现中的 \texttt{scribbles\_generator.py} 构建\cite{luo2022scribble}\footnote{\url{https://github.com/HiLab-git/WSL4MIS/blob/main/code/scribbles_generator.py}}。对每个类别，先从阶段可访问的密集标签中得到二值掩膜，再逐轴位切片生成骨架。面积较大的区域先进行随机腐蚀，随后使用 Lee 骨架化获得中心线。前景骨架经过连通区域筛选和随机分支裁剪，并进行一次形态学膨胀。对面积超过 1000 像素的目标，脚本在原类别区域内施加 $[-6,6]$ 像素的随机平移和不超过 $15^\circ$ 的随机旋转，以增加涂鸦形态变化。
+
+生成结果保留前景类别和背景涂鸦，其他位置写为 255，并在部分交叉熵中作为忽略位置。若训练代码内部使用其他 \texttt{ignore\_index}，只在数据读取阶段执行确定性映射，不改变磁盘中涂鸦的含义。所有比较方法共享同一份固定涂鸦文件，避免重新随机生成标注造成额外差异。
+
+图\ref{fig:scribblecl-annotation-sequences}给出了三类持续分割场景中由密集训练标签生成的代表性涂鸦及任务到达顺序。Domain-CL 保持前列腺分割语义不变并依次改变数据中心，Organ-CL 依次改变器官与成像模态，Class-CL 则分阶段扩展心脏结构类别。
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{ch05/scribble_annotation_fig.eps}
+\caption{ScribbleCL 三类持续分割场景的涂鸦标注与任务序列。每一行对应一种持续分割设定，箭头表示任务到达顺序；蓝色曲线表示背景涂鸦，其他彩色曲线表示当前阶段可访问的前景类别涂鸦，未被涂鸦覆盖的像素在弱监督训练中设为忽略位置。}
+\label{fig:scribblecl-annotation-sequences}
+\end{figure}
+
+针对 Class-CL，先按照当前阶段的标签空间完成类别重映射，再调用涂鸦生成代码。当前不可访问的旧类别和未来类别按该阶段的背景语义处理。完整密集标签只用于生成模拟涂鸦、验证、测试和 Dense-Sequential；其他方法的当前任务损失与历史回放均只使用涂鸦标签，回放条目还保存由当时模型计算的参考特征。
+
+\subsubsection{训练与评价设置}
+\label{subsubsec:scribblecl-training-evaluation}
+
+网络与基础训练预算沿用第三章：所有实验采用 ResUNet32，每个任务训练 150 个 epoch，优化器为 SGD，初始学习率为 0.008，在第 80 个 epoch 后乘以 0.5，批大小为 8。Dense-Sequential、PCE-Sequential、ZS-Sequential、ZS-EWC、ZS-GPM 和 ZSDERpp 使用相同的数据划分、任务顺序、网络与训练预算。当前任务损失中的权重设置为 $\lambda_g=0.05$ 和 $\lambda_s=1$；前 15 个 epoch 不启用空间先验，自第 16 个 epoch 起加入 $\mathcal{L}_{\mathrm{spatial}}$。上述设置在所有使用全局一致性与空间先验的比较方法中保持一致\cite{zhang2026zscribbleseg}。
+
+在持续学习参数方面，ZS-EWC 和 ZS-GPM 的持续学习参数沿用第三章相应基线设置\cite{kirkpatrick2017ewc,saha2021gpm}。ZSDERpp 在每个后续阶段从容量为 64 幅图像的历史回放集合中采样图像--涂鸦对及参考特征，并采用水库采样更新该集合。回放批大小为 8，随机种子固定为 42。回放损失严格采用式\eqref{eq:scribblecl-replay-loss}中的 $0.5/0.5/1.0/0.1$ 系数。Class-CL 额外启用式\eqref{eq:scribblecl-background-aware-probability}--\eqref{eq:scribblecl-background-aware-distillation}所示的背景语义校正；Domain-CL 和 Organ-CL 不使用该调整。
+
+评价直接采用第三章定义的阶段--任务性能矩阵及指标公式。A-Dice、BWTR 和 RMA 分别按式\eqref{eq:benchmark-adice}、式\eqref{eq:benchmark-bwtr}和式\eqref{eq:benchmark-rma}计算；Domain-CL 进一步使用式\eqref{eq:benchmark-efwt}中的 E-FWT，Class-CL 使用式\eqref{eq:benchmark-wcd}中的 WCD。Organ-CL 报告 A-Dice、BWTR 和 RMA。所有指标均在与第三章相同的密集测试标签上计算，指标方向和解释也保持一致。这样，第三章与第五章的结果可以在同一评价维度下讨论，并分析监督形式与历史信息使用方式对各项能力的影响。鉴于现有定量证据仅覆盖 Domain-CL，结果分析限定于该场景；Class-CL 与 Organ-CL 保留方法和实验设置，不作性能判断。
+
+\subsection{实验结果}
+\label{subsec:scribblecl-results}
+
+表\ref{tab:scribblecl-domain-results}给出了六中心前列腺 MRI 序列上的 Domain-CL 结果。A-Dice、RMA 和 E-FWT 的数值越大越好；BWTR 数值越大，表示后续阶段训练后旧域性能保持越充分。
+
+\begin{table}[htbp]
+\centering
+\caption{Domain-CL 场景下 ScribbleCL 方法的结果。红色粗体表示各指标的最高点估计；不同监督与回放条件并不等价。}
+\label{tab:scribblecl-domain-results}
+\thesistablefont
+\renewcommand{\arraystretch}{1.14}
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{lcccc}
+\toprule
+方法 & A-Dice & BWTR & RMA & E-FWT \\
+\midrule
+Dense-Sequential & $0.676$ & $-0.237$ & $\best{1.086}$ & $\best{0.260}$ \\
+PCE-Sequential & $0.248$ & $-0.545$ & $0.776$ & $0.133$ \\
+ZS-Sequential & $0.510$ & $-0.324$ & $0.732$ & $0.234$ \\
+ZS-EWC & $0.543$ & $-0.298$ & $0.761$ & $0.216$ \\
+ZS-GPM & $0.612$ & $-0.206$ & $0.808$ & $0.241$ \\
+ZSDERpp & $\best{0.701}$ & $\best{-0.152}$ & $0.899$ & $0.225$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{实验分析}
+\label{subsec:scribblecl-experimental-analysis}
+
+Dense-Sequential 的 A-Dice、BWTR、RMA 和 E-FWT 分别为 $0.676$、$-0.237$、$1.086$ 和 $0.260$。其 RMA 与 E-FWT 为表中最高值，说明密集监督直接顺序训练在当前域相对建模和前向泛化方面仍具有优势；BWTR 为负则表明，密集标签本身不能消除六中心顺序更新中的旧域性能下降。
+
+在稀疏监督参照中，PCE-Sequential 只在涂鸦位置计算部分交叉熵。与其相比，ZS-Sequential 的 A-Dice 提高 $0.262$，BWTR 提高 $0.221$，E-FWT 提高 $0.101$，而 RMA 降低 $0.044$。在相同涂鸦、骨干和训练预算下，全局一致性与空间先验改善了最终多域性能、旧域保持和前向泛化表现，但没有同步提高当前任务相对于独立训练参照的建模能力。这一差异说明，弱监督持续分割仍需联合观察主对角线、历史任务和未来任务条目。
+
+进一步加入持续学习约束后，两种无原始样本回放的持续学习比较方法表现出不同取舍。ZS-EWC 相较 ZS-Sequential 将 A-Dice、BWTR 和 RMA 分别提高 $0.033$、$0.026$ 和 $0.029$，但 E-FWT 降低 $0.018$。ZS-GPM 的对应变化为 $+0.102$、$+0.118$、$+0.076$ 和 $+0.007$，在四项指标上均高于 ZS-Sequential，并在无回放弱监督方法中取得最高 A-Dice、BWTR、RMA 和 E-FWT。在当前 Domain-CL 序列中，梯度方向保护呈现出比单纯参数重要性约束更平衡的稳定性--可塑性结果。
+
+在有限回放条件下，ZSDERpp 的 A-Dice 和 BWTR 分别为 $0.701$ 和 $-0.152$，均为表中最高值。与 ZS-Sequential 相比，两项指标分别提高 $0.191$ 和 $0.172$，RMA 提高 $0.167$，E-FWT 降低 $0.009$；与 ZS-GPM 相比，A-Dice、BWTR 和 RMA 分别提高 $0.089$、$0.054$ 和 $0.091$，E-FWT 降低 $0.016$。有限历史回放、特征保持以及回放样本上的弱监督重新优化共同提高了最终多域性能和旧域保持，但更强的历史约束没有带来最高的前向泛化。
+
+相较 Dense-Sequential，ZSDERpp 的 A-Dice 高 $0.025$，BWTR 高 $0.085$，但 RMA 和 E-FWT 分别低 $0.187$ 和 $0.035$。在当前回放容量下，有限历史回放提高了 ZSDERpp 的最终平均性能和知识保持，但当前任务相对建模与前向泛化仍低于密集监督参照。
+
+\subsection{讨论}
+\label{subsec:scribblecl-discussion}
+
+本章采用本文前期工作中的全局一致性和空间先验\cite{zhang2026zscribbleseg}。前者利用增强前后的输出关系补充未标注区域约束，后者用空间负证据限制类别区域扩张。PCE-Sequential 与 ZS-Sequential 的比较表明，这两项约束在 Domain-CL 中提高了 A-Dice、BWTR 和 E-FWT；RMA 的下降也说明，增强弱监督目标并不必然提高每个新域的独立建模能力。
+
+ZSDERpp 保存容量受限的历史图像--涂鸦对和参考特征，并通过式\eqref{eq:scribblecl-replay-loss}重新约束历史表征、已标注像素和未标注区域。有限历史回放使模型能够在后续阶段重新优化旧域样本，从而改善 A-Dice 与 BWTR。
+
+Class-CL 与 Organ-CL 使用同一 ZSDERpp 总体目标，但输出组织不同。Class-CL 需要在当前监督和旧模型约束中重新解释背景概率，Organ-CL 则依靠任务标识路由至对应输出头。三类设定共享总体训练框架；值得说明的是，现有定量证据不足以判断 Class-CL 与 Organ-CL 的实际性能。
+
+本节实验采用 A 到 F 的六中心前列腺 MRI 顺序、固定数据划分、由密集训练标签模拟得到的涂鸦、ResUNet32 骨干、统一的 150-epoch 训练预算和当前回放配置。模拟涂鸦不能覆盖真实标注者在位置、长度和类别选择上的差异。
+
+\section{与第三章基准的承接关系及适用边界}
+\label{sec:scribblecl-benchmark-connection}
+
+本章与第三章之间是直接的数据和协议继承关系。三个持续分割场景使用同一批病例、相同任务到达次序、相同训练/验证/测试划分、相同预处理和相同输出组织；变化仅发生在训练监督和历史信息访问方式。第三章在当前阶段使用可访问的密集标签，本章从同一训练标签生成固定涂鸦，并在 ZSDERpp 中额外保存容量受限的历史图像--涂鸦对及参考特征。验证集和测试集的密集标签不参与弱监督损失，因此不同方法仍在同一金标准上评价。
+
+评价方面，本章直接沿用第三章的阶段--任务性能矩阵，并报告 A-Dice、BWTR、RMA 和适用场景下的 E-FWT 或 WCD。这样的设置能够分别观察最终总体性能、旧任务保持、当前任务相对建模能力和未来域直接表现。需要注意的是，第三章与本章的回放容量并不完全相同，密集监督结果也不能被简单视为涂鸦监督的严格上界；涉及监督形式的因果归因仍需在相同回放预算和相同方法结构下进行配对实验。
+
+本章结果的适用范围受固定模拟涂鸦、六中心 Domain-CL 任务顺序、二维切片网络和当前回放配置限制。模拟涂鸦不能覆盖真实医生在位置、长度、漏标和错标方面的差异，密集验证标签仍被用于模型选择。Class-CL 与 Organ-CL 的公式和接口用于说明方法如何适配不同输出组织，不等同于已经完成相应定量验证。后续接入第三章规划的综合平台时，需要把涂鸦版本、生成规则、标注者信息和密集评价标签的访问权限作为独立的可追踪对象。
+
+\section{本章小结}
+\label{sec:scribblecl-summary}
+
+本章在第三章持续分割基准上研究了有限回放条件下的弱监督持续学习。当前任务采用部分交叉熵、全局一致性和空间先验补充稀疏涂鸦监督；ZSDERpp 进一步通过历史图像--涂鸦回放、参考特征约束和回放弱监督优化减少旧域能力下降。六中心 Domain-CL 结果表明，ZSDERpp 在当前设置下提高了最终平均 Dice 和后向保持，但没有取得最高前向泛化，说明监督增强、历史保护和未来域适用性仍需分别评价。Class-CL 与 Organ-CL 的方法适配和实验协议为后续验证保留了明确接口，但本章不对尚未完成的结果作外推。
