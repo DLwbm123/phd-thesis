@@ -11,7 +11,7 @@
 - Fast build command: `xelatex -interaction=nonstopmode -file-line-error main.tex`
 - Fast section verification: `bash scripts/verify_fast_section.sh chapters/chXX_name.tex`（一次完整构建、差异范围审查与元数据检查；完整流程见 `WORKFLOW_MODES.md`）
 - Clean command: `latexmk -C main.tex`
-- Git repository: 是；GitHub 私有仓库 `https://github.com/DLwbm123/phd-thesis`
+- Git repository: 是；GitHub 仓库 `https://github.com/DLwbm123/phd-thesis`（2026-09-04 查询为公开）
 - Git default branch: `main`
 - GitHub remote: `origin` → `https://github.com/DLwbm123/phd-thesis.git`
 - Overleaf remote: `overleaf` → `https://git@git.overleaf.com/6a69ac75d6170c19b9e2711a`

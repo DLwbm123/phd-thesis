@@ -2,7 +2,7 @@
 
 GPT Pro 三版本融合后的 LaTeX 已发布到既有双端项目：
 
-- GitHub 私有仓库：`DLwbm123/phd-thesis`
+- GitHub 仓库：`DLwbm123/phd-thesis`（远端查询为公开；本轮未修改可见性）
 - GitHub 论文分支：`agent/predefense-writing-20260830`
 - GitHub 融合源码提交：`fd81ad1b8f3770e6cace8b975c41544c3113a4bb`
 - Overleaf 项目：`6a69ac75d6170c19b9e2711a`

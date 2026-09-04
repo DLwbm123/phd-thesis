@@ -39,4 +39,4 @@ MedCL 定位为 evaluation 平台。用户在本地按规定或自定义顺序�
 
 ## 发布与核验
 
-发布沿用 GitHub 私有仓库 `DLwbm123/phd-thesis` 的论文分支及既有 Overleaf 项目。先在独立 worktree 完成本地编译和必要审查，再非强制推送 GitHub，最后运行 `scripts/sync_latex_to_overleaf.sh`。`sources/`、构建产物、缓存、原始 GPT Pro 包和比较工作目录均不上传。按作者的轻量检查偏好，依据工具退出状态、日志、文件范围和必要页面信息完成核验，不主动新增全量哈希。
+发布沿用 GitHub 仓库 `DLwbm123/phd-thesis` 的论文分支及既有 Overleaf 项目；2026-09-04 远端查询显示该仓库当前为公开状态，本轮不修改可见性。先在独立 worktree 完成本地编译和必要审查，再非强制推送 GitHub，最后运行 `scripts/sync_latex_to_overleaf.sh`。`sources/`、构建产物、缓存、原始 GPT Pro 包和比较工作目录均不上传。按作者的轻量检查偏好，依据工具退出状态、日志、文件范围和必要页面信息完成核验，不主动新增全量哈希。

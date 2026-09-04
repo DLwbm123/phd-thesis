@@ -78,7 +78,7 @@
 
 # Remote synchronization policy
 
-- GitHub 私有仓库 `DLwbm123/phd-thesis` 是版本源；
+- GitHub 仓库 `DLwbm123/phd-thesis` 是版本源；2026-09-04 远端查询显示为公开仓库，未经作者明确要求不得修改可见性；
 - 融合稿发布到专用论文分支 `agent/predefense-writing-20260830`；未经作者明确要求不合并 `main`；
 - `sources/`、构建产物、缓存和导出包不上传；
 - Overleaf 只用于查看编译结果，不作为正文修改源；
