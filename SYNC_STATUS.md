@@ -1,5 +1,13 @@
-# 七章版发布说明（2026-09-03）
+# 融合稿发布说明（2026-09-04）
 
-当前稿件来自作者提供的 `PhD_Thesis_restructured_7chapters.zip`。已本地编译为 171 页；本轮通过既有 Git 连接发布到 GitHub 两个论文分支及 Overleaf 项目 `6a69ac75d6170c19b9e2711a`，不合并 GitHub `main`。最终推送记录见本地 `seven_chapter_sync_20260903/`，详细集成范围见 `STATE.md`。
+GPT Pro 三版本融合后的 LaTeX 已发布到既有双端项目：
 
-本地 PyMuPDF 预览对部分嵌入字体显示异常；Poppler 可正常显示原图和正文标题。最终保留作者原始 PDF 图件与引用，不保留临时 PNG 替换。包内 MANIFEST 仅作为作者原包记录保存。
+- GitHub 私有仓库：`DLwbm123/phd-thesis`
+- GitHub 论文分支：`agent/predefense-writing-20260830`
+- GitHub 融合源码提交：`fd81ad1b8f3770e6cace8b975c41544c3113a4bb`
+- Overleaf 项目：`6a69ac75d6170c19b9e2711a`
+- Overleaf `main` 提交：`534da2ffc136789a484b691544ad23c9d936abb9`
+
+发布前在独立 worktree 完成干净 XeLaTeX/BibTeX 构建，生成 185 页 A4 PDF；日志中未发现 LaTeX 错误、未定义引用、未定义文献或重复标签。GitHub 保存完整写作工程，Overleaf 只同步编译所需输入。`sources/`、实验目录、构建产物、原始 GPT Pro 包、比较工作目录和本地源码 ZIP 未上传。
+
+本次没有合并 GitHub `main`，没有改变仓库可见性，也没有触碰主工作区未提交的实验代码。
