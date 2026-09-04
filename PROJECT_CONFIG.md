@@ -20,7 +20,7 @@
 - Local TeX toolchain: TeX Live 2026（用户级安装于 `~/Library/TinyTeX`；`~/.zprofile` 已加入 `bin/universal-darwin`）
 - Tool versions: `latexmk 4.88`、`XeTeX 0.999998`、`BibTeX 0.99e`
 - TeX package repository: `https://mirrors.ustc.edu.cn/CTAN/systems/texlive/tlnet`
-- Full build verification: 2026-08-14 已在 FDSDSthesis v1.1 模板下完成 XeLaTeX/BibTeX 构建，生成 163 页 `main.pdf`。
+- Full build verification: 2026-09-04 已在 FDSDSthesis 模板下完成融合稿 XeLaTeX/BibTeX 构建，生成 185 页 `main.pdf`。
 
 ## Remote sync policy
 

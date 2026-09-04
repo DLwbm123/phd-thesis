@@ -57,6 +57,7 @@
         CJKbookmarks=true,
         bookmarks=true,
         bookmarksnumbered=true,
+        hypertexnames=false,
         pdfstartview=FitH]{hyperref}
 \RequirePackage{enumitem}
 \RequirePackage{ifthen}

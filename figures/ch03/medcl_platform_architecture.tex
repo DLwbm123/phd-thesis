@@ -1,0 +1,28 @@
+\begingroup
+\begin{tikzpicture}[
+  font=\thesisfigurefont,
+  box/.style={draw=black!55,rounded corners=2pt,align=center,inner sep=4pt,line width=.6pt},
+  wide/.style={box,text width=12.7cm,minimum height=1.05cm,fill=blue!3},
+  task/.style={box,text width=3.95cm,minimum height=1.55cm,fill=white},
+  flow/.style={-{Latex[length=2mm]},draw=black!65,line width=.65pt},
+  node distance=5mm
+]
+\node[wide] (entry) {\textbf{网页入口}\quad 基准与任务顺序\quad 阶段选择\quad 模型或预测提交\quad 结果查询};
+\node[wide,below=of entry] (manage) {\textbf{评测管理}\quad 固定测试协议\quad 生成配置\quad 提交检查\quad 评测状态与队列};
+\node[task,below=7mm of manage] (cls) {\textbf{分类适配}\par 图像与类别映射\par 测试任务与分类头\par 准确率及类别结果};
+\node[task,left=3mm of cls] (seg) {\textbf{分割适配}\par 图像与标签空间\par 概率图或标签图\par 结构重叠及病例结果};
+\node[task,right=3mm of cls] (reg) {\textbf{配准适配}\par 固定与移动图像\par 空间变换与坐标约定\par 结构重叠及地标误差};
+\node[wide,below=7mm of cls] (score) {\textbf{推理与独立评分}\quad 受限模型调用或预测读取\par 平台侧测试参照\quad 阶段--任务矩阵\quad 联邦客户端维度};
+\node[wide,below=of score,fill=green!4] (view) {\textbf{结果展示}\quad 阶段曲线\quad 任务与客户端比较\quad 样例可视化\quad 报告导出};
+\node[wide,below=of view,fill=black!3] (store) {\textbf{持久化对象}\quad 评测配置\quad 模型与预测索引\quad 测试版本\quad 结果与来源\par 本地训练在平台外完成；平台不执行训练或权重聚合};
+\draw[flow] (entry) -- (manage);
+\draw[flow] (manage.south) -- (cls.north);
+\draw[flow] (manage.south -| seg.north) -- (seg.north);
+\draw[flow] (manage.south -| reg.north) -- (reg.north);
+\draw[flow] (seg.south) -- (score.north -| seg.south);
+\draw[flow] (cls.south) -- (score.north);
+\draw[flow] (reg.south) -- (score.north -| reg.south);
+\draw[flow] (score) -- (view);
+\draw[flow] (view) -- (store);
+\end{tikzpicture}
+\endgroup

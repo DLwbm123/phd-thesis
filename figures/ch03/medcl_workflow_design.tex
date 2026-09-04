@@ -1,0 +1,23 @@
+\begingroup
+\begin{tikzpicture}[
+  font=\thesisfigurefont,
+  box/.style={draw=black!55,rounded corners=2pt,align=center,inner sep=4pt,line width=.6pt},
+  wide/.style={box,text width=12.7cm,minimum height=1cm,fill=blue!3},
+  choice/.style={box,text width=5.95cm,minimum height=1.3cm,fill=white},
+  flow/.style={-{Latex[length=2mm]},draw=black!65,line width=.65pt},
+  node distance=5mm
+]
+\node[wide] (config) {\textbf{选择评测条件}\par 基准版本、任务类型与顺序、完成阶段、输出协议、可选客户端测试场景};
+\node[choice,below=7mm of config,xshift=-3.35cm] (model) {\textbf{模型提交}\par 选择已适配结构，上传阶段权重\par 平台在固定测试输入上推理};
+\node[choice,below=7mm of config,xshift=3.35cm] (pred) {\textbf{预测提交}\par 上传与测试样本对应的输出\par 平台读取并检查预测};
+\node[wide,below=7mm of model,xshift=3.35cm] (check) {\textbf{检查并固定评测配置}\par 样本覆盖、阶段归属、类别或空间约定；不要求训练记录或日志};
+\node[wide,below=of check] (score) {\textbf{计算有效结果}\par 最终产物：最终任务结果；多阶段产物：阶段变化与可计算的持续指标};
+\node[wide,below=of score,fill=green!4] (report) {\textbf{查看与导出}\par 性能矩阵、阶段曲线、客户端视图和任务样例；缺失参照标明不可计算};
+\draw[flow] (config.south -| model.north) -- (model.north);
+\draw[flow] (config.south -| pred.north) -- (pred.north);
+\draw[flow] (model.south) -- (check.north -| model.south);
+\draw[flow] (pred.south) -- (check.north -| pred.south);
+\draw[flow] (check) -- (score);
+\draw[flow] (score) -- (report);
+\end{tikzpicture}
+\endgroup

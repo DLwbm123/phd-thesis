@@ -1,0 +1,17 @@
+\begingroup
+\begin{tikzpicture}[
+  font=\thesisfigurefont,
+  box/.style={draw=black!55,rounded corners=2pt,align=center,inner sep=4pt,line width=.6pt},
+  wide/.style={box,text width=12.7cm,minimum height=1.15cm,fill=blue!3},
+  flow/.style={-{Latex[length=2mm]},draw=black!65,line width=.65pt},
+  node distance=6mm
+]
+\node[wide,fill=black!3] (train) {\textbf{平台外：联邦持续分类训练}\par 客户端本地更新与子空间构建\quad 服务器模型聚合与子空间融合\par 每个类别阶段结束后得到全局模型};
+\node[wide,below=of train] (submit) {\textbf{提交模型或预测}\par 选择任务顺序、完成阶段及测试分类头协议\par 不要求客户端模型、子空间、回放样本或训练日志};
+\node[wide,below=of submit] (test) {\textbf{MedCL：固定协议下的独立测试}\par 同一阶段全局模型\quad 按测试任务选择分类头\quad 在固定客户端测试分组上评分};
+\node[wide,below=of test,fill=green!4] (view) {\textbf{阶段 $\times$ 客户端 $\times$ 测试任务}\par 阶段--任务矩阵\quad 客户端宏平均与样本加权结果\quad 历史保持与分布差异\par 新增客户端测试划分单独登记，不替代原论文全局测试结果};
+\draw[flow] (train) -- (submit);
+\draw[flow] (submit) -- (test);
+\draw[flow] (test) -- (view);
+\end{tikzpicture}
+\endgroup

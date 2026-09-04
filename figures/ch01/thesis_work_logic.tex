@@ -1,50 +1,26 @@
 \begingroup
-\centering
 \begin{tikzpicture}[
   font=\thesisfigurefont,
-  box/.style={draw,rounded corners=2pt,align=center,inner sep=4pt,line width=.6pt},
-  wide/.style={box,text width=12.8cm,fill=black!3},
-  branch/.style={box,text width=3.75cm,minimum height=3.05cm},
-  flow/.style={-{Latex[length=2mm]},line width=.7pt},
-  principle/.style={flow,dashed},
-  node distance=3mm
+  box/.style={draw=black!55,rounded corners=2pt,align=center,inner sep=4pt,line width=.6pt},
+  wide/.style={box,text width=12.7cm,fill=blue!3,minimum height=1.1cm},
+  branch/.style={box,text width=3.85cm,minimum height=3.1cm,fill=white},
+  flow/.style={-{Latex[length=2mm]},draw=black!65,line width=.65pt},
+  node distance=5mm
 ]
-\node[wide] (problem) {\textbf{共同问题：任务持续到达，训练信息无法完整调用}\\[2pt]
-当前监督可能稀疏\quad 历史样本访问受限\quad 跨中心原始数据不能集中};
-\node[wide,below=of problem] (benchmark) {\textbf{第三章：基准评测与平台建设接口}\\[2pt]
-分割数据与任务序列\quad 阶段--任务性能矩阵\quad 学习、保持、泛化与资源评价\\
-平台接口：数据适配、任务编排、方法注册、阶段评价与结果管理};
-\draw[flow] (problem) -- (benchmark);
-
-\coordinate (row) at ($(benchmark.south)+(0,-2.25cm)$);
-\node[branch] (reg) at ($(row)+(-4.45cm,0)$)
- {\textbf{第四章：持续配准}\\[3pt]
-历史图像对有限回放\\
-元持续学习\\
-锐度感知优化\\
-Dice、TRE 与前向泛化};
-\node[branch] (seg) at (row)
- {\textbf{第五章：弱监督持续分割}\\[3pt]
-直接复用第三章数据与协议\\
-涂鸦监督与空间先验\\
-图像--涂鸦回放与特征约束};
-\node[branch] (fed) at ($(row)+(4.45cm,0)$)
- {\textbf{第六章：联邦持续分类}\\[3pt]
-原始数据不集中\\
-历史原始样本不回放\\
-跨客户端子空间融合\\
-通信与平台接口};
-
-\draw[principle] (benchmark.south) -- ++(0,-3mm) -| (reg.north);
-\draw[flow] (benchmark.south) -- (seg.north);
-\draw[principle] (benchmark.south) -- ++(0,-3mm) -| (fed.north);
-
-\node[wide,below=5mm of seg] (future)
- {\textbf{第七章：总结与医学多模态大模型持续学习展望}\\[2pt]
-数据与表征层：持续预训练\quad 任务与场景层：持续领域适配\quad 知识与行为层：持续知识编辑};
-\draw[flow] (reg.south) |- (future.west);
-\draw[flow] (seg.south) -- (future.north);
-\draw[flow] (fed.south) |- (future.east);
+\node[wide] (problem) {\textbf{共同问题：任务持续演化与训练信息受限}\par 输入域、类别集合、医学分析目标变化\quad 监督、历史访问与跨中心协作约束};
+\node[wide,below=of problem] (framework) {\textbf{第三章：MedCL 评测平台设计与分割基准}\par 平台：任务顺序、模型或预测提交、阶段评价、客户端分析与结果展示\par 分割实例：域增量、类别增量、跨器官任务增量的多维比较};
+\node[branch,below=1.05cm of framework] (fed) {\textbf{第五章：类别增量}\par\textbf{联邦持续分类}\par\medskip 类别集合逐批扩展\par 逻辑客户端分布差异\par 历史原始样本不回放\par 子空间融合与梯度保护};
+\node[branch,left=4mm of fed] (seg) {\textbf{第四章：域增量}\par\textbf{弱监督持续分割}\par\medskip 六中心前列腺序列\par 固定涂鸦监督\par 有限图像--涂鸦回放\par 监督增强与特征一致性};
+\node[branch,right=4mm of fed] (reg) {\textbf{第六章：任务增量}\par\textbf{持续医学图像配准}\par\medskip 器官与模态关系变化\par 连续空间变换预测\par 有限历史图像对回放\par 元学习与锐度感知优化};
+\node[wide,below=6mm of fed,fill=green!4] (evaluation) {\textbf{共同评测接口}\par 三项方法分别提交阶段模型或预测；任务指标独立，阶段组织与展示规则共享};
+\node[wide,below=of evaluation] (future) {\textbf{第七章：总结与展望}\par 平台实现与验证\quad 持续预训练\quad 参数高效持续适配\quad 医学知识编辑};
+\draw[flow] (problem) -- (framework);
+\draw[flow] (framework.south -| seg.north) -- node[right,align=left] {数据与协议\\直接承接} (seg.north);
+\draw[flow,dashed] (framework.south) -- node[right] {评价原则与接口} (fed.north);
+\draw[flow,dashed] (framework.south -| reg.north) -- (reg.north);
+\draw[flow] (seg.south) -- (evaluation.north -| seg.south);
+\draw[flow] (fed.south) -- (evaluation.north);
+\draw[flow] (reg.south) -- (evaluation.north -| reg.south);
+\draw[flow] (evaluation) -- (future);
 \end{tikzpicture}
-\par
 \endgroup
