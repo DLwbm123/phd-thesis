@@ -56,7 +56,7 @@
   \draw[flow] (m-source) -- (m-meta);
   \draw[flow] (m-meta) -- (m-init);
   \draw[flow] (m-support) -- (m-adapt);
-  \draw[flow] (m-init) -- (m-adapt);
+  \draw[flow] (m-init.south) -- ++(0,-.4) -| (m-adapt.north);
   \draw[flow] (m-adapt) -- (m-task);
 \end{scope}
 
@@ -81,7 +81,7 @@
   \node[process, minimum width=2.55cm] (c-eval) at (6.20,1.35)
     {持续评价\\旧任务、当前任务与未来任务};
   \draw[flow] (c-history) -- (4.15,1.35) -- (c-eval);
-  \draw[flow] (c-mt) -- (c-eval);
+  \draw[flow] (c-mt.south) -- ++(0,-.35) -| (c-eval.north);
 
 \end{scope}
 
@@ -93,17 +93,17 @@
     {客户端 1\\本地数据};
   \node[data, minimum width=1.75cm] (f-c2) at (1.05,2.05)
     {客户端 2\\本地数据};
-  \node[note] at (1.05,1.20) {$\vdots$};
-  \node[data, minimum width=1.75cm] (f-ck) at (1.05,0.95)
+  \node[note] at (1.05,1.4) {$\vdots$};
+  \node[data, minimum width=1.75cm] (f-ck) at (1.05,0.75)
     {客户端 $K$\\本地数据};
-  \node[process, minimum width=2.05cm, minimum height=10mm] (f-server) at (4.30,2.35)
+  \node[process, minimum width=2.05cm, minimum height=3cm] (f-server) at (4.30,2.05)
     {服务器\\聚合与下发};
-  \node[process, minimum width=1.95cm] (f-global) at (7.10,2.35)
+  \node[process, minimum width=1.95cm] (f-global) at (7.10,2.05)
     {共享模型};
-  % 使用不同的服务器端口，避免三组双向箭头在同一点重叠。
-  \draw[exchange] (f-c1.east) -- ([yshift=3.0mm]f-server.west);
+  % 各客户端连接独立端口，三条双向线等长且水平平行。
+  \draw[exchange] (f-c1.east) -- (f-server.west |- f-c1.east);
   \draw[exchange] (f-c2.east) -- (f-server.west);
-  \draw[exchange] (f-ck.east) -- ([yshift=-3.0mm]f-server.west);
+  \draw[exchange] (f-ck.east) -- (f-server.west |- f-ck.east);
   \draw[exchange] (f-server) -- (f-global);
 
 \end{scope}

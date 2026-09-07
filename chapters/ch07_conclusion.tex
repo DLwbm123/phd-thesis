@@ -40,7 +40,7 @@
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=\textwidth]{ch07/medical_mllm_continual_learning.png}
+\resizebox{\textwidth}{!}{\input{figures/ch07/medical_mllm_continual_learning.tex}}
 \caption[医学多模态基础模型持续学习的未来研究框架]{医学多模态基础模型持续学习的未来研究框架。持续到达的影像与文本经多模态基础模型形成共享表示，并依次适配不同影像模态、中心和下游任务。未来研究从数据与表征、任务与场景、知识与行为三个层次展开，分别对应持续预训练、参数高效持续适配和持续知识编辑。}
 \label{fig:future-medical-mllm}
 \end{figure}
@@ -49,7 +49,7 @@
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=\textwidth]{ch07/future_three_level_roadmap.png}
+\resizebox{\textwidth}{!}{\input{figures/ch07/future_three_level_roadmap.tex}}
 \caption[医学多模态基础模型持续学习的三层研究路线]{医学多模态基础模型持续学习的三层研究路线。数据与表征层通过持续预训练吸收新影像与新报告；任务与场景层通过参数高效持续适配面向新模态、新中心和下游任务；知识与行为层通过持续知识编辑更新经审核的医学知识与行为规则。MedCL 的后续实现可通过评测配置、模型版本、阶段评价、结果追踪和历史能力对照，为三个层次提供共同评价支撑；图中模型训练、更新与回退均属于平台外的研究流程，MedCL 的本阶段范围限定为模型或预测评测。}
 \label{fig:future-three-level-roadmap}
 \end{figure}

@@ -1,0 +1,63 @@
+% Editable vector layout; medical examples are extracted from the original figure.
+\begingroup
+\linespread{1}\selectfont
+\begin{tikzpicture}[
+  font=\thesisfigurefont,
+  box/.style={draw=black!55,rounded corners=2pt,line width=.65pt,align=center,inner sep=0pt},
+  flow/.style={-{Latex[length=2mm]},draw=black!65,line width=.7pt,shorten <=1pt,shorten >=1pt},
+  labeltext/.style={align=center,inner sep=0pt},
+  chip/.style={box,minimum width=1.7cm,minimum height=.4cm,fill=white},
+  task/.style={box,minimum width=3.8cm,minimum height=2.45cm}
+]
+% Two input lanes use identical widths, heights and vertical connector lengths.
+\node[box,fill=violet!4,minimum width=6.05cm,minimum height=1.55cm] (text) at (3.025,0) {};
+\node[labeltext,font=\thesisfigurefont\bfseries] at (3.025,.5) {医学文本};
+\node[labeltext,font=\sffamily\heiti\fontsize{8.5bp}{11bp}\selectfont] at (3.025,-.2)
+  {经阴道超声显示囊性病变，随访检查\\提示结构变化，结合病史与影像描述\\形成可追踪的医学文本};
+\node[box,fill=green!4,minimum width=6.05cm,minimum height=1.55cm] (image) at (10.075,0) {};
+\node[labeltext,font=\thesisfigurefont\bfseries] at (8.55,0) {医学影像};
+\node[inner sep=0pt] at (11.15,0) {\includegraphics[height=1.23cm]{ch07/assets/example-000.png}};
+\node[box,fill=violet!8,minimum width=2.65cm,minimum height=.65cm] (textenc) at (3.025,-1.35) {\textbf{文本编码器}};
+\node[box,fill=green!8,minimum width=2.65cm,minimum height=.65cm] (imageenc) at (10.075,-1.35) {\textbf{图像编码器}};
+\draw[flow] (text.south) -- (textenc.north);
+\draw[flow] (image.south) -- (imageenc.north);
+
+\begin{scope}[yshift=4.5mm]
+\node[box,draw=blue!50!black,fill=blue!4,minimum width=13.1cm,minimum height=1.85cm] (model) at (6.55,-3.3) {};
+\node[labeltext,text=blue!45!black,font=\thesisfigurefont\bfseries] at (6.55,-2.69) {医学多模态基础模型};
+\node[labeltext] at (6.55,-3.14) {跨模态表示与知识融合};
+\node[chip,fill=green!7] at (3.55,-3.59) {影像};
+\node[chip,fill=violet!7] at (5.55,-3.59) {文本};
+\node[chip,fill=blue!7] at (7.55,-3.59) {结构};
+\node[chip,fill=orange!8] at (9.55,-3.59) {知识};
+\node[labeltext,text=black!70] at (6.55,-4.02) {共享表征\quad 可更新参数\quad 版本记录};
+\draw[flow] (textenc.south) -- (model.north -| textenc.south);
+\draw[flow] (imageenc.south) -- (model.north -| imageenc.south);
+
+% The model enters the first task; task-to-task arrows lie only in the gutters.
+\node[task,draw=orange!65!black,fill=orange!5] (task1) at (1.9,-6.15) {};
+\node[task,draw=red!55!black,fill=red!3] (task2) at (6.55,-6.15) {};
+\node[task,draw=green!45!black,fill=green!4] (task3) at (11.2,-6.15) {};
+\node[labeltext,text=orange!65!black,font=\thesisfigurefont\bfseries] at (1.9,-5.23) {任务一\quad 胸部 X 线诊断};
+\node[labeltext,text=red!55!black,font=\thesisfigurefont\bfseries] at (6.55,-5.23) {任务二\quad 消化内镜识别};
+\node[labeltext,text=green!45!black,font=\thesisfigurefont\bfseries] at (11.2,-5.23) {任务三\quad 皮肤镜分类};
+\node[inner sep=0pt] at (1.9,-6.16) {\includegraphics[height=1.2cm]{ch07/assets/example-001.png}};
+\node[inner sep=0pt] at (6.55,-6.16) {\includegraphics[height=1.2cm]{ch07/assets/example-002.png}};
+\node[inner sep=0pt] at (11.2,-6.16) {\includegraphics[height=1.2cm]{ch07/assets/example-003.png}};
+\node[labeltext,text=black!70] at (1.9,-7.04) {顺序适配与阶段评价};
+\node[labeltext,text=black!70] at (6.55,-7.04) {顺序适配与阶段评价};
+\node[labeltext,text=black!70] at (11.2,-7.04) {顺序适配与阶段评价};
+\draw[flow] (model.south -| task1.north) -- (task1.north);
+\draw[flow] (task1.east) -- (task2.west);
+\draw[flow] (task2.east) -- (task3.west);
+\node[labeltext,text=black!65,font=\sffamily\heiti\fontsize{8.5bp}{11bp}\selectfont] at (8.45,-4.56)
+  {新模态、新任务、新中心与新医学知识持续到达};
+\draw[flow,dashed,draw=black!50] (3.8,-4.81) -- (13.1,-4.81);
+
+\node[box,fill=blue!4,draw=blue!40!black,minimum width=6.05cm,minimum height=1.3cm] at (3.025,-8.22)
+  {\textbf{稳定性}\\保持既有跨模态关联、\\历史知识与任务能力};
+\node[box,fill=orange!5,draw=orange!50!black,minimum width=6.05cm,minimum height=1.3cm] at (10.075,-8.22)
+  {\textbf{可塑性}\\吸收新增数据，\\适应新的任务、中心与知识};
+\end{scope}
+\end{tikzpicture}
+\endgroup

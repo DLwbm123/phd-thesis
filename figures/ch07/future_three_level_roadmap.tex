@@ -1,0 +1,44 @@
+% Three equal columns; all arrows use node boundaries and reserved gutters.
+\begingroup
+\linespread{1}\selectfont
+\begin{tikzpicture}[
+  font=\thesisfigurefont,
+  box/.style={draw=black!55,rounded corners=2pt,line width=.65pt,align=center,inner sep=0pt},
+  flow/.style={-{Latex[length=2mm]},draw=black!60,line width=.7pt,shorten <=1pt,shorten >=1pt},
+  textnode/.style={align=center,inner sep=0pt},
+  panel/.style={box,minimum width=3.9cm,minimum height=4.45cm},
+  method/.style={box,minimum width=3.3cm,minimum height=.85cm,fill=white,font=\thesisfigurefont\bfseries}
+]
+\node[box,draw=blue!50!black,fill=blue!4,minimum width=13.1cm,minimum height=1.15cm] (goal) at (6.55,0)
+  {\textbf{总体目标：兼顾稳定性与可塑性的医学多模态基础模型}\\面向新模态、新任务、新中心与经审核的新医学知识};
+
+\node[panel,draw=blue!50!black,fill=blue!3] (data) at (1.95,-3.52) {};
+\node[panel,draw=violet!60!black,fill=violet!3] (task) at (6.55,-3.52) {};
+\node[panel,draw=orange!60!black,fill=orange!4] (knowledge) at (11.15,-3.52) {};
+\node[textnode,text=blue!50!black,font=\thesisfigurefont\bfseries] at (1.95,-1.72) {数据与表征层};
+\node[textnode,text=violet!60!black,font=\thesisfigurefont\bfseries] at (6.55,-1.72) {任务与场景层};
+\node[textnode,text=orange!60!black,font=\thesisfigurefont\bfseries] at (11.15,-1.72) {知识与行为层};
+\node[method,draw=blue!50!black] at (1.95,-2.51) {持续预训练};
+\node[method,draw=violet!60!black] at (6.55,-2.51) {参数高效的\\持续领域适配};
+\node[method,draw=orange!60!black] at (11.15,-2.51) {持续知识编辑};
+\node[textnode] at (1.95,-3.49) {吸收新影像与新报告};
+\node[textnode] at (1.95,-4.34) {保持基础表征\\与跨模态对齐};
+\node[textnode] at (1.95,-5.19) {评价历史任务\\与新任务迁移};
+\node[textnode] at (6.55,-3.49) {参数高效适应\\不同中心与模态};
+\node[textnode] at (6.55,-4.34) {处理任务边界未知\\与中心重访};
+\node[textnode] at (6.55,-5.19) {兼顾旧中心保持\\和新中心性能};
+\node[textnode] at (11.15,-3.49) {更新经审核的医学知识\\与行为规则};
+\node[textnode] at (11.15,-4.34) {控制对无关知识\\和原有能力的影响};
+\node[textnode] at (11.15,-5.19) {支持版本追踪、\\复核与回退};
+\draw[flow] (data.east) -- (task.west);
+\draw[flow] (task.east) -- (knowledge.west);
+
+\node[box,draw=green!40!black,fill=green!4,minimum width=13.1cm,minimum height=1.2cm] (support) at (6.55,-7.08)
+  {\textbf{MedCL 后续实现：共同评价支撑}\\评测配置\quad 模型版本\quad 阶段评价\quad 结果追踪\quad 历史能力对照};
+\draw[flow,dashed,draw=green!40!black] (data.south) -- (support.north -| data.south);
+\draw[flow,dashed,draw=green!40!black] (task.south) -- (support.north);
+\draw[flow,dashed,draw=green!40!black] (knowledge.south) -- (support.north -| knowledge.south);
+\node[textnode,text=black!65,font=\sffamily\heiti\fontsize{8.5bp}{11bp}\selectfont] at (6.55,-8.27)
+  {共同验证原则：明确更新对象、历史访问条件、评价任务、资源代价与回退条件\\模型训练、更新与回退属于平台外研究流程；MedCL 接收模型或预测进行评测};
+\end{tikzpicture}
+\endgroup

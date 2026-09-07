@@ -1,5 +1,5 @@
 section_id,title,status,artifact
-1,绪论,integrated_pro_versions_build_verified,chapters/ch01_introduction.tex
+1,绪论,figure_refined_build_verified_20260907,chapters/ch01_introduction.tex
 1.1,研究背景及意义,integrated_pro_versions_build_verified,chapters/ch01_introduction.tex
 1.2,医学影像持续学习研究现状,integrated_pro_versions_build_verified,chapters/ch01_introduction.tex
 1.3,关键科学与工程问题,integrated_pro_versions_build_verified,chapters/ch01_introduction.tex
@@ -49,8 +49,8 @@ section_id,title,status,artifact
 6.5,持续配准的 MedCL 评测接入与示例设计,integrated_pro_versions_build_verified,chapters/ch06_registration.tex
 6.6,方法讨论与适用边界,integrated_pro_versions_build_verified,chapters/ch06_registration.tex
 6.7,本章小结,integrated_pro_versions_build_verified,chapters/ch06_registration.tex
-7,总结与展望,integrated_pro_versions_build_verified,chapters/ch07_conclusion.tex
+7,总结与展望,figure_refined_build_verified_20260907,chapters/ch07_conclusion.tex
 7.1,全文工作总结,integrated_pro_versions_build_verified,chapters/ch07_conclusion.tex
 7.2,研究局限性,integrated_pro_versions_build_verified,chapters/ch07_conclusion.tex
-7.3,未来研究展望,integrated_pro_versions_build_verified,chapters/ch07_conclusion.tex
+7.3,未来研究展望,figure_refined_build_verified_20260907,chapters/ch07_conclusion.tex
 7.4,本章小结,integrated_pro_versions_build_verified,chapters/ch07_conclusion.tex
