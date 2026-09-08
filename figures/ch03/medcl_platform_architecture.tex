@@ -8,7 +8,7 @@
   node distance=5mm
 ]
 \node[wide] (entry) {\textbf{网页入口}\quad 基准与任务顺序\quad 阶段选择\quad 模型或预测提交\quad 结果查询};
-\node[wide,below=of entry] (manage) {\textbf{评测管理}\quad 固定测试协议\quad 生成配置\quad 提交检查\quad 评测状态与队列};
+\node[wide,below=of entry] (manage) {\textbf{评测管理}\quad 固定测试设置\quad 生成配置\quad 提交检查\quad 评测状态与队列};
 \node[task,below=7mm of manage] (cls) {\textbf{分类适配}\par 图像与类别映射\par 测试任务与分类头\par 准确率及类别结果};
 \node[task,left=3mm of cls] (seg) {\textbf{分割适配}\par 图像与标签空间\par 概率图或标签图\par 结构重叠及病例结果};
 \node[task,right=3mm of cls] (reg) {\textbf{配准适配}\par 固定与移动图像\par 空间变换与坐标约定\par 结构重叠及地标误差};
