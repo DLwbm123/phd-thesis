@@ -1,36 +1,40 @@
 \begin{table}[htbp]
 \centering
+\setlength{\belowcaptionskip}{5pt}
 \caption{六中心 Domain-CL 弱监督分割结果。监督与历史信息访问条件见表\ref{tab:scribblecl-methods}。}
 \label{tab:scribblecl-domain-results}
+\linespread{1}\selectfont
 \thesistablefont
 \renewcommand{\arraystretch}{1.14}
-\setlength{\tabcolsep}{3pt}
-\begin{tabular}{lcccccc}
+\setlength{\tabcolsep}{6pt}
+\begin{tabular}{lcccc}
 \toprule
-方法 & A-Dice $\uparrow$ & BWTR $\uparrow$ & RMA $\uparrow$ & E-FWT $\uparrow$ & MPE $\downarrow$ & DRR $\downarrow$ \\
+方法 & A-Dice $\uparrow$ & BWTR $\uparrow$ & RMA $\uparrow$ & E-FWT $\uparrow$ \\
 \midrule
-Dense-Sequential & $0.6760$ & $-0.2370$ & $1.0860$ & $0.2600$ & $0$ & $0$ \\
-PCE-Sequential   & $0.2480$ & $-0.5450$ & $0.7760$ & $0.1330$ & $0$ & $0$ \\
-ZS-Sequential    & $0.5100$ & $-0.3240$ & $0.7320$ & $0.2340$ & $0$ & $0$ \\
-ZS-EWC           & $0.5430$ & $-0.2980$ & $0.7610$ & $0.2160$ & $0$ & $0$ \\
-ZS-GPM           & $0.6576$ & $-0.2060$ & $0.8080$ & $0.2410$ & $0$ & -- \\
-ZSDERpp          & $0.7687$ & $-0.1520$ & $0.8990$ & $0.2250$ & $0$ & -- \\
+Dense-Sequential & $0.6760$ & $-0.2370$ & $1.0860$ & $0.2600$ \\
+PCE-Sequential & $0.2480$ & $-0.5450$ & $0.7760$ & $0.1330$ \\
+ZS-Sequential & $0.5100$ & $-0.3240$ & $0.7320$ & $0.2340$ \\
+ZS-EWC & $0.5430$ & $-0.2980$ & $0.7610$ & $0.2160$ \\
+ZS-GPM & $0.6576$ & $-0.2060$ & $0.8080$ & $0.2410$ \\
+ZSDERpp & $0.7687$ & $-0.1520$ & $0.8990$ & $0.2250$ \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \begin{table}[htbp]
 \centering
+\setlength{\belowcaptionskip}{5pt}
 \caption{三任务 Class-CL 弱监督分割结果。WCD 评价最终模型在统一标签空间中的全类别分割表现。}
 \label{tab:scribblecl-class-results}
+\linespread{1}\selectfont
 \thesistablefont
 \renewcommand{\arraystretch}{1.14}
-\setlength{\tabcolsep}{3pt}
-\begin{tabular}{lcccccc}
+\setlength{\tabcolsep}{6pt}
+\begin{tabular}{lcccc}
 \toprule
-方法 & A-Dice $\uparrow$ & BWTR $\uparrow$ & RMA $\uparrow$ & WCD $\uparrow$ & MPE $\downarrow$ & DRR $\downarrow$ \\
+方法 & A-Dice $\uparrow$ & BWTR $\uparrow$ & RMA $\uparrow$ & WCD $\uparrow$ \\
 \midrule
-ZSDERpp + MiB & $0.7793$ & $-0.0034$ & $0.9892$ & $0.7292$ & $0$ & -- \\
+ZSDERpp + MiB & $0.7793$ & $-0.0034$ & $0.9892$ & $0.7292$ \\
 \bottomrule
 \end{tabular}
 \end{table}

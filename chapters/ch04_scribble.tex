@@ -5,7 +5,7 @@
 \section{引言}
 \label{sec:scribblecl-introduction}
 
-第三章的 MedCL 平台以任务序列和阶段--任务性能矩阵组织持续学习评价，并通过分割基准考察中心变化、类别扩展和跨器官任务变化。本章沿用其中的六中心前列腺 Domain-CL 与三任务心脏结构 Class-CL 设置，将训练监督由密集掩膜改为固定模拟涂鸦，研究标注信息受限时的新任务学习与历史知识保持。实验继续采用平台的 A-Dice、BWTR、RMA、MPE 和 DRR，并分别使用 E-FWT 与 WCD 评价未来域泛化和全类别分割表现。
+第三章的 MedCL 平台以任务序列和阶段--任务性能矩阵组织持续学习评价，并通过分割基准考察中心变化、类别扩展和跨器官任务变化。本章沿用其中的六中心前列腺 Domain-CL 与三任务心脏结构 Class-CL 设置，将训练监督由密集掩膜改为固定模拟涂鸦，研究标注信息受限时的新任务学习与历史知识保持。实验继续采用平台的 A-Dice、BWTR 和 RMA，分别使用 E-FWT 与 WCD 评价未来域泛化和全类别分割表现，并结合 MPE 与 DRR 分析模型扩展和历史信息使用。
 
 密集医学图像分割标注需要逐像素或逐体素描述器官与病灶，新的医疗中心和分割类别持续出现时，为每个阶段获得完整掩膜会形成较高监督负担。涂鸦标注只在少量位置给出类别信息，部分交叉熵只约束已标注位置，未标注区域仍需由图像信息、一致性关系和结构先验共同推断\cite{tajbakhsh2020imperfect,can2018scribble,zhang2026zscribbleseg}。中心域变化还要求模型适应新的图像分布，类别扩展则改变当前可访问的标签与背景语义；后续更新均可能降低模型已经获得的分割能力。
 
@@ -320,7 +320,7 @@ ZS-EWC 和 ZS-GPM 的持续学习参数沿用第三章相应基线设置\cite{ki
 \subsection{实验结果}
 \label{subsec:scribblecl-results}
 
-表\ref{tab:scribblecl-domain-results}给出六中心前列腺 MRI 序列上的 Domain-CL 结果，表\ref{tab:scribblecl-class-results}给出三任务心脏结构序列上的 Class-CL 结果。两类实验共同报告 A-Dice、BWTR、RMA、MPE 和 DRR，分别从最终性能、历史保持、当前学习与资源使用评价弱监督持续分割。Domain-CL 进一步报告 E-FWT，Class-CL 进一步报告 WCD。
+表\ref{tab:scribblecl-domain-results}给出六中心前列腺 MRI 序列上的 Domain-CL 结果，表\ref{tab:scribblecl-class-results}给出三任务心脏结构序列上的 Class-CL 结果。两表共同报告 A-Dice、BWTR 和 RMA，分别评价最终性能、历史保持和当前任务学习。Domain-CL 进一步报告 E-FWT，Class-CL 进一步报告 WCD。模型扩展和历史信息使用结合 MPE、DRR 及训练配置进行分析。
 
 \input{tables/ScribbleCL}
 
@@ -336,12 +336,15 @@ PCE-Sequential 只在涂鸦位置计算部分交叉熵。与其相比，ZS-Seque
 
 ZSDERpp 的 A-Dice 和 BWTR 分别为 $0.7687$ 和 $-0.1520$，为表中最高值。相较 ZS-Sequential，A-Dice、BWTR 和 RMA 分别提高 $0.2587$、$0.1720$ 和 $0.1670$；相较 ZS-GPM，分别提高 $0.1111$、$0.0540$ 和 $0.0910$。ZSDERpp 的 E-FWT 为 $0.2250$，低于 ZS-Sequential 的 $0.2340$ 和 ZS-GPM 的 $0.2410$。这些指标表明，有限图像--涂鸦回放与参考特征约束主要改善最终性能和历史保持，未来域泛化呈现不同取舍。
 
-相较 Dense-Sequential，ZSDERpp 的 A-Dice 和 BWTR 分别提高 $0.0927$ 和 $0.0850$，RMA 与 E-FWT 分别低 $0.1870$ 和 $0.0350$。各方法的 MPE 均为零；结合表\ref{tab:scribblecl-methods}中的历史信息组织，可以分别观察固定模型容量下的当前监督、历史保持和最终表现。
+相较 Dense-Sequential，ZSDERpp 的 A-Dice 和 BWTR 分别提高 $0.0927$ 和 $0.0850$，RMA 与 E-FWT 分别低 $0.1870$ 和 $0.0350$。
 
 \paragraph{三任务类别增量分割。}
-ZSDERpp 与 MiB 结合后，A-Dice 为 $0.7793$，BWTR 为 $-0.0034$，RMA 为 $0.9892$，WCD 为 $0.7292$，MPE 为零。BWTR 接近零，表明旧任务从初学到最终阶段的平均相对下降较小；RMA 接近 1，表明新增任务的初学性能平均接近独立训练参照。WCD 则记录所有心脏结构进入统一输出空间后的全类别分割表现。
+ZSDERpp 与 MiB 结合后，A-Dice 为 $0.7793$，BWTR 为 $-0.0034$，RMA 为 $0.9892$，WCD 为 $0.7292$。BWTR 接近零，表明旧任务从初学到最终阶段的平均相对下降较小；RMA 接近 1，表明新增任务的初学性能平均接近独立训练参照。WCD 则记录所有心脏结构进入统一输出空间后的全类别分割表现。
 
 类别增量结果将第三章的 Class-CL 评价延伸到涂鸦监督条件。ZSDERpp 对历史特征和涂鸦样本的约束用于保留已有结构，MiB 的背景概率处理使旧类别与新增类别在阶段标签变化时保持相容。A-Dice、BWTR、RMA 和 WCD 分别反映逐任务表现、历史保持、当前学习与最终全类别输出，构成对该设置的多维评价。
+
+\paragraph{模型与历史信息资源。}
+两类实验中各方法的 MPE 均为 0，模型参数规模不随任务推进而增加。六中心实验中，Dense-Sequential、PCE-Sequential、ZS-Sequential 和 ZS-EWC 的 DRR 均为 0。ZS-GPM 通过历史子空间约束后续更新，ZSDERpp 则保留容量为 64 幅图像的图像--涂鸦回放集及参考特征；类别增量中的 ZSDERpp 与 MiB 组合沿用这一历史信息组织方式。结合表\ref{tab:scribblecl-methods}，可以看到各方法在固定模型容量下采用了不同的知识保持方式：顺序训练不保留历史约束，ZS-EWC 与 ZS-GPM 分别使用参数重要性和子空间投影，ZSDERpp 则通过有限历史样本与参考特征减轻遗忘。
 
 \subsection{讨论}
 \label{subsec:scribblecl-discussion}

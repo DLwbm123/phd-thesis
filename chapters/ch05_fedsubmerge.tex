@@ -5,7 +5,7 @@
 \section{引言}
 \label{sec:fedsubmerge-introduction}
 
-第三章的 MedCL 平台以任务序列、阶段--任务性能矩阵和多维指标组织持续学习评价，第四章将这一设置用于稀疏涂鸦监督下的分割。本章进一步研究图像级医学分类：类别按批次到达，训练数据分布于多个客户端，后续阶段不回放历史原始样本。评价沿用 MedCL 的历史保持、当前学习与资源分析，将分割矩阵中的 Dice 换为任务准确率，报告 ACC、BWTR、RMA、MPE 和 DRR，从而把平台的评价体系扩展到无回放联邦持续学习。
+第三章的 MedCL 平台以任务序列、阶段--任务性能矩阵和多维指标组织持续学习评价，第四章将这一设置用于稀疏涂鸦监督下的分割。本章进一步研究图像级医学分类：类别按批次到达，训练数据分布于多个客户端，后续阶段不回放历史原始样本。评价沿用 MedCL 的历史保持、当前学习与资源分析，将分割矩阵中的 Dice 换为任务准确率，以 ACC、BWTR 和 RMA 评价任务表现，并结合 MPE 与 DRR 分析模型扩展和历史信息使用，从而把平台的评价体系扩展到无回放联邦持续学习。
 
 本章将每批新增类别组织为一个任务，对应第三章任务身份已知的多头分类设置。测试时，模型使用样本所属任务的分类头，候选类别限于对应类别批次。类别批次沿时间扩展，客户端之间同时存在类别比例、类别覆盖和图像来源差异，因而评价需要同时关注新任务学习、旧任务保持与联邦异质性。
 
@@ -586,7 +586,7 @@ BWTR 衡量旧任务相对于初学性能的变化，RMA 衡量顺序约束下�
 \subsection{总体性能}
 \label{subsec:fedsubmerge-main-results}
 
-表\ref{tab:fedsubmerge-main-distribution}报告 PathMNIST 和 Hyper-Kvasir 的分布偏斜结果，表\ref{tab:fedsubmerge-main-other}报告标签数量偏斜结果，表\ref{tab:fedsubmerge-main-feature}报告多来源皮肤病变特征偏斜结果。三表覆盖七个联邦设置，以 ACC 评价最终分类性能，并结合 MedCL 的 BWTR、RMA、MPE 和 DRR 分析历史保持、当前学习与资源使用。
+表\ref{tab:fedsubmerge-main-distribution}报告 PathMNIST 和 Hyper-Kvasir 的分布偏斜结果，表\ref{tab:fedsubmerge-main-other}报告标签数量偏斜结果，表\ref{tab:fedsubmerge-main-feature}报告多来源皮肤病变特征偏斜结果。三表覆盖七个联邦设置，以 ACC 评价最终分类性能，并通过 MedCL 的 BWTR 和 RMA 分析历史保持与当前学习；模型扩展及历史信息使用则结合 MPE、DRR 和训练配置在下文分析。
 
 \input{tables/FedCL}
 
@@ -600,7 +600,11 @@ PathMNIST $\alpha=0.3$ 上，FedSubMerge-AD 的 BWTR 为 $-0.2288$，高于 FedS
 Hyper-Kvasir $\alpha=0.3$ 上，FedSubMerge 的 ACC、BWTR 和 RMA 分别为 $78.64\%$、$-0.1997$ 和 $0.9982$，均高于 FedSubMerge-AD 的 $78.12\%$、$-0.2079$ 和 $0.9888$。与 FOT 相比，统一融合的 ACC 提高 $8.61$ 个百分点，BWTR 提高 $0.0915$。TARGET 的 BWTR 为 $-0.1136$，但其 RMA 为 $0.8769$、ACC 为 $71.02\%$。结合当前学习与历史保持，可以更完整地解释不同方法的最终性能。
 
 \paragraph{模型与历史信息资源。}
-在上述两个 $\alpha=0.3$ 的设置中，FedSubMerge 与 FedSubMerge-AD 的 MPE 均为零，DRR 在 PathMNIST 上为 $0.1169$，在 Hyper-Kvasir 上为 $0.9477$，均低于 FOT 的 $1.0000$。两种融合方式在同一数据设置下具有相同 DRR，其差别主要体现在服务器对客户端历史方向的选择与融合。DRR 与逐层子空间的字节量、SVD 计算及通信量共同描述资源使用，后者在开销分析中进一步讨论。
+两个 $\alpha=0.3$ 设置中，FedAvg、Fed-GPM、FOT、FedSubMerge 和 FedSubMerge-AD 的 MPE 均为 0；PathMNIST 中的 Fed-DER 和 Hyper-Kvasir 中的 TARGET 的 MPE 也均为 0。这些方法在相应设置中的性能变化不依赖模型参数扩展。
+
+历史信息使用方面，PathMNIST $\alpha=0.3$ 设置中，FedAvg 的 DRR 为 0，Fed-GPM、Fed-DER 和 FOT 分别为 $0.0049$、$0.0749$ 和 $1.0000$，FedSubMerge 与 FedSubMerge-AD 均为 $0.1169$。Hyper-Kvasir $\alpha=0.3$ 设置中，FedAvg 的 DRR 为 0，Fed-GPM 和 FOT 分别为 $0.2393$ 和 $1.0000$，FedSubMerge 与 FedSubMerge-AD 均为 $0.9477$。两种融合方式在同一数据设置下具有相同 DRR，且均低于 FOT；它们的差别主要体现在服务器对客户端历史方向的选择与融合。
+
+标签数量偏斜与多来源皮肤病变设置同样通过主梯度子空间摘要约束后续更新，FedSubMerge 及其自适应版本不保存历史原始图像用于回放。按照第三章的定义，DRR 同时计入构造历史表示所使用的数据，因此子空间方法的历史信息使用还需结合摘要存储和传输分析。逐层子空间的字节量、SVD 计算及通信量在后续开销分析中进一步讨论。
 
 这些结果将第三章的稳定性--可塑性评价用于联邦分类：ACC 反映最终表现，BWTR 反映相对历史变化，RMA 反映当前任务学习，MPE 和 DRR 记录相应资源条件。任务数据涵盖病理图像、腹部 CT、消化道内镜和多来源皮肤病变图像，各设置按表\ref{tab:fedsubmerge-setup}组织类别批次，并在测试时提供任务身份。
 
@@ -737,7 +741,7 @@ MedCL 的客户端维度以式\eqref{eq:medcl-federated-cube}中的 $R_{t,c,j}$ 
 
 \subsection{多维结果与资源记录}
 
-表\ref{tab:fedsubmerge-system-boundary}概括本章与 MedCL 评价的对应关系。主结果表将任务特定的 ACC 与平台共用的 BWTR、RMA、MPE 和 DRR 并列组织；异质性、参与率和设计消融进一步提供 BWT 与通信开销分析。性能矩阵、历史任务曲线和类别混淆结果用于解释各项汇总指标。
+表\ref{tab:fedsubmerge-system-boundary}概括本章与 MedCL 评价的对应关系。主结果表将任务特定的 ACC 与平台共用的 BWTR、RMA 并列组织，正文结合 MPE 与 DRR 分析模型扩展和历史信息使用；异质性、参与率和设计消融进一步提供 BWT 与通信开销分析。性能矩阵、历史任务曲线和类别混淆结果用于解释各项汇总指标。
 
 \begin{table}[htbp]
 \centering
