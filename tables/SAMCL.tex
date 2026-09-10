@@ -1,0 +1,40 @@
+\begin{table}[htbp]
+\centering
+\caption{SAMCL 四任务顺序实验的任务性能与 MedCL 持续学习指标。NLST 的 TRE 及 TRE-BWT 单位为 mm。红色粗体表示 EWC、SI、GPM、MER 和 SAMCL 中的任务指标最优值；下划线表示该值劣于 SAMCL，星号表示与 SAMCL 的配对 $t$ 检验达到 $p<0.05$。}
+\label{tab:samcl-main-results}
+\linespread{1}\selectfont
+\thesistablefont
+\renewcommand{\arraystretch}{1.18}
+\setlength{\tabcolsep}{3pt}
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lcccccccc@{}}
+\toprule
+\multicolumn{9}{c}{（a）最终性能 $R_{T,j}$、受限建模能力与资源条件} \\
+方法 & \shortstack{OASIS\\Dice $\uparrow$} & \shortstack{CTCT\\Dice $\uparrow$} & \shortstack{NLST\\TRE $\downarrow$} & \shortstack{MRCT\\Dice $\uparrow$} & \shortstack{Dice\\RMA$\uparrow$} & \shortstack{TRE\\RMA$\uparrow$} & MPE$\downarrow$ & DRR$\downarrow$ \\
+\midrule
+未配准 & $\underline{0.598}^{*}$ & $\underline{0.311}^{*}$ & $\underline{7.932}^{*}$ & $\underline{0.353}^{*}$ & \textemdash & \textemdash & \textemdash & \textemdash \\
+独立训练 & $0.738^{*}$ & $\underline{0.335}^{*}$ & $3.259^{*}$ & $\underline{0.550}$ & \textemdash & \textemdash & \textemdash & \textemdash \\
+集中式多任务 & $0.743^{*}$ & 0.358 & $2.662^{*}$ & $\underline{0.506}$ & \textemdash & \textemdash & \textemdash & \textemdash \\
+直接顺序训练 & $\underline{0.348}^{*}$ & $\underline{0.270}$ & $\underline{6.922}^{*}$ & 0.568 & \textemdash & \textemdash & \textemdash & \textemdash \\
+EWC & $\underline{0.659}^{*}$ & $\best{0.364^{*}}$ & 3.836 & $\underline{0.506}$ & \textemdash & \textemdash & \textemdash & \textemdash \\
+SI & $\underline{0.461}^{*}$ & $\underline{0.303}^{*}$ & $\underline{8.186}^{*}$ & $\underline{0.555}^{*}$ & \textemdash & \textemdash & \textemdash & \textemdash \\
+GPM & $\underline{0.458}^{*}$ & $\underline{0.290}^{*}$ & $\underline{7.095}^{*}$ & $\underline{0.556}^{*}$ & \textemdash & \textemdash & \textemdash & \textemdash \\
+MER & \best{0.698} & $\underline{0.331}^{*}$ & $\best{3.611^{*}}$ & $\underline{0.532}$ & $1.0156$ & $1.0177$ & $0$ & $0.2020$ \\
+SAMCL & 0.697 & 0.352 & 3.855 & \best{0.563} & $1.0892$ & $1.0097$ & $0$ & $0.1806$ \\
+\bottomrule
+\end{tabular*}
+
+\vspace{8pt}
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lcccccc@{}}
+\toprule
+\multicolumn{7}{c}{（b）后向变化 $R_{T,j}-R_{j,j}$ 与归一化后向迁移} \\
+方法 & \shortstack{OASIS\\Dice-BWT $\uparrow$} & \shortstack{CTCT\\Dice-BWT $\uparrow$} & \shortstack{NLST\\TRE-BWT $\downarrow$} & \shortstack{MRCT\\Dice-BWT} & \shortstack{Dice\\BWTR$\uparrow$} & \shortstack{TRE\\BWTR$\uparrow$} \\
+\midrule
+直接顺序训练 & $\underline{-0.395}^{*}$ & $\underline{-0.129}^{*}$ & $\underline{3.508}^{*}$ & 0 & \textemdash & \textemdash \\
+EWC & $\underline{-0.083}^{*}$ & $\best{-0.011^{*}}$ & $\underline{0.386}$ & 0 & \textemdash & \textemdash \\
+SI & $\underline{-0.281}^{*}$ & $\underline{-0.084}^{*}$ & $\underline{4.685}^{*}$ & 0 & \textemdash & \textemdash \\
+GPM & $\underline{-0.281}^{*}$ & $\underline{-0.085}^{*}$ & $\underline{3.574}^{*}$ & 0 & \textemdash & \textemdash \\
+MER & $\best{-0.036}$ & $\underline{-0.040}$ & $\best{0.077^{*}}$ & 0 & $-0.0871$ & $-0.0670$ \\
+SAMCL & $-0.037$ & $-0.039$ & 0.306 & 0 & $-0.0739$ & $-0.0892$ \\
+\bottomrule
+\end{tabular*}
+\end{table}

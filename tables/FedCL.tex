@@ -1,0 +1,175 @@
+\clearpage
+\begingroup
+\linespread{1}\selectfont
+\thesistablefont
+\setlength{\tabcolsep}{6pt}
+\renewcommand{\arraystretch}{1.10}
+\setlength{\LTcapwidth}{\textwidth}
+\begin{longtable}{@{}lrrrrr@{}}
+\caption{分布偏斜设置下的联邦持续分类结果。$^{\ast}$ 表示使用存储或生成历史样本的回放方法。}\label{tab:fedsubmerge-main-distribution}\\
+\toprule
+方法 & ACC (\%) $\uparrow$ & BWTR $\uparrow$ & RMA $\uparrow$ & MPE $\downarrow$ & DRR $\downarrow$ \\
+\midrule
+\endfirsthead
+\caption[]{分布偏斜设置下的联邦持续分类结果（续）}\\
+\toprule
+方法 & ACC (\%) $\uparrow$ & BWTR $\uparrow$ & RMA $\uparrow$ & MPE $\downarrow$ & DRR $\downarrow$ \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+\multicolumn{6}{c}{PathMNIST，$\alpha=0.3$} \\*
+FedAvg & 67.23 & -0.4086 & 0.9908 & 0.0000 & 0.0000 \\*
+FedProx & 68.51 &  &  &  &  \\*
+SCAFFOLD & 73.48 &  &  &  &  \\*
+Fed-EWC & 76.26 &  &  &  &  \\*
+Fed-SI & 77.22 &  &  &  &  \\*
+Fed-GPM & 81.40 & -0.3298 & 0.9980 & 0.0000 & 0.0049 \\*
+Fed-DER$^{\ast}$ & 81.70 & -0.0489 & 0.9734 & 0.0000 & 0.0749 \\*
+GLFC$^{\ast}$ & 84.05 &  &  &  &  \\*
+TARGET$^{\ast}$ & 84.75 &  &  &  &  \\*
+FOT & 86.20 & -0.6127 & 0.9996 & 0.0000 & 1.0000 \\*
+Re-Fed$^{\ast}$ & 87.13 &  &  &  &  \\*
+DDDR$^{\ast}$ & 88.93 &  &  &  &  \\*
+FedSubMerge & 90.97 & -0.2818 & 1.0017 & 0.0000 & 0.1169 \\*
+FedSubMerge-AD & 93.42 & -0.2288 & 0.9886 & 0.0000 & 0.1169 \\
+\midrule
+\multicolumn{6}{c}{PathMNIST，$\alpha=0.1$} \\*
+FedAvg & 57.35 &  &  &  &  \\*
+FedProx & 58.45 &  &  &  &  \\*
+SCAFFOLD & 59.95 &  &  &  &  \\*
+Fed-EWC & 64.38 &  &  &  &  \\*
+Fed-SI & 65.17 &  &  &  &  \\*
+Fed-GPM & 69.06 &  &  &  &  \\*
+Fed-DER$^{\ast}$ & 72.85 &  &  &  &  \\*
+GLFC$^{\ast}$ & 75.30 &  &  &  &  \\*
+TARGET$^{\ast}$ & 76.40 &  &  &  &  \\*
+FOT & 74.85 &  &  &  &  \\*
+Re-Fed$^{\ast}$ & 80.72 &  &  &  &  \\*
+DDDR$^{\ast}$ & 77.30 &  &  &  &  \\*
+FedSubMerge & 77.50 &  &  &  &  \\*
+FedSubMerge-AD & 79.40 &  &  &  &  \\
+\midrule
+\multicolumn{6}{c}{Hyper-Kvasir，$\alpha=0.3$} \\*
+FedAvg & 47.58 & -0.2455 & 0.9362 & 0.0000 & 0.0000 \\*
+FedProx & 63.44 &  &  &  &  \\*
+SCAFFOLD & 63.82 &  &  &  &  \\*
+Fed-EWC & 64.46 &  &  &  &  \\*
+Fed-SI & 63.58 &  &  &  &  \\*
+Fed-GPM & 66.76 & -0.1852 & 0.9868 & 0.0000 & 0.2393 \\*
+Fed-DER$^{\ast}$ & 69.64 &  &  &  &  \\*
+GLFC$^{\ast}$ & 72.16 &  &  &  &  \\*
+TARGET$^{\ast}$ & 71.02 & -0.1136 & 0.8769 & 0.0000 &  \\*
+FOT & 70.03 & -0.2912 & 0.9976 & 0.0000 & 1.0000 \\*
+Re-Fed$^{\ast}$ & 73.96 &  &  &  &  \\*
+DDDR$^{\ast}$ & 75.27 &  &  &  &  \\*
+FedSubMerge & 78.64 & -0.1997 & 0.9982 & 0.0000 & 0.9477 \\*
+FedSubMerge-AD & 78.12 & -0.2079 & 0.9888 & 0.0000 & 0.9477 \\
+\midrule
+\multicolumn{6}{c}{Hyper-Kvasir，$\alpha=0.1$} \\*
+FedAvg & 42.45 &  &  &  &  \\*
+FedProx & 55.87 &  &  &  &  \\*
+SCAFFOLD & 62.08 &  &  &  &  \\*
+Fed-EWC & 75.03 &  &  &  &  \\*
+Fed-SI & 71.89 &  &  &  &  \\*
+Fed-GPM & 64.22 &  &  &  &  \\*
+Fed-DER$^{\ast}$ & 66.01 &  &  &  &  \\*
+GLFC$^{\ast}$ & 66.59 &  &  &  &  \\*
+TARGET$^{\ast}$ & 67.10 &  &  &  &  \\*
+FOT & 74.20 &  &  &  &  \\*
+Re-Fed$^{\ast}$ & 73.79 &  &  &  &  \\*
+DDDR$^{\ast}$ & 77.24 &  &  &  &  \\*
+FedSubMerge & 76.64 &  &  &  &  \\*
+FedSubMerge-AD & 76.16 &  &  &  &  \\
+\end{longtable}
+\endgroup
+\clearpage
+\begingroup
+\linespread{1}\selectfont
+\thesistablefont
+\setlength{\tabcolsep}{6pt}
+\renewcommand{\arraystretch}{1.10}
+\setlength{\LTcapwidth}{\textwidth}
+\begin{longtable}{@{}lrrrrr@{}}
+\caption{标签数量偏斜设置下的联邦持续分类结果。$^{\ast}$ 表示使用存储或生成历史样本的回放方法。}\label{tab:fedsubmerge-main-other}\\
+\toprule
+方法 & ACC (\%) $\uparrow$ & BWTR $\uparrow$ & RMA $\uparrow$ & MPE $\downarrow$ & DRR $\downarrow$ \\
+\midrule
+\endfirsthead
+\caption[]{标签数量偏斜设置下的联邦持续分类结果（续）}\\
+\toprule
+方法 & ACC (\%) $\uparrow$ & BWTR $\uparrow$ & RMA $\uparrow$ & MPE $\downarrow$ & DRR $\downarrow$ \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+\multicolumn{6}{c}{OrganAMNIST} \\*
+FedAvg & 40.20 &  &  &  &  \\*
+FedProx & 41.33 &  &  &  &  \\*
+SCAFFOLD & 46.29 &  &  &  &  \\*
+Fed-EWC & 52.59 &  &  &  &  \\*
+Fed-SI & 48.35 &  &  &  &  \\*
+Fed-GPM & 61.20 &  &  &  &  \\*
+Fed-DER$^{\ast}$ & 62.57 &  &  &  &  \\*
+GLFC$^{\ast}$ & 64.10 &  &  &  &  \\*
+TARGET$^{\ast}$ & 65.20 &  &  &  &  \\*
+FOT & 66.85 &  &  &  &  \\*
+Re-Fed$^{\ast}$ & 68.20 &  &  &  &  \\*
+DDDR$^{\ast}$ & 69.35 &  &  &  &  \\*
+FedSubMerge & 70.17 &  &  &  &  \\*
+FedSubMerge-AD & 74.42 &  &  &  &  \\
+\midrule
+\multicolumn{6}{c}{Hyper-Kvasir} \\*
+FedAvg & 48.15 &  &  &  &  \\*
+FedProx & 46.40 &  &  &  &  \\*
+SCAFFOLD & 51.14 &  &  &  &  \\*
+Fed-EWC & 53.15 &  &  &  &  \\*
+Fed-SI & 45.08 &  &  &  &  \\*
+Fed-GPM & 61.52 &  &  &  &  \\*
+Fed-DER$^{\ast}$ & 61.18 &  &  &  &  \\*
+GLFC$^{\ast}$ & 63.06 &  &  &  &  \\*
+TARGET$^{\ast}$ & 67.24 &  &  &  &  \\*
+FOT & 66.57 &  &  &  &  \\*
+Re-Fed$^{\ast}$ & 69.38 &  &  &  &  \\*
+DDDR$^{\ast}$ & 68.94 &  &  &  &  \\*
+FedSubMerge & 70.76 &  &  &  &  \\*
+FedSubMerge-AD & 70.97 &  &  &  &  \\
+\end{longtable}
+\endgroup
+\clearpage
+\begingroup
+\linespread{1}\selectfont
+\thesistablefont
+\setlength{\tabcolsep}{6pt}
+\renewcommand{\arraystretch}{1.10}
+\setlength{\LTcapwidth}{\textwidth}
+\begin{longtable}{@{}lrrrrr@{}}
+\caption{多来源皮肤病变特征偏斜设置下的联邦持续分类结果。$^{\ast}$ 表示使用存储或生成历史样本的回放方法。}\label{tab:fedsubmerge-main-feature}\\
+\toprule
+方法 & ACC (\%) $\uparrow$ & BWTR $\uparrow$ & RMA $\uparrow$ & MPE $\downarrow$ & DRR $\downarrow$ \\
+\midrule
+\endfirsthead
+\caption[]{多来源皮肤病变特征偏斜设置下的联邦持续分类结果（续）}\\
+\toprule
+方法 & ACC (\%) $\uparrow$ & BWTR $\uparrow$ & RMA $\uparrow$ & MPE $\downarrow$ & DRR $\downarrow$ \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+\multicolumn{6}{c}{多来源皮肤病变} \\*
+FedAvg & 64.45 &  &  &  &  \\*
+FedProx & 67.90 &  &  &  &  \\*
+SCAFFOLD & 72.33 &  &  &  &  \\*
+Fed-EWC & 73.18 &  &  &  &  \\*
+Fed-SI & 77.72 &  &  &  &  \\*
+Fed-GPM & 82.76 &  &  &  &  \\*
+Fed-DER$^{\ast}$ & 78.86 &  &  &  &  \\*
+GLFC$^{\ast}$ & 79.45 &  &  &  &  \\*
+TARGET$^{\ast}$ & 80.15 &  &  &  &  \\*
+FOT & 80.80 &  &  &  &  \\*
+Re-Fed$^{\ast}$ & 84.21 &  &  &  &  \\*
+DDDR$^{\ast}$ & 84.43 &  &  &  &  \\*
+FedSubMerge & 85.53 &  &  &  &  \\*
+FedSubMerge-AD & 85.75 &  &  &  &  \\
+\end{longtable}
+\endgroup
