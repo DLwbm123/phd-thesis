@@ -1,17 +1,13 @@
-# 作者表格修订 ZIP 发布记录（2026-09-10）
+# 作者最新 ZIP 发布记录（2026-09-11）
 
-来源：`PhD_Thesis_tables_revised.zip`。基线 GitHub `84963a4`，Overleaf `fec41b3`。
+来源：`PhD_Thesis_revised.zip`。GitHub 基线 `02e566c471d666af28708477974a06e07c493464`；Overleaf 基线 `f7fbc325b1dda8ce27ed0e11ba06f011a8ae4e05`。
 
-按作者最新 ZIP 导入 69 份项目源码与资源，实际变更以下 5 份文件：
+导入 70 份项目源码、资源和作者修改说明。实际文本变化包含：中英文摘要、第一至第七章、第一/三/四章章节卡、`figures/ch01/thesis_work_logic.tex`；新增 `修改说明.md`。六份基准图片由 `figures/ch03/` 移至 `figures/ch04/`，对应引用采用新版路径。
 
-- `chapters/ch04_scribble.tex`
-- `chapters/ch05_fedsubmerge.tex`
-- `chapters/ch06_registration.tex`
-- `tables/FedCL.tex`
-- `tables/ScribbleCL.tex`
+第三章集中于评测平台设计，共用指标仍在 3.5.4；密集监督分割基准及结果移入第四章，和弱监督方法共同组织。摘要与章间衔接按作者新稿保留。Overleaf 新增提交仅将旧摘要中的平台名称补全为医学影像持续学习评测平台，新 ZIP 已在整体重写后的摘要中使用该完整名称，因此按最新 ZIP 更新。
 
-主要变化为联邦分类表横向分组排版、分割表列与间距调整，以及相关章节说明同步。按 ZIP 保留内容与数值，没有自行增补结果或开展实验。另更新 STATE、章节状态表和本报告。附带 main.pdf 与 MANIFEST.sha256 保留在本地解包目录，不提交生成文件或重新计算清单。
+另更新 STATE、章节状态表和本报告。附带 `main.pdf` 与 `MANIFEST.sha256` 保留在本地解包目录，不上传构建产物、不重新计算清单。不改动仓库独有的实验工作文件。
 
-XeLaTeX/latexmk 构建成功，183 页。最终日志无 LaTeX 错误、未定义引用、重复标签、缺字或 Overfull。已检查正文第 88、109、110 页的表格渲染。此为版本同步与编译检查，不是原始实验结果复核。
+XeLaTeX/latexmk 构建成功，183 页。最终日志无 LaTeX 错误、未定义引用、重复标签、缺字或 Overfull；正文未发现 TODO/TBD/??。已检查 PDF 第 3–5、7、11–12、36、69、77–78 页，确认摘要、目录、图 1.2、指标与迁移后的基准图排版正常。此为版本同步与编译检查，不是原始实验结果复核；未启动或宣称完成任何新增 ScribbleCL 实验。
 
-本地 PDF：`../tables_zip_update_20260910/PhD_Thesis_tables_revised_compiled_20260910.pdf`。两个远端均采用非强制推送；提交回执见最终回复及本地 release_receipt.json。
+本地 PDF：`../zip_release_20260911/PhD_Thesis_revised_compiled_20260911.pdf`。两个远端均采用非强制推送；最终提交及远端回读结果见本地 `release_receipt.json` 和最终回复。

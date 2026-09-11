@@ -11,11 +11,11 @@
 ]
 \node[wide] (problem) {\textbf{共同问题：任务持续演化与训练信息受限}};
 \node[wide,below=of problem,minimum height=1.05cm] (framework)
-  {\textbf{第三章：MedCL 评测平台设计与分割基准}\\数据与任务设定\quad 阶段矩阵\quad 多维评价指标};
+  {\textbf{第三章：MedCL 医学影像持续学习评测平台}\\场景定义与数据组织\quad 阶段矩阵\quad 多维评价指标};
 \node[branch,below=1.05cm of framework] (fed)
   {\textbf{第五章：类别扩展}\\\textbf{联邦持续分类}\\[5pt]无原始样本回放\\子空间融合与梯度保护};
 \node[branch,left=5mm of fed] (seg)
-  {\textbf{第四章：域与类别增量}\\\textbf{弱监督持续分割}\\[5pt]有限回放\enspace ·\enspace 涂鸦监督\\监督增强与特征一致性};
+  {\textbf{第四章：持续分割}\\\textbf{基准评测与弱监督方法}\\[5pt]密集监督基准\enspace $\rightarrow$\enspace 涂鸦监督\\监督增强与特征一致性};
 \node[branch,right=5mm of fed] (reg)
   {\textbf{第六章：任务增量}\\\textbf{持续医学图像配准}\\[5pt]有限图像对回放\\元学习与锐度感知优化};
 \node[wide,below=6mm of fed,minimum height=1.05cm,fill=black!8] (evaluation)
@@ -23,7 +23,7 @@
 \node[wide,below=of evaluation] (future)
   {\textbf{第七章：总结与展望}\qquad 多模态持续学习};
 \draw[flow] (problem) -- (framework);
-\draw[flow] (framework.south -| seg.north) -- node[right,align=left] {数据与评价\\直接承接} (seg.north);
+\draw[flow] (framework.south -| seg.north) -- node[right,align=left] {场景定义与\\评价指标} (seg.north);
 \draw[flow] (framework.south) -- node[right] {阶段矩阵与指标} (fed.north);
 \draw[flow] (framework.south -| reg.north) -- (reg.north);
 \draw[flow] (seg.south) -- (evaluation.north -| seg.south);
