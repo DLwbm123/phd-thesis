@@ -59,12 +59,14 @@ $|\mathcal{M}|\leq b$。这一资源条件介于联合训练与无历史原始�
 图\ref{fig:samcl-framework}展示了这一设定。训练阶段依次到达脑部 MR--MR、腹部 CT--CT、肺部 CT--CT 和腹部 MR--CT 图像对，任务之间同时存在解剖区域、图像外观、模态关系和个体内/个体间配准方式的变化。推理阶段不再为各任务维护独立网络，而是使用顺序训练后得到的单一模型处理已见任务。SAMCL 以有限经验回放保存少量历史图像对，以一阶元持续学习协调当前和历史样本的更新方向，并进一步通过锐度感知优化改善参数邻域内的损失，从而同时面向历史保持和前向泛化。
 
 \IfFileExists{figures/ch06/samcl_framework.pdf}{%
-\begin{figure}[htbp]
+\begin{landscape}
+\begin{figure}[p]
 \centering
-\includegraphics[width=\textwidth]{ch06/samcl_framework.pdf}
+\includegraphics[width=\linewidth,height=0.75\textwidth,keepaspectratio]{ch06/samcl_framework.pdf}
 \caption[SAMCL 的持续医学图像配准设定]{SAMCL 的持续医学图像配准设定。模型依次学习脑部 MR--MR、腹部 CT--CT、肺部 CT--CT 和腹部 MR--CT 配准，完成顺序训练后使用同一模型处理各已见任务。}
 \label{fig:samcl-framework}
 \end{figure}
+\end{landscape}
 }{}
 
 \subsection{配准网络与持续学习目标}
@@ -351,11 +353,18 @@ MER 与 SAMCL 均使用有限回放。两者在 OASIS 最终 Dice 和前两个�
 图\ref{fig:samcl-qualitative}给出 OASIS 与腹部 CT--CT 的代表性图像对。每个任务的上排显示固定图像与配准后移动图像之间的差异图，下排显示不同方法得到的配准结果及对应 Dice。直接顺序训练、SI 和 GPM 在早期任务上出现较明显差异，而 SAMCL 的差异图和变形后图像更接近独立训练与集中式多任务训练。该可视化与表\ref{tab:samcl-main-results}中的早期任务保持结果一致。
 
 \IfFileExists{figures/ch06/samcl_qualitative.pdf}{%
-\begin{figure}[htbp]
+\begin{figure}[p]
 \centering
-\includegraphics[width=\textwidth]{ch06/samcl_qualitative.pdf}
-\caption[不同训练策略的代表性配准结果]{不同训练策略在 OASIS 与腹部 CT--CT 代表性图像对上的配准结果。每个任务左侧给出固定图像与移动图像；各方法的上排为固定图像与配准后移动图像之间的差异图，下排为配准结果及对应 Dice。CT 图像显示时将强度裁剪到 $[-200,300]$。}
+\includegraphics[width=\textwidth,height=0.81\textheight,keepaspectratio]{ch06/samcl_qualitative_oasis_large.pdf}
+\caption[不同训练策略的代表性配准结果]{不同训练策略在 OASIS 代表性图像对上的配准结果。两组方法分别放大展示，每组左侧重复给出同一固定图像与移动图像作为参照；各方法的上排为差异图，下排为配准结果及对应 Dice。腹部 CT--CT 结果见续图。}
 \label{fig:samcl-qualitative}
+\end{figure}
+\begin{figure}[p]
+\ContinuedFloat
+\captionsetup{list=off}
+\centering
+\includegraphics[width=\textwidth,height=0.81\textheight,keepaspectratio]{ch06/samcl_qualitative_ctct_large.pdf}
+\caption{不同训练策略的代表性配准结果（续）：腹部 CT--CT。两组方法分别放大展示，每组左侧为同一固定图像与移动图像；各方法的上排为差异图，下排为配准结果及对应 Dice。CT 图像显示时将强度裁剪到 $[-200,300]$。}
 \end{figure}
 }{}
 
@@ -366,15 +375,21 @@ MER 与 SAMCL 均使用有限回放。两者在 OASIS 最终 Dice 和前两个�
 
 图\ref{fig:samcl-ablation-generalization}(b)比较采用与不采用锐度感知最小化时的泛化表现。CTCT$\rightarrow$CTCT 和 MRCT$\rightarrow$MRCT 在同一配准任务的未参与训练数据上测试；CTCT$\rightarrow$MRCT、CTCT$\rightarrow$NLST 和 OASIS$\rightarrow$NLST 则在不同配准任务上测试。加入 SAM 后，前三个 Dice 方向的结果提高，后两个 TRE 方向的误差降低。该实验表明 SAM 在这些测试方向上取得了更好的泛化表现。
 
-\begin{figure}[htbp]
+\begin{landscape}
+\begin{figure}[p]
 \centering
-\includegraphics[width=0.90\textwidth]{ch06/plot_memory_nnn.pdf}\\[-0.2em]
-{\thesisfigurefont (a) 回放容量消融实验}\par\vspace{5pt}
-\includegraphics[width=0.90\textwidth]{ch06/plot_sam_new.pdf}\\[-0.2em]
-{\thesisfigurefont (b) 域内与跨任务泛化实验}
-\caption[SAMCL 的回放容量与泛化实验]{SAMCL 的回放容量与泛化实验。（a）不同回放容量下的配准结果，OASIS、CTCT 和 MRCT 报告 Dice，NLST 报告 TRE；（b）采用或不采用锐度感知最小化时的域内与跨任务泛化结果。CTCT 表示腹部 CT--CT 配准，MRCT 表示腹部 MR--CT 配准。}
+\includegraphics[width=\linewidth,height=0.75\textwidth,keepaspectratio]{ch06/plot_memory_nnn.pdf}
+\caption[SAMCL 的回放容量与泛化实验]{SAMCL 的回放容量与泛化实验。（a）不同回放容量下的配准结果。OASIS、CTCT 和 MRCT 报告 Dice，NLST 报告 TRE；CTCT 表示腹部 CT--CT 配准，MRCT 表示腹部 MR--CT 配准。泛化实验见续图。}
 \label{fig:samcl-ablation-generalization}
 \end{figure}
+\begin{figure}[p]
+\ContinuedFloat
+\captionsetup{list=off}
+\centering
+\includegraphics[width=\linewidth,height=0.75\textwidth,keepaspectratio]{ch06/plot_sam_new.pdf}
+\caption{SAMCL 的回放容量与泛化实验（续）。（b）采用或不采用锐度感知最小化时的域内与跨任务泛化结果。CTCT 表示腹部 CT--CT 配准，MRCT 表示腹部 MR--CT 配准。}
+\end{figure}
+\end{landscape}
 
 回放容量分析与 MedCL 的 DRR 共同描述历史信息使用，域内及跨任务测试则补充观察模型在给定配准方向上的泛化表现。
 

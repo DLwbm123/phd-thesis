@@ -1,445 +1,427 @@
+% Reference data. Formatting: bibliography/thesis-plainnat.bst.
+% Conference names are centralized; publication years remain in year fields.
+% Main conferences and associated workshops have separate venue strings.
+
+@string{conf_miccai = {Medical Image Computing and Computer Assisted Intervention}}
+@string{conf_cvpr = {Proceedings of the Conference on Computer Vision and Pattern Recognition}}
+@string{conf_iccv = {Proceedings of the International Conference on Computer Vision}}
+@string{conf_eccv = {European Conference on Computer Vision}}
+@string{conf_icml = {Proceedings of the International Conference on Machine Learning}}
+@string{conf_iclr = {International Conference on Learning Representations}}
+@string{conf_neurips = {Advances in Neural Information Processing Systems}}
+@string{conf_aistats = {Proceedings of the International Conference on Artificial Intelligence and Statistics}}
+@string{conf_ijcai = {Proceedings of the International Joint Conference on Artificial Intelligence}}
+@string{conf_icpr = {Proceedings of the International Conference on Pattern Recognition}}
+@string{conf_ccs = {Proceedings of the ACM SIGSAC Conference on Computer and Communications Security}}
+@string{conf_wacv = {Proceedings of the IEEE/CVF Winter Conference on Applications of Computer Vision}}
+@string{conf_mlsys = {Proceedings of Machine Learning and Systems}}
+@string{workshop_dlmia_ml_cds = {Deep Learning in Medical Image Analysis and Multimodal Learning for Clinical Decision Support}}
+@string{workshop_pilmed = {Proceedings of the International Workshop on Personalized Incremental Learning in Medicine}}
+@string{workshop_mlmi = {International Workshop on Machine Learning in Medical Imaging}}
 
 @article{litjens2017survey,
-  author  = {Litjens, Geert and Kooi, Thijs and Ehteshami Bejnordi, Babak and Setio, Arnaud Arindra Adiyoso and Ciompi, Francesco and Ghafoorian, Mohsen and van der Laak, Jeroen A. W. M. and van Ginneken, Bram and S{\'a}nchez, Clara I.},
-  title   = {A Survey on Deep Learning in Medical Image Analysis},
-  journal = {Medical Image Analysis},
-  volume  = {42},
-  pages   = {60--88},
-  year    = {2017},
-  doi     = {10.1016/j.media.2017.07.005}
+  author        = {Litjens, Geert and Kooi, Thijs and Ehteshami Bejnordi, Babak and Setio, Arnaud Arindra Adiyoso and Ciompi, Francesco and Ghafoorian, Mohsen and van der Laak, Jeroen A. W. M. and van Ginneken, Bram and S{\'a}nchez, Clara I.},
+  title         = {A Survey on Deep Learning in Medical Image Analysis},
+  journal       = {Medical Image Analysis},
+  volume        = {42},
+  pages         = {60--88},
+  year          = {2017},
 }
 
 @inproceedings{ronneberger2015unet,
-  author    = {Ronneberger, Olaf and Fischer, Philipp and Brox, Thomas},
-  title     = {{U-Net}: Convolutional Networks for Biomedical Image Segmentation},
-  booktitle = {Medical Image Computing and Computer-Assisted Intervention -- MICCAI 2015},
-  series    = {Lecture Notes in Computer Science},
-  volume    = {9351},
-  pages     = {234--241},
-  publisher = {Springer},
-  year      = {2015},
-  doi       = {10.1007/978-3-319-24574-4_28}
+  author        = {Ronneberger, Olaf and Fischer, Philipp and Brox, Thomas},
+  title         = {{U-Net}: Convolutional Networks for Biomedical Image Segmentation},
+  booktitle     = conf_miccai,
+  series        = {Lecture Notes in Computer Science},
+  volume        = {9351},
+  pages         = {234--241},
+  publisher     = {Springer},
+  year          = {2015},
 }
 
 @article{taha2015metrics,
-  author  = {Taha, Abdel Aziz and Hanbury, Allan},
-  title   = {Metrics for Evaluating 3D Medical Image Segmentation: Analysis, Selection, and Tool},
-  journal = {BMC Medical Imaging},
-  volume  = {15},
-  pages   = {29},
-  year    = {2015},
-  doi     = {10.1186/s12880-015-0068-x}
+  author        = {Taha, Abdel Aziz and Hanbury, Allan},
+  title         = {Metrics for Evaluating {3D} Medical Image Segmentation: Analysis, Selection, and Tool},
+  journal       = {BMC Medical Imaging},
+  volume        = {15},
+  pages         = {29},
+  year          = {2015},
 }
 
 @article{balakrishnan2019voxelmorph,
-  author  = {Balakrishnan, Guha and Zhao, Amy and Sabuncu, Mert R. and Guttag, John and Dalca, Adrian V.},
-  title   = {{VoxelMorph}: A Learning Framework for Deformable Medical Image Registration},
-  journal = {IEEE Transactions on Medical Imaging},
-  volume  = {38},
-  number  = {8},
-  pages   = {1788--1800},
-  year    = {2019},
-  doi     = {10.1109/TMI.2019.2897538}
+  author        = {Balakrishnan, Guha and Zhao, Amy and Sabuncu, Mert R. and Guttag, John and Dalca, Adrian V.},
+  title         = {{VoxelMorph}: A Learning Framework for Deformable Medical Image Registration},
+  journal       = {IEEE Transactions on Medical Imaging},
+  volume        = {38},
+  number        = {8},
+  pages         = {1788--1800},
+  year          = {2019},
 }
 
 @article{sotiras2013deformable,
-  author  = {Sotiras, Aristeidis and Davatzikos, Christos and Paragios, Nikos},
-  title   = {Deformable Medical Image Registration: A Survey},
-  journal = {IEEE Transactions on Medical Imaging},
-  volume  = {32},
-  number  = {7},
-  pages   = {1153--1190},
-  year    = {2013},
-  doi     = {10.1109/TMI.2013.2265603}
+  author        = {Sotiras, Aristeidis and Davatzikos, Christos and Paragios, Nikos},
+  title         = {Deformable Medical Image Registration: A Survey},
+  journal       = {IEEE Transactions on Medical Imaging},
+  volume        = {32},
+  number        = {7},
+  pages         = {1153--1190},
+  year          = {2013},
 }
 
 @article{rueckert1999ffd,
-  author  = {Rueckert, Daniel and Sonoda, L. I. and Hayes, C. and Hill, D. L. G. and Leach, M. O. and Hawkes, D. J.},
-  title   = {Nonrigid Registration Using Free-Form Deformations: Application to Breast MR Images},
-  journal = {IEEE Transactions on Medical Imaging},
-  volume  = {18},
-  number  = {8},
-  pages   = {712--721},
-  year    = {1999},
-  doi     = {10.1109/42.796284}
+  author        = {Rueckert, Daniel and Sonoda, L. I. and Hayes, C. and Hill, D. L. G. and Leach, M. O. and Hawkes, D. J.},
+  title         = {Nonrigid Registration Using Free-Form Deformations: Application to Breast {MR} Images},
+  journal       = {IEEE Transactions on Medical Imaging},
+  volume        = {18},
+  number        = {8},
+  pages         = {712--721},
+  year          = {1999},
 }
 
 @article{pluim2003mi,
-  author  = {Pluim, Josien P. W. and Maintz, J. B. Antoine and Viergever, Max A.},
-  title   = {Mutual-Information-Based Registration of Medical Images: A Survey},
-  journal = {IEEE Transactions on Medical Imaging},
-  volume  = {22},
-  number  = {8},
-  pages   = {986--1004},
-  year    = {2003},
-  doi     = {10.1109/TMI.2003.815867}
+  author        = {Pluim, Josien P. W. and Maintz, J. B. Antoine and Viergever, Max A.},
+  title         = {Mutual-Information-Based Registration of Medical Images: A Survey},
+  journal       = {IEEE Transactions on Medical Imaging},
+  volume        = {22},
+  number        = {8},
+  pages         = {986--1004},
+  year          = {2003},
 }
 
 @article{avants2008syn,
-  author  = {Avants, Brian B. and Epstein, Charles L. and Grossman, Murray and Gee, James C.},
-  title   = {Symmetric Diffeomorphic Image Registration with Cross-Correlation: Evaluating Automated Labeling of Elderly and Neurodegenerative Brain},
-  journal = {Medical Image Analysis},
-  volume  = {12},
-  number  = {1},
-  pages   = {26--41},
-  year    = {2008},
-  doi     = {10.1016/j.media.2007.06.004}
+  author        = {Avants, Brian B. and Epstein, Charles L. and Grossman, Murray and Gee, James C.},
+  title         = {Symmetric Diffeomorphic Image Registration with Cross-Correlation: Evaluating Automated Labeling of Elderly and Neurodegenerative Brain},
+  journal       = {Medical Image Analysis},
+  volume        = {12},
+  number        = {1},
+  pages         = {26--41},
+  year          = {2008},
 }
 
 @inproceedings{jaderberg2015stn,
-  author    = {Jaderberg, Max and Simonyan, Karen and Zisserman, Andrew and Kavukcuoglu, Koray},
-  title     = {Spatial Transformer Networks},
-  booktitle = {Advances in Neural Information Processing Systems},
-  volume    = {28},
-  year      = {2015}
+  author        = {Jaderberg, Max and Simonyan, Karen and Zisserman, Andrew and Kavukcuoglu, Koray},
+  title         = {Spatial Transformer Networks},
+  booktitle     = conf_neurips,
+  volume        = {28},
+  year          = {2015},
 }
 
 @article{klein2009evaluation,
-  author  = {Klein, Arno and Andersson, Jesper and Ardekani, Babak A. and Ashburner, John and Avants, Brian and Chiang, Ming-Chang and Christensen, Gary E. and Collins, D. Louis and Gee, James and Hellier, Pierre and Song, Joo Hyun and Jenkinson, Mark and Lepage, Claude and Rueckert, Daniel and Thompson, Paul and Vercauteren, Tom and Woods, Roger P. and Mann, J. John and Parsey, Ramin V.},
-  title   = {Evaluation of 14 Nonlinear Deformation Algorithms Applied to Human Brain MRI Registration},
-  journal = {NeuroImage},
-  volume  = {46},
-  number  = {3},
-  pages   = {786--802},
-  year    = {2009},
-  doi     = {10.1016/j.neuroimage.2008.12.037}
+  author        = {Klein, Arno and Andersson, Jesper and Ardekani, Babak A. and Ashburner, John and Avants, Brian and Chiang, Ming-Chang and Christensen, Gary E. and Collins, D. Louis and Gee, James and Hellier, Pierre and Song, Joo Hyun and Jenkinson, Mark and Lepage, Claude and Rueckert, Daniel and Thompson, Paul and Vercauteren, Tom and Woods, Roger P. and Mann, J. John and Parsey, Ramin V.},
+  title         = {Evaluation of 14 Nonlinear Deformation Algorithms Applied to Human Brain {MRI} Registration},
+  journal       = {NeuroImage},
+  volume        = {46},
+  number        = {3},
+  pages         = {786--802},
+  year          = {2009},
 }
 
 @article{rohlfing2012surrogates,
-  author  = {Rohlfing, Torsten},
-  title   = {Image Similarity and Tissue Overlaps as Surrogates for Image Registration Accuracy: Widely Used but Unreliable},
-  journal = {IEEE Transactions on Medical Imaging},
-  volume  = {31},
-  number  = {2},
-  pages   = {153--163},
-  year    = {2012},
-  doi     = {10.1109/TMI.2011.2163944}
+  author        = {Rohlfing, Torsten},
+  title         = {Image Similarity and Tissue Overlaps as Surrogates for Image Registration Accuracy: Widely Used but Unreliable},
+  journal       = {IEEE Transactions on Medical Imaging},
+  volume        = {31},
+  number        = {2},
+  pages         = {153--163},
+  year          = {2012},
 }
 
 @article{esteva2017dermatologist,
-  author  = {Esteva, Andr{\'e} and Kuprel, Brett and Novoa, Roberto A. and Ko, Justin and Swetter, Susan M. and Blau, Helen M. and Thrun, Sebastian},
-  title   = {Dermatologist-Level Classification of Skin Cancer with Deep Neural Networks},
-  journal = {Nature},
-  volume  = {542},
-  number  = {7639},
-  pages   = {115--118},
-  year    = {2017},
-  doi     = {10.1038/nature21056}
+  author        = {Esteva, Andr{\'e} and Kuprel, Brett and Novoa, Roberto A. and Ko, Justin and Swetter, Susan M. and Blau, Helen M. and Thrun, Sebastian},
+  title         = {Dermatologist-Level Classification of Skin Cancer with Deep Neural Networks},
+  journal       = {Nature},
+  volume        = {542},
+  number        = {7639},
+  pages         = {115--118},
+  year          = {2017},
 }
 
 @article{willemink2020preparing,
-  author  = {Willemink, Martin J. and Koszek, Wojciech A. and Hardell, Cailin and Wu, Jie and Fleischmann, Dominik and Harvey, Hugh and Folio, Les R. and Summers, Ronald M. and Rubin, Daniel L. and Lungren, Matthew P.},
-  title   = {Preparing Medical Imaging Data for Machine Learning},
-  journal = {Radiology},
-  volume  = {295},
-  number  = {1},
-  pages   = {4--15},
-  year    = {2020},
-  doi     = {10.1148/radiol.2020192224}
+  author        = {Willemink, Martin J. and Koszek, Wojciech A. and Hardell, Cailin and Wu, Jie and Fleischmann, Dominik and Harvey, Hugh and Folio, Les R. and Summers, Ronald M. and Rubin, Daniel L. and Lungren, Matthew P.},
+  title         = {Preparing Medical Imaging Data for Machine Learning},
+  journal       = {Radiology},
+  volume        = {295},
+  number        = {1},
+  pages         = {4--15},
+  year          = {2020},
 }
 
 @article{zech2018variable,
-  author  = {Zech, John R. and Badgeley, Marcus A. and Liu, Manway and Costa, Anthony B. and Titano, Joseph J. and Oermann, Eric Karl},
-  title   = {Variable Generalization Performance of a Deep Learning Model to Detect Pneumonia in Chest Radiographs: A Cross-Sectional Study},
-  journal = {PLOS Medicine},
-  volume  = {15},
-  number  = {11},
-  pages   = {e1002683},
-  year    = {2018},
-  doi     = {10.1371/journal.pmed.1002683}
+  author        = {Zech, John R. and Badgeley, Marcus A. and Liu, Manway and Costa, Anthony B. and Titano, Joseph J. and Oermann, Eric Karl},
+  title         = {Variable Generalization Performance of a Deep Learning Model to Detect Pneumonia in Chest Radiographs: A Cross-Sectional Study},
+  journal       = {PLOS Medicine},
+  volume        = {15},
+  number        = {11},
+  pages         = {e1002683},
+  year          = {2018},
 }
 
 @article{tajbakhsh2020imperfect,
-  author  = {Tajbakhsh, Nima and Jeyaseelan, Laura and Li, Qian and Chiang, Jeffrey N. and Wu, Zhihao and Ding, Xiaowei},
-  title   = {Embracing Imperfect Datasets: A Review of Deep Learning Solutions for Medical Image Segmentation},
-  journal = {Medical Image Analysis},
-  volume  = {63},
-  pages   = {101693},
-  year    = {2020},
-  doi     = {10.1016/j.media.2020.101693}
+  author        = {Tajbakhsh, Nima and Jeyaseelan, Laura and Li, Qian and Chiang, Jeffrey N. and Wu, Zhihao and Ding, Xiaowei},
+  title         = {Embracing Imperfect Datasets: A Review of Deep Learning Solutions for Medical Image Segmentation},
+  journal       = {Medical Image Analysis},
+  volume        = {63},
+  pages         = {101693},
+  year          = {2020},
 }
 
 @article{delange2022continual,
-  author  = {{De Lange}, Matthias and Aljundi, Rahaf and Masana, Marc and Parisot, Sarah and Jia, Xu and Leonardis, Ale{\v{s}} and Slabaugh, Gregory G. and Tuytelaars, Tinne},
-  title   = {A Continual Learning Survey: Defying Forgetting in Classification Tasks},
-  journal = {IEEE Transactions on Pattern Analysis and Machine Intelligence},
-  volume  = {44},
-  number  = {7},
-  pages   = {3366--3385},
-  year    = {2022},
-  doi     = {10.1109/TPAMI.2021.3057446}
+  author        = {{De Lange}, Matthias and Aljundi, Rahaf and Masana, Marc and Parisot, Sarah and Jia, Xu and Leonardis, Ale{\v{s}} and Slabaugh, Gregory G. and Tuytelaars, Tinne},
+  title         = {A Continual Learning Survey: Defying Forgetting in Classification Tasks},
+  journal       = {IEEE Transactions on Pattern Analysis and Machine Intelligence},
+  volume        = {44},
+  number        = {7},
+  pages         = {3366--3385},
+  year          = {2022},
 }
 
 @article{rieke2020future,
-  author  = {Rieke, Nicola and Hancox, Jonny and Li, Wenqi and Milletar{\`i}, Fausto and Roth, Holger R. and Albarqouni, Shadi and Bakas, Spyridon and Galtier, Mathieu N. and Landman, Bennett A. and Maier-Hein, Klaus and Ourselin, S{\'e}bastien and Sheller, Micah and Summers, Ronald M. and Trask, Andrew and Xu, Daguang and Baust, Maximilian and Cardoso, M. Jorge},
-  title   = {The Future of Digital Health with Federated Learning},
-  journal = {npj Digital Medicine},
-  volume  = {3},
-  number  = {1},
-  pages   = {119},
-  year    = {2020},
-  doi     = {10.1038/s41746-020-00323-1}
+  author        = {Rieke, Nicola and Hancox, Jonny and Li, Wenqi and Milletar{\`i}, Fausto and Roth, Holger R. and Albarqouni, Shadi and Bakas, Spyridon and Galtier, Mathieu N. and Landman, Bennett A. and Maier-Hein, Klaus and Ourselin, S{\'e}bastien and Sheller, Micah and Summers, Ronald M. and Trask, Andrew and Xu, Daguang and Baust, Maximilian and Cardoso, M. Jorge},
+  title         = {The Future of Digital Health with Federated Learning},
+  journal       = {npj Digital Medicine},
+  volume        = {3},
+  number        = {1},
+  pages         = {119},
+  year          = {2020},
 }
 
 @article{sheller2020federated,
-  author  = {Sheller, Micah J. and Edwards, Brandon and Reina, G. Anthony and Martin, Jason and Pati, Sarthak and Kotrotsou, Aikaterini and Milchenko, Mikhail and Xu, Weilin and Marcus, Daniel and Colen, Rivka R. and Bakas, Spyridon},
-  title   = {Federated Learning in Medicine: Facilitating Multi-Institutional Collaborations without Sharing Patient Data},
-  journal = {Scientific Reports},
-  volume  = {10},
-  number  = {1},
-  pages   = {12598},
-  year    = {2020},
-  doi     = {10.1038/s41598-020-69250-1}
+  author        = {Sheller, Micah J. and Edwards, Brandon and Reina, G. Anthony and Martin, Jason and Pati, Sarthak and Kotrotsou, Aikaterini and Milchenko, Mikhail and Xu, Weilin and Marcus, Daniel and Colen, Rivka R. and Bakas, Spyridon},
+  title         = {Federated Learning in Medicine: Facilitating Multi-Institutional Collaborations without Sharing Patient Data},
+  journal       = {Scientific Reports},
+  volume        = {10},
+  number        = {1},
+  pages         = {12598},
+  year          = {2020},
 }
 
 @article{hadsell2020embracing,
-  author  = {Hadsell, Raia and Rao, Dushyant and Rusu, Andrei A. and Pascanu, Razvan},
-  title   = {Embracing Change: Continual Learning in Deep Neural Networks},
-  journal = {Trends in Cognitive Sciences},
-  volume  = {24},
-  number  = {12},
-  pages   = {1028--1040},
-  year    = {2020},
-  doi     = {10.1016/j.tics.2020.09.004}
+  author        = {Hadsell, Raia and Rao, Dushyant and Rusu, Andrei A. and Pascanu, Razvan},
+  title         = {Embracing Change: Continual Learning in Deep Neural Networks},
+  journal       = {Trends in Cognitive Sciences},
+  volume        = {24},
+  number        = {12},
+  pages         = {1028--1040},
+  year          = {2020},
 }
 
 @article{vandeven2022three,
-  author  = {{van de Ven}, Gido M. and Tuytelaars, Tinne and Tolias, Andreas S.},
-  title   = {Three Types of Incremental Learning},
-  journal = {Nature Machine Intelligence},
-  volume  = {4},
-  pages   = {1185--1197},
-  year    = {2022},
-  doi     = {10.1038/s42256-022-00568-3}
+  author        = {{van de Ven}, Gido M. and Tuytelaars, Tinne and Tolias, Andreas S.},
+  title         = {Three Types of Incremental Learning},
+  journal       = {Nature Machine Intelligence},
+  volume        = {4},
+  pages         = {1185--1197},
+  year          = {2022},
 }
 
 @article{dewey2019deepharmony,
-  author  = {Dewey, Blake E. and Zhao, Can and Reinhold, Jacob C. and Carass, Aaron and Fitzgerald, Kathryn C. and Sotirchos, Elias S. and Saidha, Shiv and Oh, Jiwon and Pham, Dzung L. and Calabresi, Peter A. and {van Zijl}, Peter C. M. and Prince, Jerry L.},
-  title   = {{DeepHarmony}: A Deep Learning Approach to Contrast Harmonization across Scanner Changes},
-  journal = {Magnetic Resonance Imaging},
-  volume  = {64},
-  pages   = {160--170},
-  year    = {2019},
-  doi     = {10.1016/j.mri.2019.05.041}
+  author        = {Dewey, Blake E. and Zhao, Can and Reinhold, Jacob C. and Carass, Aaron and Fitzgerald, Kathryn C. and Sotirchos, Elias S. and Saidha, Shiv and Oh, Jiwon and Pham, Dzung L. and Calabresi, Peter A. and {van Zijl}, Peter C. M. and Prince, Jerry L.},
+  title         = {{DeepHarmony}: A Deep Learning Approach to Contrast Harmonization across Scanner Changes},
+  journal       = {Magnetic Resonance Imaging},
+  volume        = {64},
+  pages         = {160--170},
+  year          = {2019},
 }
 
 @inproceedings{lin2016scribblesup,
-  author    = {Lin, Di and Dai, Jifeng and Jia, Jiaya and He, Kaiming and Sun, Jian},
-  title     = {{ScribbleSup}: Scribble-Supervised Convolutional Networks for Semantic Segmentation},
-  booktitle = {Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition},
-  pages     = {3159--3167},
-  year      = {2016},
-  doi       = {10.1109/CVPR.2016.344}
+  author        = {Lin, Di and Dai, Jifeng and Jia, Jiaya and He, Kaiming and Sun, Jian},
+  title         = {{ScribbleSup}: Scribble-Supervised Convolutional Networks for Semantic Segmentation},
+  booktitle     = conf_cvpr,
+  pages         = {3159--3167},
+  year          = {2016},
 }
 
 @inproceedings{can2018scribble,
-  author    = {Can, Yigit B. and Chaitanya, Krishna and Mustafa, Basil and Koch, Lisa M. and Konukoglu, Ender and Baumgartner, Christian F.},
-  title     = {Learning to Segment Medical Images with Scribble-Supervision Alone},
-  booktitle = {Deep Learning in Medical Image Analysis and Multimodal Learning for Clinical Decision Support},
-  series    = {Lecture Notes in Computer Science},
-  volume    = {11045},
-  pages     = {236--244},
-  publisher = {Springer},
-  year      = {2018},
-  doi       = {10.1007/978-3-030-00889-5_27}
+  author        = {Can, Yigit B. and Chaitanya, Krishna and Mustafa, Basil and Koch, Lisa M. and Konukoglu, Ender and Baumgartner, Christian F.},
+  title         = {Learning to Segment Medical Images with Scribble-Supervision Alone},
+  booktitle     = workshop_dlmia_ml_cds,
+  series        = {Lecture Notes in Computer Science},
+  volume        = {11045},
+  pages         = {236--244},
+  publisher     = {Springer},
+  year          = {2018},
 }
 
 @inproceedings{tang2018regularized,
-  author    = {Tang, Meng and Perazzi, Federico and Djelouah, Abdelaziz and {Ben Ayed}, Ismail and Schroers, Christopher and Boykov, Yuri},
-  title     = {On Regularized Losses for Weakly-Supervised {CNN} Segmentation},
-  booktitle = {Computer Vision -- ECCV 2018},
-  series    = {Lecture Notes in Computer Science},
-  pages     = {524--540},
-  publisher = {Springer},
-  year      = {2018},
-  doi       = {10.1007/978-3-030-01270-0_31}
+  author        = {Tang, Meng and Perazzi, Federico and Djelouah, Abdelaziz and {Ben Ayed}, Ismail and Schroers, Christopher and Boykov, Yuri},
+  title         = {On Regularized Losses for Weakly-Supervised {CNN} Segmentation},
+  booktitle     = conf_eccv,
+  series        = {Lecture Notes in Computer Science},
+  pages         = {524--540},
+  publisher     = {Springer},
+  year          = {2018},
 }
 
 @article{kervadec2019constrained,
-  author  = {Kervadec, Hoel and Dolz, Jose and Tang, Meng and Granger, Eric and Boykov, Yuri and {Ben Ayed}, Ismail},
-  title   = {Constrained-{CNN} Losses for Weakly Supervised Segmentation},
-  journal = {Medical Image Analysis},
-  volume  = {54},
-  pages   = {88--99},
-  year    = {2019},
-  doi     = {10.1016/j.media.2019.02.009}
+  author        = {Kervadec, Hoel and Dolz, Jose and Tang, Meng and Granger, Eric and Boykov, Yuri and {Ben Ayed}, Ismail},
+  title         = {Constrained-{CNN} Losses for Weakly Supervised Segmentation},
+  journal       = {Medical Image Analysis},
+  volume        = {54},
+  pages         = {88--99},
+  year          = {2019},
 }
 
 @inproceedings{luo2022scribble,
-  author    = {Luo, Xiangde and Hu, Minhao and Liao, Wenjun and Zhai, Shuwei and Song, Tao and Wang, Guotai and Zhang, Shaoting},
-  title     = {Scribble-Supervised Medical Image Segmentation via Dual-Branch Network and Dynamically Mixed Pseudo Labels Supervision},
-  booktitle = {Medical Image Computing and Computer Assisted Intervention -- MICCAI 2022},
-  series    = {Lecture Notes in Computer Science},
-  pages     = {528--538},
-  publisher = {Springer},
-  year      = {2022},
-  doi       = {10.1007/978-3-031-16431-6_50}
+  author        = {Luo, Xiangde and Hu, Minhao and Liao, Wenjun and Zhai, Shuwei and Song, Tao and Wang, Guotai and Zhang, Shaoting},
+  title         = {Scribble-Supervised Medical Image Segmentation via Dual-Branch Network and Dynamically Mixed Pseudo Labels Supervision},
+  booktitle     = conf_miccai,
+  series        = {Lecture Notes in Computer Science},
+  pages         = {528--538},
+  publisher     = {Springer},
+  year          = {2022},
 }
 
 @article{han2024dmsps,
-  author  = {Han, Meng and Luo, Xiangde and Xie, Xiangjiang and Liao, Wenjun and Zhang, Shichuan and Song, Tao and Wang, Guotai and Zhang, Shaoting},
-  title   = {{DMSPS}: Dynamically Mixed Soft Pseudo-Label Supervision for Scribble-Supervised Medical Image Segmentation},
-  journal = {Medical Image Analysis},
-  volume  = {97},
-  pages   = {103274},
-  year    = {2024},
-  doi     = {10.1016/j.media.2024.103274}
+  author        = {Han, Meng and Luo, Xiangde and Xie, Xiangjiang and Liao, Wenjun and Zhang, Shichuan and Song, Tao and Wang, Guotai and Zhang, Shaoting},
+  title         = {{DMSPS}: Dynamically Mixed Soft Pseudo-Label Supervision for Scribble-Supervised Medical Image Segmentation},
+  journal       = {Medical Image Analysis},
+  volume        = {97},
+  pages         = {103274},
+  year          = {2024},
 }
 
 @inproceedings{chen2022scribble2d5,
-  author    = {Chen, Qiuhui and Hong, Yi},
-  title     = {{Scribble2D5}: Weakly-Supervised Volumetric Image Segmentation via Scribble Annotations},
-  booktitle = {Medical Image Computing and Computer Assisted Intervention -- MICCAI 2022},
-  series    = {Lecture Notes in Computer Science},
-  pages     = {234--243},
-  publisher = {Springer},
-  year      = {2022},
-  doi       = {10.1007/978-3-031-16452-1_23}
+  author        = {Chen, Qiuhui and Hong, Yi},
+  title         = {{Scribble2D5}: Weakly-Supervised Volumetric Image Segmentation via Scribble Annotations},
+  booktitle     = conf_miccai,
+  series        = {Lecture Notes in Computer Science},
+  pages         = {234--243},
+  publisher     = {Springer},
+  year          = {2022},
 }
 
 @inproceedings{zhou2023scribblewalking,
-  author    = {Zhou, Meng and Xu, Zhe and Zhou, Kang and Tong, Raymond Kai-Yu},
-  title     = {Weakly Supervised Medical Image Segmentation via Superpixel-Guided Scribble Walking and Class-Wise Contrastive Regularization},
-  booktitle = {Medical Image Computing and Computer Assisted Intervention -- MICCAI 2023},
-  series    = {Lecture Notes in Computer Science},
-  volume    = {14221},
-  pages     = {137--147},
-  publisher = {Springer},
-  year      = {2023},
-  doi     = {10.1007/978-3-031-43895-0_13}
+  author        = {Zhou, Meng and Xu, Zhe and Zhou, Kang and Tong, Raymond Kai-Yu},
+  title         = {Weakly Supervised Medical Image Segmentation via Superpixel-Guided Scribble Walking and Class-Wise Contrastive Regularization},
+  booktitle     = conf_miccai,
+  series        = {Lecture Notes in Computer Science},
+  volume        = {14221},
+  pages         = {137--147},
+  publisher     = {Springer},
+  year          = {2023},
 }
 
 @article{zhang2026zscribbleseg,
-  author  = {Zhang, Ke and Wang, Bomin and Zhou, Hangqi and Zhuang, Xiahai},
-  title   = {{ZScribbleSeg}: A Comprehensive Segmentation Framework with Modeling of Efficient Annotation and Maximization of Scribble Supervision},
-  journal = {Medical Image Analysis},
-  volume  = {112},
-  pages   = {104074},
-  year    = {2026},
-  doi     = {10.1016/j.media.2026.104074}
+  author        = {Zhang, Ke and Wang, Bomin and Zhou, Hangqi and Zhuang, Xiahai},
+  title         = {{ZScribbleSeg}: A Comprehensive Segmentation Framework with Modeling of Efficient Annotation and Maximization of Scribble Supervision},
+  journal       = {Medical Image Analysis},
+  volume        = {112},
+  pages         = {104074},
+  year          = {2026},
 }
 
 @article{wang2024continualsurvey,
-  author  = {Wang, Liyuan and Zhang, Xingxing and Su, Hang and Zhu, Jun},
-  title   = {A Comprehensive Survey of Continual Learning: Theory, Method and Application},
-  journal = {IEEE Transactions on Pattern Analysis and Machine Intelligence},
-  volume  = {46},
-  number  = {8},
-  pages   = {5362--5383},
-  year    = {2024},
-  doi     = {10.1109/TPAMI.2024.3367329}
+  author        = {Wang, Liyuan and Zhang, Xingxing and Su, Hang and Zhu, Jun},
+  title         = {A Comprehensive Survey of Continual Learning: Theory, Method and Application},
+  journal       = {IEEE Transactions on Pattern Analysis and Machine Intelligence},
+  volume        = {46},
+  number        = {8},
+  pages         = {5362--5383},
+  year          = {2024},
 }
 
 @article{kumari2025medicalcl,
-  author  = {Kumari, Pratibha and Chauhan, Joohi and Bozorgpour, Afshin and Huang, Boqiang and Azad, Reza and Merhof, Dorit},
-  title   = {Continual Learning in Medical Image Analysis: A Comprehensive Review of Recent Advancements and Future Prospects},
-  journal = {Medical Image Analysis},
-  volume  = {106},
-  pages   = {103730},
-  year    = {2025},
-  doi     = {10.1016/j.media.2025.103730}
+  author        = {Kumari, Pratibha and Chauhan, Joohi and Bozorgpour, Afshin and Huang, Boqiang and Azad, Reza and Merhof, Dorit},
+  title         = {Continual Learning in Medical Image Analysis: A Comprehensive Review of Recent Advancements and Future Prospects},
+  journal       = {Medical Image Analysis},
+  volume        = {106},
+  pages         = {103730},
+  year          = {2025},
 }
 
 @article{yuan2024continualseg,
-  author  = {Yuan, Bo and Zhao, Danpei},
-  title   = {A Survey on Continual Semantic Segmentation: Theory, Challenge, Method and Application},
-  journal = {IEEE Transactions on Pattern Analysis and Machine Intelligence},
-  volume  = {46},
-  number  = {12},
-  pages   = {10891--10910},
-  year    = {2024},
-  doi     = {10.1109/TPAMI.2024.3446949}
+  author        = {Yuan, Bo and Zhao, Danpei},
+  title         = {A Survey on Continual Semantic Segmentation: Theory, Challenge, Method and Application},
+  journal       = {IEEE Transactions on Pattern Analysis and Machine Intelligence},
+  volume        = {46},
+  number        = {12},
+  pages         = {10891--10910},
+  year          = {2024},
 }
 
 @inproceedings{rebuffi2017icarl,
-  author    = {Rebuffi, Sylvestre-Alvise and Kolesnikov, Alexander and Sperl, Georg and Lampert, Christoph H.},
-  title     = {{iCaRL}: Incremental Classifier and Representation Learning},
-  booktitle = {Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition},
-  pages     = {2001--2010},
-  year      = {2017}
+  author        = {Rebuffi, Sylvestre-Alvise and Kolesnikov, Alexander and Sperl, Georg and Lampert, Christoph H.},
+  title         = {{iCaRL}: Incremental Classifier and Representation Learning},
+  booktitle     = conf_cvpr,
+  pages         = {2001--2010},
+  year          = {2017},
 }
 
 @article{kirkpatrick2017ewc,
-  author  = {Kirkpatrick, James and Pascanu, Razvan and Rabinowitz, Neil and Veness, Joel and Desjardins, Guillaume and Rusu, Andrei A. and Milan, Kieran and Quan, John and Ramalho, Tiago and Grabska-Barwinska, Agnieszka and Hassabis, Demis and Clopath, Claudia and Kumaran, Dharshan and Hadsell, Raia},
-  title   = {Overcoming Catastrophic Forgetting in Neural Networks},
-  journal = {Proceedings of the National Academy of Sciences},
-  volume  = {114},
-  number  = {13},
-  pages   = {3521--3526},
-  year    = {2017},
-  doi     = {10.1073/pnas.1611835114}
+  author        = {Kirkpatrick, James and Pascanu, Razvan and Rabinowitz, Neil and Veness, Joel and Desjardins, Guillaume and Rusu, Andrei A. and Milan, Kieran and Quan, John and Ramalho, Tiago and Grabska-Barwinska, Agnieszka and Hassabis, Demis and Clopath, Claudia and Kumaran, Dharshan and Hadsell, Raia},
+  title         = {Overcoming Catastrophic Forgetting in Neural Networks},
+  journal       = {Proceedings of the National Academy of Sciences},
+  volume        = {114},
+  number        = {13},
+  pages         = {3521--3526},
+  year          = {2017},
 }
 
 @article{li2018lwf,
-  author  = {Li, Zhizhong and Hoiem, Derek},
-  title   = {Learning without Forgetting},
-  journal = {IEEE Transactions on Pattern Analysis and Machine Intelligence},
-  volume  = {40},
-  number  = {12},
-  pages   = {2935--2947},
-  year    = {2018},
-  doi     = {10.1109/TPAMI.2017.2773081}
+  author        = {Li, Zhizhong and Hoiem, Derek},
+  title         = {Learning without Forgetting},
+  journal       = {IEEE Transactions on Pattern Analysis and Machine Intelligence},
+  volume        = {40},
+  number        = {12},
+  pages         = {2935--2947},
+  year          = {2018},
 }
 
 @inproceedings{karani2018lifelong,
-  author    = {Karani, Neerav and Chaitanya, Krishna and Baumgartner, Christian F. and Konukoglu, Ender},
-  title     = {A Lifelong Learning Approach to Brain {MR} Segmentation Across Scanners and Protocols},
-  booktitle = {Medical Image Computing and Computer Assisted Intervention -- MICCAI 2018},
-  series    = {Lecture Notes in Computer Science},
-  volume    = {11070},
-  pages     = {476--484},
-  publisher = {Springer},
-  year      = {2018},
-  doi       = {10.1007/978-3-030-00928-1_54}
+  author        = {Karani, Neerav and Chaitanya, Krishna and Baumgartner, Christian F. and Konukoglu, Ender},
+  title         = {A Lifelong Learning Approach to Brain {MR} Segmentation Across Scanners and Protocols},
+  booktitle     = conf_miccai,
+  series        = {Lecture Notes in Computer Science},
+  volume        = {11070},
+  pages         = {476--484},
+  publisher     = {Springer},
+  year          = {2018},
 }
 
 @article{zhang2023s3r,
-  author  = {Zhang, Jingyang and Gu, Ran and Xue, Peng and Liu, Mianxin and Zheng, Hao and Zheng, Yefeng and Ma, Lei and Wang, Guotai and Gu, Lixu},
-  title   = {{$S^3R$}: Shape and Semantics-Based Selective Regularization for Explainable Continual Segmentation Across Multiple Sites},
-  journal = {IEEE Transactions on Medical Imaging},
-  volume  = {42},
-  number  = {9},
-  pages   = {2539--2551},
-  year    = {2023},
-  doi     = {10.1109/TMI.2023.3260974}
+  author        = {Zhang, Jingyang and Gu, Ran and Xue, Peng and Liu, Mianxin and Zheng, Hao and Zheng, Yefeng and Ma, Lei and Wang, Guotai and Gu, Lixu},
+  title         = {{$S^3R$}: Shape and Semantics-Based Selective Regularization for Explainable Continual Segmentation Across Multiple Sites},
+  journal       = {IEEE Transactions on Medical Imaging},
+  volume        = {42},
+  number        = {9},
+  pages         = {2539--2551},
+  year          = {2023},
 }
 
 @article{gonzalez2023lifelong,
-  author  = {Gonz{\'a}lez, Camila and Ranem, Amin and Pinto dos Santos, Daniel and Othman, Ahmed and Mukhopadhyay, Anirban},
-  title   = {Lifelong {nnU-Net}: A Framework for Standardized Medical Continual Learning},
-  journal = {Scientific Reports},
-  volume  = {13},
-  pages   = {9381},
-  year    = {2023},
-  doi     = {10.1038/s41598-023-34484-2}
+  author        = {Gonz{\'a}lez, Camila and Ranem, Amin and Pinto dos Santos, Daniel and Othman, Ahmed and Mukhopadhyay, Anirban},
+  title         = {Lifelong {nnU-Net}: A Framework for Standardized Medical Continual Learning},
+  journal       = {Scientific Reports},
+  volume        = {13},
+  pages         = {9381},
+  year          = {2023},
 }
 
 @inproceedings{cermelli2020mib,
-  author    = {Cermelli, Fabio and Mancini, Massimiliano and Rota Bulo, Samuel and Ricci, Elisa and Caputo, Barbara},
-  title     = {Modeling the Background for Incremental Learning in Semantic Segmentation},
-  booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
-  pages     = {9233--9242},
-  year      = {2020}
+  author        = {Cermelli, Fabio and Mancini, Massimiliano and Rota Bulo, Samuel and Ricci, Elisa and Caputo, Barbara},
+  title         = {Modeling the Background for Incremental Learning in Semantic Segmentation},
+  booktitle     = conf_cvpr,
+  pages         = {9233--9242},
+  year          = {2020},
 }
 
 @inproceedings{douillard2021plop,
-  author    = {Douillard, Arthur and Chen, Yifu and Dapogny, Arnaud and Cord, Matthieu},
-  title     = {{PLOP}: Learning without Forgetting for Continual Semantic Segmentation},
-  booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
-  pages     = {4040--4050},
-  year      = {2021}
+  author        = {Douillard, Arthur and Chen, Yifu and Dapogny, Arnaud and Cord, Matthieu},
+  title         = {{PLOP}: Learning without Forgetting for Continual Semantic Segmentation},
+  booktitle     = conf_cvpr,
+  pages         = {4040--4050},
+  year          = {2021},
 }
 
 @inproceedings{zhang2023continualorgan,
-  author    = {Zhang, Yixiao and Li, Xinyi and Chen, Huimiao and Yuille, Alan L. and Liu, Yaoyao and Zhou, Zongwei},
-  title     = {Continual Learning for Abdominal Multi-organ and Tumor Segmentation},
-  booktitle = {Medical Image Computing and Computer Assisted Intervention -- MICCAI 2023},
-  series    = {Lecture Notes in Computer Science},
-  volume    = {14221},
-  pages     = {35--45},
-  publisher = {Springer},
-  year      = {2023},
-  doi       = {10.1007/978-3-031-43895-0_4}
+  author        = {Zhang, Yixiao and Li, Xinyi and Chen, Huimiao and Yuille, Alan L. and Liu, Yaoyao and Zhou, Zongwei},
+  title         = {Continual Learning for Abdominal Multi-organ and Tumor Segmentation},
+  booktitle     = conf_miccai,
+  series        = {Lecture Notes in Computer Science},
+  volume        = {14221},
+  pages         = {35--45},
+  publisher     = {Springer},
+  year          = {2023},
 }
 
 @article{wang2026benchmark,
@@ -450,787 +432,768 @@
   eprint        = {2605.06160},
   archiveprefix = {arXiv},
   primaryclass  = {cs.CV},
-  url = {https://arxiv.org/abs/2605.06160},
-  urldate = {2026-08-30}
+  url           = {https://arxiv.org/abs/2605.06160},
+  urldate       = {2026-08-30},
 }
 
 @inproceedings{wang2024samcl,
-  author    = {Wang, Bomin and Luo, Xinzhe and Zhuang, Xiahai},
-  title     = {Toward Universal Medical Image Registration via Sharpness-Aware Meta-Continual Learning},
-  booktitle = {Medical Image Computing and Computer Assisted Intervention -- MICCAI 2024},
-  series    = {Lecture Notes in Computer Science},
-  pages     = {739--748},
-  publisher = {Springer},
-  year      = {2024},
-  doi       = {10.1007/978-3-031-72069-7_69}
+  author        = {Wang, Bomin and Luo, Xinzhe and Zhuang, Xiahai},
+  title         = {Toward Universal Medical Image Registration via Sharpness-Aware Meta-Continual Learning},
+  booktitle     = conf_miccai,
+  series        = {Lecture Notes in Computer Science},
+  pages         = {739--748},
+  publisher     = {Springer},
+  year          = {2024},
 }
 
 @inproceedings{mcmahan2017fedavg,
-  author    = {McMahan, H. Brendan and Moore, Eider and Ramage, Daniel and Hampson, Seth and {Ag{\"u}era y Arcas}, Blaise},
-  title     = {Communication-Efficient Learning of Deep Networks from Decentralized Data},
-  booktitle = {Proceedings of the 20th International Conference on Artificial Intelligence and Statistics},
-  series    = {Proceedings of Machine Learning Research},
-  volume    = {54},
-  pages     = {1273--1282},
-  publisher = {PMLR},
-  year      = {2017}
+  author        = {McMahan, H. Brendan and Moore, Eider and Ramage, Daniel and Hampson, Seth and {Ag{\"u}era y Arcas}, Blaise},
+  title         = {Communication-Efficient Learning of Deep Networks from Decentralized Data},
+  booktitle     = conf_aistats,
+  series        = {Proceedings of Machine Learning Research},
+  volume        = {54},
+  pages         = {1273--1282},
+  publisher     = {PMLR},
+  year          = {2017},
 }
 
 @article{yang2024fclsurvey,
-  author  = {Yang, Xin and Yu, Hao and Gao, Xin and Wang, Hao and Zhang, Junbo and Li, Tianrui},
-  title   = {Federated Continual Learning via Knowledge Fusion: A Survey},
-  journal = {IEEE Transactions on Knowledge and Data Engineering},
-  volume  = {36},
-  number  = {8},
-  pages   = {3832--3850},
-  year    = {2024},
-  doi     = {10.1109/TKDE.2024.3363240}
+  author        = {Yang, Xin and Yu, Hao and Gao, Xin and Wang, Hao and Zhang, Junbo and Li, Tianrui},
+  title         = {Federated Continual Learning via Knowledge Fusion: A Survey},
+  journal       = {IEEE Transactions on Knowledge and Data Engineering},
+  volume        = {36},
+  number        = {8},
+  pages         = {3832--3850},
+  year          = {2024},
 }
 
 @inproceedings{yoon2021fedweit,
-  author    = {Yoon, Jaehong and Jeong, Wonyong and Lee, Giwoong and Yang, Eunho and Hwang, Sung Ju},
-  title     = {Federated Continual Learning with Weighted Inter-client Transfer},
-  booktitle = {Proceedings of the 38th International Conference on Machine Learning},
-  series    = {Proceedings of Machine Learning Research},
-  volume    = {139},
-  pages     = {12073--12086},
-  publisher = {PMLR},
-  year      = {2021}
+  author        = {Yoon, Jaehong and Jeong, Wonyong and Lee, Giwoong and Yang, Eunho and Hwang, Sung Ju},
+  title         = {Federated Continual Learning with Weighted Inter-client Transfer},
+  booktitle     = conf_icml,
+  series        = {Proceedings of Machine Learning Research},
+  volume        = {139},
+  pages         = {12073--12086},
+  publisher     = {PMLR},
+  year          = {2021},
 }
 
 @inproceedings{ma2022cfed,
-  author    = {Ma, Yuhang and Xie, Zhongle and Wang, Jue and Chen, Ke and Shou, Lidan},
-  title     = {Continual Federated Learning Based on Knowledge Distillation},
-  booktitle = {Proceedings of the Thirty-First International Joint Conference on Artificial Intelligence},
-  pages     = {2182--2188},
-  year      = {2022},
-  doi       = {10.24963/ijcai.2022/303}
+  author        = {Ma, Yuhang and Xie, Zhongle and Wang, Jue and Chen, Ke and Shou, Lidan},
+  title         = {Continual Federated Learning Based on Knowledge Distillation},
+  booktitle     = conf_ijcai,
+  pages         = {2182--2188},
+  year          = {2022},
 }
 
 @inproceedings{dong2022glfc,
-  author    = {Dong, Jiahua and Wang, Lixu and Fang, Zhen and Sun, Gan and Xu, Shichao and Wang, Xiao and Zhu, Qi},
-  title     = {Federated Class-Incremental Learning},
-  booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
-  pages     = {10164--10173},
-  year      = {2022}
+  author        = {Dong, Jiahua and Wang, Lixu and Fang, Zhen and Sun, Gan and Xu, Shichao and Wang, Xiao and Zhu, Qi},
+  title         = {Federated Class-Incremental Learning},
+  booktitle     = conf_cvpr,
+  pages         = {10164--10173},
+  year          = {2022},
 }
 
 @inproceedings{babendererde2025dynbc,
-  author    = {Babendererde, Niklas and Zhu, Haozhe and Fuchs, Moritz and Stieber, Jonathan and Mukhopadhyay, Anirban},
-  title     = {Federated-Continual Dynamic Segmentation of Histopathology Guided by Barlow Continuity},
-  booktitle = {Proceedings of the IEEE/CVF Winter Conference on Applications of Computer Vision},
-  pages     = {3752--3761},
-  year      = {2025}
+  author        = {Babendererde, Niklas and Zhu, Haozhe and Fuchs, Moritz and Stieber, Jonathan and Mukhopadhyay, Anirban},
+  title         = {Federated-Continual Dynamic Segmentation of Histopathology Guided by {Barlow} Continuity},
+  booktitle     = conf_wacv,
+  pages         = {3752--3761},
+  year          = {2025},
 }
 
 @article{zhou2025thoracicfcl,
-  author  = {Zhou, Tianshuo and Wang, Boyuan},
-  title   = {Cross Paradigm Fusion of Federated and Continual Learning on Multilayer Perceptron Mixer Architecture for Incremental Thoracic Infection Diagnosis},
-  journal = {Scientific Reports},
-  volume  = {15},
-  pages   = {24449},
-  year    = {2025},
-  doi     = {10.1038/s41598-025-06077-8}
+  author        = {Zhou, Tianshuo and Wang, Boyuan},
+  title         = {Cross Paradigm Fusion of Federated and Continual Learning on Multilayer Perceptron Mixer Architecture for Incremental Thoracic Infection Diagnosis},
+  journal       = {Scientific Reports},
+  volume        = {15},
+  pages         = {24449},
+  year          = {2025},
 }
 
 @article{sinhal2026dpfedepc,
-  author  = {Sinhal, Anay and Sinhal, Amit and Sinhal, Arpana},
-  title   = {Federated Continual Learning for Privacy-Preserving Chest Radiograph Classification},
-  journal = {Scientific Reports},
-  year    = {2026},
-  doi     = {10.1038/s41598-026-55211-7}
+  author        = {Sinhal, Anay and Sinhal, Amit and Sinhal, Arpana},
+  title         = {Federated Continual Learning for Privacy-Preserving Chest Radiograph Classification},
+  journal       = {Scientific Reports},
+  year          = {2026},
 }
 
 @inproceedings{saha2021gpm,
-  author    = {Saha, Gobinda and Garg, Isha and Roy, Kaushik},
-  title     = {Gradient Projection Memory for Continual Learning},
-  booktitle = {International Conference on Learning Representations},
-  year      = {2021}
+  author        = {Saha, Gobinda and Garg, Isha and Roy, Kaushik},
+  title         = {Gradient Projection Memory for Continual Learning},
+  booktitle     = conf_iclr,
+  year          = {2021},
 }
 
 @inproceedings{whatwrong,
-  author    = {Gonzalez, C. and Lemke, N. and Ranem, A. and others},
-  title     = {What Is Wrong with Continual Learning in Medical Image Segmentation?},
-  booktitle = {Proceedings of the International Workshop on Personalized Incremental Learning in Medicine},
-  pages     = {25--34},
-  year      = {2025}
+  author        = {Gonzalez, C. and Lemke, N. and Ranem, A. and others},
+  title         = {What Is Wrong with Continual Learning in Medical Image Segmentation?},
+  booktitle     = workshop_pilmed,
+  pages         = {25--34},
+  year          = {2025},
 }
 
 @inproceedings{method_regu_si,
-  author    = {Zenke, Friedemann and Poole, Ben and Ganguli, Surya},
-  title     = {Continual Learning Through Synaptic Intelligence},
-  booktitle = {Proceedings of the 34th International Conference on Machine Learning},
-  pages     = {3987--3995},
-  year      = {2017}
+  author        = {Zenke, Friedemann and Poole, Ben and Ganguli, Surya},
+  title         = {Continual Learning Through Synaptic Intelligence},
+  booktitle     = conf_icml,
+  pages         = {3987--3995},
+  year          = {2017},
 }
 
 @inproceedings{method_replay_er,
-  author    = {Rolnick, David and Ahuja, Arun and Schwarz, Jonathan and others},
-  title     = {Experience Replay for Continual Learning},
-  booktitle = {Advances in Neural Information Processing Systems},
-  volume    = {32},
-  year      = {2019}
+  author        = {Rolnick, David and Ahuja, Arun and Schwarz, Jonathan and others},
+  title         = {Experience Replay for Continual Learning},
+  booktitle     = conf_neurips,
+  volume        = {32},
+  year          = {2019},
 }
 
 @inproceedings{method_replay_gss,
-  author    = {Tiwari, Rishabh and Killamsetty, Krishnateja and Iyer, Rishabh and others},
-  title     = {GCR: Gradient Coreset Based Replay Buffer Selection for Continual Learning},
-  booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
-  pages     = {99--108},
-  year      = {2022}
+  author        = {Tiwari, Rishabh and Killamsetty, Krishnateja and Iyer, Rishabh and others},
+  title         = {{GCR}: Gradient Coreset Based Replay Buffer Selection for Continual Learning},
+  booktitle     = conf_cvpr,
+  pages         = {99--108},
+  year          = {2022},
 }
 
 @inproceedings{method_replay_gem,
-  author    = {Lopez-Paz, David and Ranzato, Marc'Aurelio},
-  title     = {Gradient Episodic Memory for Continual Learning},
-  booktitle = {Advances in Neural Information Processing Systems},
-  volume    = {30},
-  year      = {2017}
+  author        = {Lopez-Paz, David and Ranzato, Marc'Aurelio},
+  title         = {Gradient Episodic Memory for Continual Learning},
+  booktitle     = conf_neurips,
+  volume        = {30},
+  year          = {2017},
 }
 
 @inproceedings{method_replay_agem,
-  author    = {Chaudhry, Arslan and Ranzato, Marc'Aurelio and Rohrbach, Marcus and others},
-  title     = {Efficient Lifelong Learning with A-GEM},
-  booktitle = {International Conference on Learning Representations},
-  year      = {2019}
+  author        = {Chaudhry, Arslan and Ranzato, Marc'Aurelio and Rohrbach, Marcus and others},
+  title         = {Efficient Lifelong Learning with {A-GEM}},
+  booktitle     = conf_iclr,
+  year          = {2019},
 }
 
 @inproceedings{method_replay_der,
-  author    = {Buzzega, Pietro and Boschini, Matteo and Porrello, Angelo and others},
-  title     = {Dark Experience for General Continual Learning: A Strong, Simple Baseline},
-  booktitle = {Advances in Neural Information Processing Systems},
-  volume    = {33},
-  pages     = {15920--15930},
-  year      = {2020}
+  author        = {Buzzega, Pietro and Boschini, Matteo and Porrello, Angelo and others},
+  title         = {Dark Experience for General Continual Learning: A Strong, Simple Baseline},
+  booktitle     = conf_neurips,
+  volume        = {33},
+  pages         = {15920--15930},
+  year          = {2020},
 }
 
 @article{method_replay_xder,
-  author  = {Boschini, Matteo and Bonicelli, Lorenzo and Buzzega, Pietro and others},
-  title   = {Class-Incremental Continual Learning into the Extended DER-Verse},
-  journal = {IEEE Transactions on Pattern Analysis and Machine Intelligence},
-  volume  = {45},
-  number  = {5},
-  pages   = {5497--5512},
-  year    = {2023}
+  author        = {Boschini, Matteo and Bonicelli, Lorenzo and Buzzega, Pietro and others},
+  title         = {Class-Incremental Continual Learning into the Extended {DER-Verse}},
+  journal       = {IEEE Transactions on Pattern Analysis and Machine Intelligence},
+  volume        = {45},
+  number        = {5},
+  pages         = {5497--5512},
+  year          = {2023},
 }
 
 @inproceedings{method_replay_fdr,
-  author    = {Benjamin, Ari S. and Rolnick, David and Kording, Konrad P.},
-  title     = {Measuring and Regularizing Networks in Function Space},
-  booktitle = {International Conference on Learning Representations},
-  year      = {2019}
+  author        = {Benjamin, Ari S. and Rolnick, David and Kording, Konrad P.},
+  title         = {Measuring and Regularizing Networks in Function Space},
+  booktitle     = conf_iclr,
+  year          = {2019},
 }
 
 @article{method_dyn_pnn,
-  author  = {Rusu, Andrei A. and Rabinowitz, Neil C. and Desjardins, Guillaume and others},
-  title   = {Progressive Neural Networks},
-  journal = {arXiv preprint arXiv:1606.04671},
-  year    = {2016},
-  url = {https://arxiv.org/abs/1606.04671},
-  urldate = {2026-08-30}
+  author        = {Rusu, Andrei A. and Rabinowitz, Neil C. and Desjardins, Guillaume and others},
+  title         = {Progressive Neural Networks},
+  journal       = {arXiv preprint arXiv:1606.04671},
+  year          = {2016},
+  url           = {https://arxiv.org/abs/1606.04671},
+  urldate       = {2026-08-30},
 }
 
 @article{method_dyn_dan,
-  author  = {Rosenfeld, Amir and Tsotsos, John K.},
-  title   = {Incremental Learning Through Deep Adaptation},
-  journal = {IEEE Transactions on Pattern Analysis and Machine Intelligence},
-  volume  = {42},
-  number  = {3},
-  pages   = {651--663},
-  year    = {2020}
+  author        = {Rosenfeld, Amir and Tsotsos, John K.},
+  title         = {Incremental Learning Through Deep Adaptation},
+  journal       = {IEEE Transactions on Pattern Analysis and Machine Intelligence},
+  volume        = {42},
+  number        = {3},
+  pages         = {651--663},
+  year          = {2020},
 }
 
 @misc{dataset_prostate2,
-  author = {Bloch, N. and Madabhushi, A. and Huisman, H. and Freymann, J. and others},
-  title  = {NCI-ISBI 2013 Challenge: Automated Segmentation of Prostate Structures},
-  year   = {2014},
-  note   = {Challenge dataset and evaluation protocol}
+  author        = {Bloch, N. and Madabhushi, A. and Huisman, H. and Freymann, J. and others},
+  title         = {{NCI-ISBI} 2013 Challenge: Automated Segmentation of Prostate Structures},
+  year          = {2014},
+  note          = {Challenge dataset and evaluation protocol},
 }
 
 @article{dataset_prostate,
-  author  = {Lema{\^i}tre, Guillaume and Mart{\'i}, Robert and Freixenet, Jordi and others},
-  title   = {Computer-Aided Detection and Diagnosis for Prostate Cancer Based on Mono and Multi-Parametric {MRI}: A Review},
-  journal = {Computers in Biology and Medicine},
-  volume  = {60},
-  pages   = {8--31},
-  year    = {2015}
+  author        = {Lema{\^i}tre, Guillaume and Mart{\'i}, Robert and Freixenet, Jordi and others},
+  title         = {Computer-Aided Detection and Diagnosis for Prostate Cancer Based on Mono and Multi-Parametric {MRI}: A Review},
+  journal       = {Computers in Biology and Medicine},
+  volume        = {60},
+  pages         = {8--31},
+  year          = {2015},
 }
 
 @article{dataset_prostate3,
-  author  = {Litjens, Geert and Toth, Robert and van de Ven, Wiro and Hoeks, Christian and others},
-  title   = {Evaluation of Prostate Segmentation Algorithms for {MRI}: The {PROMISE12} Challenge},
-  journal = {Medical Image Analysis},
-  volume  = {18},
-  pages   = {359--373},
-  year    = {2014}
+  author        = {Litjens, Geert and Toth, Robert and van de Ven, Wiro and Hoeks, Christian and others},
+  title         = {Evaluation of Prostate Segmentation Algorithms for {MRI}: The {PROMISE12} Challenge},
+  journal       = {Medical Image Analysis},
+  volume        = {18},
+  pages         = {359--373},
+  year          = {2014},
 }
 
 @inproceedings{dataset_domaincl,
-  author    = {Liu, Quande and Dou, Qi and Heng, Pheng-Ann},
-  title     = {Shape-Aware Meta-Learning for Generalizing Prostate {MRI} Segmentation to Unseen Domains},
-  booktitle = {Medical Image Computing and Computer Assisted Intervention -- MICCAI 2020},
-  pages     = {475--485},
-  year      = {2020}
+  author        = {Liu, Quande and Dou, Qi and Heng, Pheng-Ann},
+  title         = {Shape-Aware Meta-Learning for Generalizing Prostate {MRI} Segmentation to Unseen Domains},
+  booktitle     = conf_miccai,
+  pages         = {475--485},
+  year          = {2020},
 }
 
 @article{care25ASA1,
-  author  = {Zhuang, Xiahai and Shen, Juan},
-  title   = {Multi-Scale Patch and Multi-Modality Atlases for Whole Heart Segmentation of {MRI}},
-  journal = {Medical Image Analysis},
-  volume  = {31},
-  pages   = {77--87},
-  year    = {2016}
+  author        = {Zhuang, Xiahai and Shen, Juan},
+  title         = {Multi-Scale Patch and Multi-Modality Atlases for Whole Heart Segmentation of {MRI}},
+  journal       = {Medical Image Analysis},
+  volume        = {31},
+  pages         = {77--87},
+  year          = {2016},
 }
 
 @article{discussion_inter_seg3,
-  author  = {Gao, Shizhao and Zhou, Hongliang and Gao, Yong and others},
-  title   = {BayeSeg: Bayesian Modeling for Medical Image Segmentation with Interpretable Generalizability},
-  journal = {Medical Image Analysis},
-  volume  = {89},
-  pages   = {102889},
-  year    = {2023}
+  author        = {Gao, Shizhao and Zhou, Hongliang and Gao, Yong and others},
+  title         = {{BayeSeg}: Bayesian Modeling for Medical Image Segmentation with Interpretable Generalizability},
+  journal       = {Medical Image Analysis},
+  volume        = {89},
+  pages         = {102889},
+  year          = {2023},
 }
 
 @article{care25ASA2,
-  author  = {Zhuang, Xiahai},
-  title   = {Multivariate Mixture Model for Myocardial Segmentation Combining Multi-Source Images},
-  journal = {IEEE Transactions on Pattern Analysis and Machine Intelligence},
-  volume  = {41},
-  number  = {12},
-  pages   = {2933--2946},
-  year    = {2019}
+  author        = {Zhuang, Xiahai},
+  title         = {Multivariate Mixture Model for Myocardial Segmentation Combining Multi-Source Images},
+  journal       = {IEEE Transactions on Pattern Analysis and Machine Intelligence},
+  volume        = {41},
+  number        = {12},
+  pages         = {2933--2946},
+  year          = {2019},
 }
 
 @article{dataset_lascars,
-  author  = {Li, Lei and Zimmer, V{\'a}clav A. and Schnabel, Julia A. and others},
-  title   = {AtrialJSQnet: A New Framework for Joint Segmentation and Quantification of Left Atrium and Scars Incorporating Spatial and Shape Information},
-  journal = {Medical Image Analysis},
-  volume  = {76},
-  pages   = {102303},
-  year    = {2022}
+  author        = {Li, Lei and Zimmer, V{\'a}clav A. and Schnabel, Julia A. and others},
+  title         = {{AtrialJSQnet}: A New Framework for Joint Segmentation and Quantification of Left Atrium and Scars Incorporating Spatial and Shape Information},
+  journal       = {Medical Image Analysis},
+  volume        = {76},
+  pages         = {102303},
+  year          = {2022},
 }
 
 @article{dataset_lascars2,
-  author  = {Li, Lei and Zimmer, V{\'a}clav A. and Schnabel, Julia A. and others},
-  title   = {Medical Image Analysis on Left Atrial {LGE MRI} for Atrial Fibrillation Studies: A Review},
-  journal = {Medical Image Analysis},
-  volume  = {77},
-  pages   = {102360},
-  year    = {2022}
+  author        = {Li, Lei and Zimmer, V{\'a}clav A. and Schnabel, Julia A. and others},
+  title         = {Medical Image Analysis on Left Atrial {LGE MRI} for Atrial Fibrillation Studies: A Review},
+  journal       = {Medical Image Analysis},
+  volume        = {77},
+  pages         = {102360},
+  year          = {2022},
 }
 
 @article{dataset_taskcl,
-  author  = {Bilic, Patrick and Christ, Patrick and Li, Hongbin and others},
-  title   = {The Liver Tumor Segmentation Benchmark ({LiTS})},
-  journal = {Medical Image Analysis},
-  volume  = {84},
-  pages   = {102680},
-  year    = {2023}
+  author        = {Bilic, Patrick and Christ, Patrick and Li, Hongbin and others},
+  title         = {The Liver Tumor Segmentation Benchmark ({LiTS})},
+  journal       = {Medical Image Analysis},
+  volume        = {84},
+  pages         = {102680},
+  year          = {2023},
 }
 
 @article{dataset_taskcl2,
-  author  = {Pati, Sarthak and Baid, Ujjwal and Zenk, Maximilian and others},
-  title   = {The Federated Tumor Segmentation ({FeTS}) Challenge},
-  journal = {arXiv preprint arXiv:2105.05874},
-  year    = {2021},
-  url = {https://arxiv.org/abs/2105.05874},
-  urldate = {2026-08-30}
+  author        = {Pati, Sarthak and Baid, Ujjwal and Zenk, Maximilian and others},
+  title         = {The Federated Tumor Segmentation ({FeTS}) Challenge},
+  journal       = {arXiv preprint arXiv:2105.05874},
+  year          = {2021},
+  url           = {https://arxiv.org/abs/2105.05874},
+  urldate       = {2026-08-30},
 }
 
 @book{goodfellow2016deep,
-  author    = {Goodfellow, Ian and Bengio, Yoshua and Courville, Aaron},
-  title     = {Deep Learning},
-  publisher = {MIT Press},
-  address   = {Cambridge, MA},
-  year      = {2016}
+  author        = {Goodfellow, Ian and Bengio, Yoshua and Courville, Aaron},
+  title         = {Deep Learning},
+  publisher     = {MIT Press},
+  address       = {Cambridge, MA},
+  year          = {2016},
 }
 
 @article{fawcett2006roc,
-  author  = {Fawcett, Tom},
-  title   = {An Introduction to {ROC} Analysis},
-  journal = {Pattern Recognition Letters},
-  volume  = {27},
-  number  = {8},
-  pages   = {861--874},
-  year    = {2006},
-  doi     = {10.1016/j.patrec.2005.10.010}
+  author        = {Fawcett, Tom},
+  title         = {An Introduction to {ROC} Analysis},
+  journal       = {Pattern Recognition Letters},
+  volume        = {27},
+  number        = {8},
+  pages         = {861--874},
+  year          = {2006},
 }
 
 @inproceedings{brodersen2010balanced,
-  author    = {Brodersen, Kay Henning and Ong, Cheng Soon and Stephan, Klaas Enno and Buhmann, Joachim M.},
-  title     = {The Balanced Accuracy and Its Posterior Distribution},
-  booktitle = {Proceedings of the 20th International Conference on Pattern Recognition},
-  pages     = {3121--3124},
-  publisher = {IEEE},
-  year      = {2010},
-  doi       = {10.1109/ICPR.2010.764}
+  author        = {Brodersen, Kay Henning and Ong, Cheng Soon and Stephan, Klaas Enno and Buhmann, Joachim M.},
+  title         = {The Balanced Accuracy and Its Posterior Distribution},
+  booktitle     = conf_icpr,
+  pages         = {3121--3124},
+  publisher     = {IEEE},
+  year          = {2010},
 }
 
 @inproceedings{geiping2020inverting,
-  author    = {Geiping, Jonas and Bauermeister, Hartmut and Dr{\"o}ge, Hannah and M{\"o}ller, Michael},
-  title     = {Inverting Gradients: How Easy Is It to Break Privacy in Federated Learning?},
-  booktitle = {Advances in Neural Information Processing Systems},
-  volume    = {33},
-  year      = {2020}
+  author        = {Geiping, Jonas and Bauermeister, Hartmut and Dr{\"o}ge, Hannah and M{\"o}ller, Michael},
+  title         = {Inverting Gradients: How Easy Is It to Break Privacy in Federated Learning?},
+  booktitle     = conf_neurips,
+  volume        = {33},
+  year          = {2020},
 }
 
 @inproceedings{bonawitz2017practical,
-  author    = {Bonawitz, Keith and Ivanov, Vladimir and Kreuter, Ben and Marcedone, Antonio and McMahan, H. Brendan and Patel, Sarvar and Ramage, Daniel and Segal, Aaron and Seth, Karn},
-  title     = {Practical Secure Aggregation for Privacy-Preserving Machine Learning},
-  booktitle = {Proceedings of the 2017 ACM SIGSAC Conference on Computer and Communications Security},
-  pages     = {1175--1191},
-  publisher = {ACM},
-  year      = {2017},
-  doi       = {10.1145/3133956.3133982}
+  author        = {Bonawitz, Keith and Ivanov, Vladimir and Kreuter, Ben and Marcedone, Antonio and McMahan, H. Brendan and Patel, Sarvar and Ramage, Daniel and Segal, Aaron and Seth, Karn},
+  title         = {Practical Secure Aggregation for Privacy-Preserving Machine Learning},
+  booktitle     = conf_ccs,
+  pages         = {1175--1191},
+  publisher     = {ACM},
+  year          = {2017},
 }
 
 @inproceedings{abadi2016deep,
-  author    = {Abadi, Mart{\'i}n and Chu, Andy and Goodfellow, Ian and McMahan, H. Brendan and Mironov, Ilya and Talwar, Kunal and Zhang, Li},
-  title     = {Deep Learning with Differential Privacy},
-  booktitle = {Proceedings of the 2016 ACM SIGSAC Conference on Computer and Communications Security},
-  pages     = {308--318},
-  publisher = {ACM},
-  year      = {2016},
-  doi       = {10.1145/2976749.2978318}
+  author        = {Abadi, Mart{\'i}n and Chu, Andy and Goodfellow, Ian and McMahan, H. Brendan and Mironov, Ilya and Talwar, Kunal and Zhang, Li},
+  title         = {Deep Learning with Differential Privacy},
+  booktitle     = conf_ccs,
+  pages         = {308--318},
+  publisher     = {ACM},
+  year          = {2016},
 }
 
 @inproceedings{finn2017maml,
-  author    = {Finn, Chelsea and Abbeel, Pieter and Levine, Sergey},
-  title     = {Model-Agnostic Meta-Learning for Fast Adaptation of Deep Networks},
-  booktitle = {Proceedings of the 34th International Conference on Machine Learning},
-  series    = {Proceedings of Machine Learning Research},
-  volume    = {70},
-  pages     = {1126--1135},
-  publisher = {PMLR},
-  year      = {2017}
+  author        = {Finn, Chelsea and Abbeel, Pieter and Levine, Sergey},
+  title         = {Model-Agnostic Meta-Learning for Fast Adaptation of Deep Networks},
+  booktitle     = conf_icml,
+  series        = {Proceedings of Machine Learning Research},
+  volume        = {70},
+  pages         = {1126--1135},
+  publisher     = {PMLR},
+  year          = {2017},
 }
 
 @inproceedings{foret2021sam,
-  author    = {Foret, Pierre and Kleiner, Ariel and Mobahi, Hossein and Neyshabur, Behnam},
-  title     = {Sharpness-Aware Minimization for Efficiently Improving Generalization},
-  booktitle = {International Conference on Learning Representations},
-  year      = {2021}
+  author        = {Foret, Pierre and Kleiner, Ariel and Mobahi, Hossein and Neyshabur, Behnam},
+  title         = {Sharpness-Aware Minimization for Efficiently Improving Generalization},
+  booktitle     = conf_iclr,
+  year          = {2021},
 }
 
-
 @inproceedings{bakman2024fot,
-  title     = {Federated Orthogonal Training: Mitigating Global Catastrophic Forgetting in Continual Federated Learning},
-  author    = {Bakman, Yavuz Faruk and Yaldiz, Duygu Nur and Ezzeldin, Yahya H. and Avestimehr, Salman},
-  booktitle = {International Conference on Learning Representations},
-  year      = {2024}
+  title         = {Federated Orthogonal Training: Mitigating Global Catastrophic Forgetting in Continual Federated Learning},
+  author        = {Bakman, Yavuz Faruk and Yaldiz, Duygu Nur and Ezzeldin, Yahya H. and Avestimehr, Salman},
+  booktitle     = conf_iclr,
+  year          = {2024},
 }
 
 @incollection{ballerini2013dermofit,
-  title     = {A color and texture based hierarchical {K-NN} approach to the classification of non-melanoma skin lesions},
-  author    = {Ballerini, Lucia and Fisher, Robert B. and Aldridge, Ben and Rees, Jonathan},
-  booktitle = {Color Medical Image Analysis},
-  series    = {Lecture Notes in Computational Vision and Biomechanics},
-  volume    = {6},
-  pages     = {63--86},
-  editor    = {Celebi, M. Emre and Schaefer, Gerald},
-  publisher = {Springer Netherlands},
-  doi       = {10.1007/978-94-007-5389-1_4},
-  year      = {2013}
+  title         = {A color and texture based hierarchical {K-NN} approach to the classification of non-melanoma skin lesions},
+  author        = {Ballerini, Lucia and Fisher, Robert B. and Aldridge, Ben and Rees, Jonathan},
+  booktitle     = {Color Medical Image Analysis},
+  series        = {Lecture Notes in Computational Vision and Biomechanics},
+  volume        = {6},
+  pages         = {63--86},
+  editor        = {Celebi, M. Emre and Schaefer, Gerald},
+  publisher     = {Springer Netherlands},
+  year          = {2013},
 }
 
 @article{borgli2020hyperkvasir,
-  title={HyperKvasir, a comprehensive multi-class image and video dataset for gastrointestinal endoscopy},
-  author={Borgli, Hanna and Thambawita, Vajira and Smedsrud, Pia H and Hicks, Steven and Jha, Debesh and Eskeland, Sigrun L and Randel, Kristin Ranheim and Pogorelov, Konstantin and Lux, Mathias and Nguyen, Duc Tien Dang and others},
-  journal={Scientific Data},
-  volume={7},
-  number={1},
-  pages={283},
-  publisher={Nature Publishing Group UK London},
-  year={2020}
+  title         = {{HyperKvasir}, a comprehensive multi-class image and video dataset for gastrointestinal endoscopy},
+  author        = {Borgli, Hanna and Thambawita, Vajira and Smedsrud, Pia H. and Hicks, Steven and Jha, Debesh and Eskeland, Sigrun L. and Randel, Kristin Ranheim and Pogorelov, Konstantin and Lux, Mathias and Nguyen, Duc Tien Dang and others},
+  journal       = {Scientific Data},
+  volume        = {7},
+  number        = {1},
+  pages         = {283},
+  publisher     = {Nature Publishing Group UK London},
+  year          = {2020},
 }
 
 @article{combalia2019bcn20000,
-  title   = {{BCN20000}: Dermoscopic lesions in the wild},
-  author  = {Combalia, Marc and Codella, Noel C. F. and Rotemberg, Veronica and Helba, Brian and Vilaplana, Veronica and Reiter, Ofer and Carrera, Cristina and Barreiro, Alicia and Halpern, Allan C. and Puig, Susana and Malvehy, Josep},
-  journal = {arXiv preprint arXiv:1908.02288},
-  year    = {2019},
-  url = {https://arxiv.org/abs/1908.02288},
-  urldate = {2026-08-30}
+  title         = {{BCN20000}: Dermoscopic lesions in the wild},
+  author        = {Combalia, Marc and Codella, Noel C. F. and Rotemberg, Veronica and Helba, Brian and Vilaplana, Veronica and Reiter, Ofer and Carrera, Cristina and Barreiro, Alicia and Halpern, Allan C. and Puig, Susana and Malvehy, Josep},
+  journal       = {arXiv preprint arXiv:1908.02288},
+  year          = {2019},
+  url           = {https://arxiv.org/abs/1908.02288},
+  urldate       = {2026-08-30},
 }
 
 @article{dwork2014algorithmic,
-  title   = {The algorithmic foundations of differential privacy},
-  author  = {Dwork, Cynthia and Roth, Aaron},
-  journal = {Foundations and Trends in Theoretical Computer Science},
-  volume  = {9},
-  number  = {3--4},
-  pages   = {211--407},
-  publisher = {Now Publishers},
-  year    = {2014}
+  title         = {The algorithmic foundations of differential privacy},
+  author        = {Dwork, Cynthia and Roth, Aaron},
+  journal       = {Foundations and Trends in Theoretical Computer Science},
+  volume        = {9},
+  number        = {3--4},
+  pages         = {211--407},
+  publisher     = {Now Publishers},
+  year          = {2014},
 }
 
-@article{grammenos2020federatedPCA,
-  title={Federated principal component analysis},
-  author={Grammenos, Andreas and Mendoza Smith, Rodrigo and Crowcroft, Jon and Mascolo, Cecilia},
-  journal={Advances in Neural Information Processing Systems},
-  volume={33},
-  pages={6453--6464},
-  year={2020}
+@inproceedings{grammenos2020federatedPCA,
+  title         = {Federated principal component analysis},
+  author        = {Grammenos, Andreas and Mendoza Smith, Rodrigo and Crowcroft, Jon and Mascolo, Cecilia},
+  volume        = {33},
+  pages         = {6453--6464},
+  year          = {2020},
+  booktitle     = conf_neurips,
 }
 
 @inproceedings{he2016resnet,
-  title={Deep residual learning for image recognition},
-  author={He, Kaiming and Zhang, Xiangyu and Ren, Shaoqing and Sun, Jian},
-  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
-  pages={770--778},
-  year={2016}
+  title         = {Deep residual learning for image recognition},
+  author        = {He, Kaiming and Zhang, Xiangyu and Ren, Shaoqing and Sun, Jian},
+  booktitle     = conf_cvpr,
+  pages         = {770--778},
+  year          = {2016},
 }
 
 @article{hsu2019dirichlet,
-  title={Measuring the effects of non-identical data distribution for federated visual classification},
-  author={Hsu, Tzu-Ming Harry and Qi, Hang and Brown, Matthew},
-  journal={arXiv preprint arXiv:1909.06335},
-  year={2019},
-  url = {https://arxiv.org/abs/1909.06335},
-  urldate = {2026-08-30}
+  title         = {Measuring the effects of non-identical data distribution for federated visual classification},
+  author        = {Hsu, Tzu-Ming Harry and Qi, Hang and Brown, Matthew},
+  journal       = {arXiv preprint arXiv:1909.06335},
+  year          = {2019},
+  url           = {https://arxiv.org/abs/1909.06335},
+  urldate       = {2026-08-30},
 }
 
 @article{iwen2016distributedSVD,
-  title={A distributed and incremental SVD algorithm for agglomerative data analysis on large networks},
-  author={Iwen, Mark A and Ong, Benjamin W},
-  journal={SIAM Journal on Matrix Analysis and Applications},
-  volume={37},
-  number={4},
-  pages={1699--1718},
-  publisher={SIAM},
-  year={2016}
+  title         = {A distributed and incremental {SVD} algorithm for agglomerative data analysis on large networks},
+  author        = {Iwen, Mark A. and Ong, Benjamin W.},
+  journal       = {SIAM Journal on Matrix Analysis and Applications},
+  volume        = {37},
+  number        = {4},
+  pages         = {1699--1718},
+  publisher     = {SIAM},
+  year          = {2016},
 }
 
 @inproceedings{karimireddy2020scaffold,
-  title={Scaffold: Stochastic controlled averaging for federated learning},
-  author={Karimireddy, Sai Praneeth and Kale, Satyen and Mohri, Mehryar and Reddi, Sashank and Stich, Sebastian and Suresh, Ananda Theertha},
-  booktitle={International Conference on Machine Learning},
-  pages={5132--5143},
-  organization={PMLR},
-  year={2020}
+  title         = {{Scaffold}: Stochastic controlled averaging for federated learning},
+  author        = {Karimireddy, Sai Praneeth and Kale, Satyen and Mohri, Mehryar and Reddi, Sashank and Stich, Sebastian and Suresh, Ananda Theertha},
+  booktitle     = conf_icml,
+  pages         = {5132--5143},
+  year          = {2020},
+  publisher     = {PMLR},
 }
 
 @article{kawahara2019derm7pt,
-  title   = {Seven-point checklist and skin lesion classification using multitask multimodal neural nets},
-  author  = {Kawahara, Jeremy and Daneshvar, Sara and Argenziano, Giuseppe and Hamarneh, Ghassan},
-  journal = {IEEE Journal of Biomedical and Health Informatics},
-  volume  = {23},
-  number  = {2},
-  pages   = {538--546},
-  publisher = {IEEE},
-  doi     = {10.1109/JBHI.2018.2824327},
-  year    = {2019}
+  title         = {Seven-point checklist and skin lesion classification using multitask multimodal neural nets},
+  author        = {Kawahara, Jeremy and Daneshvar, Sara and Argenziano, Giuseppe and Hamarneh, Ghassan},
+  journal       = {IEEE Journal of Biomedical and Health Informatics},
+  volume        = {23},
+  number        = {2},
+  pages         = {538--546},
+  publisher     = {IEEE},
+  year          = {2019},
 }
 
-@article{li2020fedprox,
-  title={Federated optimization in heterogeneous networks},
-  author={Li, Tian and Sahu, Anit Kumar and Zaheer, Manzil and Sanjabi, Maziar and Talwalkar, Ameet and Smith, Virginia},
-  journal={Proceedings of Machine Learning and Systems},
-  volume={2},
-  pages={429--450},
-  year={2020}
+@inproceedings{li2020fedprox,
+  title         = {Federated optimization in heterogeneous networks},
+  author        = {Li, Tian and Sahu, Anit Kumar and Zaheer, Manzil and Sanjabi, Maziar and Talwalkar, Ameet and Smith, Virginia},
+  volume        = {2},
+  pages         = {429--450},
+  year          = {2020},
+  booktitle     = conf_mlsys,
 }
 
 @inproceedings{li2024Refed,
-  title={Towards efficient replay in federated incremental learning},
-  author={Li, Yichen and Li, Qunwei and Wang, Haozhao and Li, Ruixuan and Zhong, Wenliang and Zhang, Guannan},
-  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
-  pages={12820--12829},
-  year={2024}
+  title         = {Towards efficient replay in federated incremental learning},
+  author        = {Li, Yichen and Li, Qunwei and Wang, Haozhao and Li, Ruixuan and Zhong, Wenliang and Zhang, Guannan},
+  booktitle     = conf_cvpr,
+  pages         = {12820--12829},
+  year          = {2024},
 }
 
 @inproceedings{liang2024dddr,
-  title={Diffusion-driven data replay: A novel approach to combat forgetting in federated class continual learning},
-  author={Liang, Jinglin and Zhong, Jin and Gu, Hanlin and Lu, Zhongqi and Tang, Xingxing and Dai, Gang and Huang, Shuangping and Fan, Lixin and Yang, Qiang},
-  booktitle={European Conference on Computer Vision},
-  pages={303--319},
-  organization={Springer},
-  year={2024}
+  title         = {Diffusion-driven data replay: A novel approach to combat forgetting in federated class continual learning},
+  author        = {Liang, Jinglin and Zhong, Jin and Gu, Hanlin and Lu, Zhongqi and Tang, Xingxing and Dai, Gang and Huang, Shuangping and Fan, Lixin and Yang, Qiang},
+  booktitle     = conf_eccv,
+  pages         = {303--319},
+  year          = {2024},
+  publisher     = {Springer},
 }
 
 @article{tschandl2018ham10000,
-  title   = {The {HAM10000} dataset, a large collection of multi-source dermatoscopic images of common pigmented skin lesions},
-  author  = {Tschandl, Philipp and Rosendahl, Cliff and Kittler, Harald},
-  journal = {Scientific Data},
-  volume  = {5},
-  number  = {1},
-  pages   = {180161},
-  publisher = {Nature Publishing Group},
-  doi     = {10.1038/sdata.2018.161},
-  year    = {2018}
+  title         = {The {HAM10000} dataset, a large collection of multi-source dermatoscopic images of common pigmented skin lesions},
+  author        = {Tschandl, Philipp and Rosendahl, Cliff and Kittler, Harald},
+  journal       = {Scientific Data},
+  volume        = {5},
+  number        = {1},
+  pages         = {180161},
+  publisher     = {Nature Publishing Group},
+  year          = {2018},
 }
 
 @article{yang2023medmnist,
-  title   = {{MedMNIST} v2---A large-scale lightweight benchmark for {2D} and {3D} biomedical image classification},
-  author  = {Yang, Jiancheng and Shi, Rui and Wei, Donglai and Liu, Zequan and Zhao, Lin and Ke, Bilian and Pfister, Hanspeter and Ni, Bingbing},
-  journal = {Scientific Data},
-  volume  = {10},
-  number  = {1},
-  pages   = {41},
-  publisher = {Nature Publishing Group},
-  year    = {2023}
+  title         = {{MedMNIST} v2---A large-scale lightweight benchmark for {2D} and {3D} biomedical image classification},
+  author        = {Yang, Jiancheng and Shi, Rui and Wei, Donglai and Liu, Zequan and Zhao, Lin and Ke, Bilian and Pfister, Hanspeter and Ni, Bingbing},
+  journal       = {Scientific Data},
+  volume        = {10},
+  number        = {1},
+  pages         = {41},
+  publisher     = {Nature Publishing Group},
+  year          = {2023},
 }
 
 @inproceedings{zhang2023target,
-  title={Target: Federated class-continual learning via exemplar-free distillation},
-  author={Zhang, Jie and Chen, Chen and Zhuang, Weiming and Lyu, Lingjuan},
-  booktitle={Proceedings of the IEEE/CVF International Conference on Computer Vision},
-  pages={4782--4793},
-  year={2023}
+  title         = {{Target}: Federated class-continual learning via exemplar-free distillation},
+  author        = {Zhang, Jie and Chen, Chen and Zhuang, Weiming and Lyu, Lingjuan},
+  booktitle     = conf_iccv,
+  pages         = {4782--4793},
+  year          = {2023},
 }
 
 @article{maintz1998registration,
-  author  = {Maintz, J. B. Antoine and Viergever, Max A.},
-  title   = {A Survey of Medical Image Registration},
-  journal = {Medical Image Analysis},
-  volume  = {2},
-  number  = {1},
-  pages   = {1--36},
-  year    = {1998}
+  author        = {Maintz, J. B. Antoine and Viergever, Max A.},
+  title         = {A Survey of Medical Image Registration},
+  journal       = {Medical Image Analysis},
+  volume        = {2},
+  number        = {1},
+  pages         = {1--36},
+  year          = {1998},
 }
 
 @article{gupta2021registration,
-  author  = {Gupta, Sandesh and Gupta, Phalguni and Verma, Vivek S.},
-  title   = {Study on Anatomical and Functional Medical Image Registration Methods},
-  journal = {Neurocomputing},
-  volume  = {452},
-  pages   = {534--548},
-  year    = {2021}
+  author        = {Gupta, Sandesh and Gupta, Phalguni and Verma, Vivek S.},
+  title         = {Study on Anatomical and Functional Medical Image Registration Methods},
+  journal       = {Neurocomputing},
+  volume        = {452},
+  pages         = {534--548},
+  year          = {2021},
 }
 
 @article{maes1997mutualinformation,
-  author  = {Maes, Frederik and Collignon, Andre and Vandermeulen, Dirk and Marchal, Guy and Suetens, Paul},
-  title   = {Multimodality Image Registration by Maximization of Mutual Information},
-  journal = {IEEE Transactions on Medical Imaging},
-  volume  = {16},
-  number  = {2},
-  pages   = {187--198},
-  year    = {1997}
+  author        = {Maes, Frederik and Collignon, Andre and Vandermeulen, Dirk and Marchal, Guy and Suetens, Paul},
+  title         = {Multimodality Image Registration by Maximization of Mutual Information},
+  journal       = {IEEE Transactions on Medical Imaging},
+  volume        = {16},
+  number        = {2},
+  pages         = {187--198},
+  year          = {1997},
 }
 
 @article{haskins2020deepreg,
-  author  = {Haskins, Grant and Kruger, Uwe and Yan, Pingkun},
-  title   = {Deep Learning in Medical Image Registration: A Survey},
-  journal = {Machine Vision and Applications},
-  volume  = {31},
-  pages   = {1--18},
-  year    = {2020}
+  author        = {Haskins, Grant and Kruger, Uwe and Yan, Pingkun},
+  title         = {Deep Learning in Medical Image Registration: A Survey},
+  journal       = {Machine Vision and Applications},
+  volume        = {31},
+  pages         = {1--18},
+  year          = {2020},
 }
 
 @article{kang2022dual,
-  author  = {Kang, Miao and Hu, Xiaojun and Huang, Weilin and Scott, Matthew R. and Reyes, Mauricio},
-  title   = {Dual-Stream Pyramid Registration Network},
-  journal = {Medical Image Analysis},
-  volume  = {78},
-  pages   = {102379},
-  year    = {2022}
+  author        = {Kang, Miao and Hu, Xiaojun and Huang, Weilin and Scott, Matthew R. and Reyes, Mauricio},
+  title         = {Dual-Stream Pyramid Registration Network},
+  journal       = {Medical Image Analysis},
+  volume        = {78},
+  pages         = {102379},
+  year          = {2022},
 }
 
 @article{che2023amnet,
-  author  = {Che, Tongtong and Wang, Xiuying and Zhao, Kun and Zhao, Yan and Zeng, Debin and Li, Qiongling and Zheng, Yuanjie and Yang, Ning and Wang, Jian and Li, Shuyu},
-  title   = {{AMNet}: Adaptive Multi-Level Network for Deformable Registration of 3D Brain MR Images},
-  journal = {Medical Image Analysis},
-  volume  = {85},
-  pages   = {102740},
-  year    = {2023}
+  author        = {Che, Tongtong and Wang, Xiuying and Zhao, Kun and Zhao, Yan and Zeng, Debin and Li, Qiongling and Zheng, Yuanjie and Yang, Ning and Wang, Jian and Li, Shuyu},
+  title         = {{AMNet}: Adaptive Multi-Level Network for Deformable Registration of {3D} Brain {MR} Images},
+  journal       = {Medical Image Analysis},
+  volume        = {85},
+  pages         = {102740},
+  year          = {2023},
 }
 
 @article{hering2021lungreg,
-  author  = {Hering, Alessa and H{\"a}ger, Stephanie and Moltz, Jan and Lessmann, Nikolas and Heldmann, Stefan and van Ginneken, Bram},
-  title   = {{CNN}-Based Lung {CT} Registration with Multiple Anatomical Constraints},
-  journal = {Medical Image Analysis},
-  volume  = {72},
-  pages   = {102139},
-  year    = {2021}
+  author        = {Hering, Alessa and H{\"a}ger, Stephanie and Moltz, Jan and Lessmann, Nikolas and Heldmann, Stefan and van Ginneken, Bram},
+  title         = {{CNN}-Based Lung {CT} Registration with Multiple Anatomical Constraints},
+  journal       = {Medical Image Analysis},
+  volume        = {72},
+  pages         = {102139},
+  year          = {2021},
 }
 
 @article{lee2020clinicalcl,
-  author  = {Lee, Cecilia S. and Lee, Aaron Y.},
-  title   = {Clinical Applications of Continual Learning Machine Learning},
-  journal = {The Lancet Digital Health},
-  volume  = {2},
-  number  = {6},
-  pages   = {e279--e281},
-  year    = {2020}
+  author        = {Lee, Cecilia S. and Lee, Aaron Y.},
+  title         = {Clinical Applications of Continual Learning Machine Learning},
+  journal       = {The Lancet Digital Health},
+  volume        = {2},
+  number        = {6},
+  pages         = {e279--e281},
+  year          = {2020},
 }
 
 @article{vokinger2021medicaldevices,
-  author  = {Vokinger, Kerstin N. and Feuerriegel, Stefan and Kesselheim, Aaron S.},
-  title   = {Continual Learning in Medical Devices: {FDA}'s Action Plan and Beyond},
-  journal = {The Lancet Digital Health},
-  volume  = {3},
-  number  = {6},
-  pages   = {e337--e338},
-  year    = {2021}
+  author        = {Vokinger, Kerstin N. and Feuerriegel, Stefan and Kesselheim, Aaron S.},
+  title         = {Continual Learning in Medical Devices: {FDA}'s Action Plan and Beyond},
+  journal       = {The Lancet Digital Health},
+  volume        = {3},
+  number        = {6},
+  pages         = {e337--e338},
+  year          = {2021},
 }
 
 @inproceedings{thrun1995lifelong,
-  author    = {Thrun, Sebastian},
-  title     = {Is Learning the N-th Thing Any Easier Than Learning the First?},
-  booktitle = {Advances in Neural Information Processing Systems},
-  year      = {1995}
+  author        = {Thrun, Sebastian},
+  title         = {Is Learning the {N}-th Thing Any Easier Than Learning the First?},
+  booktitle     = conf_neurips,
+  year          = {1995},
 }
 
 @incollection{mccloskey1989catastrophic,
-  author    = {McCloskey, Michael and Cohen, Neal J.},
-  title     = {Catastrophic Interference in Connectionist Networks: The Sequential Learning Problem},
-  booktitle = {Psychology of Learning and Motivation},
-  volume    = {24},
-  pages     = {109--165},
-  publisher = {Elsevier},
-  year      = {1989}
+  author        = {McCloskey, Michael and Cohen, Neal J.},
+  title         = {Catastrophic Interference in Connectionist Networks: The Sequential Learning Problem},
+  booktitle     = {Psychology of Learning and Motivation},
+  volume        = {24},
+  pages         = {109--165},
+  publisher     = {Elsevier},
+  year          = {1989},
 }
 
 @inproceedings{riemer2019mer,
-  author    = {Riemer, Matthew and Cases, Ignacio and Ajemian, Robert and Liu, Miao and Rish, Irina and Tu, Yuhai and Tesauro, Gerald},
-  title     = {Learning to Learn without Forgetting by Maximizing Transfer and Minimizing Interference},
-  booktitle = {International Conference on Learning Representations},
-  year      = {2019}
+  author        = {Riemer, Matthew and Cases, Ignacio and Ajemian, Robert and Liu, Miao and Rish, Irina and Tu, Yuhai and Tesauro, Gerald},
+  title         = {Learning to Learn without Forgetting by Maximizing Transfer and Minimizing Interference},
+  booktitle     = conf_iclr,
+  year          = {2019},
 }
 
 @article{nichol2018firstorder,
-  author  = {Nichol, Alex and Achiam, Joshua and Schulman, John},
-  title   = {On First-Order Meta-Learning Algorithms},
-  journal = {arXiv preprint arXiv:1803.02999},
-  year    = {2018},
-  url = {https://arxiv.org/abs/1803.02999},
-  urldate = {2026-08-30}
+  author        = {Nichol, Alex and Achiam, Joshua and Schulman, John},
+  title         = {On First-Order Meta-Learning Algorithms},
+  journal       = {arXiv preprint arXiv:1803.02999},
+  year          = {2018},
+  url           = {https://arxiv.org/abs/1803.02999},
+  urldate       = {2026-08-30},
 }
 
 @article{hill2001registration,
-  author  = {Hill, Derek L. G. and Batchelor, Philip G. and Holden, Mark and Hawkes, David J.},
-  title   = {Medical Image Registration},
-  journal = {Physics in Medicine and Biology},
-  volume  = {46},
-  pages   = {R1--R45},
-  year    = {2001}
+  author        = {Hill, Derek L. G. and Batchelor, Philip G. and Holden, Mark and Hawkes, David J.},
+  title         = {Medical Image Registration},
+  journal       = {Physics in Medicine and Biology},
+  volume        = {46},
+  pages         = {R1--R45},
+  year          = {2001},
 }
 
 @article{hering2021learn2reg,
-  author  = {Hering, Alessa and Hansen, Lasse and Mok, Tony C. W. and Chung, Albert C. S. and Siebert, Hanna and others},
-  title   = {{Learn2Reg}: Comprehensive Multi-Task Medical Image Registration Challenge, Dataset and Evaluation in the Era of Deep Learning},
-  journal = {IEEE Transactions on Medical Imaging},
-  volume  = {42},
-  pages   = {697--712},
-  year    = {2021}
+  author        = {Hering, Alessa and Hansen, Lasse and Mok, Tony C. W. and Chung, Albert C. S. and Siebert, Hanna and others},
+  title         = {{Learn2Reg}: Comprehensive Multi-Task Medical Image Registration Challenge, Dataset and Evaluation in the Era of Deep Learning},
+  journal       = {IEEE Transactions on Medical Imaging},
+  volume        = {42},
+  pages         = {697--712},
+  year          = {2021},
 }
 
 @article{marcus2007oasis,
-  author  = {Marcus, Daniel S. and Wang, Tracy H. and Parker, Jamie and Csernansky, John G. and Morris, John C. and Buckner, Randy L.},
-  title   = {Open Access Series of Imaging Studies ({OASIS}): Cross-Sectional {MRI} Data in Young, Middle Aged, Nondemented, and Demented Older Adults},
-  journal = {Journal of Cognitive Neuroscience},
-  volume  = {19},
-  pages   = {1498--1507},
-  year    = {2007}
+  author        = {Marcus, Daniel S. and Wang, Tracy H. and Parker, Jamie and Csernansky, John G. and Morris, John C. and Buckner, Randy L.},
+  title         = {Open Access Series of Imaging Studies ({OASIS}): Cross-Sectional {MRI} Data in Young, Middle Aged, Nondemented, and Demented Older Adults},
+  journal       = {Journal of Cognitive Neuroscience},
+  volume        = {19},
+  pages         = {1498--1507},
+  year          = {2007},
 }
 
 @article{xu2016abdomenreg,
-  author  = {Xu, Zhoubing and Lee, Christopher P. and Heinrich, Mattias P. and Modat, Marc and Rueckert, Daniel and Ourselin, S{\'e}bastien and Abramson, Richard G. and Landman, Bennett A.},
-  title   = {Evaluation of Six Registration Methods for the Human Abdomen on Clinically Acquired {CT}},
-  journal = {IEEE Transactions on Biomedical Engineering},
-  volume  = {63},
-  pages   = {1563--1572},
-  year    = {2016}
+  author        = {Xu, Zhoubing and Lee, Christopher P. and Heinrich, Mattias P. and Modat, Marc and Rueckert, Daniel and Ourselin, S{\'e}bastien and Abramson, Richard G. and Landman, Bennett A.},
+  title         = {Evaluation of Six Registration Methods for the Human Abdomen on Clinically Acquired {CT}},
+  journal       = {IEEE Transactions on Biomedical Engineering},
+  volume        = {63},
+  pages         = {1563--1572},
+  year          = {2016},
 }
 
 @article{clark2013tcia,
-  author  = {Clark, Kenneth W. and Vendt, Bruce A. and Smith, Kirk E. and Freymann, John B. and Kirby, Justin S. and Koppel, Paul and Moore, Stephen M. and Phillips, Stanley R. and Maffitt, David R. and Pringle, Michael and Tarbox, Lawrence and Prior, Fred W.},
-  title   = {The Cancer Imaging Archive ({TCIA}): Maintaining and Operating a Public Information Repository},
-  journal = {Journal of Digital Imaging},
-  volume  = {26},
-  pages   = {1045--1057},
-  year    = {2013}
+  author        = {Clark, Kenneth W. and Vendt, Bruce A. and Smith, Kirk E. and Freymann, John B. and Kirby, Justin S. and Koppel, Paul and Moore, Stephen M. and Phillips, Stanley R. and Maffitt, David R. and Pringle, Michael and Tarbox, Lawrence and Prior, Fred W.},
+  title         = {The Cancer Imaging Archive ({TCIA}): Maintaining and Operating a Public Information Repository},
+  journal       = {Journal of Digital Imaging},
+  volume        = {26},
+  pages         = {1045--1057},
+  year          = {2013},
 }
 
 @inproceedings{jia2022lkunet,
-  author    = {Jia, Xi and Bartlett, Joseph and Zhang, Tianyang and Lu, Wenqi and Qiu, Zhaowen and Duan, Jinming},
-  title     = {{U-Net} vs Transformer: Is {U-Net} Outdated in Medical Image Registration?},
-  booktitle = {International Workshop on Machine Learning in Medical Imaging},
-  pages     = {151--160},
-  publisher = {Springer},
-  year      = {2022}
+  author        = {Jia, Xi and Bartlett, Joseph and Zhang, Tianyang and Lu, Wenqi and Qiu, Zhaowen and Duan, Jinming},
+  title         = {{U-Net} vs Transformer: Is {U-Net} Outdated in Medical Image Registration?},
+  booktitle     = workshop_mlmi,
+  pages         = {151--160},
+  publisher     = {Springer},
+  year          = {2022},
 }
 
 @article{hu2018weakreg,
-  author  = {Hu, Yipeng and Modat, Marc and Gibson, Eli and Li, Wenqi and Ghavami, Nooshin and Bonmati, Ester and Wang, Guotai and Bandula, Steven and Moore, Caroline M. and Emberton, Mark and others},
-  title   = {Weakly-Supervised Convolutional Neural Networks for Multimodal Image Registration},
-  journal = {Medical Image Analysis},
-  volume  = {49},
-  pages   = {1--13},
-  year    = {2018}
+  author        = {Hu, Yipeng and Modat, Marc and Gibson, Eli and Li, Wenqi and Ghavami, Nooshin and Bonmati, Ester and Wang, Guotai and Bandula, Steven and Moore, Caroline M. and Emberton, Mark and others},
+  title         = {Weakly-Supervised Convolutional Neural Networks for Multimodal Image Registration},
+  journal       = {Medical Image Analysis},
+  volume        = {49},
+  pages         = {1--13},
+  year          = {2018},
 }
 
 @article{ashburner2007diffeomorphic,
-  author  = {Ashburner, John},
-  title   = {A Fast Diffeomorphic Image Registration Algorithm},
-  journal = {NeuroImage},
-  volume  = {38},
-  number  = {1},
-  pages   = {95--113},
-  year    = {2007}
+  author        = {Ashburner, John},
+  title         = {A Fast Diffeomorphic Image Registration Algorithm},
+  journal       = {NeuroImage},
+  volume        = {38},
+  number        = {1},
+  pages         = {95--113},
+  year          = {2007},
 }
 
 @inproceedings{kingma2015adam,
-  author    = {Kingma, Diederik P. and Ba, Jimmy},
-  title     = {Adam: A Method for Stochastic Optimization},
-  booktitle = {International Conference on Learning Representations},
-  year      = {2015}
+  author        = {Kingma, Diederik P. and Ba, Jimmy},
+  title         = {{Adam}: A Method for Stochastic Optimization},
+  booktitle     = conf_iclr,
+  year          = {2015},
 }
-
 
 @inproceedings{kirillov2023sam,
-  author    = {Kirillov, Alexander and Mintun, Eric and Ravi, Nikhila and Mao, Hanzi and Rolland, Chloe and Gustafson, Laura and Xiao, Tete and Whitehead, Spencer and Berg, Alexander C. and Lo, Wan-Yen and Doll{\'a}r, Piotr and Girshick, Ross},
-  title     = {Segment Anything},
-  booktitle = {Proceedings of the IEEE/CVF International Conference on Computer Vision},
-  pages     = {4015--4026},
-  year      = {2023}
+  author        = {Kirillov, Alexander and Mintun, Eric and Ravi, Nikhila and Mao, Hanzi and Rolland, Chloe and Gustafson, Laura and Xiao, Tete and Whitehead, Spencer and Berg, Alexander C. and Lo, Wan-Yen and Doll{\'a}r, Piotr and Girshick, Ross},
+  title         = {Segment Anything},
+  booktitle     = conf_iccv,
+  pages         = {4015--4026},
+  year          = {2023},
 }
-
 
 @inproceedings{hu2022lora,
-  author    = {Hu, Edward J. and Shen, Yelong and Wallis, Phillip and Allen-Zhu, Zeyuan and Li, Yuanzhi and Wang, Shean and Wang, Lu and Chen, Weizhu},
-  title     = {{LoRA}: Low-Rank Adaptation of Large Language Models},
-  booktitle = {International Conference on Learning Representations},
-  year      = {2022}
+  author        = {Hu, Edward J. and Shen, Yelong and Wallis, Phillip and Allen-Zhu, Zeyuan and Li, Yuanzhi and Wang, Shean and Wang, Lu and Chen, Weizhu},
+  title         = {{LoRA}: Low-Rank Adaptation of Large Language Models},
+  booktitle     = conf_iclr,
+  year          = {2022},
 }
-
 
 @article{ding2023peft,
-  author  = {Ding, Ning and Qin, Yujia and Yang, Guang and Wei, Fuchao and Yang, Zonghan and Su, Yusheng and Hu, Shengding and Chen, Yulin and Chan, Chi-Min and Chen, Weize and Yi, Jing and Zhao, Weilin and Wang, Xiaozhi and Zheng, Zhiyuan and Chen, Jianfei and Liu, Yang and Tang, Jie and Li, Juanzi and Sun, Maosong},
-  title   = {Parameter-Efficient Fine-Tuning of Large-Scale Pre-Trained Language Models},
-  journal = {Nature Machine Intelligence},
-  volume  = {5},
-  number  = {3},
-  pages   = {220--235},
-  year    = {2023}
+  author        = {Ding, Ning and Qin, Yujia and Yang, Guang and Wei, Fuchao and Yang, Zonghan and Su, Yusheng and Hu, Shengding and Chen, Yulin and Chan, Chi-Min and Chen, Weize and Yi, Jing and Zhao, Weilin and Wang, Xiaozhi and Zheng, Zhiyuan and Chen, Jianfei and Liu, Yang and Tang, Jie and Li, Juanzi and Sun, Maosong},
+  title         = {Parameter-Efficient Fine-Tuning of Large-Scale Pre-Trained Language Models},
+  journal       = {Nature Machine Intelligence},
+  volume        = {5},
+  number        = {3},
+  pages         = {220--235},
+  year          = {2023},
 }
-
 
 @inproceedings{wang2021tent,
-  author    = {Wang, Dequan and Shelhamer, Evan and Liu, Shaoteng and Olshausen, Bruno and Darrell, Trevor},
-  title     = {Tent: Fully Test-Time Adaptation by Entropy Minimization},
-  booktitle = {International Conference on Learning Representations},
-  year      = {2021}
+  author        = {Wang, Dequan and Shelhamer, Evan and Liu, Shaoteng and Olshausen, Bruno and Darrell, Trevor},
+  title         = {{Tent}: Fully Test-Time Adaptation by Entropy Minimization},
+  booktitle     = conf_iclr,
+  year          = {2021},
 }
-
 
 @inproceedings{hu2021fullytta,
-  author    = {Hu, Minhao and Song, Tao and Gu, Yudong and Luo, Xiangde and Chen, Jieneng and Chen, Yinan and Zhang, Ya and Zhang, Shaoting},
-  title     = {Fully Test-Time Adaptation for Image Segmentation},
-  booktitle = {Medical Image Computing and Computer Assisted Intervention -- MICCAI 2021},
-  series    = {Lecture Notes in Computer Science},
-  volume    = {12903},
-  pages     = {251--260},
-  publisher = {Springer},
-  year      = {2021}
+  author        = {Hu, Minhao and Song, Tao and Gu, Yudong and Luo, Xiangde and Chen, Jieneng and Chen, Yinan and Zhang, Ya and Zhang, Shaoting},
+  title         = {Fully Test-Time Adaptation for Image Segmentation},
+  booktitle     = conf_miccai,
+  series        = {Lecture Notes in Computer Science},
+  volume        = {12903},
+  pages         = {251--260},
+  publisher     = {Springer},
+  year          = {2021},
 }
 
-
 @inproceedings{ke2025tppr,
-  author = {Ke, Hualong and Shi, Jiangming and Zhang, Yachao and Wang, Fangyong and Xie, Yuan and Qu, Yanyun},
-  title = {Task-Aware Prompt Gradient Projection for Parameter-Efficient Tuning Federated Class-Incremental Learning},
-  booktitle = {Proceedings of the IEEE/CVF International Conference on Computer Vision},
-  year = {2025},
-  pages = {2631--2641},
-  url = {https://openaccess.thecvf.com/content/ICCV2025/html/Ke_Task-Aware_Prompt_Gradient_Projection_for_Parameter-Efficient_Tuning_Federated_Class-Incremental_Learning_ICCV_2025_paper.html}
+  author        = {Ke, Hualong and Shi, Jiangming and Zhang, Yachao and Wang, Fangyong and Xie, Yuan and Qu, Yanyun},
+  title         = {Task-Aware Prompt Gradient Projection for Parameter-Efficient Tuning Federated Class-Incremental Learning},
+  booktitle     = conf_iccv,
+  year          = {2025},
+  pages         = {2631--2641},
+  url           = {https://openaccess.thecvf.com/content/ICCV2025/html/Ke_Task-Aware_Prompt_Gradient_Projection_for_Parameter-Efficient_Tuning_Federated_Class-Incremental_Learning_ICCV_2025_paper.html},
 }

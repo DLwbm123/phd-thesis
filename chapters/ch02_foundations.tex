@@ -177,7 +177,7 @@ y_{i,c}\log q_{\theta,c}^{\mathrm{ml}}(\mathbf{x}_i)
 \\
 \mathrm{BAcc}
 &=
-\frac{\mathrm{Sens}+\mathrm{Spec}}{2}.
+\frac{\mathrm{Sens}+\mathrm{Spec}}{2},
 &&
 \end{aligned}
 \label{eq:foundations-cls-metrics}
@@ -459,7 +459,7 @@ Y_c(\mathbf{u})
 \mathcal{M}_{t-1},
 s_t,
 \mathcal{U}_t
-\right).
+\right),
 \label{eq:foundations-cl-update}
 \end{equation}
 其中，$\mathcal{D}_t$ 为当前阶段数据，$\mathcal{H}_t$ 和 $\mathcal{M}_{t-1}$ 分别表示在给定访问条件下可用的历史原始样本与有限记忆，$s_t$ 表示可用的任务或上下文身份，$\mathcal{U}_t$ 表示联邦环境中可获得的客户端通信信息。并非所有设定都包含上述全部要素；式\eqref{eq:foundations-cl-update}用于记录一次更新所使用的信息。

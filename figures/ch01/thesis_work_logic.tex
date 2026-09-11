@@ -5,7 +5,7 @@
   font=\thesisfigurefont,
   box/.style={draw=black!55,rounded corners=2pt,align=center,inner sep=4pt,line width=.6pt},
   wide/.style={box,minimum width=13.1cm,fill=black!5,minimum height=.8cm},
-  branch/.style={box,minimum width=3.9cm,minimum height=2.7cm,fill=white},
+  branch/.style={box,text width=3.95cm,minimum height=3.35cm,fill=white},
   flow/.style={-{Latex[length=2mm]},draw=black!65,line width=.65pt},
   node distance=5mm
 ]
@@ -15,7 +15,7 @@
 \node[branch,below=1.05cm of framework] (fed)
   {\textbf{第五章：类别扩展}\\\textbf{联邦持续分类}\\[5pt]无原始样本回放\\子空间融合与梯度保护};
 \node[branch,left=5mm of fed] (seg)
-  {\textbf{第四章：持续分割}\\\textbf{基准评测与弱监督方法}\\[5pt]密集监督基准\enspace $\rightarrow$\enspace 涂鸦监督\\监督增强与特征一致性};
+  {\textbf{第四章：持续分割}\\\textbf{基准评测与弱监督方法}\\[5pt]密集监督基准\par $\downarrow$\par 涂鸦监督\\监督增强与特征一致性};
 \node[branch,right=5mm of fed] (reg)
   {\textbf{第六章：任务增量}\\\textbf{持续医学图像配准}\\[5pt]有限图像对回放\\元学习与锐度感知优化};
 \node[wide,below=6mm of fed,minimum height=1.05cm,fill=black!8] (evaluation)

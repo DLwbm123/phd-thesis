@@ -38,12 +38,13 @@
 
 \begin{figure}[htbp]
 \centering
-\input{figures/ch03/medcl_platform_architecture.tex}
+\resizebox{\textwidth}{!}{\input{figures/ch03/medcl_platform_architecture.tex}}
 \caption[MedCL 持续学习评测平台总体设计]{MedCL 持续学习评测平台总体设计示意。用户在本地完成训练后提交模型或预测，平台经配置检查、任务适配与评分组织结果报告。}
 \label{fig:medcl-platform-architecture}
 \end{figure}
 
-结果记录将基准版本、任务配置、阶段表现与汇总指标对应保存。分割、分类和配准分别展示任务性能，再通过 BWTR、RMA、MPE 和 DRR 等指标分析历史保持、当前学习及资源使用。后续方法章节以这一组织方式呈现各自的实验结果。
+{\widowpenalty=10000
+结果记录将基准版本、任务配置、阶段表现与汇总指标对应保存。分割、分类和配准分别展示任务性能，再通过 BWTR、RMA、MPE 和 DRR 等指标分析历史保持、当前学习及资源使用。后续方法章节依此组织实验结果。\par}
 
 \section{面向分割、分类与配准的持续学习场景建模}
 \label{sec:medcl-scenario-modeling}
@@ -185,8 +186,6 @@ R^{(m)}_{t,j}=\operatorname{Eval}_m\!\left(f^{(t)},\mathcal D^{\mathrm{test}}_j\
 
 以下按实际到达顺序排列任务，即令 $\pi(t)=t$；自定义顺序先按式\eqref{eq:medcl-evaluation-matrix}完成任务与阶段映射。以分割为例，设 $d_{t,i}$ 为完成第 $t$ 个任务训练后的模型在任务 $i$ 测试集上的平均 Dice。平台据此定义最终性能、历史保持、当前学习、前向泛化和资源指标。第四章将这些定义用于密集监督分割基准和弱监督持续分割；第五章以准确率替换任务性能；第六章按 Dice、TRE 的优劣方向分别计算相应指标。MPE 和 DRR 用于各章的模型与历史信息资源记录。
 
-\subsubsection*{最终平均性能}
-
 最终平均 Dice（average Dice，A-Dice）计算模型完成全部 $T$ 个任务后在所有任务上的平均性能：
 \begin{equation}
 \mathrm{A\mbox{-}Dice}
@@ -195,8 +194,6 @@ R^{(m)}_{t,j}=\operatorname{Eval}_m\!\left(f^{(t)},\mathcal D^{\mathrm{test}}_j\
 \label{eq:benchmark-adice}
 \end{equation}
 A-Dice 越大，表示最终模型在全部任务上的总体分割性能越高。该指标会把不同任务压缩为一个平均值，无法区分历史保持和当前任务学习，也可能受到某些高分任务的影响。
-
-\subsubsection*{后向迁移与遗忘}
 
 后向迁移率（backward transfer rate，BWTR）比较最终模型在旧任务上的性能与刚完成该任务训练时的性能：
 \begin{equation}
@@ -209,8 +206,6 @@ A-Dice 越大，表示最终模型在全部任务上的总体分割性能越高�
 \end{equation}
 各旧任务的初学 Dice 为正时，式\eqref{eq:benchmark-bwtr}先计算每项任务的相对变化，再对旧任务取平均。BWTR 为负表示平均相对性能下降，为正表示平均相对性能提高。BWTR 为零表示相对变化的均值为零，正负变化可能相互抵消，并不必然表示每项旧任务的性能都保持不变。
 
-\subsubsection*{受限建模能力}
-
 仅约束遗忘可能限制模型对当前任务的学习。平台用受限建模能力 RMA 比较任务初学表现与独立训练参照。令 $d_i^{NC}$ 表示仅使用任务 $i$ 的数据独立训练所得模型的性能；它与第四章结果表中连续学习全部任务的 Non-CL 顺序训练模型不同。RMA 定义为
 \begin{equation}
 \mathrm{RMA}
@@ -221,8 +216,6 @@ A-Dice 越大，表示最终模型在全部任务上的总体分割性能越高�
 \label{eq:benchmark-rma}
 \end{equation}
 RMA 不计入第一个任务，因为该阶段尚未受到此前任务学习的影响。RMA 接近 1 表示各阶段初学性能与独立训练参照的比值平均接近 1；小于或大于 1，分别表示平均低于或高于参照。该指标不直接说明每个任务的结果，也不能单独确定性能差异由哪项约束造成。
-
-\subsubsection*{扩展前向迁移与前向泛化}
 
 本文统一使用前向泛化描述模型在尚未参与优化的未来域上的直接表现。令 $d_{0,i}$ 表示随机初始化模型在任务 $i$ 上的 Dice，则 Domain-CL 的扩展前向迁移指标定义为
 \begin{equation}
@@ -236,16 +229,12 @@ RMA 不计入第一个任务，因为该阶段尚未受到此前任务学习的�
 \end{equation}
 该指标汇总每个已完成阶段对所有未来域的直接表现，而不是只比较相邻任务。E-FWT 越大，说明当前模型在尚未训练域上的前向泛化相对于随机初始化越强。由于 Class-CL 的未来类别尚未进入已学习的输出语义，跨器官任务的输出含义又不相同，E-FWT 仅用于共享标签语义的 Domain-CL。其数值反映当前基准下的前向泛化，不应被解释为未知临床数据上的通用保证。
 
-\subsubsection*{全类别分割性能}
-
 Class-CL 最终需要在统一标签空间中预测所有已见结构。平台使用全类别 Dice（whole-class Dice，WCD）记录最终模型对全部类别的分割结果：
 \begin{equation}
 \mathrm{WCD}=d_{\mathrm{all}}.
 \label{eq:benchmark-wcd}
 \end{equation}
 WCD 越大，表示最终统一输出空间中的全类别分割性能越高。它与 A-Dice 的汇总对象不同，因此两者可能给出不同方法排序。
-
-\subsubsection*{模型与数据资源}
 
 模型参数扩展率（model parameter expansion，MPE）描述任务到达后新增参数相对于初始模型参数量的平均比例：
 \begin{equation}
@@ -272,7 +261,7 @@ MPE 越小，表示模型容量随任务增长越少。只有初始主干和参�
 N_t^{\mathrm{replay}}
 }{
 N_t^{\mathrm{train}}
-}.
+},
 \label{eq:benchmark-drr}
 \end{equation}
 其中，$N_t^{\mathrm{replay}}$ 表示以历史任务 $t$ 为来源、在后续阶段重新使用或用于构造回放信息的数据量，$N_t^{\mathrm{train}}$ 表示任务 $t$ 的训练数据量。DRR 越小，表示对历史信息回访的依赖越低。第四章密集监督基准表中带星号的 DRR 表示回放原始图像；不带星号的非零值可对应其他历史表示。MPE 和 DRR 只描述部分资源条件，不能替代计算时间、显存和通信开销的完整核算。
@@ -312,7 +301,7 @@ R^{(m)}_{t,c,j}=\operatorname{Eval}_m\!\left(f^{(t)},\mathcal D^{\mathrm{test}}_
 
 \begin{figure}[htbp]
 \centering
-\input{figures/ch03/medcl_workflow_design.tex}
+\resizebox{\textwidth}{!}{\input{figures/ch03/medcl_workflow_design.tex}}
 \caption[MedCL 模型与预测提交的交互流程设计]{MedCL 模型与预测提交的交互流程设计。两种提交方式共享任务配置、输入检查、评分和报告流程。状态表示评测任务进度，不表示本地训练过程监测。}
 \label{fig:medcl-workflow-design}
 \end{figure}

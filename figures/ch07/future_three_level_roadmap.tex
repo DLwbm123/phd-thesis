@@ -6,7 +6,7 @@
 \definecolor{routerust}{HTML}{A65D48}
 \begin{tikzpicture}[
   font=\thesisfigurefont,
-  direction/.style={circle,minimum size=3.35cm,draw,line width=.85pt,inner sep=0pt},
+  direction/.style={circle,minimum size=3.75cm,draw,line width=.85pt,inner sep=0pt},
   labeltext/.style={align=center,inner sep=0pt},
   spoke/.style={-{Latex[length=2mm]},draw=black!45,line width=.75pt,shorten <=2pt,shorten >=2pt}
 ]
@@ -16,15 +16,15 @@
 \node[labeltext,text=routegreen] at (1.95,.7) {数据与表征};
 \node[labeltext,font=\thesisfigurefont\bfseries] at (1.95,.08) {持续预训练};
 \node[labeltext,text=black!65] at (1.95,-.6) {新数据\quad 表征保持};
-\node[labeltext,text=routegold] at (11.15,.7) {任务与场景};
+\node[labeltext,text=routegold] at (11.15,.90) {任务与场景};
 \node[labeltext,font=\thesisfigurefont\bfseries] at (11.15,.02) {参数高效\\持续适配};
-\node[labeltext,text=black!65] at (11.15,-.6) {新场景\quad 参数高效};
+\node[labeltext,text=black!65] at (11.15,-.85) {新场景\quad 参数高效};
 \node[labeltext,text=routerust] at (6.55,-3.5) {知识与行为};
 \node[labeltext,font=\thesisfigurefont\bfseries] at (6.55,-4.12) {持续知识编辑};
 \node[labeltext,text=black!65] at (6.55,-4.8) {新知识\quad 能力保持};
-\node[circle,minimum size=2.65cm,draw=black!65,fill=black!3,line width=.9pt,inner sep=0pt] (goal) at (6.55,-.6) {};
+\node[circle,minimum size=3.05cm,draw=black!65,fill=black!3,line width=.9pt,inner sep=0pt] (goal) at (6.55,-.6) {};
 \node[labeltext,font=\thesisfigurefont\bfseries] at (6.55,-.37) {医学多模态\\持续学习};
-\node[labeltext,text=black!65,font=\sffamily\heiti\fontsize{8bp}{10bp}\selectfont] at (6.55,-1.12) {稳定性\,$\leftrightarrow$\,可塑性};
+\node[labeltext,text=black!65,font=\sffamily\heiti\fontsize{10bp}{12bp}\selectfont] at (6.55,-1.12) {稳定性\,$\leftrightarrow$\,可塑性};
 \draw[spoke] (goal) -- (data);
 \draw[spoke] (goal) -- (task);
 \draw[spoke] (goal) -- (knowledge);

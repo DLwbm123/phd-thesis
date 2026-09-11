@@ -149,6 +149,10 @@ subsection={
         format={\zihao{-4}\heiti\sffamily},
 },}
 
+% Numbered headings and the contents stop at chapter.section.subsection.
+\setcounter{secnumdepth}{2}
+\setcounter{tocdepth}{2}
+
 \titlecontents{chapter}[0em]{\smallskip\sffamily}{\thecontentslabel~}{}{\hfill\sffamily\contentspage\smallskip}
 %\titlecontents{section}[1em]{\sffamily}{\thecontentslabel~}{}{\hspace{0.5em}\titlerule*{ .}\sffamily\contentspage}
 %\titlecontents{subsection}[2em]{\sffamily}{\thecontentslabel~}{}{\hspace{0.5em}\titlerule*{ .}\sffamily\contentspage}
@@ -159,7 +163,7 @@ subsection={
 \renewcommand*\chapter{\@ifstar{\starchapter}{\cleardoublepage\@dblarg\nostarchapter}}
 \newcommand*\starchapter[1]{
 \ifthenelse{\equal{\detokenize{#1}}{\detokenize{Abstract}}}
-{\setcounter{secnumdepth}{-1}\oldchapter*{#1}\addcontentsline{toc}{chapter}{Abstract}\setcounter{secnumdepth}{3}}{\setcounter{secnumdepth}{-1}\oldchapter{#1}\setcounter{secnumdepth}{3}}}
+{\setcounter{secnumdepth}{-1}\oldchapter*{#1}\addcontentsline{toc}{chapter}{Abstract}\setcounter{secnumdepth}{2}}{\setcounter{secnumdepth}{-1}\oldchapter{#1}\setcounter{secnumdepth}{2}}}
 \def\nostarchapter[#1]#2{\oldchapter[{#1}]{#2}}
 \makeatother
 

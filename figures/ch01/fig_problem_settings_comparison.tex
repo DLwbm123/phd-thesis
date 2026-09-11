@@ -1,23 +1,25 @@
 \begingroup
+\linespread{1}\selectfont
+\renewcommand{\arraystretch}{0.95}
 \centering
 \tikzset{
   >=Latex,
   frame/.style={draw=black, rounded corners=3pt, line width=0.65pt, fill=white},
   header/.style={draw=black, rounded corners=2pt, line width=0.65pt, fill=black!8,
-    align=center, font=\scriptsize\bfseries, minimum height=7mm},
+    align=center, font=\thesisfigurefont\bfseries, minimum height=7mm},
   data/.style={draw=black, rounded corners=2pt, line width=0.55pt, fill=black!3,
-    align=center, font=\scriptsize, minimum height=7mm, inner xsep=4pt},
+    align=center, font=\thesisfigurefont, minimum height=7mm, inner xsep=4pt},
   process/.style={draw=black, rounded corners=2pt, line width=0.55pt, fill=white,
-    align=center, font=\scriptsize, minimum height=7mm, inner xsep=4pt},
-  note/.style={align=center, font=\tiny, text=black},
+    align=center, font=\thesisfigurefont, minimum height=7mm, inner xsep=4pt},
+  note/.style={align=center, font=\thesisfigurefont, text=black},
   flow/.style={-{Latex[length=1.7mm,width=1.1mm]}, draw=black, line width=0.55pt},
   exchange/.style={<->, draw=black, line width=0.55pt}
 }
 
 \resizebox{\textwidth}{!}{%
-\begin{tikzpicture}[x=1cm,y=1cm]
+\begin{tikzpicture}[x=1.65cm,y=0.74cm]
 
-\begin{scope}[shift={(0,5.45)}]
+\begin{scope}[shift={(0,16.35)}]
   \draw[frame] (0,0) rectangle (8.35,4.75);
   \node[header, minimum width=7.75cm] at (4.175,4.28)
     {参照：常规集中式离线监督};
@@ -27,31 +29,31 @@
     {一次性优化};
   \node[process, minimum width=1.65cm] (s-model) at (6.75,2.92)
     {固定模型};
-  \node[data, minimum width=2.05cm] (s-test) at (1.45,1.35)
+  \node[data, minimum width=2.05cm] (s-test) at (1.45,1.13)
     {独立测试样本\\相对稳定条件};
-  \node[process, minimum width=1.70cm] (s-pred) at (6.75,1.35)
+  \node[process, minimum width=1.70cm] (s-pred) at (6.75,1.13)
     {预测与评价};
   \draw[flow] (s-train) -- (s-opt);
   \draw[flow] (s-opt) -- (s-model);
-  \draw[flow] (s-test) -- (4.05,1.35) -- (s-pred);
+  \draw[flow] (s-test) -- (4.05,1.13) -- (s-pred);
   \draw[flow] (s-model) -- (s-pred);
 \end{scope}
 
-\begin{scope}[shift={(9.05,5.45)}]
+\begin{scope}[shift={(0,10.90)}]
   \draw[frame] (0,0) rectangle (8.35,4.75);
   \node[header, minimum width=7.75cm] at (4.175,4.28)
     {元学习：任务组织与快速适应};
-  \node[data, minimum width=1.95cm] (m-source) at (1.30,2.98)
+  \node[data, minimum width=1.95cm] (m-source) at (1.30,2.93)
     {多个源任务\\$\mathcal{T}_1,\ldots,\mathcal{T}_K$};
-  \node[process, minimum width=1.65cm] (m-meta) at (4.05,2.98)
+  \node[process, minimum width=1.65cm] (m-meta) at (4.05,2.93)
     {元训练};
-  \node[process, minimum width=1.80cm] (m-init) at (6.80,2.98)
+  \node[process, minimum width=1.80cm] (m-init) at (6.80,2.93)
     {可适应初始化};
-  \node[data, minimum width=1.95cm] (m-support) at (1.30,1.38)
+  \node[data, minimum width=1.95cm] (m-support) at (1.30,1.13)
     {新任务少量数据\\支持集};
-  \node[process, minimum width=1.65cm] (m-adapt) at (4.05,1.38)
+  \node[process, minimum width=1.65cm] (m-adapt) at (4.05,1.13)
     {任务内适应};
-  \node[process, minimum width=1.80cm] (m-task) at (6.80,1.38)
+  \node[process, minimum width=1.80cm] (m-task) at (6.80,1.13)
     {新任务模型};
   \draw[flow] (m-source) -- (m-meta);
   \draw[flow] (m-meta) -- (m-init);
@@ -60,7 +62,7 @@
   \draw[flow] (m-adapt) -- (m-task);
 \end{scope}
 
-\begin{scope}[shift={(0,0)}]
+\begin{scope}[shift={(0,5.45)}]
   \draw[frame] (0,0) rectangle (8.35,4.75);
   \node[header, minimum width=7.75cm] at (4.175,4.28)
     {持续学习：时间到达与历史访问};
@@ -85,20 +87,20 @@
 
 \end{scope}
 
-\begin{scope}[shift={(9.05,0)}]
+\begin{scope}[shift={(0,0)}]
   \draw[frame] (0,0) rectangle (8.35,4.75);
   \node[header, minimum width=7.75cm] at (4.175,4.28)
     {联邦学习：数据位置与协同优化};
-  \node[data, minimum width=1.75cm] (f-c1) at (1.05,3.20)
-    {客户端 1\\本地数据};
-  \node[data, minimum width=1.75cm] (f-c2) at (1.05,2.05)
-    {客户端 2\\本地数据};
-  \node[note] at (1.05,1.4) {$\vdots$};
-  \node[data, minimum width=1.75cm] (f-ck) at (1.05,0.75)
-    {客户端 $K$\\本地数据};
-  \node[process, minimum width=2.05cm, minimum height=3cm] (f-server) at (4.30,2.05)
+  \node[data, minimum width=3.7cm] (f-c1) at (1.55,3.10)
+    {客户端 1：本地数据};
+  \node[data, minimum width=3.7cm] (f-c2) at (1.55,2.03)
+    {客户端 2：本地数据};
+  \node[note] at (1.55,1.38) {$\vdots$};
+  \node[data, minimum width=3.7cm] (f-ck) at (1.55,0.70)
+    {客户端 $K$：本地数据};
+  \node[process, minimum width=2.05cm, minimum height=2.2cm] (f-server) at (4.65,2.03)
     {服务器\\聚合与下发};
-  \node[process, minimum width=1.95cm] (f-global) at (7.10,2.05)
+  \node[process, minimum width=1.95cm] (f-global) at (7.10,2.03)
     {共享模型};
   % 各客户端连接独立端口，三条双向线等长且水平平行。
   \draw[exchange] (f-c1.east) -- (f-server.west |- f-c1.east);

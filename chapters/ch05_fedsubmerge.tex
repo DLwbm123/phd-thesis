@@ -30,11 +30,25 @@ Ke 等提出的 TPPR 使用视觉提示、任务感知的提示梯度投影和�
 
 据此，图\ref{fig:fedsubmerge-overview}概括了本章方法。客户端先进行常规轮次联邦训练，并在每个任务结束时构建逐层 PGS。FedSubMerge 将全部客户端 PGS 融合为同一个共享子空间；FedSubMerge-AD 则依据逐层子空间距离选择相关客户端，为每个目标客户端返回个性化 PGS。下一任务中，客户端先接收该 PGS，再投影本地梯度；任务结束后，将返回的历史摘要与当前任务梯度共同压缩为新的客户端 PGS，并上传服务器。该循环使历史信息以递归低秩摘要而非原始样本的形式跨任务传递。
 
-\begin{figure}[htbp]
+\begin{figure}[p]
 \centering
-\includegraphics[width=\textwidth]{ch05/fedsubmerge_overview.pdf}
-\caption{FedSubMerge 与 FedSubMerge-AD 的整体流程。客户端在轮次联邦训练后构建逐层主梯度子空间；服务器将全部客户端子空间统一融合，或按层选择相似客户端并进行个性化融合；后续任务中，客户端把新任务梯度投影到返回子空间的正交补，并在每个任务结束时递归更新本地子空间。}
+\includegraphics[width=\textwidth,height=0.81\textheight,keepaspectratio]{ch05/fedsubmerge_overview_a_large.pdf}
+\caption[FedSubMerge 与 FedSubMerge-AD 的整体流程]{FedSubMerge 与 FedSubMerge-AD 的整体流程。（a）联邦任务流与主梯度子空间构建。客户端完成轮次联邦训练后，利用最终模型采样当前任务梯度，并通过奇异值分解构建逐层主梯度子空间；服务器融合与后续本地训练见续图。}
 \label{fig:fedsubmerge-overview}
+\end{figure}
+\begin{figure}[p]
+\ContinuedFloat
+\captionsetup{list=off}
+\centering
+\includegraphics[width=\textwidth,height=0.81\textheight,keepaspectratio]{ch05/fedsubmerge_overview_b_large.pdf}
+\caption{FedSubMerge 与 FedSubMerge-AD 的整体流程（续）。（b）服务器端子空间融合。FedSubMerge 统一融合全部客户端子空间；FedSubMerge-AD 按层选择相似客户端，再对加权基进行个性化融合。}
+\end{figure}
+\begin{figure}[p]
+\ContinuedFloat
+\captionsetup{list=off}
+\centering
+\includegraphics[width=\textwidth,height=0.81\textheight,keepaspectratio]{ch05/fedsubmerge_overview_c_large.pdf}
+\caption{FedSubMerge 与 FedSubMerge-AD 的整体流程（续）。（c）本地投影训练与客户端子空间更新。后续任务中，新梯度投影到返回子空间的正交补，并在每个任务结束时递归更新客户端主梯度子空间。}
 \end{figure}
 
 图中划去的历史影像表示后续任务不再回放历史原始样本；原始影像不直接上传至服务器。
@@ -594,13 +608,11 @@ BWTR 衡量旧任务相对于初学性能的变化，RMA 衡量顺序约束下�
 
 FedSubMerge-AD 在七个设置中的五个取得高于 FedSubMerge 的 ACC。PathMNIST $\alpha=0.3$ 上，两者分别为 $93.42\%$ 和 $90.97\%$；在 OrganAMNIST 标签数量偏斜和皮肤病变特征偏斜设置上，FedSubMerge-AD 分别达到 $74.42\%$ 和 $85.75\%$。Hyper-Kvasir 的两个分布偏斜设置中，统一融合的 ACC 更高，说明客户端选择的收益与具体数据分布有关。
 
-\paragraph{历史保持与当前任务学习。}
-PathMNIST $\alpha=0.3$ 上，FedSubMerge-AD 的 BWTR 为 $-0.2288$，高于 FedSubMerge 的 $-0.2818$；其 RMA 为 $0.9886$，略低于统一融合的 $1.0017$。相较 FedAvg 的 BWTR $-0.4086$ 和 FOT 的 $-0.6127$，两种子空间融合方法均具有更小的平均相对下降。Fed-DER 的 BWTR 为 $-0.0489$，其 ACC 为 $81.70\%$，表明较小的历史相对下降与较高的最终分类准确率反映不同方面的能力。
+从历史保持与当前任务学习看，PathMNIST $\alpha=0.3$ 上，FedSubMerge-AD 的 BWTR 为 $-0.2288$，高于 FedSubMerge 的 $-0.2818$；其 RMA 为 $0.9886$，略低于统一融合的 $1.0017$。相较 FedAvg 的 BWTR $-0.4086$ 和 FOT 的 $-0.6127$，两种子空间融合方法均具有更小的平均相对下降。Fed-DER 的 BWTR 为 $-0.0489$，其 ACC 为 $81.70\%$，表明较小的历史相对下降与较高的最终分类准确率反映不同方面的能力。
 
 Hyper-Kvasir $\alpha=0.3$ 上，FedSubMerge 的 ACC、BWTR 和 RMA 分别为 $78.64\%$、$-0.1997$ 和 $0.9982$，均高于 FedSubMerge-AD 的 $78.12\%$、$-0.2079$ 和 $0.9888$。与 FOT 相比，统一融合的 ACC 提高 $8.61$ 个百分点，BWTR 提高 $0.0915$。TARGET 的 BWTR 为 $-0.1136$，但其 RMA 为 $0.8769$、ACC 为 $71.02\%$。结合当前学习与历史保持，可以更完整地解释不同方法的最终性能。
 
-\paragraph{模型与历史信息资源。}
-两个 $\alpha=0.3$ 设置中，FedAvg、Fed-GPM、FOT、FedSubMerge 和 FedSubMerge-AD 的 MPE 均为 0；PathMNIST 中的 Fed-DER 和 Hyper-Kvasir 中的 TARGET 的 MPE 也均为 0。这些方法在相应设置中的性能变化不依赖模型参数扩展。
+在模型资源方面，两个 $\alpha=0.3$ 设置中，FedAvg、Fed-GPM、FOT、FedSubMerge 和 FedSubMerge-AD 的 MPE 均为 0；PathMNIST 中的 Fed-DER 和 Hyper-Kvasir 中的 TARGET 的 MPE 也均为 0。这些方法在相应设置中的性能变化不依赖模型参数扩展。
 
 历史信息使用方面，PathMNIST $\alpha=0.3$ 设置中，FedAvg 的 DRR 为 0，Fed-GPM、Fed-DER 和 FOT 分别为 $0.0049$、$0.0749$ 和 $1.0000$，FedSubMerge 与 FedSubMerge-AD 均为 $0.1169$。Hyper-Kvasir $\alpha=0.3$ 设置中，FedAvg 的 DRR 为 0，Fed-GPM 和 FOT 分别为 $0.2393$ 和 $1.0000$，FedSubMerge 与 FedSubMerge-AD 均为 $0.9477$。两种融合方式在同一数据设置下具有相同 DRR，且均低于 FOT；它们的差别主要体现在服务器对客户端历史方向的选择与融合。
 
@@ -690,21 +702,25 @@ FedSubMerge-AD（$n=4$） & \best{93.42} & 0.00 & -3.37 & 0.00 \\
 
 图\ref{fig:fedsubmerge-hyperparameter}给出多来源皮肤病变设置上的相关客户端数和服务器能量阈值敏感性。$K=4$ 时，$n=0$ 仅使用目标客户端 PGS，跨机构共享不足；$n=3$ 使用全部客户端，与统一融合对应，BWT 略有改善但 ACC 下降；$n=2$ 在两项指标之间取得本实验采用的平衡。提高 $\gamma$ 通常保留更多旧方向并改善 BWT，也会增加投影约束。$\gamma=0.97$ 获得最高 ACC，因而与 $n=2$ 共同作为默认配置。该选择来自当前验证设置，不应解释为所有数据和任务长度下的通用最优值。
 
-\begin{figure}[htbp]
+\begin{landscape}
+\begin{figure}[p]
 \centering
-\includegraphics[width=0.94\textwidth]{ch05/fedsubmerge_hyperparameter.pdf}
+\includegraphics[width=\linewidth,height=0.75\textwidth,keepaspectratio]{ch05/fedsubmerge_hyperparameter.pdf}
 \caption{多来源皮肤病变特征偏斜设置上的 FedSubMerge-AD 参数敏感性。（a）相关客户端数 $n$；当 $K=4$ 时，$n=0$ 只使用目标客户端 PGS，$n=3$ 使用全部其他客户端。（b）服务器能量阈值 $\gamma$。星号表示默认配置 $n=2$、$\gamma=0.97$。}
 \label{fig:fedsubmerge-hyperparameter}
 \end{figure}
+\end{landscape}
 
 图\ref{fig:fedsubmerge-accuracy-matrix}展示 Hyper-Kvasir $\alpha=0.3$ 上两种方法的任务准确率矩阵。FedSubMerge 与 FedSubMerge-AD 的十个对角条目平均值分别为 $84.56\%$ 和 $87.95\%$，最终 ACC 分别为 $78.64\%$ 和 $78.12\%$。自适应融合具有更高的平均初学准确率，统一融合具有更高的最终平均准确率。按照 MedCL 的阶段矩阵组织结果，可以将任务初学表现与后续更新后的历史任务表现分别展开。
 
-\begin{figure}[htbp]
+\begin{landscape}
+\begin{figure}[p]
 \centering
-\includegraphics[width=0.94\textwidth]{ch05/fedsubmerge_accuracy_matrix.pdf}
+\includegraphics[width=\linewidth,height=0.75\textwidth,keepaspectratio]{ch05/fedsubmerge_accuracy_matrix.pdf}
 \caption{Hyper-Kvasir（$\alpha=0.3$）上 FedSubMerge 与 FedSubMerge-AD 的任务准确率矩阵。单元格表示完成任务 $t$ 后在任务 $\tau$ 上的准确率；对角线刻画新任务刚学习后的性能，对角线到最终行的变化刻画随后任务训练造成的旧任务下降。}
 \label{fig:fedsubmerge-accuracy-matrix}
 \end{figure}
+\end{landscape}
 
 \subsection{计算、存储与通信开销}
 \label{subsec:fedsubmerge-efficiency}
@@ -728,7 +744,7 @@ PGS 构建与融合主要在任务结束后执行：各受保护层使用 $n_s=2
 
 \begin{figure}[htbp]
 \centering
-\input{figures/ch05/fedsubmerge_engineering.tex}
+\resizebox{\textwidth}{!}{\input{figures/ch05/fedsubmerge_engineering.tex}}
 \caption[联邦持续分类与 MedCL 的评价流程]{联邦持续分类与 MedCL 的评价流程。训练程序生成阶段全局模型，任务适配器按测试任务选择分类头，阶段矩阵用于汇总 ACC、BWTR 和 RMA，训练配置用于记录 MPE、DRR 与通信开销。}
 \label{fig:fedsubmerge-engineering}
 \end{figure}

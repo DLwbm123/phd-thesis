@@ -61,8 +61,9 @@
 
 常规集中式离线监督、元学习、持续学习和联邦学习分别从任务组织、时间到达、历史访问和原始数据位置等维度改变训练流程。它们不是互斥范式：元学习可以作为持续学习的优化工具，持续学习也可以在联邦环境中实施。图~\ref{fig:problem-settings-comparison}以常规集中式离线监督为参照，概括相关设定及其可组合关系。
 
-\begin{figure}[t]
+\begin{figure}[p]
   \centering
+  \captionsetup{font=small,skip=6pt}
   \input{figures/ch01/fig_problem_settings_comparison.tex}
   \caption[与本文相关的学习设定及其关系。]
   {与本文相关的学习设定及其关系。常规集中式离线监督在预先汇集的训练数据上完成一次性优化，并在相对稳定的测试条件下评价；元学习主要改变任务组织和快速适应方式；持续学习强调数据按时间到达、模型连续更新及历史信息的可用条件；联邦学习强调原始数据分布于多个客户端并通过双向模型通信协同优化。三种设定描述不同维度，可以相互组合。}
@@ -212,7 +213,7 @@ RQ5 & 配准／任务增量／有限经验回放 & 以 SAMCL 在固定跨器官�
 
 \begin{figure}[htbp]
 \centering
-\input{figures/ch01/thesis_work_logic.tex}
+\resizebox{\textwidth}{!}{\input{figures/ch01/thesis_work_logic.tex}}
 \caption[本文研究工作的总体技术路线]{本文研究工作的总体技术路线。第三章介绍 MedCL 评测平台与多维指标；第四章构建持续分割基准并研究弱监督方法，第五、六章分别研究类别扩展下的联邦持续分类和跨器官、跨模态持续配准。三章使用共同的场景定义与阶段矩阵，并分别评价历史保持、当前学习及资源使用。}
 \label{fig:thesis-work-logic}
 \end{figure}

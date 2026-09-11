@@ -8,7 +8,7 @@
   box/.style={draw=modelink!70,rounded corners=2pt,line width=.65pt,align=center,inner sep=0pt},
   flow/.style={-{Latex[length=2mm]},draw=modelink,line width=.75pt,shorten <=1pt,shorten >=1pt},
   labeltext/.style={align=center,inner sep=0pt},
-  task/.style={box,minimum width=3.75cm,minimum height=2.1cm,fill=black!1}
+  task/.style={box,minimum width=3.75cm,minimum height=2.65cm,fill=black!1}
 ]
 % Editable report sheets: visual placeholders only, without patient information.
 \begin{scope}[shift={(1.05,-.05)}]
@@ -36,23 +36,23 @@
 \node[labeltext,text=black!65] at (6.55,-2.96) {跨模态融合\enspace /\enspace 共享表征\enspace /\enspace 版本记录};
 \draw[flow] (textenc.south) -- (model.north -| textenc.south);
 \draw[flow] (imageenc.south) -- (model.north -| imageenc.south);
-\node[task] (task1) at (1.875,-5.22) {};
-\node[task] (task2) at (6.55,-5.22) {};
-\node[task] (task3) at (11.225,-5.22) {};
-\node[labeltext,font=\thesisfigurefont\bfseries] at (1.875,-4.5) {任务一\quad 胸部 X 线诊断};
-\node[labeltext,font=\thesisfigurefont\bfseries] at (6.55,-4.5) {任务二\quad 消化内镜识别};
-\node[labeltext,font=\thesisfigurefont\bfseries] at (11.225,-4.5) {任务三\quad 皮肤镜分类};
-\node[inner sep=0pt] at (1.875,-5.35) {\includegraphics[height=1.18cm]{ch07/assets/example-001.png}};
-\node[inner sep=0pt] at (6.55,-5.35) {\includegraphics[height=1.18cm]{ch07/assets/example-002.png}};
-\node[inner sep=0pt] at (11.225,-5.35) {\includegraphics[height=1.18cm]{ch07/assets/example-003.png}};
+\node[task] (task1) at (1.875,-5.48) {};
+\node[task] (task2) at (6.55,-5.48) {};
+\node[task] (task3) at (11.225,-5.48) {};
+\node[labeltext,font=\thesisfigurefont\bfseries] at (1.875,-4.65) {任务一\\胸部 X 线诊断};
+\node[labeltext,font=\thesisfigurefont\bfseries] at (6.55,-4.65) {任务二\\消化内镜识别};
+\node[labeltext,font=\thesisfigurefont\bfseries] at (11.225,-4.65) {任务三\\皮肤镜分类};
+\node[inner sep=0pt] at (1.875,-5.95) {\includegraphics[height=1.35cm]{ch07/assets/example-001.png}};
+\node[inner sep=0pt] at (6.55,-5.95) {\includegraphics[height=1.35cm]{ch07/assets/example-002.png}};
+\node[inner sep=0pt] at (11.225,-5.95) {\includegraphics[height=1.35cm]{ch07/assets/example-003.png}};
 \draw[flow] (model.south -| task1.north) -- (task1.north);
 \draw[flow] (task1.east) -- (task2.west);
 \draw[flow] (task2.east) -- (task3.west);
 \node[labeltext,text=black!65] at (8.45,-3.72) {新模态、新任务、新中心与新知识};
 \draw[flow,dashed,draw=modelteal!70] (3.75,-4.02) -- (13.1,-4.02);
-\node[labeltext,text=black!65] at (6.55,-6.62) {顺序适配\quad $\longrightarrow$\quad 阶段评价};
-\draw[draw=black!20,line width=.55pt] (0,-7.03) -- (13.1,-7.03);
-\node[labeltext] at (6.55,-7.48)
+\node[labeltext,text=black!65] at (6.55,-7.18) {顺序适配\quad $\longrightarrow$\quad 阶段评价};
+\draw[draw=black!20,line width=.55pt] (0,-7.59) -- (13.1,-7.59);
+\node[labeltext] at (6.55,-8.04)
   {\textbf{稳定性}\enspace 既有能力保持\qquad $\longleftrightarrow$\qquad \textbf{可塑性}\enspace 新增信息吸收};
 \end{tikzpicture}
 \endgroup
