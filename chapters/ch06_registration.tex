@@ -1,4 +1,4 @@
-\chapter{基于锐度感知元经验回放的医学影像持续配准研究}
+\chapter{基于锐度感知元经验回放的医学影像持续配准}
 \label{chap:registration}
 \setlength{\emergencystretch}{1em}
 
@@ -325,7 +325,7 @@ SAMCL & 有限经验回放、元持续学习与锐度感知更新 & 容量受限
 \end{equation}
 对 Dice，BWT 为负表示重叠精度下降，因此 Dice-BWT 越高越好；对 TRE，BWT 为正表示误差增大，因此 TRE-BWT 越低越好。最后一个任务之后没有进一步训练，其 BWT 按定义为零。原始任务性能保留各自的方向与单位。
 
-持续学习评价进一步沿用第三章的 BWTR 与 RMA，分别对 Dice 和 TRE 组织归一化指标。BWTR 按任务指标的优劣方向表示相对历史变化，负值表示性能下降，数值越高表示保持越充分；RMA 以相应任务的独立训练表现为参照，数值越高表示受限条件下的建模能力越强。Dice 与 TRE 分别汇总，使结构重叠与地标对应均能从历史保持和当前学习两个角度分析。模型参数扩展与历史信息使用则按式\eqref{eq:benchmark-mpe}和式\eqref{eq:benchmark-drr}记录 MPE 与 DRR。
+持续学习评价进一步沿用第三章的 BWTR 与 RMA，分别对 Dice 和 TRE 组织归一化指标。BWTR 按第\ref{sec:benchmark-metrics}节的指标方向计算，负值表示性能下降，数值越高表示保持越充分；RMA 以相应任务的独立训练表现为对照。Dice 使用初学性能与独立训练性能之比，TRE 使用独立训练误差与初学误差之比，均以较大值表示较强的受限建模能力。Dice 与 TRE 分别汇总，使结构重叠与地标对应均能从历史保持和当前学习两个角度分析。模型参数扩展与历史信息使用则按式\eqref{eq:benchmark-mpe}和式\eqref{eq:benchmark-drr}记录 MPE 与 DRR。
 
 在实现方面，所有方法使用相同的 LK-UNet 骨干。实验在 PyTorch 中实现，并在 NVIDIA RTX 3090 GPU 上运行。每个任务训练 $10000$ 次迭代，采用 Adam 优化器\cite{kingma2015adam}，学习率为 $1\times10^{-4}$，批大小为 $4$。SAMCL 的历史回放容量设为 $200$，元学习率 $\beta$ 设为 $0.25$，锐度邻域半径 $\rho$ 设为 $0.05$。
 

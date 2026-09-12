@@ -1,4 +1,4 @@
-\chapter{基于子空间聚合的无回放联邦医学影像持续分类研究}
+\chapter{基于子空间聚合的无回放联邦医学影像持续分类}
 \label{chap:fedsubmerge}
 \setlength{\emergencystretch}{1em}
 
@@ -17,8 +17,8 @@
 
 本章先说明研究动机与问题建模，再介绍 FedSubMerge、FedSubMerge-AD 及其局部理论分析。实验涵盖七个联邦设置，主比较使用 ACC、BWTR 和 RMA，并通过异质性、参与率和消融实验分析方法表现。最后结合 MedCL 的记录方式讨论阶段全局模型、客户端分布与资源开销。
 
-\section{研究动机与问题建模}
-\subsection{研究动机}
+\section{方法动机与问题建模}
+\subsection{方法动机}
 \label{sec:fedsubmerge-motivation}
 
 已有联邦持续学习方法采用不同形式的历史信息。例如，Ke 等的 TPPR 结合视觉提示、任务感知的提示梯度投影和提示回放，研究参数高效的联邦类别增量学习\cite{ke2025tppr}。其保护对象是预训练模型中的少量可训练参数，本章则考察如何保存和融合样本级梯度子空间。
@@ -567,7 +567,7 @@ FedSubMerge-AD 的相关客户端数在每个设置的全局验证集上一次�
 \end{equation}
 ACC 衡量最终模型在各已见任务上的平均准确率；BWT 表示旧任务准确率从初学完成到最终阶段的平均绝对变化。ACC 以百分数报告，BWT 以百分点报告，二者均越高越好。异质性、客户端规模和设计消融采用 ACC 与 BWT 观察具体设置下的变化。
 
-为与第三章 MedCL 的综合评价衔接，主比较进一步使用 BWTR 和 RMA。令 $a_{\tau}^{NC}$ 表示任务 $\tau$ 独立训练参照的准确率，将式\eqref{eq:benchmark-bwtr}和式\eqref{eq:benchmark-rma}中的 Dice 替换为准确率，得到
+为与第三章 MedCL 的综合评价衔接，主比较进一步使用 BWTR 和 RMA。令 $a_{\tau}^{NC}$ 表示任务 $\tau$ 独立训练参照的准确率，在式\eqref{eq:benchmark-bwtr}和式\eqref{eq:benchmark-rma}中以准确率作为任务指标，得到
 \begin{equation}
 \mathrm{BWTR}
 =
