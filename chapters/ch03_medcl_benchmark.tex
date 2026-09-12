@@ -370,31 +370,6 @@ MPE 与 DRR 不替代存储、计算和通信统计。训练预算记录轮数�
 
 配准查看器提供固定、移动和外部生成的配准后影像，支持切面与融合查看。独立配准示例还提供棋盘格和彩色融合，其“对齐参考”以固定影像表示目标状态，不作为计算得到的变形结果。定量 TRE 由预测对应点与隐藏固定地标计算。
 
-% CODEX_SCREENSHOT_REGISTRATION: figures/ch03/screenshots/medcl_registration_example.png
-
-图\ref{fig:medcl-registration-example-ui}展示脑 MRI 配准示例中的固定影像、移动影像与对齐参考，以及棋盘格和彩色融合对照。
-\begin{figure}[p]
-\centering
-\begin{minipage}{0.96\linewidth}
-\centering
-\thesisgraphic{ch03/screenshots/medcl_registration_example.png}
-\par\small (a) 任务设置与切片对比
-\end{minipage}
-\par\vspace{6pt}
-\begin{minipage}[t]{0.475\linewidth}
-\centering
-\thesisgraphic{ch03/screenshots/medcl_registration_checkerboard.png}
-\par\small (b) 棋盘格对照
-\end{minipage}\hfill
-\begin{minipage}[t]{0.475\linewidth}
-\centering
-\thesisgraphic{ch03/screenshots/medcl_registration_fusion.png}
-\par\small (c) 彩色融合对照
-\end{minipage}
-\caption{MedCL 配准示例展示}
-\label{fig:medcl-registration-example-ui}
-\end{figure}
-
 \begin{samepage}
 病例显示与数值评分分开处理。预览按固定步长采样，同时更新显示间距；评分仍使用规定的测试数据。空间信息充分时按相应网格显示，缺少完整方向信息时采用索引空间。隐藏分割真值与固定地标留在评分端，浏览器只接收获准展示的影像和预测。
 \par

@@ -1,19 +1,11 @@
-# 指定小节合并及 Overleaf 最新摘要保留
+# 移除第三章配准示例图并保留最新标题
 
-作者已确认上一轮修改版，并授权同步 GitHub 与 Overleaf，明确要求保留 Overleaf 的最新摘要，其余部分可由确认稿覆盖。
+作者要求删除图 3.7“MedCL 配准示例展示”并更新 GitHub 与 Overleaf；随后再次明确要求保留其在 Overleaf 修改的题目。
 
-## 本次内容
+正文只删除 `chapters/ch03_medcl_benchmark.tex` 中该图的引出句、图环境、图注、标签及对应占位注释，共 25 行。其他配准功能说明和截图资源保留。删除后该图不再出现在正文、插图目录或交叉引用中。
 
-- 将 3.3.3 与 3.3.4 合并为 3.3.3，保留标题“测试标注管理与提交要求”和两节全部正文。
-- 将 4.5.2 与 4.5.3 合并为 4.5.2“实验结果与分析”，保留两节全部正文。
-- 原 4.5.4 改为 4.5.3“方法讨论”。
-- 以作者确认的 `PhD_Thesis_sections_merged_20260912.zip` 为其余论文输入。相对于上一轮远端版本，其中还包含作者 ZIP 自带的第三章截图与展示调整、第四章标题、流程图字号及分页设置；本轮不另行改写。
-- `SRC/abstract.tex`、`SRC/abstract_zh_body.tex`、`SRC/abstract_en_body.tex` 原样取自 Overleaf `9ad17447e2604bf3809a4149da3fd7c13885dcdc`。这三份文件在 Overleaf 发布差异中为空，GitHub 同步保存作者的中英文摘要更新。
+同步期间获取到作者在 Overleaf 的两次标题更新，最终以 `d861f9f78b4452ab9807acb23111aa7bccccfd31` 为发布父提交。中文题目为“训练信息受限条件下医学影像分析的持续学习”，英文题目为“Continual Learning for Medical Image Analysis with Limited Training Information”。`main.tex` 及摘要入口、中英文摘要三份文件均保留该远端版本，并同步保存到 GitHub。Overleaf 发布差异仅包含删图的章节文件。
 
-## 验证与发布
+完整 XeLaTeX/latexmk 编译通过，共 173 页。最终日志无 LaTeX 错误、未解析引文或引用、重复标签、缺字、Overfull 或过大浮动体。已查看 PDF 第 1、15、69、70、71 页，确认封面题目、插图目录及删图后的分页正常。字体提示沿用模板既有设置。
 
-完整 XeLaTeX/latexmk 编译通过，共 175 页。最终日志无 LaTeX 错误、未解析引文或引用、重复标签、缺字、Overfull 或过大浮动体。中英文摘要的 PDF 第 3–8 页已逐页查看；目录及正文中的 3.3.3、4.5.2、4.5.3 编号确认正确，合并处页面沿用上一轮已完成的检查。保留模板既有字体族提示。
-
-GitHub 发布到 `agent/predefense-writing-20260830`。Overleaf 发布提交以已获取的远端提交为父提交，摘要路径不变；使用非强制推送防止覆盖构建期间可能产生的新远端编辑。若远端并发更新导致拒绝，重新保留最新摘要后再发布。
-
-本地 PDF：`../section_merge_sync_20260912/PhD_Thesis_sections_merged_latest_abstract_20260912.pdf`；源 ZIP 和发布回执同在该目录。构建 PDF、截图、临时发布目录不上传。GitHub 仅包含论文源文件、作者 ZIP 中的展示资源和本轮简要状态报告；未修改 `sources/`，未新增实验、指标或科学结论，既有实验和证据待核事项维持原状态。
+沿用 GitHub `agent/predefense-writing-20260830` 与 Overleaf `main` 的非强制发布方式。发布回执和 PDF 位于本地 `../remove_fig37_20260912/`；构建 PDF、审查图片和临时部署目录不上传。未修改 `sources/`，未新增实验、指标或结论，既有实验与证据待核事项维持原状态。
