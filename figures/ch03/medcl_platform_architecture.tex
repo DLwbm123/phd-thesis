@@ -7,14 +7,14 @@
   flow/.style={-{Latex[length=2mm]},draw=black!65,line width=.65pt},
   node distance=5mm
 ]
-\node[wide] (entry) {\textbf{网页入口}\quad 基准与任务顺序\quad 阶段选择\quad 模型或预测提交\quad 结果查询};
-\node[wide,below=of entry] (manage) {\textbf{评测管理}\quad 固定测试设置\quad 生成配置\quad 提交检查\quad 评测状态与队列};
-\node[task,below=7mm of manage] (cls) {\textbf{分类适配}\par 图像与类别映射\par 测试任务与分类头\par 准确率及类别结果};
-\node[task,left=3mm of cls] (seg) {\textbf{分割适配}\par 图像与标签空间\par 概率图或标签图\par 结构重叠及病例结果};
-\node[task,right=3mm of cls] (reg) {\textbf{配准适配}\par 固定与移动图像\par 空间变换与坐标约定\par 结构重叠及地标误差};
-\node[wide,below=7mm of cls] (score) {\textbf{推理与独立评分}\quad 受限模型调用或预测读取\par 平台保存的测试标注\quad 阶段--任务矩阵\quad BWTR 与 RMA};
-\node[wide,below=of score,fill=green!4] (view) {\textbf{结果展示}\quad 阶段曲线\quad 任务与客户端比较\quad 样例可视化\quad 报告导出};
-\node[wide,below=of view,fill=black!3] (store) {\textbf{持久化对象}\quad 评测配置\quad 模型与预测索引\quad 测试版本\quad 结果与来源\par 任务性能、持续学习能力与模型及历史信息资源对应记录};
+\node[wide] (entry) {\textbf{Streamlit 网页}\quad 基准与任务顺序\quad 阶段选择\quad 模型或预测提交\quad 结果查询};
+\node[wide,below=of entry] (manage) {\textbf{SQLite 评测管理}\quad 提交检查\quad 固定配置\quad 作业队列与状态};
+\node[task,below=7mm of manage] (cls) {\textbf{分类适配}\par 图像与类别映射\par 测试任务与分类头\par 任务及客户端准确率};
+\node[task,left=3mm of cls] (seg) {\textbf{分割适配}\par 图像与标签空间\par 整数预测标签图\par 病例 Dice 与标签预览};
+\node[task,right=3mm of cls] (reg) {\textbf{配准适配}\par 固定与移动图像\par 固定空间预测对应点\par TRE 及影像预览};
+\node[wide,below=7mm of cls] (score) {\textbf{独立评分进程}\quad 受限模型调用或预测读取\par 隐藏测试标注\quad 任务主指标\quad 阶段与客户端矩阵};
+\node[wide,below=of score,fill=green!4] (view) {\textbf{结果展示}\quad 阶段与方法比较\quad Cornerstone3D 病例查看\quad 报告导出};
+\node[wide,below=of view,fill=black!3] (store) {\textbf{持久化对象}\quad 评测配置\quad 模型与预测索引\quad 测试版本\quad 结果与来源\par 提交评分、论文历史结果和独立病例示例分别管理};
 \draw[flow] (entry) -- (manage);
 \draw[flow] (manage.south) -- (cls.north);
 \draw[flow] (manage.south -| seg.north) -- (seg.north);

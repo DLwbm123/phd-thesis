@@ -1,0 +1,17 @@
+\begingroup
+\begin{tikzpicture}[
+ font=\thesisfigurefont,
+ box/.style={draw=black!55,rounded corners=2pt,align=center,inner sep=5pt,line width=.6pt},
+ top/.style={box,text width=5.6cm,minimum height=.9cm,fill=blue!3},
+ small/.style={box,text width=2.6cm,minimum height=1.65cm,fill=white},
+ flow/.style={-{Latex[length=2mm]},draw=black!60,line width=.65pt},node distance=6mm]
+\node[top] (input) {\textbf{病例预览}\par 图像、标签图与显示几何};
+\node[small,below=8mm of input,xshift=-1.6cm] (mpr) {\textbf{三个正交切面}\par 图像与标签\par 切片与透明度};
+\node[small,below=8mm of input,xshift=1.6cm] (surface) {\textbf{三维表面}\par 逐标签提取\par 旋转与透明度};
+\node[top,below=7mm of mpr,xshift=1.6cm,fill=green!3] (sync) {\textbf{共同控制}\par 标签筛选、病例切换与视图重置};
+\draw[flow] (input.south -| mpr.north) -- (mpr.north);
+\draw[flow] (input.south -| surface.north) -- (surface.north);
+\draw[flow] (mpr.south) -- (sync.north -| mpr.south);
+\draw[flow] (surface.south) -- (sync.north -| surface.south);
+\end{tikzpicture}
+\endgroup
