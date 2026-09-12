@@ -112,7 +112,6 @@ MedCL 的设计围绕结果是否能够正确对应和比较展开。首先，�
 
 隐藏测试标注仅交给评分模块，不写入病例预览或发送至浏览器。分类报告提供任务和客户端聚合结果，不导出逐样本正误或隐藏类别频数；分割查看器显示影像与预测标签，配准查看器显示获准提供的影像和预测结果。独立示例中的完整标签与涂鸦用于标注展示，与隐藏测试集分开管理。
 
-\subsection{评测版本与可比条件}
 \label{subsec:medcl-three-modes}
 
 一次评测固定任务顺序、测试划分、预处理、输出头和汇总规则；改变顺序或客户端分组时建立独立记录。方法比较同时核对评分器与基准版本、任务顺序、输出头、监督声明、测试资产记录及客户端划分。方法名称不决定可比性，同一测试集也不意味着训练条件相同。论文实验中的网络、回放容量与训练预算在相应方法章节说明，不由平台根据上传文件推断。
@@ -321,7 +320,7 @@ MPE 与 DRR 不替代存储、计算和通信统计。训练预算记录轮数�
 % CODEX_SCREENSHOT_SEGMENTATION: figures/ch03/screenshots/medcl_segmentation_example.png
 
 图\ref{fig:medcl-segmentation-example-ui}以子图展示任务设置、三个正交切面与七类心脏结构的三维分割视图。
-\begin{figure}[p]
+\begin{figure}[htbp]
 \centering
 \begin{minipage}{0.96\linewidth}
 \centering
@@ -329,26 +328,10 @@ MPE 与 DRR 不替代存储、计算和通信统计。训练预算记录轮数�
 \par\small (a) 场景、任务与显示设置
 \end{minipage}
 \par\vspace{5pt}
-\begin{minipage}[t]{0.315\linewidth}
+\begin{minipage}{0.96\linewidth}
 \centering
-\thesisgraphic{ch03/screenshots/medcl_segmentation_axial.png}
-\par\small (b) Z 方向切面
-\end{minipage}\hfill
-\begin{minipage}[t]{0.315\linewidth}
-\centering
-\thesisgraphic{ch03/screenshots/medcl_segmentation_coronal.png}
-\par\small (c) Y 方向切面
-\end{minipage}\hfill
-\begin{minipage}[t]{0.315\linewidth}
-\centering
-\thesisgraphic{ch03/screenshots/medcl_segmentation_sagittal.png}
-\par\small (d) X 方向切面
-\end{minipage}
-\par\vspace{6pt}
-\begin{minipage}{0.48\linewidth}
-\centering
-\thesisgraphic{ch03/screenshots/medcl_segmentation_3d.png}
-\par\small (e) 七类心脏结构三维分割
+\thesisgraphic{ch03/screenshots/medcl_segmentation_cardiac_views.png}
+\par\small (b) 心脏正交切面与三维分割视图
 \end{minipage}
 \caption{MedCL 全监督分割示例展示}
 \label{fig:medcl-segmentation-example-ui}
@@ -358,39 +341,64 @@ MPE 与 DRR 不替代存储、计算和通信统计。训练预算记录轮数�
 
 % CODEX_SCREENSHOT_WEAK: figures/ch03/screenshots/medcl_weak_segmentation_example.png
 
-图\ref{fig:medcl-weak-example-ui}展示弱监督示例的任务与切片设置，以及原始影像、稀疏涂鸦和分割叠加的对照。
+图\ref{fig:medcl-weak-example-ui}展示域增量场景下的任务与切片设置，以及原始影像、稀疏涂鸦和分割叠加的对照。
 \begin{figure}[htbp]
 \centering
 \begin{minipage}{0.96\linewidth}
 \centering
-\thesisgraphic{ch03/screenshots/medcl_weak_settings.png}
-\par\small (a) 任务与切片设置
+\thesisgraphic{ch03/screenshots/medcl_weak_domain_settings.png}
+\par\small (a) 域增量任务与切片设置
 \end{minipage}
 \par\vspace{6pt}
-\begin{minipage}[t]{0.315\linewidth}
+\begin{minipage}{0.96\linewidth}
 \centering
-\thesisgraphic{ch03/screenshots/medcl_weak_image.png}
-\par\small (b) 原始影像
-\end{minipage}\hfill
-\begin{minipage}[t]{0.315\linewidth}
-\centering
-\thesisgraphic{ch03/screenshots/medcl_weak_scribble.png}
-\par\small (c) 稀疏涂鸦
-\end{minipage}\hfill
-\begin{minipage}[t]{0.315\linewidth}
-\centering
-\thesisgraphic{ch03/screenshots/medcl_weak_overlay.png}
-\par\small (d) 分割叠加
+\thesisgraphic{ch03/screenshots/medcl_weak_domain_comparison.png}
+\par\small (b) 原始影像、稀疏涂鸦与分割叠加
 \end{minipage}
 \caption{MedCL 弱监督分割示例展示}
 \label{fig:medcl-weak-example-ui}
 \end{figure}
 
-分类示例显示选定任务中的图像及类别，用于核对类别语义；正式分类结果保持任务和客户端层面的聚合展示。配准查看器提供固定、移动和外部生成的配准后影像，支持切面与融合查看。独立配准示例还提供棋盘格和彩色融合，其“对齐参考”以固定影像表示目标状态，不作为计算得到的变形结果。定量 TRE 由预测对应点与隐藏固定地标计算。
+分类示例显示选定任务中的图像及类别，用于核对类别语义；正式分类结果保持任务和客户端层面的聚合展示。图\ref{fig:medcl-classification-example-ui}展示消化道内镜分类示例的任务选择、图像与类别信息。
+
+\begin{figure}[htbp]
+\centering
+\thesisgraphic{ch03/screenshots/medcl_classification_example.png}
+\caption{MedCL 分类示例展示}
+\label{fig:medcl-classification-example-ui}
+\end{figure}
+
+配准查看器提供固定、移动和外部生成的配准后影像，支持切面与融合查看。独立配准示例还提供棋盘格和彩色融合，其“对齐参考”以固定影像表示目标状态，不作为计算得到的变形结果。定量 TRE 由预测对应点与隐藏固定地标计算。
 
 % CODEX_SCREENSHOT_REGISTRATION: figures/ch03/screenshots/medcl_registration_example.png
 
+图\ref{fig:medcl-registration-example-ui}展示脑 MRI 配准示例中的固定影像、移动影像与对齐参考，以及棋盘格和彩色融合对照。
+\begin{figure}[p]
+\centering
+\begin{minipage}{0.96\linewidth}
+\centering
+\thesisgraphic{ch03/screenshots/medcl_registration_example.png}
+\par\small (a) 任务设置与切片对比
+\end{minipage}
+\par\vspace{6pt}
+\begin{minipage}[t]{0.475\linewidth}
+\centering
+\thesisgraphic{ch03/screenshots/medcl_registration_checkerboard.png}
+\par\small (b) 棋盘格对照
+\end{minipage}\hfill
+\begin{minipage}[t]{0.475\linewidth}
+\centering
+\thesisgraphic{ch03/screenshots/medcl_registration_fusion.png}
+\par\small (c) 彩色融合对照
+\end{minipage}
+\caption{MedCL 配准示例展示}
+\label{fig:medcl-registration-example-ui}
+\end{figure}
+
+\begin{samepage}
 病例显示与数值评分分开处理。预览按固定步长采样，同时更新显示间距；评分仍使用规定的测试数据。空间信息充分时按相应网格显示，缺少完整方向信息时采用索引空间。隐藏分割真值与固定地标留在评分端，浏览器只接收获准展示的影像和预测。
+\par
+\end{samepage}
 
 \subsection{评测测试方案}
 \label{subsec:medcl-test-plan}
@@ -433,6 +441,7 @@ MPE 与 DRR 不替代存储、计算和通信统计。训练预算记录轮数�
 
 方法比较中的论文历史结果采用只读数据组织，支持按场景、方法、指标及结果来源筛选，图表导出保留当前选择。持续分割的历史数据及其方法结论属于第四章，第三章只说明这种结果浏览功能；历史导入与用户提交评分分别保存，避免将既有实验误作新的平台评测。
 
+\FloatBarrier
 
 \section{本章小结}
 \label{sec:benchmark-summary}

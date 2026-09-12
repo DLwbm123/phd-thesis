@@ -1,4 +1,4 @@
-\chapter{医学影像持续分割方法评测与弱监督持续分割}
+\chapter{医学影像持续分割方法评测与弱监督分割}
 \label{chap:scribblecl}
 \label{chap:segmentation}
 \setlength{\emergencystretch}{1em}
@@ -661,7 +661,7 @@ ZS-EWC 和 ZS-GPM 的持续学习参数沿用表\ref{tab:benchmark-baseline-conf
 两类实验使用第\ref{subsec:segmentation-benchmark-evaluation}节的分割评价设置。RMA 随结果记录独立训练对照的监督形式与训练预算，MPE 与 DRR 根据模型参数和历史信息记录汇总。
 
 
-\subsection{阶段预测与分割结果整理}
+\subsection{实验结果与分析}
 \label{sec:scribblecl-platform-integration}
 \label{sec:scribblecl-platform}
 \label{sec:scribblecl-benchmark-connection}
@@ -670,7 +670,6 @@ ZS-EWC 和 ZS-GPM 的持续学习参数沿用表\ref{tab:benchmark-baseline-conf
 
 分割可视化在相同病例上比较不同阶段的预测，以掩膜叠加和误差区域辅助解释 Dice 变化。结果同时记录训练监督、回放容量和损失配置，避免将采用不同历史信息的方法当作仅有监督形式差异的对照。
 
-\subsection{实验结果与分析}
 \label{subsec:scribblecl-results}
 \label{subsec:scribblecl-experimental-analysis}
 
@@ -695,7 +694,7 @@ ZSDERpp 的 A-Dice 和 BWTR 分别为 $0.7687$ 和 $-0.1520$，为表中最高�
 从资源使用看，两类弱监督实验结果表中各方法的 MPE 均为 0，模型参数规模不随任务推进而增加。六中心实验中，Dense-Sequential、PCE-Sequential、ZS-Sequential 和 ZS-EWC 的 DRR 均为 0。ZS-GPM 通过历史子空间约束后续更新，ZSDERpp 则保留容量为 64 幅图像的图像--涂鸦回放集及参考特征；类别增量中的 ZSDERpp 与 MiB 组合沿用这一历史信息组织方式。结合表\ref{tab:scribblecl-methods}，可以看到各方法在固定模型容量下采用了不同的知识保持方式：顺序训练不保留历史约束，ZS-EWC 与 ZS-GPM 分别使用参数重要性和子空间投影，ZSDERpp 则通过有限历史样本与参考特征减轻遗忘。
 
 
-\subsection{监督条件与方法讨论}
+\subsection{方法讨论}
 \label{subsec:scribblecl-discussion}
 \label{sec:segmentation-discussion}
 
