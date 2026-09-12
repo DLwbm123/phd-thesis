@@ -17,3 +17,10 @@
 \setcounter{totalnumber}{5}
 \setlength{\textfloatsep}{12pt plus 2pt minus 2pt}
 \setlength{\intextsep}{12pt plus 2pt minus 2pt}
+
+% Keep every thesis illustration within the portrait text block.
+\newcommand{\thesisfigurewidth}{0.96\linewidth}
+\newcommand{\thesisfigureheight}{0.66\textheight}
+\newcommand{\thesisgraphic}[1]{%
+  \includegraphics[width=\thesisfigurewidth,height=\thesisfigureheight,keepaspectratio]{#1}%
+}

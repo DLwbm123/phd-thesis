@@ -5,24 +5,25 @@
 \section{引言}
 \label{sec:fedsubmerge-introduction}
 
-第三章的 MedCL 平台以任务序列、阶段--任务性能矩阵和多维指标组织持续学习评价，第四章据此完成密集监督分割基准评测，并在固定数据与测试设置下研究涂鸦监督方法。本章进一步研究图像级医学分类：类别按批次到达，训练数据分布于多个客户端，后续阶段不回放历史原始样本。评价沿用 MedCL 的历史保持、当前学习与资源分析，将分割矩阵中的 Dice 换为任务准确率，以 ACC、BWTR 和 RMA 评价任务表现，并结合 MPE 与 DRR 分析模型扩展和历史信息使用，从而把平台的评价体系扩展到无回放联邦持续学习。
+第四章通过有限图像--涂鸦回放保留旧任务能力。本章转向另一种训练条件：医学分类数据分布在多个客户端，类别按批次到达，后续阶段不能回放历史原始样本。评价仍沿用第三章 MedCL 的阶段矩阵，但以任务准确率代替分割 Dice，用 ACC、BWTR 和 RMA 分别分析最终表现、历史保持与当前学习，并结合 MPE、DRR 及通信记录说明资源开销。
 
 本章将每批新增类别组织为一个任务，对应第三章任务身份已知的多头分类设置。测试时，模型使用样本所属任务的分类头，候选类别限于对应类别批次。类别批次沿时间扩展，客户端之间同时存在类别比例、类别覆盖和图像来源差异，因而评价需要同时关注新任务学习、旧任务保持与联邦异质性。
 
-联邦环境使历史知识保护同时涉及时间和客户端两个维度。客户端只使用当前本地数据更新时，其类别比例、样本数量和图像来源差异可能使更新偏离联邦总体历史；单个客户端构建的保护信息又只能覆盖自身经历，不能直接包含只由其他客户端学习的类别方向。若服务器无差别叠加全部客户端的历史方向，可用于学习当前类别批次的更新空间则会不断收缩。因此，本章需要同时扩大跨客户端历史覆盖，并避免统一保护对异质客户端造成过度约束。
+联邦模型既要保留本地旧任务知识，也要保留从其他客户端获得的知识。客户端只用当前数据更新时，单独保存的历史信息无法覆盖其他中心的经历；服务器若将所有历史方向都用于约束每个客户端，又可能压缩新任务的学习空间。本章因此研究如何融合跨客户端历史信息，以及如何减少不相关方向对当前学习的限制。
 
 针对上述问题，本文提出联邦子空间融合方法 FedSubMerge。每个客户端在当前阶段结束时利用样本级梯度与服务器此前返回的历史摘要，递归构建低秩主梯度子空间（principal gradient subspace，PGS）；服务器对客户端上传的子空间基和奇异值进行融合，形成覆盖跨客户端历史方向的共享保护空间；后续本地训练将共享特征提取器的梯度投影至该空间的正交补，以降低更新对旧任务损失的一阶干扰。FedSubMerge-AD 进一步按网络层计算子空间距离，为目标客户端选择相关客户端并构建个性化保护空间，从而在历史覆盖与当前可塑性之间形成不同侧重。
 
 常规联邦轮次仍交换完整模型，额外的子空间基与奇异值在阶段结束后上传和返回。本章的无回放指不再读取历史原始样本，保留的模型参数和子空间摘要仍参与后续学习。
 
-本章依次介绍问题建模、FedSubMerge 与 FedSubMerge-AD、局部理论分析和七个联邦设置下的实验结果。主比较使用 MedCL 的归一化历史保持、受限建模能力和资源指标，异质性、参与率与设计消融进一步分析方法行为；最后说明阶段全局模型、分类预测和客户端分布在平台评价中的对应关系。
+本章先说明研究动机与问题建模，再介绍 FedSubMerge、FedSubMerge-AD 及其局部理论分析。实验涵盖七个联邦设置，主比较使用 ACC、BWTR 和 RMA，并通过异质性、参与率和消融实验分析方法表现。最后结合 MedCL 的记录方式讨论阶段全局模型、客户端分布与资源开销。
 
-\section{无回放联邦持续分类的研究动机}
+\section{研究动机与问题建模}
+\subsection{研究动机}
 \label{sec:fedsubmerge-motivation}
 
-Ke 等提出的 TPPR 使用视觉提示、任务感知的提示梯度投影和提示回放，研究参数高效的联邦类别增量学习\cite{ke2025tppr}。该方法将历史保护作用于预训练模型的少量可训练参数，与本章保存样本级梯度子空间摘要的方式不同。
+已有联邦持续学习方法采用不同形式的历史信息。例如，Ke 等的 TPPR 结合视觉提示、任务感知的提示梯度投影和提示回放，研究参数高效的联邦类别增量学习\cite{ke2025tppr}。其保护对象是预训练模型中的少量可训练参数，本章则考察如何保存和融合样本级梯度子空间。
 
-无回放联邦持续学习同时包含空间和时间两个维度的训练信息受限。在空间维度，各机构只能在本地访问原始医学图像，服务器接收模型参数或其他允许传输的摘要；在时间维度，客户端训练当前任务时不能重新使用先前任务的原始样本。传统联邦学习主要处理同一训练阶段内的跨客户端聚合，而单机持续学习主要处理一个学习器上的顺序任务。二者叠加后，某个客户端当前能够观察的梯度只反映其本地新任务，不能完整表示联邦模型已经从其他机构获得的历史知识。
+本章的训练信息限制来自两个方面：不同机构只能在本地使用原始图像，服务器仅接收模型参数或其他允许传输的信息；进入新任务后，客户端也不能再读取旧任务原始样本。常规联邦学习侧重同一阶段的跨客户端聚合，单机持续学习侧重一个模型的顺序更新。两者结合时，当前本地梯度无法完整反映模型此前从其他机构获得的知识。
 
 具体到本地 PGS，客户端可以记录自身旧任务中对损失影响较大的梯度方向，并在后续训练中避开这些方向。该策略能够保护本地历史，却不能保护只由其他客户端观察过的类别。若某一罕见病种此前只出现在少数中心，未观察该病种的客户端不会在自己的 PGS 中形成相应方向。当这些客户端在新任务上产生较大更新时，其梯度仍可能干扰服务器模型中与该病种相关的参数。服务器端需要汇集跨客户端保护信息，才能把局部任务历史扩展为联邦范围的历史知识摘要。
 
@@ -30,30 +31,16 @@ Ke 等提出的 TPPR 使用视觉提示、任务感知的提示梯度投影和�
 
 据此，图\ref{fig:fedsubmerge-overview}概括了本章方法。客户端先进行常规轮次联邦训练，并在每个任务结束时构建逐层 PGS。FedSubMerge 将全部客户端 PGS 融合为同一个共享子空间；FedSubMerge-AD 则依据逐层子空间距离选择相关客户端，为每个目标客户端返回个性化 PGS。下一任务中，客户端先接收该 PGS，再投影本地梯度；任务结束后，将返回的历史摘要与当前任务梯度共同压缩为新的客户端 PGS，并上传服务器。该循环使历史信息以递归低秩摘要而非原始样本的形式跨任务传递。
 
-\begin{figure}[p]
+\begin{figure}[htbp]
 \centering
-\includegraphics[width=\textwidth,height=0.81\textheight,keepaspectratio]{ch05/fedsubmerge_overview_a_large.pdf}
-\caption[FedSubMerge 与 FedSubMerge-AD 的整体流程]{FedSubMerge 与 FedSubMerge-AD 的整体流程。（a）联邦任务流与主梯度子空间构建。客户端完成轮次联邦训练后，利用最终模型采样当前任务梯度，并通过奇异值分解构建逐层主梯度子空间；服务器融合与后续本地训练见续图。}
+\thesisgraphic{ch05/fedsubmerge_overview.pdf}
+\caption[FedSubMerge 与 FedSubMerge-AD 的整体流程]{FedSubMerge 与 FedSubMerge-AD 的整体流程。（a）联邦任务流与客户端主梯度子空间构建；（b）服务器端统一融合或按层选择相关客户端后进行自适应融合；（c）将后续本地梯度投影到保护空间的正交补，并在任务结束时更新客户端子空间。}
 \label{fig:fedsubmerge-overview}
-\end{figure}
-\begin{figure}[p]
-\ContinuedFloat
-\captionsetup{list=off}
-\centering
-\includegraphics[width=\textwidth,height=0.81\textheight,keepaspectratio]{ch05/fedsubmerge_overview_b_large.pdf}
-\caption{FedSubMerge 与 FedSubMerge-AD 的整体流程（续）。（b）服务器端子空间融合。FedSubMerge 统一融合全部客户端子空间；FedSubMerge-AD 按层选择相似客户端，再对加权基进行个性化融合。}
-\end{figure}
-\begin{figure}[p]
-\ContinuedFloat
-\captionsetup{list=off}
-\centering
-\includegraphics[width=\textwidth,height=0.81\textheight,keepaspectratio]{ch05/fedsubmerge_overview_c_large.pdf}
-\caption{FedSubMerge 与 FedSubMerge-AD 的整体流程（续）。（c）本地投影训练与客户端子空间更新。后续任务中，新梯度投影到返回子空间的正交补，并在每个任务结束时递归更新客户端主梯度子空间。}
 \end{figure}
 
 图中划去的历史影像表示后续任务不再回放历史原始样本；原始影像不直接上传至服务器。
 
-\section{无回放联邦持续学习的问题建模}
+\subsection{问题建模}
 \label{sec:fedsubmerge-formulation}
 
 设联邦系统包含 $K$ 个客户端，集合为
@@ -95,17 +82,16 @@ W^{(t,r)}
 \end{equation}
 其中 $\mathcal{C}_{\tau}$ 为任务 $\tau$ 上存在数据的客户端集合。无回放约束使后续阶段无法直接优化式\eqref{eq:fedsubmerge-objective}中的全部历史项。本章的实际目标是在只使用当前任务样本训练的同时，通过紧凑历史方向降低新更新对旧任务的干扰。
 
-相应地，该建模保留了常规 FedAvg 的轮次模型通信。PGS 不是每轮传输的替代模型，而是在每个任务结束后增加的一次上传和返回。因此，本章方法改变的是历史知识的表示和本地梯度更新方式，而不是用低秩子空间替代完整全局模型。
+该建模保留了常规 FedAvg 的轮次模型通信。PGS 不是每轮传输的替代模型，而是在每个任务结束后增加的一次上传和返回。因此，本章方法改变的是历史知识的表示和本地梯度更新方式，而不是用低秩子空间替代完整全局模型。
 
 \section{FedSubMerge 方法}
 \label{sec:fedsubmerge-method}
 
-\subsection{方法总体框架}
 \label{subsec:fedsubmerge-overview}
 
 FedSubMerge 的核心对象是逐层 PGS。客户端用少量当前任务样本构造样本级梯度矩阵，通过奇异值分解提取主要方向；服务器接收各客户端的子空间基和奇异值，并再次执行拼接与压缩。统一版本向所有客户端返回同一个 PGS，强调跨机构历史覆盖。自适应版本按目标客户端和网络层选择相似客户端，返回客户端特定 PGS，强调在异质性下保留优化自由度。
 
-具体到任务切换过程，方法包含“接收--投影--更新--融合”四个连续步骤。任务 $t$ 开始前，客户端接收任务 $t-1$ 后服务器返回的共享或个性化 PGS；训练任务 $t$ 时，将共享特征提取器的梯度投影到该 PGS 的正交补；任务结束后，把此前返回的加权基与当前任务梯度矩阵共同压缩，得到新的客户端 PGS；服务器最后对这些 PGS 进行统一或自适应融合，为任务 $t+1$ 生成保护空间。首个任务没有历史 PGS，因而采用常规本地更新。
+任务 $t$ 开始前，客户端接收服务器在任务 $t-1$ 后返回的共享或个性化 PGS，并在本地训练时将共享特征提取器的梯度投影到其正交补。任务结束后，客户端将此前返回的加权基与当前任务梯度共同压缩为新的 PGS。服务器再进行统一或自适应融合，为下一任务提供保护空间。首个任务没有历史 PGS，采用常规本地更新。
 
 \subsection{客户端主梯度子空间构建}
 \label{subsec:fedsubmerge-client-pgs}
@@ -183,7 +169,7 @@ U_K^{(t)}\Sigma_K^{(t)}
 服务器随后令
 $(\bar U_c^{(t)},\bar\Sigma_c^{(t)})=(\bar U_{\mathrm{all}}^{(t)},\bar\Sigma_{\mathrm{all}}^{(t)})$，并向全部客户端返回同一个共享 PGS。
 
-需要说明的是，式\eqref{eq:fedsubmerge-uniform-merge}拼接的是 $U_c\Sigma_c$ 而不是只有 $U_c$。若不同方向的奇异值差异较大，只拼接正交基会把所有保留方向视为同等重要；加入奇异值后，服务器端协方差能够反映各方向在客户端递归代理中的相对能量。再次执行 SVD 还可以融合多个客户端间相近的方向，并通过 $\gamma$ 限制任务增长时的秩膨胀。较大的 $\gamma$ 保留更多历史能量，通常增强保护范围，但也可能增加对当前任务更新的约束。
+式\eqref{eq:fedsubmerge-uniform-merge}拼接的是 $U_c\Sigma_c$ 而不是只有 $U_c$。若不同方向的奇异值差异较大，只拼接正交基会把所有保留方向视为同等重要；加入奇异值后，服务器端协方差能够反映各方向在客户端递归代理中的相对能量。再次执行 SVD 还可以融合多个客户端间相近的方向，并通过 $\gamma$ 限制任务增长时的秩膨胀。较大的 $\gamma$ 保留更多历史能量，通常增强保护范围，但也可能增加对当前任务更新的约束。
 
 \subsection{基于正交补投影的本地训练}
 \label{subsec:fedsubmerge-local-projection}
@@ -201,7 +187,8 @@ P_{\bar U_c^{(t-1)}}^{\perp}g_c
 
 不过，正交补投影去除的是返回 PGS 张成空间中的梯度分量。若该空间覆盖旧任务的重要梯度方向，则被保留的更新对旧任务损失的一阶影响较小。但式\eqref{eq:fedsubmerge-projected-gradient}并不保证旧任务性能完全不变。PGS 是有限样本、有限秩和历史模型位置下的近似，未投影参数、二阶项以及优化器残差仍可能引起干扰。
 
-\subsection{自适应逐层客户端选择}
+\subsection{自适应客户端选择与保护子空间}
+\label{subsec:fedsubmerge-personalized-subspace}
 \label{subsec:fedsubmerge-adaptive-selection}
 
 统一融合能够扩大历史覆盖范围，但可能把与目标客户端无关的方向加入保护空间。FedSubMerge-AD 对每个目标客户端和每个受保护层分别选择相关客户端。设客户端 $C_c$ 和 $C_{c'}$ 在某层的 PGS 秩为 $k_c^{(t)}$ 和 $k_{c'}^{(t)}$，两子空间的主角由
@@ -244,8 +231,6 @@ D_{c,c'}^{(t)}
 \end{equation}
 相关客户端选择在各网络层独立执行，因为浅层和深层的子空间相似性可能不同。
 
-\subsection{客户端特定保护子空间构建}
-\label{subsec:fedsubmerge-personalized-subspace}
 
 基于逐层相关客户端集合，FedSubMerge-AD 构造
 \begin{equation}
@@ -312,7 +297,7 @@ G_c^{(t)}
 
 在本章实验中，PGS 只为共享特征提取器的可训练卷积层和全连接权重层构建。没有当前任务数据的客户端不参与该任务的 PGS 上传，服务器保留其最近摘要。该处理使方法能够支持部分客户端缺少某一任务数据，但本章仍假设各客户端的任务切换时机和整体任务流均同步给定。
 
-\section{方法理论分析}
+\section{理论分析}
 \label{sec:fedsubmerge-theory}
 
 本节在单个受保护权重层上分析 PGS 对旧任务损失和当前任务梯度的影响。将该层参数向量记为 $w\in\mathbb{R}^{d}$。多层情形可通过堆叠参数并使用分块对角投影表示。以下结论依赖局部光滑性和有效更新确实由投影梯度形成的条件，用于解释作用机制，不直接给出分类准确率或全局收敛保证。
@@ -521,7 +506,7 @@ b\sum_{c=1}^{K}
 (d_{\ell}+1)k_{c,\ell}.
 \label{eq:fedsubmerge-server-storage}
 \end{equation}
-需要说明的是，这些摘要不包含原始图像、标签、未归一化输出（logits）、生成样本或回放样本集合。该存储形式支持无原始样本回放，但不能据此推导形式化隐私性质。
+这些摘要不包含原始图像、标签、未归一化输出（logits）、生成样本或回放样本集合。该存储形式支持无原始样本回放，但不能据此推导形式化隐私性质。
 
 \section{实验设计与结果分析}
 \label{sec:fedsubmerge-experiments}
@@ -618,7 +603,7 @@ Hyper-Kvasir $\alpha=0.3$ 上，FedSubMerge 的 ACC、BWTR 和 RMA 分别为 $78
 
 标签数量偏斜与多来源皮肤病变设置同样通过主梯度子空间摘要约束后续更新，FedSubMerge 及其自适应版本不保存历史原始图像用于回放。按照第三章的定义，DRR 同时计入构造历史表示所使用的数据，因此子空间方法的历史信息使用还需结合摘要存储和传输分析。逐层子空间的字节量、SVD 计算及通信量在后续开销分析中进一步讨论。
 
-这些结果将第三章的稳定性--可塑性评价用于联邦分类：ACC 反映最终表现，BWTR 反映相对历史变化，RMA 反映当前任务学习，MPE 和 DRR 记录相应资源条件。任务数据涵盖病理图像、腹部 CT、消化道内镜和多来源皮肤病变图像，各设置按表\ref{tab:fedsubmerge-setup}组织类别批次，并在测试时提供任务身份。
+综合各设置，ACC 较高不一定意味着 BWTR 或 RMA 也最高。分析最终分类表现时，需要同时看旧任务下降、当前任务学习及所使用的历史信息。病理、腹部 CT、内镜和皮肤病变数据按表\ref{tab:fedsubmerge-setup}组织类别批次，所有结果均在测试任务身份已知的条件下获得。
 
 \subsection{异质性、客户端规模与参与率}
 \label{subsec:fedsubmerge-robustness}
@@ -702,25 +687,21 @@ FedSubMerge-AD（$n=4$） & \best{93.42} & 0.00 & -3.37 & 0.00 \\
 
 图\ref{fig:fedsubmerge-hyperparameter}给出多来源皮肤病变设置上的相关客户端数和服务器能量阈值敏感性。$K=4$ 时，$n=0$ 仅使用目标客户端 PGS，跨机构共享不足；$n=3$ 使用全部客户端，与统一融合对应，BWT 略有改善但 ACC 下降；$n=2$ 在两项指标之间取得本实验采用的平衡。提高 $\gamma$ 通常保留更多旧方向并改善 BWT，也会增加投影约束。$\gamma=0.97$ 获得最高 ACC，因而与 $n=2$ 共同作为默认配置。该选择来自当前验证设置，不应解释为所有数据和任务长度下的通用最优值。
 
-\begin{landscape}
-\begin{figure}[p]
+\begin{figure}[htbp]
 \centering
-\includegraphics[width=\linewidth,height=0.75\textwidth,keepaspectratio]{ch05/fedsubmerge_hyperparameter.pdf}
+\thesisgraphic{ch05/fedsubmerge_hyperparameter.pdf}
 \caption{多来源皮肤病变特征偏斜设置上的 FedSubMerge-AD 参数敏感性。（a）相关客户端数 $n$；当 $K=4$ 时，$n=0$ 只使用目标客户端 PGS，$n=3$ 使用全部其他客户端。（b）服务器能量阈值 $\gamma$。星号表示默认配置 $n=2$、$\gamma=0.97$。}
 \label{fig:fedsubmerge-hyperparameter}
 \end{figure}
-\end{landscape}
 
 图\ref{fig:fedsubmerge-accuracy-matrix}展示 Hyper-Kvasir $\alpha=0.3$ 上两种方法的任务准确率矩阵。FedSubMerge 与 FedSubMerge-AD 的十个对角条目平均值分别为 $84.56\%$ 和 $87.95\%$，最终 ACC 分别为 $78.64\%$ 和 $78.12\%$。自适应融合具有更高的平均初学准确率，统一融合具有更高的最终平均准确率。按照 MedCL 的阶段矩阵组织结果，可以将任务初学表现与后续更新后的历史任务表现分别展开。
 
-\begin{landscape}
-\begin{figure}[p]
+\begin{figure}[htbp]
 \centering
-\includegraphics[width=\linewidth,height=0.75\textwidth,keepaspectratio]{ch05/fedsubmerge_accuracy_matrix.pdf}
+\thesisgraphic{ch05/fedsubmerge_accuracy_matrix.pdf}
 \caption{Hyper-Kvasir（$\alpha=0.3$）上 FedSubMerge 与 FedSubMerge-AD 的任务准确率矩阵。单元格表示完成任务 $t$ 后在任务 $\tau$ 上的准确率；对角线刻画新任务刚学习后的性能，对角线到最终行的变化刻画随后任务训练造成的旧任务下降。}
 \label{fig:fedsubmerge-accuracy-matrix}
 \end{figure}
-\end{landscape}
 
 \subsection{计算、存储与通信开销}
 \label{subsec:fedsubmerge-efficiency}
@@ -732,30 +713,25 @@ PGS 构建与融合主要在任务结束后执行：各受保护层使用 $n_s=2
 持久化存储保留客户端最近 PGS 及服务器返回 PGS 的基与奇异值，不保存回放图像或生成样本。摘要大小由各层维度和保留秩决定；随着任务增加，奇异值谱和保留秩可能变化，因此存储量不一定保持不变。逐层秩、构建时间和通信量共同反映摘要压缩与历史覆盖的资源代价。
 
 
-\section{基于 MedCL 的联邦持续分类评价}
+\subsection{平台评价与方法讨论}
+\label{sec:fedsubmerge-discussion}
 \label{sec:fedsubmerge-engineering}
 \label{sec:fedsubmerge-platform-integration}
 
-\subsection{阶段全局模型与分类预测}
+图\ref{fig:fedsubmerge-engineering}说明联邦训练与 MedCL 评价的衔接。客户端更新、模型聚合和阶段末子空间融合由训练程序完成，平台接收各类别阶段结束后的全局模型或分类预测。任务配置保存数据来源、类别批次、顺序、阶段和分类头映射；模型接口读取 ResNet-18 权重，预测接口读取与测试样本对应的类别概率或标签。
 
-本章的客户端更新、常规模型聚合和阶段末子空间融合由联邦训练程序完成。MedCL 的评价对象为各类别阶段结束后的全局模型及其分类预测，任务配置记录数据来源、类别批次、训练顺序、完成阶段和分类头映射。模型接口使用 ResNet-18 权重，预测接口使用与测试样本对应的类别概率或标签。
-
-阶段 $t$ 的全局模型在任务 $j$ 上推理时，选择任务 $j$ 对应的分类头，并按该任务的类别映射解释输出，形成 $a_{t,j}$。最终行用于 ACC，最终历史任务表现与初学表现用于 BWT 和 BWTR，初学表现与独立训练参照用于 RMA。参数与历史信息使用记录用于 MPE 和 DRR，模型及 PGS 传输记录用于通信开销分析。
+阶段 $t$ 的全局模型在任务 $j$ 上测试时，使用任务 $j$ 的分类头和类别映射，得到 $a_{t,j}$。这些条目按式\eqref{eq:fedsubmerge-acc-bwt}和式\eqref{eq:fedsubmerge-bwtr-rma}计算 ACC、BWT、BWTR 与 RMA。模型参数、历史信息使用及模型和 PGS 传输记录分别补充资源分析。
 
 \begin{figure}[htbp]
 \centering
-\resizebox{\textwidth}{!}{\input{figures/ch05/fedsubmerge_engineering.tex}}
+\resizebox{\thesisfigurewidth}{!}{\input{figures/ch05/fedsubmerge_engineering.tex}}
 \caption[联邦持续分类与 MedCL 的评价流程]{联邦持续分类与 MedCL 的评价流程。训练程序生成阶段全局模型，任务适配器按测试任务选择分类头，阶段矩阵用于汇总 ACC、BWTR 和 RMA，训练配置用于记录 MPE、DRR 与通信开销。}
 \label{fig:fedsubmerge-engineering}
 \end{figure}
 
-\subsection{持续阶段与客户端分布}
-
 本章以全局测试集上的任务准确率评价共享模型，客户端异质性通过分布偏斜、标签数量偏斜和来源特征偏斜三类设置体现。每个设置固定测试划分和任务顺序，比较不同阶段全局模型的表现，形成与第三章式\eqref{eq:medcl-evaluation-matrix}对应的阶段--任务矩阵。
 
 MedCL 的客户端维度以式\eqref{eq:medcl-federated-cube}中的 $R_{t,c,j}$ 表示，在固定客户端测试分组下记录同一阶段全局模型的表现。客户端宏平均与样本加权准确率分别按式\eqref{eq:medcl-client-aggregation}计算，同时保留各分组的样本量和类别分布。阶段维度描述学习与保持，客户端维度描述同一模型在不同分布中的表现，两者使用共同的任务与样本标识。
-
-\subsection{多维结果与资源记录}
 
 表\ref{tab:fedsubmerge-system-boundary}概括本章与 MedCL 评价的对应关系。主结果表将任务特定的 ACC 与平台共用的 BWTR、RMA 并列组织，正文结合 MPE 与 DRR 分析模型扩展和历史信息使用；异质性、参与率和设计消融进一步提供 BWT 与通信开销分析。性能矩阵、历史任务曲线和类别混淆结果用于解释各项汇总指标。
 
@@ -779,10 +755,8 @@ MedCL 的客户端维度以式\eqref{eq:medcl-federated-cube}中的 $R_{t,c,j}$ 
 \end{tabularx}
 \end{table}
 
-\section{方法讨论}
-\label{sec:fedsubmerge-discussion}
 
-跨客户端融合将多个客户端的梯度子空间用于后续保护。本地 PGS 消融与完整方法的比较表明，加入其他客户端的历史方向后，最终分类表现有所改善。在不回放历史原始图像的条件下，子空间基与奇异值提供了可用于后续梯度约束的历史信息。
+从方法效果看，仅使用本地 PGS 与完整方法的消融比较表明，加入其他客户端的历史方向有助于提高最终准确率。子空间基与奇异值因而能够在不保留历史原始图像的条件下，为后续更新提供历史约束。
 
 统一融合与自适应融合的取舍随数据设置变化。PathMNIST $\alpha=0.3$ 上，自适应融合具有更高的 ACC 和 BWTR，统一融合的 RMA 更高；Hyper-Kvasir $\alpha=0.3$ 上，统一融合的 ACC、BWTR 和 RMA 均更高。这一差异说明客户端相关性、历史方向覆盖和当前任务学习需要联合分析，而不能由单一指标决定融合方式。
 
