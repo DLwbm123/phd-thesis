@@ -17,8 +17,51 @@
 \section{持续分割问题与实验设置}
 \label{sec:benchmark-instance}
 
+% RESTORED_SEGMENTATION_OVERVIEW_BEGIN
+图\ref{fig:benchmark-overview}给出持续分割基准的整体构成。三类任务沿用第三章的数据划分与输出配置，按固定顺序比较正则化、回放和参数隔离等方法，并从最终表现、历史保持、当前学习及资源使用等方面评价。图中的 Organ-CL 对应本文的跨器官任务增量实例。
+
+\begin{figure}[htbp]
+\centering
+\thesisgraphic{ch04/benchmark_overview_new.pdf}
+\caption[持续医学图像分割基准的整体构成]{持续医学图像分割基准的整体构成。左侧为域增量、类别增量和跨器官任务增量场景，中间为统一顺序训练设置，右侧为任务性能、持续学习能力与资源评价。图中的 Organ-CL 对应本文的跨器官任务增量实例。}
+\label{fig:benchmark-overview}
+\end{figure}
+
+% RESTORED_SEGMENTATION_OVERVIEW_END
+
 \subsection{问题定义与对比方法}
 \label{sec:benchmark-problem-definition}
+
+% RESTORED_SEGMENTATION_RELATED_WORK_BEGIN
+\phantomsection\label{sec:benchmark-related-work}
+已有持续学习综述分别梳理了通用方法、持续语义分割和医学影像中的应用\cite{wang2024continualsurvey,yuan2024continualseg,kumari2025medicalcl}。针对医学分割，域特定归一化、形状与语义正则化以及器官类别扩展等方法采用了不同的数据、网络和历史信息条件\cite{karani2018lifelong,zhang2023s3r,zhang2023continualorgan}。比较这些方法时，需要固定任务、测试集和资源条件，区分方法差异与实验设置差异。
+
+Lifelong nnU-Net 在前列腺、海马与心脏的域变化中比较持续分割方法，并分析任务顺序、输出头和训练时间\cite{gonzalez2023lifelong}；Gonzalez 等还比较了持续方法与独立分割器组合的收益\cite{whatwrong}。表\ref{tab:benchmark-related-work}列出这些工作与本文分割评测的覆盖范围。Lifelong nnU-Net 的任务训练后 FWT 反映新任务适应，独立模型跨域测试反映直接泛化，二者与本文 E-FWT 的计算方式不同。表中的“实验”“讨论”和“--”分别表示包含对应评价、仅作概念讨论和未列出该项内容。
+
+\begin{table}[htbp]
+\centering
+\caption{持续医学图像分割相关综述与评测基准的覆盖范围比较}
+\label{tab:benchmark-related-work}
+\thesistablefont
+\renewcommand{\arraystretch}{1.12}
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}p{2.4cm}p{2.0cm}*{2}{>{\centering\arraybackslash}p{0.8cm}}>{\centering\arraybackslash}p{1.05cm}*{5}{>{\centering\arraybackslash}p{0.8cm}}>{\centering\arraybackslash}p{1.0cm}@{}}
+\toprule
+\multirow{2}{*}{工作} & \multirow{2}{*}{类型} & \multicolumn{3}{c}{场景} & \multicolumn{5}{c}{评价维度} & \multirow{2}{1.0cm}{统一设置} \\
+\cmidrule(lr){3-5}\cmidrule(lr){6-10}
+ & & \shortstack{域\\增量} & \shortstack{类别\\增量} & \shortstack{任务\\增量} & \shortstack{稳定\\性} & \shortstack{可塑\\性} & \shortstack{前向\\泛化} & 参数 & 回放 & \\
+\midrule
+Yuan 等\cite{yuan2024continualseg} & 自然图像综述 & 讨论 & 讨论 & -- & -- & -- & -- & -- & -- & -- \\
+Kumari 等\cite{kumari2025medicalcl} & 医学影像综述 & 讨论 & 讨论 & 讨论 & -- & -- & -- & -- & -- & -- \\
+Lifelong nnU-Net\cite{gonzalez2023lifelong} & 评测框架 & 实验 & -- & -- & 实验 & 实验 & 实验 & -- & -- & 实验 \\
+Gonzalez 等\cite{whatwrong} & 基准研究 & 实验 & -- & -- & 实验 & -- & -- & -- & -- & 实验 \\
+本文分割评测 & 综合基准 & 实验 & 实验 & 实验 & 实验 & 实验 & 实验 & 实验 & 实验 & 实验 \\
+\bottomrule
+\end{tabular}%
+
+\end{table}
+
+% RESTORED_SEGMENTATION_RELATED_WORK_END
 
 设第 $t$ 阶段获得密集标注训练集 $\mathcal D_t$，图像与标签来自分布 $\mathbb D_t$：
 \begin{equation}
@@ -345,6 +388,19 @@ JointTrain & $.881\pm.010$ & -- & -- & $0$ & $0$ \\
 当前学习、历史保持和前向泛化也不总是同步改善。EWC、SI 和 Non-CL 在部分场景中具有接近或超过 1 的 RMA，却伴随较负的 BWTR；参数隔离取得零 BWTR 时，未来域 E-FWT 不一定更高。Class-CL 中 A-Dice 与 WCD 的排序差异还说明，逐任务平均性能不能替代最终统一输出的评价。因此，方法比较需要结合阶段--任务矩阵和具体资源条件。
 
 上述结论来自公开数据、预先划分的任务、固定主干与训练预算。跨中心变化、心脏结构类别扩展和跨器官任务对应不同输出语义，方法排序需要结合数据分布与训练条件解释。SAM 与 LoRA 的补充分析仅在六中心设置中考察基础分割模型的顺序适配，不代表其他基础模型和更长序列的结果。
+
+% RESTORED_SEGMENTATION_PARADIGMS_BEGIN
+\phantomsection\label{subsec:benchmark-related-paradigms}
+持续分割还可能同时面对多中心数据分散、测试分布变化和更少标注。图\ref{fig:benchmark-related-paradigms}概括持续学习与相关学习范式的联系。联邦持续学习同时处理客户端差异和任务随时间变化\cite{yang2024fclsurvey,yoon2021fedweit}；持续测试时适应利用无标签测试流更新模型\cite{wang2021tent,hu2021fullytta}；少样本、无监督与新类发现则改变训练时可用的标注或类别信息。它们与本章密集监督基准具有不同的训练条件，方法结论需要在相应设置下评价，不能直接沿用本章的排序。对于本文接下来关注的涂鸦监督，关键变化是当前任务只能在少量位置获得像素标签。
+
+\begin{figure}[htbp]
+\centering
+\thesisgraphic{ch04/plots_for_benchmark.pdf}
+\caption[持续学习与相关机器学习范式的联系]{持续学习与相关机器学习范式的联系。联邦持续学习、持续测试时适应、少样本持续学习、无监督持续学习和持续新类发现等方向，分别改变数据分布方式、标注可用性或类别开放程度。图示概括不同训练信息条件与持续学习研究的联系。}
+\label{fig:benchmark-related-paradigms}
+\end{figure}
+
+% RESTORED_SEGMENTATION_PARADIGMS_END
 
 密集监督下的直接顺序训练仍会遗忘旧任务，而仅约束历史参数又不能补足当前图像缺少的标签。下一节因此在相同域增量与类别增量数据上，用固定模拟涂鸦替代完整训练掩膜，同时研究监督增强和历史知识保持。
 
