@@ -343,25 +343,23 @@ MPE 与 DRR 不替代存储、计算和通信统计。训练预算记录轮数�
 
 分割基准将第\ref{sec:medcl-scenario-modeling}节的任务与数据配置落实为图\ref{fig:benchmark-overview}所示的评测流程。训练程序按选定顺序生成阶段模型，平台按任务输出配置计算 Dice 和阶段指标；第四章只补充网络、训练预算、比较方法与实验结果。弱监督实验保留相同病例划分和测试标注，训练标签与回放方式另行记录。
 
-\begin{figure}[H]
+\begin{figure}[!htbp]
 \centering
-\thesisgraphic{ch04/benchmark_overview_new.pdf}
+\includegraphics[width=0.90\linewidth,height=\thesisfigureheight,keepaspectratio]{ch04/benchmark_overview_new.pdf}
 \caption[MedCL 分割基准的组成与评测流程]{MedCL 分割基准的组成与评测流程。左侧为域增量、类别增量和跨器官任务增量场景，中间为平台外的顺序训练，右侧为平台组织的任务性能、持续学习能力与资源评价。图中的 Organ-CL 对应本文的跨器官任务增量实例。}
 \label{fig:benchmark-overview}
 \end{figure}
 
-第五章提交各类别阶段结束后的全局模型或分类预测，采用准确率矩阵分析新任务学习和旧任务保持。第六章提交配准模型或空间变换，分别按结构标签和对应地标形成 Dice、TRE 矩阵。三类任务共用 BWTR、RMA、MPE 和 DRR 的计算要求，分类头选择、配准坐标和任务特定可视化仍由各适配器处理。
-
-图\ref{fig:benchmark-related-paradigms}列出可能接入平台的其他学习设置。联邦持续学习增加客户端间差异\cite{yang2024fclsurvey,yoon2021fedweit}，持续测试时适应允许利用无标签测试流更新模型\cite{wang2021tent,hu2021fullytta}，少样本、无监督和新类发现则改变标注或类别信息。接入这些设置时需要重新声明可用信息、任务划分与测试方式；图示仅说明扩展方向，不表示本文已经完成相应实验。
-
-\begin{figure}[H]
+\begin{figure}[!t]
 \centering
 \thesisgraphic{ch04/plots_for_benchmark.pdf}
 \caption[持续学习与相关机器学习范式的联系]{持续学习与相关机器学习范式的联系。联邦持续学习、持续测试时适应、少样本持续学习、无监督持续学习和持续新类发现等方向，分别改变数据分布方式、标注可用性或类别开放程度。图示概括不同训练信息条件与持续学习研究的联系。}
 \label{fig:benchmark-related-paradigms}
 \end{figure}
 
-\FloatBarrier
+第五章提交各类别阶段结束后的全局模型或分类预测，采用准确率矩阵分析新任务学习和旧任务保持。第六章提交配准模型或空间变换，分别按结构标签和对应地标形成 Dice、TRE 矩阵。三类任务共用 BWTR、RMA、MPE 和 DRR 的计算要求，分类头选择、配准坐标和任务特定可视化仍由各适配器处理。
+
+图\ref{fig:benchmark-related-paradigms}列出可能接入平台的其他学习设置。联邦持续学习增加客户端间差异\cite{yang2024fclsurvey,yoon2021fedweit}，持续测试时适应允许利用无标签测试流更新模型\cite{wang2021tent,hu2021fullytta}，少样本、无监督和新类发现则改变标注或类别信息。接入这些设置时需要重新声明可用信息、任务划分与测试方式；图示仅说明扩展方向，不表示本文已经完成相应实验。
 
 \section{本章小结}
 \label{sec:benchmark-summary}
