@@ -49,23 +49,23 @@ ZS-DER & 0.4141 & -0.5875 & 0.8789 & 0.2334 & 0.0000 & 0.0317 \\
 \begin{table}[htbp]
 \centering
 \setlength{\belowcaptionskip}{5pt}
-\caption{四任务 Organ-CL 弱监督分割结果（含背景）。}
+\caption{四任务 Organ-CL 弱监督分割结果（含背景）。$^{*}$ 表示回放原始图像，NA 表示缺失。}
 \label{tab:scribblecl-organ-results}
 \linespread{1}\selectfont
 \thesistablefont
 \renewcommand{\arraystretch}{1.14}
-\setlength{\tabcolsep}{6pt}
-\begin{tabular}{lccc}
+\setlength{\tabcolsep}{2pt}
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lccccc@{}}
 \toprule
-方法 & A-Dice $\uparrow$ & BWTR $\uparrow$ & RMA $\uparrow$ \\
+方法 & A-Dice $\uparrow$ & BWTR $\uparrow$ & RMA $\uparrow$ & MPE $\downarrow$ & DRR $\downarrow$ \\
 \midrule
-Dense-Sequential & $0.5987$ & \textemdash & \textemdash \\
-PCE-Sequential & $0.6141$ & \textemdash & \textemdash \\
-ZS-Sequential & $0.5871$ & \textemdash & \textemdash \\
-ZS-EWC & $0.6039$ & \textemdash & \textemdash \\
-ZS-GPM & $0.6201$ & \textemdash & \textemdash \\
-ZS-ER & $0.7845$ & $-0.1164$ & \textemdash \\
-ZSDERpp & $0.8481$ & \textemdash & \textemdash \\
+Dense-Sequential & $0.5987$ & $-0.4719$ & $1.0757$ & $5.20\times10^{-6}$ & $0.0000$ \\
+PCE-Sequential & $0.6141$ & $-0.2895$ & $0.9234$ & $5.20\times10^{-6}$ & $0.0000$ \\
+ZS-Sequential & $0.5871$ & $-0.4052$ & $0.9820$ & $5.20\times10^{-6}$ & $0.0000$ \\
+ZS-EWC & $0.6039$ & $-0.3740$ & $0.9804$ & $5.20\times10^{-6}$ & $0.0000$ \\
+ZS-GPM & $0.6201$ & $-0.3397$ & $0.9763$ & $5.20\times10^{-6}$ & $0.0536$ \\
+ZS-ER & $0.7845$ & $-0.1164$ & $1.0073$ & $5.20\times10^{-6}$ & $0.1101^{*}$ \\
+ZSDERpp & $0.8481$ & $-0.0252$ & $1.0138$ & $5.20\times10^{-6}$ & $\mathrm{NA}^{*}$ \\
 \bottomrule
-\end{tabular}
+\end{tabular*}
 \end{table}
