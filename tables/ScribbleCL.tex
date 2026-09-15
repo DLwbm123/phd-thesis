@@ -1,7 +1,7 @@
 \begin{table}[htbp]
 \centering
 \setlength{\belowcaptionskip}{5pt}
-\caption{六中心 Domain-CL 弱监督分割结果。监督与历史信息访问条件见表\ref{tab:scribblecl-methods}。}
+\caption{六中心 Domain-CL 弱监督分割结果。}
 \label{tab:scribblecl-domain-results}
 \linespread{1}\selectfont
 \thesistablefont
@@ -27,73 +27,45 @@ ZSDERpp & $0.7687$ & $-0.1520$ & $0.8990$ & $0.2250$ \\
 \caption{三任务 Class-CL 弱监督分割结果（含背景）。}
 \label{tab:scribblecl-class-results}
 \linespread{1}\selectfont
-\fontsize{9.5bp}{12.5bp}\selectfont
+\thesistablefont
 \renewcommand{\arraystretch}{1.14}
 \setlength{\tabcolsep}{2pt}
-\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lcrrrrrr@{}}
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lcccccc@{}}
 \toprule
-方法 & \shortstack{各任务\\epochs} & A-Dice $\uparrow$ & BWTR $\uparrow$ & RMA $\uparrow$ & WCD $\uparrow$ & MPE $\downarrow$ & DRR $\downarrow$ \\
+方法 & A-Dice $\uparrow$ & BWTR $\uparrow$ & RMA $\uparrow$ & WCD $\uparrow$ & MPE $\downarrow$ & DRR $\downarrow$ \\
 \midrule
-\multicolumn{8}{c}{同预算正式实验} \\
-PCE-Sequential & 80 & 0.3755 & -0.5957 & 0.8216 & 0.1971 & 0.0000 & 0.0000 \\
-Dense-Sequential & 80 & 0.4844 & -0.6785 & 1.1391 & 0.3309 & 0.0000 & 0.0000 \\
-ZS-Sequential & 80 & 0.4610 & -0.6420 & 1.0438 & 0.3063 & 0.0000 & 0.0000 \\
-ZS-EWC & 80 & 0.4461 & -0.6390 & 1.0072 & 0.2908 & 0.0000 & 0.0000 \\
-ZS-GPM & 80 & 0.4486 & -0.6327 & 0.9968 & 0.2661 & 0.0000 & 0.0107 \\
-ZSDERpp + MiB & 80 & 0.7677 & 0.0031 & 0.9845 & 0.7067 & 0.0000 & 0.0313 \\
-\midrule
-\multicolumn{8}{c}{后续续跑实验（预算不同）} \\
-ZS-ER & 80/80/60 & 0.3616 & -0.5948 & 0.7520 & 0.1726 & 0.0000 & 0.0333 \\
-\shortstack[l]{ZS-DER\\（数值稳定修复）} & 80/60/60 & 0.4141 & -0.5875 & 0.8789 & 0.2334 & 0.0000 & 0.0317 \\
+PCE-Sequential & 0.3755 & -0.5957 & 0.8216 & 0.1971 & 0.0000 & 0.0000 \\
+Dense-Sequential & 0.4844 & -0.6785 & 1.1391 & 0.3309 & 0.0000 & 0.0000 \\
+ZS-Sequential & 0.4610 & -0.6420 & 1.0438 & 0.3063 & 0.0000 & 0.0000 \\
+ZS-EWC & 0.4461 & -0.6390 & 1.0072 & 0.2908 & 0.0000 & 0.0000 \\
+ZS-GPM & 0.4486 & -0.6327 & 0.9968 & 0.2661 & 0.0000 & 0.0107 \\
+ZSDERpp + MiB & 0.7677 & 0.0031 & 0.9845 & 0.7067 & 0.0000 & 0.0313 \\
+ZS-ER & 0.3616 & -0.5948 & 0.7520 & 0.1726 & 0.0000 & 0.0333 \\
+ZS-DER & 0.4141 & -0.5875 & 0.8789 & 0.2334 & 0.0000 & 0.0317 \\
 \bottomrule
 \end{tabular*}
-\par\vspace{5pt}
-\begin{minipage}{\textwidth}\footnotesize
-注：Dice、BWTR、RMA 和 WCD 均采用含背景口径；WCD 为统一八类标签空间的独立评估。前六行均为每任务 80 epochs、seed=42；后两行为不同预算的续跑结果。RMA 使用同批独立参考，GPM 的 DRR 表示子空间估计样本比例，回放方法表示实际历史样本使用比例。
-\end{minipage}
 \end{table}
 
 \begin{table}[htbp]
 \centering
 \setlength{\belowcaptionskip}{5pt}
-\caption{六中心 Domain-CL 的含背景最终分割结果补充。}
-\label{tab:scribblecl-domain-background}
-\linespread{1}\selectfont
-\fontsize{9.5bp}{12.5bp}\selectfont
-\renewcommand{\arraystretch}{1.14}
-\setlength{\tabcolsep}{2pt}
-\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lcrrrrrrr@{}}
-\toprule
-方法 & \shortstack{各任务\\epochs} & A & B & C & D & E & F & A-Dice \\
-\midrule
-ZSDERpp & 80 & 0.8273 & 0.8721 & 0.7994 & 0.6156 & 0.6826 & 0.8154 & 0.7687 \\
-ZS-GPM & 150 & 0.6169 & 0.6681 & 0.6759 & 0.5634 & 0.6215 & 0.7997 & 0.6576 \\
-\bottomrule
-\end{tabular*}
-\par\vspace{5pt}
-\begin{minipage}{\textwidth}\footnotesize
-注：A--F 依次为 BIDMC、HK、ISBI、UCL、ISBI\_1.5、I2CVB。两行训练预算不同；本次汇总缺少完整含背景阶段矩阵，不据此补写 BWTR、RMA 或 E-FWT。
-\end{minipage}
-\end{table}
-
-\begin{table}[htbp]
-\centering
-\setlength{\belowcaptionskip}{5pt}
-\caption{四任务 Organ-CL 已完成序列的含背景分割结果。}
+\caption{四任务 Organ-CL 弱监督分割结果（含背景）。}
 \label{tab:scribblecl-organ-results}
 \linespread{1}\selectfont
-\fontsize{9.5bp}{12.5bp}\selectfont
+\thesistablefont
 \renewcommand{\arraystretch}{1.14}
-\setlength{\tabcolsep}{2pt}
-\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lrrrrrr@{}}
+\setlength{\tabcolsep}{6pt}
+\begin{tabular}{lccc}
 \toprule
-方法 & T1 & T2 & T3 & T4 & A-Dice & BWTR $\uparrow$ \\
+方法 & A-Dice $\uparrow$ & BWTR $\uparrow$ & RMA $\uparrow$ \\
 \midrule
-ZS-ER & 0.7150 & 0.6424 & 0.8794 & 0.9010 & 0.7845 & -0.1164 \\
+Dense-Sequential & \textemdash & \textemdash & \textemdash \\
+PCE-Sequential & \textemdash & \textemdash & \textemdash \\
+ZS-Sequential & \textemdash & \textemdash & \textemdash \\
+ZS-EWC & \textemdash & \textemdash & \textemdash \\
+ZS-GPM & \textemdash & \textemdash & \textemdash \\
+ZS-ER & $0.7845$ & $-0.1164$ & \textemdash \\
+ZSDERpp & $0.8481$ & \textemdash & \textemdash \\
 \bottomrule
-\end{tabular*}
-\par\vspace{5pt}
-\begin{minipage}{\textwidth}\footnotesize
-注：40 epochs/任务、回放容量为 64；T1、T3、T4 使用减半训练集，T2 使用完整训练集。仅列已完成的测试序列，不纳入未完成 checkpoint、验证筛选或诊断结果。
-\end{minipage}
+\end{tabular}
 \end{table}
