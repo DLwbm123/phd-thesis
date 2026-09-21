@@ -1,31 +1,29 @@
 \documentclass{FDSDSthesis}
 
-% Packages used in the thesis.
 \usepackage{amsmath,amssymb,amsthm,bm}
 \usepackage[ruled,noline]{algorithm2e}
 \usepackage{threeparttable}
 \usepackage{multirow}
-\usepackage{booktabs}
+\usepackage{booktabs,longtable}
 \usepackage{array}
 \usepackage{tabularx}
 \usepackage[numbers,sort&compress]{natbib}
 \usepackage{float}
+\usepackage{placeins}
+\usepackage{caption}
 \usepackage{tikz}
 \usetikzlibrary{arrows.meta,positioning,calc}
 
-% Paths of template and thesis figures.
 \graphicspath{{fig/}{figures/}}
 
-% User macros.
 \input macros
 
 \SetKwFor{For}{for }{\textbf{do}}{\textbf{end for}}
 \SetKwFor{If}{if }{\textbf{then}}{\textbf{end if}}
 \renewcommand{\algorithmcfname}{算法}
 
-% Thesis information.
-\ctitle{面向任务持续演化与训练信息受限的医学影像持续学习研究}
-\etitle{Continual Learning for Medical Image Analysis under Evolving Tasks and Limited Training Information}
+\ctitle{训练信息受限条件下医学影像分析的持续学习}
+\etitle{Continual Learning for Medical Image Analysis with Limited Training Information}
 \author{王波民}
 \supervisor{庄吓海~教授}
 \faculty{大数据学院}
@@ -33,9 +31,9 @@
 \stuid{21110980022}
 \mail{}
 \pubdate{\today}
-\degreePoA{0} % 0: 博士 or 1: 硕士
-\degreeMoP{1} % 0: 学术 or 1: 专业
-\blindreview{0} % 0: 非盲审 or 1: 盲审
+\degreePoA{0} %
+\degreeMoP{1} %
+\blindreview{0} %
 
 \begin{document}
 
@@ -50,15 +48,21 @@
 \mainmatter
 \include{chapters/ch01_introduction}
 \include{chapters/ch02_foundations}
-\include{chapters/ch03_benchmark}
-\include{chapters/ch04_registration}
-\include{chapters/ch05_scribble}
-\include{chapters/ch06_fedsubmerge}
+\include{chapters/ch03_medcl_benchmark}
+\include{chapters/ch04_scribble}
+\include{chapters/ch05_fedsubmerge}
+\include{chapters/ch06_registration}
 \include{chapters/ch07_conclusion}
 
 \backmatter
-\bibliographystyle{bibliography/gbt7714-2025-numeric}
+\begingroup
+\setlength{\emergencystretch}{2em}
+\setlength{\bibsep}{0.5\baselineskip}
+\interlinepenalty=10000
+\raggedbottom
+\bibliographystyle{bibliography/thesis-plainnat}
 \bibliography{bibliography/references}
+\endgroup
 \include{chapters/publications}
 \include{chapters/acknowledgements}
 \cleardoublepage

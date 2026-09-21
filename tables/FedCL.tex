@@ -1,0 +1,126 @@
+\clearpage
+\begin{table}[!htbp]
+\centering
+\setlength{\belowcaptionskip}{5pt}
+\caption{分布偏斜设置下的联邦持续分类结果。BWTR 以百分数表示；$^{\ast}$ 表示使用存储或生成历史样本的回放方法；空白或破折号表示相应资源数据未报告。}
+\label{tab:fedsubmerge-main-distribution}
+\linespread{1}\selectfont
+\fontsize{9.0bp}{11.8bp}\selectfont
+\setlength{\tabcolsep}{1.3pt}
+\renewcommand{\arraystretch}{1.07}
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lrrrrrrrr@{}}
+\toprule
+\multicolumn{9}{c}{（a）PathMNIST} \\
+ & \multicolumn{4}{c}{$\alpha=0.3$} & \multicolumn{4}{c}{$\alpha=0.1$} \\
+\cmidrule(lr){2-5}\cmidrule(lr){6-9}
+方法 & \shortstack{ACC\\(\%) $\uparrow$} & \shortstack{BWTR\\(\%) $\uparrow$} & \shortstack{MPE\\$\downarrow$} & \shortstack{DRR\\$\downarrow$} & \shortstack{ACC\\(\%) $\uparrow$} & \shortstack{BWTR\\(\%) $\uparrow$} & \shortstack{MPE\\$\downarrow$} & \shortstack{DRR\\$\downarrow$} \\
+\midrule
+FedAvg & 67.23 & -29.71 & 0.0000 & 0.0000 & 57.35 & -42.01 & 0.0000 & 0.0000 \\
+FedProx & 68.51 & -24.07 &  &  & 58.45 & -40.40 &  &  \\
+SCAFFOLD & 73.48 & -24.32 &  &  & 59.95 & -38.58 &  &  \\
+Fed-EWC & 76.26 & -19.80 &  &  & 64.38 & -31.36 &  &  \\
+Fed-SI & 77.22 & -20.65 &  &  & 65.17 & -31.79 &  &  \\
+Fed-GPM & 81.40 & -14.94 & 0.0000 & 0.0049 & 69.06 & -23.60 & 0.0000 & 0.0039 \\
+Fed-DER$^{\ast}$ & 81.70 & -14.24 & 0.0000 & 0.0749 & 72.85 & -21.28 &  &  \\
+GLFC$^{\ast}$ & 84.05 & -13.92 &  &  & 75.30 & -20.08 &  &  \\
+TARGET$^{\ast}$ & 84.75 & -8.25 & 0.0000 & \textemdash & 76.40 & -17.95 &  &  \\
+FOT & 86.20 & -6.93 & 0.0000 & 1.0000 & 74.85 & -18.82 &  &  \\
+Re-Fed$^{\ast}$ & 87.13 & -5.83 &  &  & 80.72 & -16.70 &  &  \\
+DDDR$^{\ast}$ & 88.93 & -4.36 &  &  & 77.30 & -16.81 &  &  \\
+\midrule
+FedSubMerge & 90.97 & -0.94 & 0.0000 & 0.1169 & 77.50 & -16.21 & 0.0000 & 0.0956 \\
+FedSubMerge-AD & 93.42 & -3.51 & 0.0000 & 0.1169 & 79.40 & -18.31 & 0.0000 & 0.0956 \\
+\bottomrule
+\end{tabular*}
+\par\vspace{8pt}
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lrrrrrrrr@{}}
+\toprule
+\multicolumn{9}{c}{（b）Hyper-Kvasir} \\
+ & \multicolumn{4}{c}{$\alpha=0.3$} & \multicolumn{4}{c}{$\alpha=0.1$} \\
+\cmidrule(lr){2-5}\cmidrule(lr){6-9}
+方法 & \shortstack{ACC\\(\%) $\uparrow$} & \shortstack{BWTR\\(\%) $\uparrow$} & \shortstack{MPE\\$\downarrow$} & \shortstack{DRR\\$\downarrow$} & \shortstack{ACC\\(\%) $\uparrow$} & \shortstack{BWTR\\(\%) $\uparrow$} & \shortstack{MPE\\$\downarrow$} & \shortstack{DRR\\$\downarrow$} \\
+\midrule
+FedAvg & 47.58 & -39.60 & 0.0000 & 0.0000 & 42.45 & -45.84 & 0.0000 & 0.0000 \\
+FedProx & 63.44 & -22.18 &  &  & 55.87 & -35.29 &  &  \\
+SCAFFOLD & 63.82 & -20.77 &  &  & 62.08 & -25.16 &  &  \\
+Fed-EWC & 64.46 & -21.93 &  &  & 75.03 & -13.81 &  &  \\
+Fed-SI & 63.58 & -22.69 &  &  & 71.89 & -18.18 &  &  \\
+Fed-GPM & 66.76 & -19.67 & 0.0000 & 0.2393 & 64.22 & -21.00 & 0.0000 & 0.1735 \\
+Fed-DER$^{\ast}$ & 69.64 & -17.38 & 0.0000 & 0.4473 & 66.01 & -23.19 &  &  \\
+GLFC$^{\ast}$ & 72.16 & -15.42 &  &  & 66.59 & -25.11 &  &  \\
+TARGET$^{\ast}$ & 71.02 & -16.82 & 0.0000 & \textemdash & 67.10 & -21.81 &  &  \\
+FOT & 70.03 & -14.09 & 0.0000 & 1.0000 & 74.20 & -17.56 &  &  \\
+Re-Fed$^{\ast}$ & 73.96 & -15.29 &  &  & 73.79 & -15.09 &  &  \\
+DDDR$^{\ast}$ & 75.27 & -14.09 &  &  & 77.24 & -11.91 &  &  \\
+\midrule
+FedSubMerge & 78.64 & -7.75 & 0.0000 & 0.9477 & 76.64 & -12.25 & 0.0000 & 0.8638 \\
+FedSubMerge-AD & 78.12 & -12.45 & 0.0000 & 0.9477 & 76.16 & -14.85 & 0.0000 & 0.8638 \\
+\bottomrule
+\end{tabular*}
+\end{table}
+
+\begin{table}[!htbp]
+\centering
+\setlength{\belowcaptionskip}{5pt}
+\caption{标签数量偏斜设置下的联邦持续分类结果。BWTR 以百分数表示；$^{\ast}$ 表示使用存储或生成历史样本的回放方法；空白或破折号表示相应资源数据未报告。}
+\label{tab:fedsubmerge-main-other}
+\linespread{1}\selectfont
+\fontsize{9.0bp}{11.8bp}\selectfont
+\setlength{\tabcolsep}{1.3pt}
+\renewcommand{\arraystretch}{1.10}
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lrrrrrrrr@{}}
+\toprule
+ & \multicolumn{4}{c}{OrganAMNIST} & \multicolumn{4}{c}{Hyper-Kvasir} \\
+\cmidrule(lr){2-5}\cmidrule(lr){6-9}
+方法 & \shortstack{ACC\\(\%) $\uparrow$} & \shortstack{BWTR\\(\%) $\uparrow$} & \shortstack{MPE\\$\downarrow$} & \shortstack{DRR\\$\downarrow$} & \shortstack{ACC\\(\%) $\uparrow$} & \shortstack{BWTR\\(\%) $\uparrow$} & \shortstack{MPE\\$\downarrow$} & \shortstack{DRR\\$\downarrow$} \\
+\midrule
+FedAvg & 40.20 & -64.70 &  &  & 48.15 & -46.51 & 0.0000 & 0.0000 \\
+FedProx & 41.33 & -61.76 &  &  & 46.40 & -49.79 &  &  \\
+SCAFFOLD & 46.29 & -51.41 &  &  & 51.14 & -40.68 &  &  \\
+Fed-EWC & 52.59 & -42.68 &  &  & 53.15 & -37.72 &  &  \\
+Fed-SI & 48.35 & -46.15 &  &  & 45.08 & -43.93 &  &  \\
+Fed-GPM & 61.20 & -29.47 &  &  & 61.52 & -24.98 & 0.0000 & 0.0868 \\
+Fed-DER$^{\ast}$ & 62.57 & -24.88 &  &  & 61.18 & -24.72 &  &  \\
+GLFC$^{\ast}$ & 64.10 & -23.10 &  &  & 63.06 & -21.04 &  &  \\
+TARGET$^{\ast}$ & 65.20 & -21.99 &  &  & 67.24 & -11.12 &  &  \\
+FOT & 66.85 & -19.74 &  &  & 66.57 & -6.45 &  &  \\
+Re-Fed$^{\ast}$ & 68.20 & -17.89 &  &  & 69.38 & -1.76 &  &  \\
+DDDR$^{\ast}$ & 69.35 & -15.34 &  &  & 68.94 & -3.24 &  &  \\
+\midrule
+FedSubMerge & 70.17 & -18.34 &  &  & 70.76 & 0.10 & 0.0000 & 1.0000 \\
+FedSubMerge-AD & 74.42 & -18.72 &  &  & 70.97 & -2.04 & 0.0000 & 1.0000 \\
+\bottomrule
+\end{tabular*}
+\end{table}
+
+\begin{table}[!htbp]
+\centering
+\setlength{\belowcaptionskip}{5pt}
+\caption{多来源皮肤病变特征偏斜设置下的联邦持续分类结果。BWTR 以百分数表示；$^{\ast}$ 表示使用存储或生成历史样本的回放方法；空白或破折号表示相应资源数据未报告。}
+\label{tab:fedsubmerge-main-feature}
+\linespread{1}\selectfont
+\fontsize{9.0bp}{11.8bp}\selectfont
+\setlength{\tabcolsep}{1.3pt}
+\renewcommand{\arraystretch}{1.10}
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lrrrr@{}}
+\toprule
+方法 & \shortstack{ACC\\(\%) $\uparrow$} & \shortstack{BWTR\\(\%) $\uparrow$} & \shortstack{MPE\\$\downarrow$} & \shortstack{DRR\\$\downarrow$} \\
+\midrule
+FedAvg & 64.45 & -26.38 & 0.0000 & 0.0000 \\
+FedProx & 67.90 & -21.94 &  &  \\
+SCAFFOLD & 72.33 & -18.03 &  &  \\
+Fed-EWC & 73.18 & -17.66 &  &  \\
+Fed-SI & 77.72 & -17.23 &  &  \\
+Fed-GPM & 82.76 & -9.52 & 0.0000 & 0.0096 \\
+Fed-DER$^{\ast}$ & 78.86 & -14.18 &  &  \\
+GLFC$^{\ast}$ & 79.45 & -9.21 &  &  \\
+TARGET$^{\ast}$ & 80.15 & -6.45 &  &  \\
+FOT & 80.80 & -8.91 &  &  \\
+Re-Fed$^{\ast}$ & 84.21 & -7.02 &  &  \\
+DDDR$^{\ast}$ & 84.43 & -6.73 &  &  \\
+\midrule
+FedSubMerge & 85.53 & -5.10 & 0.0000 & 0.2485 \\
+FedSubMerge-AD & 85.75 & -5.83 & 0.0000 & 0.2485 \\
+\bottomrule
+\end{tabular*}
+\end{table}

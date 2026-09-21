@@ -1,0 +1,18 @@
+\begingroup
+\begin{tikzpicture}[
+ font=\thesisfigurefont,
+ box/.style={draw=black!50,rounded corners=2pt,align=center,inner sep=5pt,line width=.6pt},
+ wide/.style={box,text width=12.8cm,minimum height=.9cm,fill=blue!3},
+ card/.style={box,text width=3.95cm,minimum height=1.25cm},
+ flow/.style={-{Latex[length=2mm]},draw=black!55,line width=.65pt},node distance=5mm]
+\node[wide] (nav) {\textbf{MedCL}\quad 首页\quad 任务中心\quad 评测记录\quad 方法比较};
+\node[card,below=7mm of nav] (seg) {\textbf{分割}\par 全监督示例\quad 弱监督示例};
+\node[card,left=3mm of seg] (cls) {\textbf{分类}\par 分类示例};
+\node[card,right=3mm of seg] (reg) {\textbf{配准}\par 配准示例};
+\node[wide,below=6mm of seg,fill=green!3] (gallery) {\textbf{独立示例浏览}\quad 选择数据集、场景与任务\quad 查看图像及标注};
+\node[wide,below=of gallery] (run) {\textbf{开始评测}\quad 选择基准与阶段\quad 提交模型或预测\quad 查看评分与报告};
+\draw[flow] (cls.south) -- (gallery.north -| cls.south);
+\draw[flow] (seg) -- (gallery);
+\draw[flow] (reg.south) -- (gallery.north -| reg.south);
+\end{tikzpicture}
+\endgroup
