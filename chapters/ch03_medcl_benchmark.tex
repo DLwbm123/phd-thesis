@@ -9,7 +9,7 @@
 
 持续学习的评价需要同时记录模型所处的阶段和接受测试的任务。最终平均性能说明模型在序列结束后的整体表现，阶段结果则用于分析新任务学习和旧任务保持。医学影像分割、分类与配准具有不同的输出形式，联邦设置还涉及客户端之间的数据差异。将这些结果放在一起分析时，首先需要明确任务身份、测试数据、输出含义和汇总方式。
 
-本章介绍 MedCL 医学影像持续学习评测平台。平台以中文网页组织任务选择、阶段配置、文件提交、评分记录和病例查看，通过任务适配器处理分割标签、分类结果与配准对应点。模型训练在平台外进行，用户提交阶段权重或预测文件，平台负责在固定测试条件下评分并保存结果。平台实现代码见项目仓库\footnote{MedCL 项目仓库：\url{https://github.com/DLwbm123/medcl}。本章实现说明依据提交 \texttt{676430c} 的程序与文档。}。
+本章介绍 MedCL 医学影像持续学习评测平台。平台以中文网页组织任务选择、阶段配置、文件提交、评分记录和病例查看，通过任务适配器处理分割标签、分类结果与配准对应点。模型训练在平台外进行，用户提交阶段权重或预测文件，平台负责在固定测试条件下评分并保存结果。平台实现代码见项目仓库\footnote{MedCL 项目仓库：\url{https://github.com/DLwbm123/medcl}，代码版本为 \texttt{676430c}。}。
 
 本章说明全局平台的数据组织、功能实现与共同评价指标。分割实验所用的数据划分与任务配置作为统一配置的一部分在本章列出；分割基准的整体流程、方法比较和实验分析在第四章展开。第五章和第六章分别沿用共同的阶段记录方式分析联邦持续分类与持续配准，各任务的网络、训练参数和结果均在相应章节说明。
 
@@ -86,7 +86,7 @@ MedCL 的设计围绕结果是否能够正确对应和比较展开。首先，�
 \addlinespace
 类别增量分割 & MMWHS 心脏 CT & 三阶段：LV/LA/MYO $\rightarrow$ RV/RA $\rightarrow$ AA/PA & 共享八通道头；第四章密集与涂鸦监督 \\
 \addlinespace
-跨器官分割 & LAScarQS、PROMISE12 中心 D、LiTS、FeTS 2021 & 左心房 LGE MRI $\rightarrow$ 前列腺 MRI $\rightarrow$ 肝 CT $\rightarrow$ 脑肿瘤 FLAIR MRI & 每任务二通道头；第四章密集监督 \\
+跨器官分割 & LAScarQS、PROMISE12 中心 D、LiTS、FeTS 2021 & 左心房 LGE MRI $\rightarrow$ 前列腺 MRI $\rightarrow$ 肝 CT $\rightarrow$ 脑肿瘤 FLAIR MRI & 每任务二通道头；第四章密集与涂鸦监督 \\
 \addlinespace
 联邦持续分类 & PathMNIST、OrganAMNIST、Hyper-Kvasir、四来源皮肤病变 & 类别批次顺序到达；固定客户端划分 & 任务特定分类头；第五章无原始样本回放 \\
 \addlinespace
@@ -97,7 +97,7 @@ MedCL 的设计围绕结果是否能够正确对应和比较展开。首先，�
 
 分割任务按病例划分为 60\% 训练、15\% 验证和 25\% 测试，各方法共享划分。前列腺中心 C 先裁剪并空间对齐，六中心轴位切片统一为 $256\times256$，按非零体素归一化\cite{dataset_prostate2,dataset_prostate,dataset_prostate3,dataset_domaincl}。心脏 CT 重采样至 $0.78\times0.78$ mm 平面分辨率，平均层厚为 1.60 mm，再调整为 $256\times256$\cite{care25ASA1,discussion_inter_seg3,care25ASA2}。跨器官图像采用零均值、单位方差归一化，切片同样为 $256\times256$\cite{dataset_lascars,dataset_lascars2,dataset_taskcl,dataset_taskcl2}。
 
-心脏三阶段依次引入左心室/左心房/心肌、右心室/右心房和升主动脉/肺动脉；阶段内不可访问的类别按背景规则处理，最终在统一标签空间评分。跨器官任务保留 Organ-CL 标识，测试时已知任务身份，二值前景编码分别表示对应器官或病灶。弱监督分割沿用前两类序列，只替换训练标签，密集验证与测试标注不变；涂鸦生成与方法训练见第四章。
+心脏三阶段依次引入左心室/左心房/心肌、右心室/右心房和升主动脉/肺动脉；阶段内不可访问的类别按背景规则处理，最终在统一标签空间评分。跨器官任务保留 Organ-CL 标识，测试时已知任务身份，二值前景编码分别表示对应器官或病灶。弱监督分割沿用上述三类序列，只替换训练标签，密集验证与测试标注不变；涂鸦生成与方法训练见第四章。
 
 分类与配准保留各自的数据划分，具体设置见第\ref{subsec:fedsubmerge-experimental-setup}节和第\ref{subsubsec:samcl-materials}节。各阶段复用相同测试清单，分割切片按病例归组，分类按数据提供的样本单位记录，配准按图像对记录。客户端测试分组另行保存，不用分割的划分比例替代其他任务设置。
 
@@ -174,7 +174,7 @@ R^{(m)}_{t,j}=\operatorname{Eval}_m\!\left(f^{(t)},\mathcal D^{\mathrm{test}}_j\
 \subsection{持续学习能力指标}
 \label{sec:benchmark-metrics}
 
-本节保留全文共用的能力指标定义，并说明它们与网页评分的对应关系。以下按实际到达顺序排列任务，令 $r^{(m)}_{t,i}=R^{(m)}_{t,\pi(i)}$，因此 $r^{(m)}_{i,i}$ 是任务初学表现。对 Dice 或准确率这类越高越好的指标，后向迁移率（backward transfer rate，BWTR）定义为
+本节定义全文共用的持续学习能力指标，并说明它们与网页评分的对应关系。以下按实际到达顺序排列任务，令 $r^{(m)}_{t,i}=R^{(m)}_{t,\pi(i)}$，因此 $r^{(m)}_{i,i}$ 是任务初学表现。对 Dice 或准确率这类越高越好的指标，后向迁移率（backward transfer rate，BWTR）定义为
 \begin{equation}
 \mathrm{BWTR}^{(m)}
 =
@@ -283,7 +283,6 @@ MPE 与 DRR 不替代存储、计算和通信统计。训练预算记录轮数�
 
 网页由首页、任务中心、评测记录和方法比较四个入口组成。首页将分割、分类和配准并列为任务卡，用户可以开始一次评测，也可以直接打开分类、全监督分割、弱监督分割或配准示例。最近评测列表与具体作业关联，点击后进入对应记录。首页中的阶段矩阵与影像缩略图用于介绍功能，实际分数在评测记录中查看。
 
-% CODEX_SCREENSHOT_HOME: figures/ch03/screenshots/medcl_homepage.png
 
 图\ref{fig:medcl-homepage-ui}展示平台首页及三类任务的示例入口。
 \begin{figure}[htbp]
@@ -304,20 +303,17 @@ MPE 与 DRR 不替代存储、计算和通信统计。训练预算记录轮数�
 \label{fig:medcl-workflow-design}
 \end{figure}
 
-% CODEX_SCREENSHOT_SUBMISSION: figures/ch03/screenshots/medcl_submission.png
 
 \subsection{持续学习与任务特定可视化}
 \label{subsec:medcl-visualization}
 
 持续学习结果以阶段--任务矩阵呈现，行对应模型阶段，列对应测试任务。用户沿同一列查看一个任务在后续学习中的表现，也可以选择阶段比较不同任务。客户端视图在相同阶段展开固定测试分组，辅助判断总体分数与客户端差异是否一致。方法比较按相容的评测配置筛选记录，保留各指标的方向和单位。
 
-% CODEX_SCREENSHOT_RESULTS: figures/ch03/screenshots/medcl_evaluation_results.png
 
 分割查看器提供三个正交切面和一个三维视口。切面叠加整数标签图，用户可调节透明度、选择标签、移动切片并调整视野。三维视口根据各非零标签分别提取表面，与切面使用一致颜色；旋转和缩放用于查看目标形状及其空间关系，三维不透明度独立控制表面材质。三维结构来自标签图，而非原始影像的灰度体绘制，显示过程保留标签内容，不额外平滑或补全结构。
 
 全监督分割示例按场景与任务切换病例，类别增量示例保留各阶段的全局标签编码，并提供七类心脏结构的完整示例。示例使用独立病例的已有标注，目的是展示数据和查看操作；评测记录中的病例预览则读取提交预测，二者具有不同来源。切换任务或病例时重新建立查看器，避免上一病例的图层混入新视图。
 
-% CODEX_SCREENSHOT_SEGMENTATION: figures/ch03/screenshots/medcl_segmentation_example.png
 
 图\ref{fig:medcl-segmentation-example-ui}以子图展示任务设置、三个正交切面与七类心脏结构的三维分割视图。
 \begin{figure}[htbp]
@@ -339,7 +335,6 @@ MPE 与 DRR 不替代存储、计算和通信统计。训练预算记录轮数�
 
 弱监督示例在影像和完整标签之外，显示同一病例的原始稀疏涂鸦。通过切片位置、标签筛选和叠加透明度，可以对照局部监督的位置与解剖结构。未标注位置与背景标签分别编码，防止显示时将没有监督的区域当作背景。示例浏览不生成模型评分，第四章的弱监督性能由固定密集测试标注评价。
 
-% CODEX_SCREENSHOT_WEAK: figures/ch03/screenshots/medcl_weak_segmentation_example.png
 
 图\ref{fig:medcl-weak-example-ui}展示域增量场景下的任务与切片设置，以及原始影像、稀疏涂鸦和分割叠加的对照。
 \begin{figure}[htbp]

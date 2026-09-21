@@ -5,7 +5,7 @@
 \section{引言}
 \label{sec:fedsubmerge-introduction}
 
-第四章通过有限图像--涂鸦回放保留旧任务能力。本章转向另一种训练条件：医学分类数据分布在多个客户端，类别按批次到达，后续阶段不能回放历史原始样本。评价仍沿用第三章 MedCL 的阶段矩阵，但以任务准确率代替分割 Dice，用 ACC、BWTR 和 RMA 分别分析最终表现、历史保持与当前学习，并结合 MPE、DRR 及通信记录说明资源开销。
+第四章通过有限图像--涂鸦回放保留旧任务能力。本章转向另一种训练条件：医学分类数据分布在多个客户端，类别按批次到达，后续阶段不能回放历史原始样本。评价仍沿用第三章 MedCL 的阶段矩阵，但以任务准确率代替分割 Dice，用 ACC 与 BWTR 分析最终表现和历史保持，用任务矩阵的对角条目观察初学表现，并结合 MPE、DRR 及通信记录分析资源开销。
 
 本章将每批新增类别组织为一个任务，对应第三章任务身份已知的多头分类设置。测试时，模型使用样本所属任务的分类头，候选类别限于对应类别批次。类别批次沿时间扩展，客户端之间同时存在类别比例、类别覆盖和图像来源差异，因而评价需要同时关注新任务学习、旧任务保持与联邦异质性。
 
@@ -15,7 +15,7 @@
 
 常规联邦轮次仍交换完整模型，额外的子空间基与奇异值在阶段结束后上传和返回。本章的无回放指不再读取历史原始样本，保留的模型参数和子空间摘要仍参与后续学习。
 
-本章先说明研究动机与问题建模，再介绍 FedSubMerge、FedSubMerge-AD 及其局部理论分析。实验涵盖七个联邦设置，主比较使用 ACC、BWTR 和 RMA，并通过异质性、参与率和消融实验分析方法表现。最后结合 MedCL 的记录方式讨论阶段全局模型、客户端分布与资源开销。
+本章先说明研究动机与问题建模，再介绍 FedSubMerge、FedSubMerge-AD 及其局部理论分析。实验涵盖七个联邦设置，主比较报告 ACC、BWTR、MPE 和 DRR，并通过异质性、参与率和消融实验分析方法表现。最后结合 MedCL 的记录方式讨论阶段全局模型、客户端分布与资源开销。
 
 \section{方法动机与问题建模}
 \subsection{方法动机}
@@ -567,7 +567,7 @@ FedSubMerge-AD 的相关客户端数在每个设置的全局验证集上一次�
 \end{equation}
 ACC 衡量最终模型在各已见任务上的平均准确率；BWT 表示旧任务准确率从初学完成到最终阶段的平均绝对变化。ACC 以百分数报告，BWT 以百分点报告，二者均越高越好。异质性、客户端规模和设计消融采用 ACC 与 BWT 观察具体设置下的变化。
 
-为与第三章 MedCL 的综合评价衔接，主比较进一步使用 BWTR 和 RMA。令 $a_{\tau}^{NC}$ 表示任务 $\tau$ 独立训练参照的准确率，在式\eqref{eq:benchmark-bwtr}和式\eqref{eq:benchmark-rma}中以准确率作为任务指标，得到
+第三章 MedCL 的 BWTR 与 RMA 分别评价历史保持与当前任务学习。在分类任务中，二者以准确率作为基础指标。令 $a_{\tau}^{NC}$ 表示任务 $\tau$ 独立训练参照的准确率，在式\eqref{eq:benchmark-bwtr}和式\eqref{eq:benchmark-rma}中以准确率作为任务指标，得到
 \begin{equation}
 \mathrm{BWTR}
 =
@@ -580,35 +580,39 @@ ACC 衡量最终模型在各已见任务上的平均准确率；BWT 表示旧任
 \frac{a_{\tau,\tau}}{a_{\tau}^{NC}}.
 \label{eq:fedsubmerge-bwtr-rma}
 \end{equation}
-BWTR 衡量旧任务相对于初学性能的变化，RMA 衡量顺序约束下新任务的初学表现相对于独立训练参照的水平，两者均越高越好。MPE 与 DRR 分别沿用式\eqref{eq:benchmark-mpe}和式\eqref{eq:benchmark-drr}，记录模型参数扩展和历史信息构建、复用所涉及的数据比例。FedSubMerge 以梯度子空间摘要保留历史信息，后续阶段通过摘要约束更新。
+BWTR 衡量旧任务相对于初学性能的变化，RMA 衡量顺序约束下新任务的初学表现相对于独立训练参照的水平，两者均越高越好。本章主结果表中的 BWTR 以百分数表示，即将式\eqref{eq:fedsubmerge-bwtr-rma}的比值乘以 $100\%$；其百分数显示与异质性、参与率和消融表中以准确率百分点表示的 BWT 不同。本章以 ACC 与 BWTR 进行总体性能比较，任务初学表现通过准确率矩阵的对角条目分析。MPE 与 DRR 分别沿用式\eqref{eq:benchmark-mpe}和式\eqref{eq:benchmark-drr}，记录模型参数扩展和历史信息构建、复用所涉及的数据比例。FedSubMerge 以梯度子空间摘要保留历史信息，后续阶段通过摘要约束更新。
 
 \subsection{总体性能}
 \label{subsec:fedsubmerge-main-results}
 
-表\ref{tab:fedsubmerge-main-distribution}报告 PathMNIST 和 Hyper-Kvasir 的分布偏斜结果，表\ref{tab:fedsubmerge-main-other}报告标签数量偏斜结果，表\ref{tab:fedsubmerge-main-feature}报告多来源皮肤病变特征偏斜结果。三表覆盖七个联邦设置，以 ACC 评价最终分类性能，并通过 MedCL 的 BWTR 和 RMA 分析历史保持与当前学习；模型扩展及历史信息使用则结合 MPE、DRR 和训练配置在下文分析。
+表\ref{tab:fedsubmerge-main-distribution}报告 PathMNIST 和 Hyper-Kvasir 的分布偏斜结果，表\ref{tab:fedsubmerge-main-other}报告标签数量偏斜结果，表\ref{tab:fedsubmerge-main-feature}报告多来源皮肤病变特征偏斜结果。三表覆盖七个联邦设置，以 ACC 评价最终分类性能，以 MedCL 的 BWTR 评价历史保持，同时列示 MPE 与 DRR。空白或破折号表示相应资源记录缺失，不视为零值；当前任务学习结合任务准确率矩阵另行分析。
 
 \input{tables/FedCL}
 
-在七个设置中，FedSubMerge 或 FedSubMerge-AD 均取得无回放方法中的最高 ACC。与各设置中最强的无回放比较方法相比，两种方法中较高的 ACC 提升为 1.61--8.61 个百分点。纳入回放方法后，所提方法在五个设置中取得最高 ACC，在 PathMNIST $\alpha=0.1$ 和 Hyper-Kvasir $\alpha=0.1$ 中位于第二。这表明跨客户端梯度子空间融合在不重新使用历史原始样本的条件下仍能获得较高的最终平均准确率。
+在七个设置中，FedSubMerge 或 FedSubMerge-AD 均取得无原始样本回放方法中的最高 ACC。与各设置中最强的无回放比较方法相比，两种方法中较高的 ACC 提升为 $1.61$--$8.61$ 个百分点。纳入回放方法后，所提方法在五个设置中取得最高 ACC；PathMNIST $\alpha=0.1$ 下，FedSubMerge-AD 的 $79.40\%$ 低于 Re-Fed 的 $80.72\%$；Hyper-Kvasir $\alpha=0.1$ 下，FedSubMerge 的 $76.64\%$ 低于 DDDR 的 $77.24\%$。所提方法在这两个设置中取得第二高 ACC。
 
-FedSubMerge-AD 在七个设置中的五个取得高于 FedSubMerge 的 ACC。PathMNIST $\alpha=0.3$ 上，两者分别为 $93.42\%$ 和 $90.97\%$；在 OrganAMNIST 标签数量偏斜和皮肤病变特征偏斜设置上，FedSubMerge-AD 分别达到 $74.42\%$ 和 $85.75\%$。Hyper-Kvasir 的两个分布偏斜设置中，统一融合的 ACC 更高，说明客户端选择的收益与具体数据分布有关。
+FedSubMerge-AD 在七个设置中的五个取得高于 FedSubMerge 的 ACC，但统一融合的 BWTR 在七个设置中均更高。在所比较的无原始样本回放方法中，FedSubMerge 在七个设置中均取得最高 BWTR；纳入回放方法后，其 BWTR 在五个设置中仍为最高，Hyper-Kvasir $\alpha=0.1$ 和 OrganAMNIST 标签数量偏斜中的最高值则由 DDDR 取得。这说明自适应融合较常获得更高最终准确率，统一融合则具有更充分的平均相对历史保持，两者在最终性能与历史保持之间呈现不同取舍。
 
-从历史保持与当前任务学习看，PathMNIST $\alpha=0.3$ 上，FedSubMerge-AD 的 BWTR 为 $-0.2288$，高于 FedSubMerge 的 $-0.2818$；其 RMA 为 $0.9886$，略低于统一融合的 $1.0017$。相较 FedAvg 的 BWTR $-0.4086$ 和 FOT 的 $-0.6127$，两种子空间融合方法均具有更小的平均相对下降。Fed-DER 的 BWTR 为 $-0.0489$，其 ACC 为 $81.70\%$，表明较小的历史相对下降与较高的最终分类准确率反映不同方面的能力。
+PathMNIST $\alpha=0.3$ 下，FedSubMerge 与 FedSubMerge-AD 的 ACC 分别为 $90.97\%$ 和 $93.42\%$，BWTR 分别为 $-0.94\%$ 和 $-3.51\%$。自适应融合的 ACC 高 $2.45$ 个百分点，统一融合的 BWTR 高 $2.57$ 个百分点。与 FOT 的 $86.20\%$ ACC 和 $-6.93\%$ BWTR 相比，两种融合方式均改善了最终性能与历史保持；Fed-DER 的 ACC 为 $81.70\%$、BWTR 为 $-14.24\%$，并不具有更小的相对历史下降。异质性增强至 $\alpha=0.1$ 后，两种方法的 ACC 分别降至 $77.50\%$ 和 $79.40\%$，BWTR 分别为 $-16.21\%$ 和 $-18.31\%$，历史退化明显加重。
 
-Hyper-Kvasir $\alpha=0.3$ 上，FedSubMerge 的 ACC、BWTR 和 RMA 分别为 $78.64\%$、$-0.1997$ 和 $0.9982$，均高于 FedSubMerge-AD 的 $78.12\%$、$-0.2079$ 和 $0.9888$。与 FOT 相比，统一融合的 ACC 提高 $8.61$ 个百分点，BWTR 提高 $0.0915$。TARGET 的 BWTR 为 $-0.1136$，但其 RMA 为 $0.8769$、ACC 为 $71.02\%$。结合当前学习与历史保持，可以更完整地解释不同方法的最终性能。
+Hyper-Kvasir $\alpha=0.3$ 下，FedSubMerge 的 ACC 和 BWTR 分别为 $78.64\%$ 和 $-7.75\%$，均高于 FedSubMerge-AD 的 $78.12\%$ 和 $-12.45\%$。与 FOT 相比，统一融合的 ACC 和 BWTR 分别提高 $8.61$ 和 $6.34$ 个百分点；与 ACC 最高的回放基线 DDDR 相比，ACC 提高 $3.37$ 个百分点。$\alpha=0.1$ 下，统一融合仍优于自适应融合，但其 ACC 和 BWTR 分别低于 DDDR $0.60$ 和 $0.34$ 个百分点。这些结果说明，相关客户端选择在 Hyper-Kvasir 的两个分布偏斜设置中没有优于统一融合。
 
-在模型资源方面，两个 $\alpha=0.3$ 设置中，FedAvg、Fed-GPM、FOT、FedSubMerge 和 FedSubMerge-AD 的 MPE 均为 0；PathMNIST 中的 Fed-DER 和 Hyper-Kvasir 中的 TARGET 的 MPE 也均为 0。这些方法在相应设置中的性能变化不依赖模型参数扩展。
+标签数量偏斜下，OrganAMNIST 上 FedSubMerge-AD 的 ACC 为 $74.42\%$，比 FedSubMerge 的 $70.17\%$ 高 $4.25$ 个百分点，也高于 DDDR 的 $69.35\%$。但二者的 BWTR 分别为 $-18.72\%$ 和 $-18.34\%$，均低于 DDDR 的 $-15.34\%$，说明较高最终 ACC 不等于较小相对遗忘。Hyper-Kvasir 上，自适应与统一融合的 ACC 分别为 $70.97\%$ 和 $70.76\%$；统一融合的 BWTR 为 $0.10\%$，高于自适应融合的 $-2.04\%$。这一接近零的正值表示旧任务平均相对表现略有改善，不能推断每个旧任务都没有性能下降。
 
-历史信息使用方面，PathMNIST $\alpha=0.3$ 设置中，FedAvg 的 DRR 为 0，Fed-GPM、Fed-DER 和 FOT 分别为 $0.0049$、$0.0749$ 和 $1.0000$，FedSubMerge 与 FedSubMerge-AD 均为 $0.1169$。Hyper-Kvasir $\alpha=0.3$ 设置中，FedAvg 的 DRR 为 0，Fed-GPM 和 FOT 分别为 $0.2393$ 和 $1.0000$，FedSubMerge 与 FedSubMerge-AD 均为 $0.9477$。两种融合方式在同一数据设置下具有相同 DRR，且均低于 FOT；它们的差别主要体现在服务器对客户端历史方向的选择与融合。
+多来源皮肤病变特征偏斜下，FedSubMerge 与 FedSubMerge-AD 的 ACC 分别为 $85.53\%$ 和 $85.75\%$，均高于回放基线中的最高值 DDDR 的 $84.43\%$。二者的 BWTR 分别为 $-5.10\%$ 和 $-5.83\%$，也均高于表中其他方法。这一设置再次体现自适应融合在最终 ACC 上略高、统一融合在平均相对历史保持上更好的取舍。
 
-标签数量偏斜与多来源皮肤病变设置同样通过主梯度子空间摘要约束后续更新，FedSubMerge 及其自适应版本不保存历史原始图像用于回放。按照第三章的定义，DRR 同时计入构造历史表示所使用的数据，因此子空间方法的历史信息使用还需结合摘要存储和传输分析。逐层子空间的字节量、SVD 计算及通信量在后续开销分析中进一步讨论。
+资源方面，三张主表中给出的 MPE 值均为 $0.0000$，表明相应配置不依赖模型参数扩展。OrganAMNIST 及部分基线的资源项缺失，因此资源比较仅覆盖有记录的配置。
 
-综合各设置，ACC 较高不一定意味着 BWTR 或 RMA 也最高。分析最终分类表现时，需要同时看旧任务下降、当前任务学习及所使用的历史信息。病理、腹部 CT、内镜和皮肤病变数据按表\ref{tab:fedsubmerge-setup}组织类别批次，所有结果均在测试任务身份已知的条件下获得。
+PathMNIST 的 $\alpha=0.3$ 和 $\alpha=0.1$ 设置中，FedSubMerge 与 FedSubMerge-AD 的 DRR 分别为 $0.1169$ 和 $0.0956$，均高于相应 Fed-GPM 的 $0.0049$ 和 $0.0039$。Hyper-Kvasir 两个分布偏斜设置中，两种融合方法的 DRR 分别为 $0.9477$ 和 $0.8638$，也高于 Fed-GPM 的 $0.2393$ 和 $0.1735$。在两个 $\alpha=0.3$ 设置中，它们的 DRR 均低于 FOT 的 $1.0000$；PathMNIST 上则高于 Fed-DER 的 $0.0749$，Hyper-Kvasir 上高于 Fed-DER 的 $0.4473$。因此，无原始样本回放不意味着用于构建历史表示的数据比例最低。
+
+Hyper-Kvasir 标签数量偏斜中，两种融合方法的 DRR 均为 $1.0000$，Fed-GPM 为 $0.0868$；多来源皮肤病变中，两种融合方法均为 $0.2485$，Fed-GPM 为 $0.0096$。相同设置下，两种融合方式的 DRR 相同，但服务器返回的子空间及其实际秩可能不同。按照第三章定义，DRR 计入构造历史表示所涉及的数据，并不等同于后续回放原始图像的比例，也不能直接表示摘要字节量、SVD 计算或通信量。这些开销在后文分别分析。
+
+综合各设置，ACC 与 BWTR 分别刻画最终分类表现和相对历史变化，不总是给出相同排序。任务矩阵的对角条目进一步反映初学表现。所有分类结果均在表\ref{tab:fedsubmerge-setup}规定的类别批次和测试任务身份已知的条件下获得。
 
 \subsection{异质性、客户端规模与参与率}
 \label{subsec:fedsubmerge-robustness}
 
-表\ref{tab:fedsubmerge-heterogeneity}考察 PathMNIST 上不同 Dirichlet 参数。$\alpha$ 越小，客户端类别比例越不均衡。四种方法的 ACC 均随异质性增强而下降，BWT 整体变差。在所比较的 $\alpha$ 和 IID 设置下，FedSubMerge-AD 的 ACC 最高，FedSubMerge 的 BWT 最高。例如，$\alpha=0.05$ 时，前者的 ACC 为 $75.20\%$，后者的 BWT 为 $-19.30$ 个百分点。
+表\ref{tab:fedsubmerge-heterogeneity}考察 PathMNIST 上不同 Dirichlet 参数。$\alpha$ 越小，客户端类别比例越不均衡。四种方法的 ACC 均随异质性增强而下降。BWT 的总体趋势相似，但并非逐点单调：FedSubMerge 在 $\alpha=0.5$ 时为 $-1.05$，在 $\alpha=0.3$ 时为 $-0.86$ 个百分点。在所比较的 $\alpha$ 和 IID 设置下，FedSubMerge-AD 的 ACC 最高，FedSubMerge 的 BWT 最高。例如，$\alpha=0.05$ 时，前者的 ACC 为 $75.20\%$，后者的 BWT 为 $-19.30$ 个百分点。
 
 \begin{table}[htbp]
 \centering
@@ -654,7 +658,7 @@ FedSubMerge-AD & \best{75.20} & -21.95 & \best{79.40} & -16.85 & \best{93.42} & 
 
 \end{table}
 
-完全参与时，PGS 额外通信约占 20 个模型通信轮次的 $3.0\%$--$3.5\%$；参与率下降后，该比例约为 $11.8\%$--$12.3\%$。该比例以相应设置下的模型通信量为分母，表示任务结束时的额外子空间通信，不是每个常规轮次新增的传输比例。
+完全参与时，PGS 额外通信约占 20 个模型通信轮次的 $3.0\%$--$3.5\%$；参与率为 $0.50$ 时，该比例为 $5.9\%$--$6.4\%$，降至 $0.30$ 时为 $11.8\%$--$12.3\%$。该比例以相应设置下的模型通信量为分母，表示任务结束时的额外子空间通信，不是每个常规轮次新增的传输比例。
 
 \subsection{消融、参数敏感性与任务级结果}
 \label{subsec:fedsubmerge-ablation}
@@ -683,14 +687,14 @@ FedSubMerge-AD（$n=4$） & \best{93.42} & 0.00 & -3.37 & 0.00 \\
 \end{tabular}
 \end{table}
 
-基于梯度的子空间在 ACC 和 BWT 上均优于基于激活的子空间。相较随机选择，按子空间相似性选择客户端使最终 ACC 提高 4.87 个百分点，两者 BWT 接近。去除奇异值加权后，ACC 和 BWT 均下降，说明加权融合在这一设置下有利于最终性能和历史保持。统一融合相较自适应融合，BWT 高 2.51 个百分点，ACC 低 2.45 个百分点。
+完整 FedSubMerge-AD 相较基于激活的子空间配置，ACC 高 $5.62$ 个百分点，BWT 高 $3.86$ 个百分点。相较随机选择，按子空间相似性选择客户端使最终 ACC 提高 $4.87$ 个百分点，但 BWT 低 $0.13$ 个百分点，两项指标呈现不同变化方向。去除奇异值加权后，ACC 和 BWT 均下降，说明加权融合在这一设置下有利于最终性能和历史保持。统一融合相较自适应融合，BWT 高 2.51 个百分点，ACC 低 2.45 个百分点。
 
-图\ref{fig:fedsubmerge-hyperparameter}给出多来源皮肤病变设置上的相关客户端数和服务器能量阈值敏感性。$K=4$ 时，$n=0$ 仅使用目标客户端 PGS，跨机构共享不足；$n=3$ 使用全部客户端，与统一融合对应，BWT 略有改善但 ACC 下降；$n=2$ 在两项指标之间取得本实验采用的平衡。提高 $\gamma$ 通常保留更多旧方向并改善 BWT，也会增加投影约束。$\gamma=0.97$ 获得最高 ACC，因而与 $n=2$ 共同作为默认配置。该选择来自当前验证设置，不应解释为所有数据和任务长度下的通用最优值。
+图\ref{fig:fedsubmerge-hyperparameter}给出多来源皮肤病变设置上的相关客户端数和服务器能量阈值敏感性。$K=4$ 时，$n=0$ 仅使用目标客户端 PGS，跨机构共享不足；$n=3$ 使用全部客户端，与统一融合对应，BWT 略有改善但 ACC 下降；$n=2$ 在两项指标之间取得本实验采用的平衡。提高 $\gamma$ 通常保留更多旧方向并改善 BWT，也会增加投影约束。$\gamma=0.97$ 获得最高 ACC，因而与 $n=2$ 共同作为默认配置。该默认配置根据本实验的验证设置确定。
 
 \begin{figure}[htbp]
 \centering
 \thesisgraphic{ch05/fedsubmerge_hyperparameter.pdf}
-\caption{多来源皮肤病变特征偏斜设置上的 FedSubMerge-AD 参数敏感性。（a）相关客户端数 $n$；当 $K=4$ 时，$n=0$ 只使用目标客户端 PGS，$n=3$ 使用全部其他客户端。（b）服务器能量阈值 $\gamma$。星号表示默认配置 $n=2$、$\gamma=0.97$。}
+\caption{多来源皮肤病变特征偏斜设置上的 FedSubMerge-AD 参数敏感性。（a）相关客户端数 $n$；当 $K=4$ 时，$n=0$ 只使用目标客户端 PGS，$n=3$ 使用全部其他客户端。（b）服务器能量阈值 $\gamma$。ACC 以百分数、BWT 以百分点报告。星号表示默认配置 $n=2$、$\gamma=0.97$。}
 \label{fig:fedsubmerge-hyperparameter}
 \end{figure}
 
@@ -720,12 +724,12 @@ PGS 构建与融合主要在任务结束后执行：各受保护层使用 $n_s=2
 
 图\ref{fig:fedsubmerge-engineering}说明联邦训练与 MedCL 评价的衔接。客户端更新、模型聚合和阶段末子空间融合由训练程序完成，平台接收各类别阶段结束后的全局模型或分类预测。任务配置保存数据来源、类别批次、顺序、阶段和分类头映射；模型接口读取 ResNet-18 权重，预测接口读取与测试样本对应的类别概率或标签。
 
-阶段 $t$ 的全局模型在任务 $j$ 上测试时，使用任务 $j$ 的分类头和类别映射，得到 $a_{t,j}$。这些条目按式\eqref{eq:fedsubmerge-acc-bwt}和式\eqref{eq:fedsubmerge-bwtr-rma}计算 ACC、BWT、BWTR 与 RMA。模型参数、历史信息使用及模型和 PGS 传输记录分别补充资源分析。
+阶段 $t$ 的全局模型在任务 $j$ 上测试时，使用任务 $j$ 的分类头和类别映射，得到 $a_{t,j}$。这些条目按式\eqref{eq:fedsubmerge-acc-bwt}和式\eqref{eq:fedsubmerge-bwtr-rma}计算 ACC、BWT 与 BWTR；具备独立训练参照时，还可计算 RMA。模型参数、历史信息使用及模型和 PGS 传输记录分别补充资源分析。
 
 \begin{figure}[htbp]
 \centering
 \resizebox{\thesisfigurewidth}{!}{\input{figures/ch05/fedsubmerge_engineering.tex}}
-\caption[联邦持续分类与 MedCL 的评价流程]{联邦持续分类与 MedCL 的评价流程。训练程序生成阶段全局模型，任务适配器按测试任务选择分类头，阶段矩阵用于汇总 ACC、BWTR 和 RMA，训练配置用于记录 MPE、DRR 与通信开销。}
+\caption[联邦持续分类与 MedCL 的评价流程]{联邦持续分类与 MedCL 的评价流程。训练程序生成阶段全局模型，任务适配器按测试任务选择分类头，阶段矩阵用于汇总 ACC 与 BWTR，独立训练参照齐备时可进一步计算 RMA，训练配置用于记录 MPE、DRR 与通信开销。}
 \label{fig:fedsubmerge-engineering}
 \end{figure}
 
@@ -733,7 +737,7 @@ PGS 构建与融合主要在任务结束后执行：各受保护层使用 $n_s=2
 
 MedCL 的客户端维度以式\eqref{eq:medcl-federated-cube}中的 $R_{t,c,j}$ 表示，在固定客户端测试分组下记录同一阶段全局模型的表现。客户端宏平均与样本加权准确率分别按式\eqref{eq:medcl-client-aggregation}计算，同时保留各分组的样本量和类别分布。阶段维度描述学习与保持，客户端维度描述同一模型在不同分布中的表现，两者使用共同的任务与样本标识。
 
-表\ref{tab:fedsubmerge-system-boundary}概括本章与 MedCL 评价的对应关系。主结果表将任务特定的 ACC 与平台共用的 BWTR、RMA 并列组织，正文结合 MPE 与 DRR 分析模型扩展和历史信息使用；异质性、参与率和设计消融进一步提供 BWT 与通信开销分析。性能矩阵、历史任务曲线和类别混淆结果用于解释各项汇总指标。
+表\ref{tab:fedsubmerge-system-boundary}概括本章与 MedCL 评价的对应关系。主结果表将任务特定的 ACC 与平台共用的 BWTR 并列组织，以 MPE 与 DRR 分别分析模型扩展和历史信息使用；异质性、参与率和设计消融进一步提供 BWT 与通信开销分析。性能矩阵、历史任务曲线和类别混淆结果用于解释各项汇总指标。
 
 \begin{table}[htbp]
 \centering
@@ -748,7 +752,7 @@ MedCL 的客户端维度以式\eqref{eq:medcl-federated-cube}中的 $R_{t,c,j}$ 
 \midrule
 任务与阶段 & 类别批次依次到达、阶段全局模型 & 任务标识、分类头映射与阶段矩阵 \\
 最终性能 & 全局模型在各已见任务上的准确率 & 逐任务准确率与 ACC \\
-保持与学习 & 历史任务、初学性能与独立训练参照 & BWTR、RMA 与阶段变化曲线 \\
+保持与学习 & 历史任务与初学性能；独立训练参照用于 RMA & BWTR 与阶段矩阵；具备独立训练参照时计算 RMA \\
 客户端分布 & 分布、标签数量与来源特征偏斜 & 联邦设置、样本分组与分布记录 \\
 资源使用 & 参数、历史摘要及模型与 PGS 传输 & MPE、DRR 和通信开销 \\
 \bottomrule
@@ -758,7 +762,7 @@ MedCL 的客户端维度以式\eqref{eq:medcl-federated-cube}中的 $R_{t,c,j}$ 
 
 从方法效果看，仅使用本地 PGS 与完整方法的消融比较表明，加入其他客户端的历史方向有助于提高最终准确率。子空间基与奇异值因而能够在不保留历史原始图像的条件下，为后续更新提供历史约束。
 
-统一融合与自适应融合的取舍随数据设置变化。PathMNIST $\alpha=0.3$ 上，自适应融合具有更高的 ACC 和 BWTR，统一融合的 RMA 更高；Hyper-Kvasir $\alpha=0.3$ 上，统一融合的 ACC、BWTR 和 RMA 均更高。这一差异说明客户端相关性、历史方向覆盖和当前任务学习需要联合分析，而不能由单一指标决定融合方式。
+统一融合与自适应融合的取舍随数据设置变化。PathMNIST $\alpha=0.3$ 上，自适应融合具有更高的 ACC，统一融合的 BWTR 更高；Hyper-Kvasir $\alpha=0.3$ 上，统一融合的 ACC 与 BWTR 均更高。这一差异说明客户端相关性、历史方向覆盖和当前任务学习需要联合分析，而不能由单一指标决定融合方式。
 
 实验涵盖病理图像、腹部 CT、消化道内镜和多来源皮肤病变图像，采用同步类别批次、预先给定的阶段划分、已知测试任务身份及从头训练的 ResNet-18。客户端由公开数据按照固定划分构造，分别模拟类别分布、类别覆盖和图像来源差异。
 
@@ -771,4 +775,4 @@ MedCL 的客户端维度以式\eqref{eq:medcl-federated-cube}中的 $R_{t,c,j}$ 
 
 本章提出 FedSubMerge，通过奇异值加权融合客户端主梯度子空间，并在后续本地训练中采用正交补梯度投影。FedSubMerge-AD 进一步按层选择相关客户端，构建客户端特定保护空间。理论分析解释了历史方向保护、递归融合和子空间截断的局部作用。
 
-在七个联邦设置中，FedSubMerge 与 FedSubMerge-AD 中表现较好的版本均取得无回放比较方法中的最高 ACC。MedCL 指标进一步揭示两种融合方式对历史保持与当前学习的不同影响：PathMNIST $\alpha=0.3$ 上，FedSubMerge-AD 的 ACC 和 BWTR 分别为 $93.42\%$ 和 $-0.2288$；Hyper-Kvasir $\alpha=0.3$ 上，FedSubMerge 的 ACC、BWTR 和 RMA 分别为 $78.64\%$、$-0.1997$ 和 $0.9982$。完全参与时，阶段末额外 PGS 通信约占 20 个模型通信轮次的 $3.0\%$--$3.5\%$。下一章沿用平台评价，研究有限图像对回放下的持续配准。
+在七个联邦设置中，FedSubMerge 与 FedSubMerge-AD 中表现较好的版本均取得无回放比较方法中的最高 ACC。MedCL 指标进一步揭示最终性能与历史保持的不同取舍：PathMNIST $\alpha=0.3$ 上，FedSubMerge-AD 的 ACC 和 BWTR 分别为 $93.42\%$ 和 $-3.51\%$，统一融合的 ACC 为 $90.97\%$、BWTR 为 $-0.94\%$；Hyper-Kvasir $\alpha=0.3$ 上，FedSubMerge 的 ACC 和 BWTR 分别为 $78.64\%$ 和 $-7.75\%$，均高于自适应版本。在七个设置中，统一融合的 BWTR 均高于自适应融合，而自适应融合在五个设置中具有更高 ACC。完全参与时，阶段末额外 PGS 通信约占 20 个模型通信轮次的 $3.0\%$--$3.5\%$。下一章沿用平台评价，研究有限图像对回放下的持续配准。

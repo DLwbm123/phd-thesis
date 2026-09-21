@@ -76,7 +76,6 @@
   \draw[flow] (c-t2.east) -- (c-m2.west);
   \draw[flow] (c-m2.east) -- (6.20,2.85);
   \node[note, inner xsep=0pt] at (6.48,2.85) {$\cdots$};
-  % 箭头在省略号之后、theta_t 方框之前结束，避免箭头侵入方框。
   \draw[flow] (6.72,2.85) -- ([xshift=-0.8mm]c-mt.west);
   \node[data, minimum width=2.55cm] (c-history) at (2.05,1.35)
     {可访问的历史信息\\完整／有限／无回放};
@@ -102,7 +101,6 @@
     {服务器\\聚合与下发};
   \node[process, minimum width=1.95cm] (f-global) at (7.10,2.03)
     {共享模型};
-  % 各客户端连接独立端口，三条双向线等长且水平平行。
   \draw[exchange] (f-c1.east) -- (f-server.west |- f-c1.east);
   \draw[exchange] (f-c2.east) -- (f-server.west);
   \draw[exchange] (f-ck.east) -- (f-server.west |- f-ck.east);

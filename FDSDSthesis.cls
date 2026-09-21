@@ -19,7 +19,7 @@
 
 \LoadClass[UTF8,scheme=chinese,zihao=-4,openany,linespread=1.383705]{ctexbook}
 
-%\setmainfont[Mapping=tex-text]{Times New Roman} %可选择以 Times New Roman 作为西文字体
+\setmainfont[Mapping=tex-text]{Times New Roman} %可选择以 Times New Roman 作为西文字体
 % 优先使用原项目字体；若 Overleaf/GitHub 工作副本未包含字体文件，
 % 则回退到 TeX Live 自带的 Fandol 字体，保证 XeLaTeX 可直接编译。
 \IfFileExists{./FontStyle/SimSun.ttf}{%
