@@ -1,3 +1,3 @@
-# 最新状态：图中文字字体统一（2026-09-21）
+# 最新状态：三张分割可视化更新（2026-09-22）
 
-基于 Overleaf 最新作者稿 `571e5a289a86ac5656759632d5e5b993b9e5a7a0` 统一图内中文宋体、英文 Times New Roman；保留字号与已合规的三张 ZSDerpp 图。完整本地编译通过，183 页，图件与流程图渲染检查通过。无新增学术内容或实验。详情见 `handoff/LATEST_CODEX_REPORT.md`。
+基于 Overleaf 最新稿替换三张 ZSDerpp 可视化，保持论文图样式，中文宋体、英文 Times New Roman，文字放大25%。本地全文编译通过，183 页。数值及图页检查通过，正文和表格不变。详情见 handoff/LATEST_CODEX_REPORT.md。
