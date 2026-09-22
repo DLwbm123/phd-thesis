@@ -1,0 +1,419 @@
+\chapter{医学影像持续学习评测平台设计}
+\label{chap:benchmark}
+\label{chap:medcl}
+\setlength{\emergencystretch}{1em}
+
+\section{引言}
+\label{sec:benchmark-introduction}
+
+
+持续学习的评价需要同时记录模型所处的阶段和接受测试的任务。最终平均性能说明模型在序列结束后的整体表现，阶段结果则用于分析新任务学习和旧任务保持。医学影像分割、分类与配准具有不同的输出形式，联邦设置还涉及客户端之间的数据差异。将这些结果放在一起分析时，首先需要明确任务身份、测试数据、输出含义和汇总方式。
+
+本章介绍 MedCL 医学影像持续学习评测平台。平台以中文网页组织任务选择、阶段配置、文件提交、评分记录和病例查看，通过任务适配器处理分割标签、分类结果与配准对应点。模型训练在平台外进行，用户提交阶段权重或预测文件，平台负责在固定测试条件下评分并保存结果。平台实现代码见项目仓库\footnote{MedCL 项目仓库：\url{https://github.com/DLwbm123/medcl}，代码版本为 \texttt{676430c}。}。
+
+本章说明全局平台的数据组织、功能实现与共同评价指标。分割实验所用的数据划分与任务配置作为统一配置的一部分在本章列出；分割基准的整体流程、方法比较和实验分析在第四章展开。第五章和第六章分别沿用共同的阶段记录方式分析联邦持续分类与持续配准，各任务的网络、训练参数和结果均在相应章节说明。
+
+\section{平台需求与总体设计}
+\label{sec:medcl-design}
+
+
+\subsection{平台面向的医学影像分析任务}
+\label{subsec:medcl-task-scope}
+
+平台设置分割、分类和配准三个任务入口。分割以整数标签图为输入，按病例汇总 Dice，并提供切面叠加与三维标签表面。分类接收全局编码下的预测类别，计算任务准确率和客户端汇总结果。配准接收固定图像空间中的预测对应点，以目标配准误差 TRE 评价对齐情况；外部生成的配准后影像与变换后预测标签用于辅助查看。
+
+三类任务共用阶段配置、提交检查、结果存储和报告导出，差别集中在测试数据读取、预测形状与评分方式。任务适配器保留这些差别，因此不同网络可以通过统一预测格式接入，而无需改变平台的页面结构或作业流程。平台分别报告各任务的指标，不将准确率、Dice 和以毫米表示的 TRE 合成一个总分。
+
+\subsection{评测需求与设计依据}
+\label{subsec:medcl-requirements}
+
+MedCL 的设计围绕结果是否能够正确对应和比较展开。首先，任务标识与学习阶段需要分别保存。同一任务可以出现在不同顺序的位置，模型文件也可能只覆盖部分阶段，评分时应按实际学习顺序确定已见任务。其次，预测必须与固定测试样本逐项对应，类别编码、输出头和空间坐标由评测配置明确，不能在评分时依据测试标签临时调整。
+
+提交评分与结果浏览具有不同的数据需求。评分进程读取测试标注并计算数值，网页显示评分结果和获准展示的病例信息；独立示例则用于理解图像与标注，不参与评测统计。方法比较保留任务顺序、监督条件、指标单位和结果来源，使不同输入方式产生的结果能够在相同条件下核对。
+
+平台采用独立评分进程处理提交，用数据库保存配置与作业状态，用统一的结果对象连接矩阵、病例预览和导出报告。这样，用户可以从同一条记录查看阶段表现、检查局部预测，再导出对应数值。模型优化、历史样本回放和联邦聚合仍在各方法的训练程序中完成。
+
+\subsection{总体架构与数据流}
+\label{subsec:medcl-architecture}
+
+
+图\ref{fig:medcl-platform-architecture}给出平台结构。Streamlit 实现中文网页，SQLite 保存评测配置、作业状态与结果索引，独立评分进程调用任务适配器和指标函数，Cornerstone3D 组件负责病例显示。网页与评分进程分别运行，读取已有结果和执行新的评分作业相互独立。
+
+评测从用户选择的任务配置开始。平台检查阶段文件、匿名样本标识和预测形状后，将配置与提交记录一同写入数据库；配置入队后由数据库触发器保持固定。评分进程读取模型或预测，按测试任务生成分数，再写回阶段矩阵、持续学习指标与病例预览索引。网页以作业标识查询结果，报告也从同一记录生成。
+
+\begin{figure}[htbp]
+\centering
+\resizebox{\thesisfigurewidth}{!}{\input{figures/ch03/medcl_platform_architecture.tex}}
+\caption[MedCL 持续学习评测平台总体设计]{MedCL 持续学习评测平台总体设计。网页、配置与队列、任务适配器、评分进程和病例查看器分别承担交互、数据组织、评分与显示职责。}
+\label{fig:medcl-platform-architecture}
+\end{figure}
+
+测试资产以只读方式访问，上传文件、配置和结果保存在独立状态目录。执行前核对测试文件大小与修改时间，用于发现文件变动。平台另外保存论文历史结果与独立示例：历史结果带有原表、指标定义和来源位置，示例带有任务与病例信息，二者都与用户提交产生的评分记录分别管理。
+
+\section{持续学习场景与数据组织}
+\label{sec:medcl-scenario-modeling}
+
+\subsection{任务设定与阶段记录}
+\label{subsec:medcl-three-dimensions}
+\label{subsec:medcl-task-setting-matrix}
+\label{subsec:medcl-stage-config}
+\label{sec:benchmark-scenarios}
+
+平台分别记录任务类型、增量设定、训练监督条件和输出头。分割可配置域增量、类别增量与任务增量；分类按类别任务组织，配准按器官、模态或配准关系组织。训练条件与测试输出分别登记，例如全监督和弱监督分割可以使用相同的完整测试标注。第五章的任务特定分类头和平台类别增量配置分别保留各自的输出条件。
+
+设任务数为 $T$，到达顺序为 $\pi$。阶段 $t$ 的已见任务为 $\{\pi(1),\ldots,\pi(t)\}$，模型或预测与该阶段对应。任务 $j$ 的初学阶段记为 $s(j)=\pi^{-1}(j)$。历史任务始终使用对应的输出头与标签映射；只有未来任务与当前输出语义兼容时，才安排未学习任务测试。阶段位置与任务标识分别保存，测试计划据此确定。例如，顺序为 $[T_3,T_1,T_2]$ 时，阶段 1 对应首先学习 $T_3$，不能按任务编号解释为 $T_1$。未提交的阶段保留空行，最后一个可见阶段也不会自动被认作全部任务训练结束后的阶段。
+
+\subsection{数据划分与基准配置}
+\label{sec:medcl-data-config}
+\label{subsec:medcl-dataset-map}
+\label{subsec:medcl-benchmark-config}
+
+平台的基准配置保存任务标识、数据格式、测试资产、类别语义、输出头和评分单位。分割适配器根据病例切片索引重建完整病例，分类适配器读取指定测试子集，配准适配器读取固定空间中的影像与对应点。训练、验证划分由各实验程序维护，网页评分读取与配置对应的测试部分。表\ref{tab:medcl-cross-chapter-data}汇总本文各章采用的数据与任务设置，其中分割部分同时用于密集监督和弱监督实验。
+
+\begin{table}[htbp]
+\centering
+\caption{MedCL 的数据来源、任务序列与输出配置}
+\label{tab:medcl-cross-chapter-data}
+\label{tab:benchmark-datasets}
+\thesistablefont
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.16}
+\begin{tabularx}{\textwidth}{@{}p{2.0cm}XXp{2.7cm}@{}}
+\toprule
+任务设置 & 数据来源 & 阶段与任务顺序 & 输出与应用 \\
+\midrule
+域增量分割 & NCI-ISBI 2013：A、B；I2CVB：C；PROMISE12：D、E、F & 六中心 A$\rightarrow$B$\rightarrow$C$\rightarrow$D$\rightarrow$E$\rightarrow$F & 共享二通道头；第四章密集与涂鸦监督 \\
+\addlinespace
+类别增量分割 & MMWHS 心脏 CT & 三阶段：LV/LA/MYO $\rightarrow$ RV/RA $\rightarrow$ AA/PA & 共享八通道头；第四章密集与涂鸦监督 \\
+\addlinespace
+跨器官分割 & LAScarQS、PROMISE12 中心 D、LiTS、FeTS 2021 & 左心房 LGE MRI $\rightarrow$ 前列腺 MRI $\rightarrow$ 肝 CT $\rightarrow$ 脑肿瘤 FLAIR MRI & 每任务二通道头；第四章密集与涂鸦监督 \\
+\addlinespace
+联邦持续分类 & PathMNIST、OrganAMNIST、Hyper-Kvasir、四来源皮肤病变 & 类别批次顺序到达；固定客户端划分 & 任务特定分类头；第五章无原始样本回放 \\
+\addlinespace
+持续配准 & OASIS、腹部 CT--CT、NLST、腹部 MR--CT & 脑 MR--MR $\rightarrow$ 腹部 CT--CT $\rightarrow$ 肺 CT--CT $\rightarrow$ 腹部 MR--CT & 连续空间变换；第六章有限图像对回放 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+分割任务按病例划分为 60\% 训练、15\% 验证和 25\% 测试，各方法共享划分。前列腺中心 C 先裁剪并空间对齐，六中心轴位切片统一为 $256\times256$，按非零体素归一化\cite{dataset_prostate2,dataset_prostate,dataset_prostate3,dataset_domaincl}。心脏 CT 重采样至 $0.78\times0.78$ mm 平面分辨率，平均层厚为 1.60 mm，再调整为 $256\times256$\cite{care25ASA1,discussion_inter_seg3,care25ASA2}。跨器官图像采用零均值、单位方差归一化，切片同样为 $256\times256$\cite{dataset_lascars,dataset_lascars2,dataset_taskcl,dataset_taskcl2}。
+
+心脏三阶段依次引入左心室/左心房/心肌、右心室/右心房和升主动脉/肺动脉；阶段内不可访问的类别按背景规则处理，最终在统一标签空间评分。跨器官任务保留 Organ-CL 标识，测试时已知任务身份，二值前景编码分别表示对应器官或病灶。弱监督分割沿用上述三类序列，只替换训练标签，密集验证与测试标注不变；涂鸦生成与方法训练见第四章。
+
+分类与配准保留各自的数据划分，具体设置见第\ref{subsec:fedsubmerge-experimental-setup}节和第\ref{subsubsec:samcl-materials}节。各阶段复用相同测试清单，分割切片按病例归组，分类按数据提供的样本单位记录，配准按图像对记录。客户端测试分组另行保存，不用分割的划分比例替代其他任务设置。
+
+示例图库使用独立素材，以任务类型、场景和任务标识检索病例。分割示例覆盖域、类别和跨器官任务，分类示例按数据集与类别任务选择，配准示例按图像对类型选择。病例影像、显示标签和空间信息存储在同一示例记录中。图库的浏览顺序用于选择展示内容，论文实验则采用表\ref{tab:medcl-cross-chapter-data}中的固定顺序。
+
+\subsection{测试标注管理与提交要求}
+\label{subsec:medcl-split-isolation}
+
+测试标注指评分所用的真实信息：分割掩膜、分类标签，以及配准的结构标注或对应地标。平台按版本维护这些标注，用户只提交模型或预测，不上传自行指定的测试标签。它们与 RMA 所需的独立训练对照、E-FWT 所需的随机初始化对照不同，后两者是模型表现的比较依据，不是测试标注。
+
+提交文件通过匿名样本标识匹配测试数据，不依赖上传数组的排列顺序。检查包括标识是否完整且唯一、标签是否属于登记类别，以及配准对应点的坐标系和单位是否一致。全监督或弱监督是提交者对外部训练条件的声明，随评测配置保存；两种条件均使用完整测试标注评分，平台不以预测文件反推训练时使用了何种标签。
+
+隐藏测试标注仅交给评分模块，不写入病例预览或发送至浏览器。分类报告提供任务和客户端聚合结果，不导出逐样本正误或隐藏类别频数；分割查看器显示影像与预测标签，配准查看器显示获准提供的影像和预测结果。独立示例中的完整标签与涂鸦用于标注展示，与隐藏测试集分开管理。
+
+\label{subsec:medcl-three-modes}
+
+一次评测固定任务顺序、测试划分、预处理、输出头和汇总规则；改变顺序或客户端分组时建立独立记录。方法比较同时核对评分器与基准版本、任务顺序、输出头、监督声明、测试资产记录及客户端划分。方法名称不决定可比性，同一测试集也不意味着训练条件相同。论文实验中的网络、回放容量与训练预算在相应方法章节说明，不由平台根据上传文件推断。
+
+联邦设置同时记录阶段间变化和客户端间差异：中心依次到达属于时间变化，同一阶段内类别比例或来源不同属于客户端差异。平台分别保存二者，避免把任务组织变化误作方法收益。资源与统计报告要求见第\ref{subsec:medcl-resource-reporting}节。
+
+\section{平台功能与评价指标}
+\label{sec:medcl-functions-evaluation}
+
+\subsection{功能模块及其输入输出}
+\label{subsec:medcl-modules}
+
+表\ref{tab:medcl-modules}给出六个核心模块。模块围绕一次评测需要的对象组织，训练代码、优化器和回放集合不进入平台执行流程。
+
+\begin{table}[htbp]
+\centering
+\caption{MedCL 评测平台的模块职责与输入输出}
+\label{tab:medcl-modules}
+\thesistablefont
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.14}
+\begin{tabularx}{\textwidth}{@{}p{2.2cm}XX@{}}
+\toprule
+模块 & 输入与职责 & 输出及其用途 \\
+\midrule
+基准与数据管理 & 测试病例、标签、预处理和客户端划分版本 & 稳定任务标识、测试清单与评分端标注索引 \\
+配置与提交管理 & 模型或预测；界面选择的顺序、阶段及输出条件 & 固定评测配置、模型与预测文件索引和输入检查结果 \\
+任务适配与推理 & 已支持结构的权重，或符合格式要求的预测文件 & 分割整数标签、预测类别或固定空间预测对应点 \\
+阶段与客户端评分 & 预测、平台保存的测试标注和指标定义 & 任务指标、性能矩阵、客户端分解与有效样本数 \\
+调度与结果存储 & 已通过检查的评测任务及计算资源 & 运行状态、错误信息、结果索引和配置记录 \\
+界面与报告导出 & 评测配置、指标、矩阵及获准展示的病例 & 比较视图、病例可视化和 CSV、JSON、HTML 报告 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{模型推理与预测提交接口}
+\label{subsec:medcl-interfaces}
+
+模型提交采用 float32 safetensors 权重，直接执行的结构为线性分类器、逐像素线性分类器和点平移模型。结构及参数键由平台检查，不从上传文件加载任意网络代码。U-Net、EfficientNet 及本文方法可在外部完成推理，再通过预测文件进入同一评分流程。两条路径共用样本对齐与评分模块，相同预测应得到相同分数。
+
+预测支持 JSON、NPZ 和平铺 ZIP，每个阶段对应一个文件。NPZ 或 ZIP 中，每项任务的样本标识数组与预测数组成对保存；例如 \texttt{T1\_\_ids.npy} 与 \texttt{T1\_\_pred.npy} 分别记录匿名样本标识列表和预测。分类及分割均提交整数类别，平台按这些标签评分，不对概率输出进行额外解码。配准对应点采用固定空间的有序 $xyz$ 毫米坐标；可选的配准后图像与变换后预测标签须已对齐固定图像网格，二者只用于查看，不参与 TRE 计算。
+
+上传检查覆盖文件与展开大小、数组形状、数值范围和样本映射，拒绝对象数组、Pickle、压缩包目录及符号链接，不将 ZIP 解压到任意文件路径。直接模型推理在通过隔离检查的 macOS 沙箱中执行，限制网络、文件访问和运行资源；其他执行环境采用预测评分。平台以本地单用户工作台组织这些操作，展示服务则可以单独提供图库与历史结果浏览，不承担模型训练或联邦聚合。
+
+\subsection{阶段--任务矩阵与多维评价}
+\label{subsec:medcl-evaluation}
+
+设提交的模型阶段集合为 $\mathcal S$，阶段 $t$ 的可评价任务集合为 $\mathcal J_t$，任务指标 $m$ 对应的性能为
+\begin{equation}
+R^{(m)}_{t,j}=\operatorname{Eval}_m\!\left(f^{(t)},\mathcal D^{\mathrm{test}}_j\right),
+\qquad t\in\mathcal S,\ j\in\mathcal J_t.
+\label{eq:medcl-evaluation-matrix}
+\end{equation}
+预测提交用该阶段的预测代替模型推理。任务 $j$ 的初学条目为 $R^{(m)}_{s(j),j}$，后续同一列记录历史表现，最终行汇总训练结束后的性能。按实际到达顺序排列任务后，初学条目位于主对角线；自定义顺序须先完成任务与阶段的对应。
+
+平台为每项指标保存方向、单位、有效样本数和汇总方式。提交评分以分类准确率、分割 Dice 和配准 TRE 为任务主指标，前两者越高越好，TRE 越低越好且以毫米表示。分割评分先在完整病例上计算各类 Dice，对包括背景在内的类别求平均，再对病例求平均；第四章 A-Dice 与 WCD 的统计对象另在第\ref{subsec:segmentation-benchmark-evaluation}节规定，不能仅因名称中都含 Dice 而混用分数。三类任务分别形成矩阵，不将不同指标的原始值合并排名。
+
+矩阵末行、初学条目和独立训练对照分别用于最终性能、历史保持和当前学习评价；共享输出语义下的未来任务条目用于前向泛化。模型参数与历史信息使用根据训练配置另行统计。仅提交最终模型时可计算最终性能，不能据此补出阶段变化；缺少对照或有效分母时，相应指标记为不可计算，不以零代替。
+
+\subsection{持续学习能力指标}
+\label{sec:benchmark-metrics}
+
+本节定义全文共用的持续学习能力指标，并说明它们与网页评分的对应关系。以下按实际到达顺序排列任务，令 $r^{(m)}_{t,i}=R^{(m)}_{t,\pi(i)}$，因此 $r^{(m)}_{i,i}$ 是任务初学表现。对 Dice 或准确率这类越高越好的指标，后向迁移率（backward transfer rate，BWTR）定义为
+\begin{equation}
+\mathrm{BWTR}^{(m)}
+=
+\frac{1}{T-1}
+\sum_{i=1}^{T-1}
+\frac{r^{(m)}_{T,i}-r^{(m)}_{i,i}}{r^{(m)}_{i,i}}.
+\label{eq:benchmark-bwtr}
+\end{equation}
+BWTR 衡量旧任务相对于初学表现的平均变化。负值表示平均下降，正值表示平均提高；零值也可能来自不同任务正负变化的抵消，并不代表每项任务都没有遗忘。对 TRE 这类越低越好的指标，将分子改为 $r^{(m)}_{i,i}-r^{(m)}_{T,i}$，仍使正值表示改善。
+
+受限建模能力 RMA 比较任务刚学习完成时的表现与独立训练对照。令 $b_i^{(m)}$ 表示仅使用任务 $i$ 数据独立训练的模型在同一测试集上的性能，则对越高越好的指标有
+\begin{equation}
+\mathrm{RMA}^{(m)}
+=
+\frac{1}{T-1}
+\sum_{i=2}^{T}
+\frac{r^{(m)}_{i,i}}{b_i^{(m)}}.
+\label{eq:benchmark-rma}
+\end{equation}
+第一阶段尚未受到历史任务影响，故不计入 RMA。对 TRE 等距离指标，每项比值改为 $b_i^{(m)}/r^{(m)}_{i,i}$。RMA 接近 1 表示初学表现平均接近独立训练水平，大于或小于 1 分别表示平均优于或低于对照。独立训练对照须与待比较方法采用明确且可比的网络、监督和训练预算；它不同于第四章连续学习全部任务的 Non-CL 顺序训练基线。
+
+上述相对指标要求分母为正。某项任务不适用指标 $m$ 时，仅对具有所需初学、最终或对照结果的任务求平均，分母采用有效任务数，并报告所用任务集合；任务阶段仍按原序列记录。第六章据此分别汇总结构 Dice 和地标 TRE，而不对二者混合求平均。
+
+前向泛化描述模型尚未针对未来任务更新时的直接表现。对于具有相同输出语义、允许测试全部未来任务的设置，令 $r^{(m)}_{0,i}$ 为随机初始化模型的性能，则越高越好的指标对应的扩展前向迁移为
+\begin{equation}
+\mathrm{E\mbox{-}FWT}^{(m)}
+=
+\frac{2}{T(T-1)}
+\sum_{t=1}^{T-1}
+\sum_{i=t+1}^{T}
+\left(r^{(m)}_{t,i}-r^{(m)}_{0,i}\right).
+\label{eq:benchmark-efwt}
+\end{equation}
+它汇总各阶段对所有未来任务的表现，而不只比较相邻任务。第四章的域增量分割共享前列腺与背景语义，可以使用该式；未来类别尚未进入已学习输出的类别增量，以及输出含义不同的跨器官分割，不使用这一 E-FWT 设置。对其他任务，只按已规定的测试关系报告前向结果，不补齐不适用的矩阵条目。
+
+最终平均性能由各任务适配器按相同指标汇总。分割的 A-Dice 与全类别 Dice 在第\ref{subsec:segmentation-benchmark-evaluation}节说明，分类与配准分别保留准确率、结构 Dice 和 TRE。平台统一的是阶段记录与能力评价，不是各任务的输出形式。
+
+网页评分由实际阶段记录计算最终任务宏平均、绝对后向迁移 BWT 和遗忘量。BWT 比较历史任务初学时与最终阶段的分数，遗忘量比较最终分数与此前各阶段的最佳分数；TRE 按越低越好的方向计算。对初学分数为正的 Dice 和准确率，还按式\eqref{eq:benchmark-bwtr}给出 BWTR。本文距离型相对指标用于整理配准实验结果，网页 TRE 则报告绝对变化。
+
+评分程序中的 FWT 使用任务学习前一个阶段的表现，即比较 $r^{(m)}_{i-1,i}$ 与随机初始化对照 $r^{(m)}_{0,i}$；式\eqref{eq:benchmark-efwt}的 E-FWT 则使用所有允许评价的未来任务条目，二者分别命名。RMA 与 E-FWT 按相应独立训练或随机初始化对照计算，缺少对照时保留空值。历史结果页展示论文已报告的指标值及其来源，不能从最终预测或展示曲线反推训练过程。
+
+\subsection{联邦持续评测与客户端差异}
+\label{subsec:medcl-federated-evaluation}
+
+联邦评测同时保留时间阶段与客户端分布两个维度。平台采用固定逻辑客户端测试划分，同一阶段的全局模型分别在各客户端的各项测试任务上评分，形成
+\begin{equation}
+R^{(m)}_{t,c,j}=\operatorname{Eval}_m\!\left(f^{(t)},\mathcal D^{\mathrm{test}}_{c,j}\right),
+\label{eq:medcl-federated-cube}
+\end{equation}
+其中 $c$ 为逻辑客户端，$j$ 为测试任务。平台按匿名病例序号在客户端之间轮转分配，保持同一病例的切片完整；分类数据不含患者标识时按图像分配，并在配置中保存分组版本及客户端数。这种分组用于分析同一模型在固定测试子集上的差异，不代表第五章的训练客户端划分或真实跨医院联邦部署。平台不需要用户提交客户端模型，也不执行权重聚合或通信。
+
+以分类准确率为例，令 $a_{t,c,j}$ 表示对应单元的准确率，$n_{c,j}$ 为测试样本数，$\mathcal C_j$ 为在任务 $j$ 上具有测试样本的客户端集合，则宏平均与样本加权平均分别为
+\begin{equation}
+\bar a^{\mathrm{macro}}_{t,j}=\frac{1}{|\mathcal C_j|}\sum_{c\in\mathcal C_j}a_{t,c,j},
+\qquad
+\bar a^{\mathrm{weighted}}_{t,j}=\frac{\sum_{c\in\mathcal C_j}n_{c,j}a_{t,c,j}}{\sum_{c\in\mathcal C_j}n_{c,j}}.
+\label{eq:medcl-client-aggregation}
+\end{equation}
+前者体现客户端间的平均表现，后者体现该划分中合并样本的总体准确率。平台另行展示最差客户端表现、标准差与最大最小差；准确率的最差值取最小值，TRE 的最差值取最大值，无测试样本的单元不填零。多个阶段的输入还可显示各客户端旧任务表现的变化；仅有最终输入时只报告最终客户端分布。
+
+第五章通过全局测试集评价各阶段共享模型，并以固定训练客户端划分构造分布偏斜、标签数量偏斜和来源特征偏斜。平台的客户端测试配置另以样本标识保存测试分组，在每个阶段使用相同分组进行评价。全局任务矩阵描述整体持续学习表现，客户端矩阵进一步展开同一模型在不同分布中的表现。
+
+\subsection{资源统计与结果报告}
+\label{subsec:medcl-resource-reporting}
+
+模型参数扩展率（model parameter expansion，MPE）描述新增参数相对于初始模型的平均比例：
+\begin{equation}
+\mathrm{MPE}
+=
+\frac{1}{T-1}
+\sum_{t=2}^{T}
+\frac{
+\mathrm{Param}(\theta_t)-\mathrm{Param}(\theta_{t-1})
+}{
+\mathrm{Param}(\theta_1)
+}.
+\label{eq:benchmark-mpe}
+\end{equation}
+MPE 越小，表示任务到达后增加的参数越少；横向比较须采用相同的初始主干和参数统计方式。数据回放率（data replay ratio，DRR）记录历史数据被重新使用或用于构造历史表示的比例：
+\begin{equation}
+\mathrm{DRR}
+=
+\frac{1}{T-1}
+\sum_{t=1}^{T-1}
+\frac{
+N_t^{\mathrm{replay}}
+}{
+N_t^{\mathrm{train}}
+},
+\label{eq:benchmark-drr}
+\end{equation}
+其中，$N_t^{\mathrm{replay}}$ 为以历史任务 $t$ 为来源、后续重新使用或用于构造回放信息的数据量，$N_t^{\mathrm{train}}$ 为该任务训练数据量。记录须说明原始图像、特征、输出或子空间等保存对象，不能仅凭 DRR 判断隐私或字节开销。
+
+MPE 与 DRR 不替代存储、计算和通信统计。训练预算记录轮数或迭代数、批大小；回放预算记录容量和对象；联邦通信区分常规模型交换与额外摘要传输。第四章的二维切片、第六章的三维图像对和第五章的梯度子空间不能只按数量比较成本。原始图像不上传也不等于模型更新或子空间具备形式化隐私保证。
+
+报告同时注明重复次数、统计单位、均值与标准差的来源。准确率以百分数表示，两个准确率的绝对差值以百分点表示；相对变化注明分母。病例、任务、客户端和重复实验是不同的汇总单位，不相互替代。资源数据按论文训练记录整理，不从预测数组估算参数扩展或回放量，也不将缺失记录解释为零开销。
+
+提交评分结果可导出为 CSV、JSON 和 HTML。CSV 便于逐项核对，JSON 保存配置、矩阵与指标的结构化信息，HTML 用于结果阅读。缺失数值在 JSON 中记为 \texttt{null}，在 CSV 中留空并保留原因；导出报告不嵌入医学体数据。历史结果视图另支持图表 SVG、PNG 及含图表的离线 HTML，均保留筛选条件和来源说明。
+
+
+\section{交互设计、测试与评测应用}
+\label{sec:medcl-ui-test}
+
+\subsection{页面组织与提交过程}
+\label{subsec:medcl-workflow}
+
+网页由首页、任务中心、评测记录和方法比较四个入口组成。首页将分割、分类和配准并列为任务卡，用户可以开始一次评测，也可以直接打开分类、全监督分割、弱监督分割或配准示例。最近评测列表与具体作业关联，点击后进入对应记录。首页中的阶段矩阵与影像缩略图用于介绍功能，实际分数在评测记录中查看。
+
+
+图\ref{fig:medcl-homepage-ui}展示平台首页及三类任务的示例入口。
+\begin{figure}[htbp]
+\centering
+\thesisgraphic{ch03/screenshots/medcl_homepage.png}
+\caption{MedCL 平台首页示例展示}
+\label{fig:medcl-homepage-ui}
+\end{figure}
+
+任务中心按任务类型、增量场景和基准配置逐层选择。分割流程先记录全监督或弱监督条件，再确认任务顺序、输出头、已完成阶段和输入文件。页面提供匿名样本索引，用户据此整理预测；阶段位置由页面选择，无需另写任务清单。提交前检查样本覆盖、标签编码和空间约定，通过检查后生成独立的评测记录。
+
+图\ref{fig:medcl-workflow-design}概括两条提交路径。权重提交先在受限环境中生成预测，预测提交直接读取文件，之后使用同一任务评分流程。记录页显示排队、运行、完成或失败等作业状态；这些状态表示评分进度，而不是平台外的模型训练进度。输入有误时，页面给出具体原因，用户修正后重新提交。
+
+\begin{figure}[htbp]
+\centering
+\resizebox{\thesisfigurewidth}{!}{\input{figures/ch03/medcl_workflow_design.tex}}
+\caption[MedCL 模型与预测提交的交互流程]{MedCL 模型与预测提交的交互流程。两条路径在得到预测后共用输入检查、任务评分、结果查看与报告导出。}
+\label{fig:medcl-workflow-design}
+\end{figure}
+
+
+\subsection{持续学习与任务特定可视化}
+\label{subsec:medcl-visualization}
+
+持续学习结果以阶段--任务矩阵呈现，行对应模型阶段，列对应测试任务。用户沿同一列查看一个任务在后续学习中的表现，也可以选择阶段比较不同任务。客户端视图在相同阶段展开固定测试分组，辅助判断总体分数与客户端差异是否一致。方法比较按相容的评测配置筛选记录，保留各指标的方向和单位。
+
+
+分割查看器提供三个正交切面和一个三维视口。切面叠加整数标签图，用户可调节透明度、选择标签、移动切片并调整视野。三维视口根据各非零标签分别提取表面，与切面使用一致颜色；旋转和缩放用于查看目标形状及其空间关系，三维不透明度独立控制表面材质。三维结构来自标签图，而非原始影像的灰度体绘制，显示过程保留标签内容，不额外平滑或补全结构。
+
+全监督分割示例按场景与任务切换病例，类别增量示例保留各阶段的全局标签编码，并提供七类心脏结构的完整示例。示例使用独立病例的已有标注，目的是展示数据和查看操作；评测记录中的病例预览则读取提交预测，二者具有不同来源。切换任务或病例时重新建立查看器，避免上一病例的图层混入新视图。
+
+
+图\ref{fig:medcl-segmentation-example-ui}以子图展示任务设置、三个正交切面与七类心脏结构的三维分割视图。
+\begin{figure}[htbp]
+\centering
+\begin{minipage}{0.96\linewidth}
+\centering
+\thesisgraphic{ch03/screenshots/medcl_segmentation_settings.png}
+\par\small (a) 场景、任务与显示设置
+\end{minipage}
+\par\vspace{5pt}
+\begin{minipage}{0.96\linewidth}
+\centering
+\thesisgraphic{ch03/screenshots/medcl_segmentation_cardiac_views.png}
+\par\small (b) 心脏正交切面与三维分割视图
+\end{minipage}
+\caption{MedCL 全监督分割示例展示}
+\label{fig:medcl-segmentation-example-ui}
+\end{figure}
+
+弱监督示例在影像和完整标签之外，显示同一病例的原始稀疏涂鸦。通过切片位置、标签筛选和叠加透明度，可以对照局部监督的位置与解剖结构。未标注位置与背景标签分别编码，防止显示时将没有监督的区域当作背景。示例浏览不生成模型评分，第四章的弱监督性能由固定密集测试标注评价。
+
+
+图\ref{fig:medcl-weak-example-ui}展示域增量场景下的任务与切片设置，以及原始影像、稀疏涂鸦和分割叠加的对照。
+\begin{figure}[htbp]
+\centering
+\begin{minipage}{0.96\linewidth}
+\centering
+\thesisgraphic{ch03/screenshots/medcl_weak_domain_settings.png}
+\par\small (a) 域增量任务与切片设置
+\end{minipage}
+\par\vspace{6pt}
+\begin{minipage}{0.96\linewidth}
+\centering
+\thesisgraphic{ch03/screenshots/medcl_weak_domain_comparison.png}
+\par\small (b) 原始影像、稀疏涂鸦与分割叠加
+\end{minipage}
+\caption{MedCL 弱监督分割示例展示}
+\label{fig:medcl-weak-example-ui}
+\end{figure}
+
+分类示例显示选定任务中的图像及类别，用于核对类别语义；正式分类结果保持任务和客户端层面的聚合展示。图\ref{fig:medcl-classification-example-ui}展示消化道内镜分类示例的任务选择、图像与类别信息。
+
+\begin{figure}[htbp]
+\centering
+\thesisgraphic{ch03/screenshots/medcl_classification_example.png}
+\caption{MedCL 分类示例展示}
+\label{fig:medcl-classification-example-ui}
+\end{figure}
+
+配准查看器提供固定、移动和外部生成的配准后影像，支持切面与融合查看。独立配准示例还提供棋盘格和彩色融合，其“对齐参考”以固定影像表示目标状态，不作为计算得到的变形结果。定量 TRE 由预测对应点与隐藏固定地标计算。
+
+\begin{samepage}
+病例显示与数值评分分开处理。预览按固定步长采样，同时更新显示间距；评分仍使用规定的测试数据。空间信息充分时按相应网格显示，缺少完整方向信息时采用索引空间。隐藏分割真值与固定地标留在评分端，浏览器只接收获准展示的影像和预测。
+\par
+\end{samepage}
+
+\subsection{评测测试方案}
+\label{subsec:medcl-test-plan}
+\label{subsec:medcl-current-status}
+
+项目测试围绕输入、数值、显示和导出四类对象展开，表\ref{tab:medcl-test-plan}列出检查内容。指标测试采用可手算输入，阶段测试改变任务顺序和阶段覆盖，客户端测试改变样本数量，分别核对对应的评分与汇总。页面测试检查选择状态与作业标识，保证用户打开的是所选记录。
+
+\begin{table}[htbp]
+\centering
+\caption{MedCL 评测平台的测试方案}
+\label{tab:medcl-test-plan}
+\thesistablefont
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.14}
+\begin{tabularx}{\textwidth}{@{}p{2.4cm}XX@{}}
+\toprule
+测试对象 & 构造或检查内容 & 核对要求 \\
+\midrule
+阶段与任务映射 & 自定义顺序、最终输入及缺失阶段 & 已见任务与阶段正确对应，缺失条目保持空值 \\
+任务评分 & 标签编码、病例汇总、空目标、地标坐标与单位 & 分数与手算或可信对照一致 \\
+客户端汇总 & 不同样本量、空客户端及固定测试分组 & 宏平均、加权平均与最差值符合指标方向 \\
+提交与隔离 & 文件大小、数组形状、压缩包内容及模型结构 & 拒绝非法输入，模型执行权限受限 \\
+病例显示 & 切面叠加、标签筛选、表面几何及病例切换 & 图层与所选病例一致，标签颜色与几何对应 \\
+结果与隐私 & 标注传输、报告字段、历史来源及空值 & 隐藏标注留在评分端，不混淆结果来源 \\
+页面与导出 & 任务选择、记录打开、方法筛选和报告生成 & 页面、矩阵与报告指向同一评测配置 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+三维显示使用可控制的合成标签检查几何与图层关系，包括非连续标签、单层目标和空前景等情况。固定标签、空间信息和相机后替换原图强度，应改变切面中的原始图像而保持标签表面不变。该检查用于判断三维对象是否由标签正确生成，与医学病例上的分割准确性评价分开。
+
+结果导入与导出检查同时保留真实零值、缺失值、均值和标准差的含义。历史结果按来源表格逐项核对，评分结果按作业配置核对，独立示例不写入评分统计。测试由此覆盖数据读取、计算、显示和输出之间的对应关系。
+
+\subsection{分割评测实例与跨任务应用}
+\label{sec:benchmark-platform-connection}
+
+以分割预测提交为例，用户先选定场景与监督条件，按照页面给出的匿名索引为各阶段准备整数标签图。平台核对任务顺序与病例覆盖，在完整测试病例上计算 Dice，再组织阶段矩阵和持续学习指标。用户从选定阶段进入病例预览，检查局部标签与三维结构，最后导出相应记录。这一过程说明平台如何读取和呈现分割结果；第四章的基准流程、比较方法和性能分析仍由分割章节完整展开。
+
+分类与配准沿用相同的记录方式，但保留各自的输入和评分。第五章按类别阶段获得全局模型，使用准确率矩阵分析任务学习与历史保持；网页提交按照选定配置登记全局类别及输出头。第六章在外部完成图像变换并计算结构 Dice，固定空间的预测对应点可用于平台 TRE 评分，配准后影像可用于病例查看。客户端测试分组、训练时的联邦客户端划分与配准图像对分别记录，不由平台界面反推训练过程。
+
+方法比较中的论文历史结果采用只读数据组织，支持按场景、方法、指标及结果来源筛选，图表导出保留当前选择。持续分割的历史数据及其方法结论属于第四章，第三章只说明这种结果浏览功能；历史导入与用户提交评分分别保存，避免将既有实验误作新的平台评测。
+
+\FloatBarrier
+
+\section{本章小结}
+\label{sec:benchmark-summary}
+
+本章介绍 MedCL 的任务配置、提交评分、结果存储和病例查看。平台通过阶段--任务记录连接分割、分类与配准的评价，并分别管理提交结果、论文历史数据和独立示例。共同的数据与指标定义用于衔接后续章节，任务专用的评分和显示保留各自含义。下一章在固定分割配置下展开持续分割方法评测与弱监督实验。

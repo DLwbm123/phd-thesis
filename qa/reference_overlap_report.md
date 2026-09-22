@@ -4,4 +4,6 @@
 
 最低报告长度：28 个归一化字符。
 
-未发现达到阈值的长文本精确重合。
+| 长度 | 本论文位置 | 参考论文位置 | 重合片段 |
+|---:|---|---|---|
+| 58 | `chapters/publications.tex` 段 13 | `sources/reference_thesis/Thesis reference/main.tex` 段 41 | `MedicalImageComputingandComputerAssistedInterventionMICCAI` |

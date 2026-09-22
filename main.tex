@@ -1,54 +1,71 @@
-\documentclass[type=doctor]{fduthesis}
+\documentclass{FDSDSthesis}
 
-\input{config/thesis_info}
-\input{config/build_flags}
-
+\usepackage{amsmath,amssymb,amsthm,bm}
 \usepackage[ruled,noline]{algorithm2e}
 \usepackage{threeparttable}
 \usepackage{multirow}
-\usepackage{booktabs}
+\usepackage{booktabs,longtable}
 \usepackage{array}
-\usepackage{graphicx}
+\usepackage{tabularx}
+\usepackage[numbers,sort&compress]{natbib}
 \usepackage{float}
+\usepackage{placeins}
+\usepackage{caption}
 \usepackage{tikz}
 \usetikzlibrary{arrows.meta,positioning,calc}
-\usepackage{enumitem}
-\graphicspath{{figures/}}
+
+\graphicspath{{fig/}{figures/}}
+
+\input macros
 
 \SetKwFor{For}{for }{\textbf{do}}{\textbf{end for}}
 \SetKwFor{If}{if }{\textbf{then}}{\textbf{end if}}
 \renewcommand{\algorithmcfname}{算法}
 
+\ctitle{训练信息受限条件下医学影像分析的持续学习}
+\etitle{Continual Learning for Medical Image Analysis with Limited Training Information}
+\author{王波民}
+\supervisor{庄吓海~教授}
+\faculty{大数据学院}
+\major{电子信息}
+\stuid{21110980022}
+\mail{}
+\pubdate{\today}
+\degreePoA{0} %
+\degreeMoP{1} %
+\blindreview{0} %
+
 \begin{document}
 
+\makecover
+
 \frontmatter
+\include{SRC/abstract}
 \tableofcontents
 \listoffigures
 \listoftables
 
-\begin{abstract}
-\mbox{}
-\end{abstract}
-
-\begin{abstract*}
-\mbox{}
-\end{abstract*}
-
 \mainmatter
 \include{chapters/ch01_introduction}
 \include{chapters/ch02_foundations}
-\include{chapters/ch03_benchmark}
-\include{chapters/ch04_fedsubmerge}
-\include{chapters/ch05_scribble_samcl}
-\include{chapters/ch06_conclusion}
+\include{chapters/ch03_medcl_benchmark}
+\include{chapters/ch04_scribble}
+\include{chapters/ch05_fedsubmerge}
+\include{chapters/ch06_registration}
+\include{chapters/ch07_conclusion}
 
 \backmatter
-\ifthesisbibliography
-\printbibliography
-\fi
-
-\chapter{攻读博士学位期间取得的研究成果}
-
-\chapter{致谢}
+\begingroup
+\setlength{\emergencystretch}{2em}
+\setlength{\bibsep}{0.5\baselineskip}
+\interlinepenalty=10000
+\raggedbottom
+\bibliographystyle{bibliography/thesis-plainnat}
+\bibliography{bibliography/references}
+\endgroup
+\include{chapters/publications}
+\include{chapters/acknowledgements}
+\cleardoublepage
+\include{SRC/statement}
 
 \end{document}

@@ -1,0 +1,28 @@
+\begingroup
+\begin{tikzpicture}[
+  font=\thesisfigurefont,
+  box/.style={draw=black!55,rounded corners=2pt,align=center,inner sep=4pt,line width=.6pt},
+  wide/.style={box,text width=12.7cm,minimum height=1.05cm,fill=blue!3},
+  task/.style={box,text width=3.95cm,minimum height=1.55cm,fill=white},
+  flow/.style={-{Latex[length=2mm]},draw=black!65,line width=.65pt},
+  node distance=5mm
+]
+\node[wide] (entry) {\textbf{Streamlit 网页}\quad 基准与任务顺序\quad 阶段选择\quad 模型或预测提交\quad 结果查询};
+\node[wide,below=of entry] (manage) {\textbf{SQLite 评测管理}\quad 提交检查\quad 固定配置\quad 作业队列与状态};
+\node[task,below=7mm of manage] (cls) {\textbf{分类适配}\par 图像与类别映射\par 测试任务与分类头\par 任务及客户端准确率};
+\node[task,left=3mm of cls] (seg) {\textbf{分割适配}\par 图像与标签空间\par 整数预测标签图\par 病例 Dice 与标签预览};
+\node[task,right=3mm of cls] (reg) {\textbf{配准适配}\par 固定与移动图像\par 固定空间预测对应点\par TRE 及影像预览};
+\node[wide,below=7mm of cls] (score) {\textbf{独立评分进程}\quad 受限模型调用或预测读取\par 隐藏测试标注\quad 任务主指标\quad 阶段与客户端矩阵};
+\node[wide,below=of score,fill=green!4] (view) {\textbf{结果展示}\quad 阶段与方法比较\quad Cornerstone3D 病例查看\quad 报告导出};
+\node[wide,below=of view,fill=black!3] (store) {\textbf{持久化对象}\quad 评测配置\quad 模型与预测索引\quad 测试版本\quad 结果与来源\par 提交评分、论文历史结果和独立病例示例分别管理};
+\draw[flow] (entry) -- (manage);
+\draw[flow] (manage.south) -- (cls.north);
+\draw[flow] (manage.south -| seg.north) -- (seg.north);
+\draw[flow] (manage.south -| reg.north) -- (reg.north);
+\draw[flow] (seg.south) -- (score.north -| seg.south);
+\draw[flow] (cls.south) -- (score.north);
+\draw[flow] (reg.south) -- (score.north -| reg.south);
+\draw[flow] (score) -- (view);
+\draw[flow] (view) -- (store);
+\end{tikzpicture}
+\endgroup

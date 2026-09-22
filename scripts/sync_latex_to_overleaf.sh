@@ -51,6 +51,12 @@ git -C "$deploy_repo" rm -rq --ignore-unmatch -- \
   .gitignore \
   main.tex \
   latexmkrc \
+  Makefile \
+  FDSDSthesis.cls \
+  FontStyle \
+  fig \
+  macros.tex \
+  SRC \
   fduthesis.cls \
   fduthesis-en.cls \
   fduthesis.def \
@@ -62,10 +68,12 @@ git -C "$deploy_repo" rm -rq --ignore-unmatch -- \
   bibliography \
   figures \
   tables \
-  scripts
+  scripts/run_bibtex.sh
 install -d \
+  "$deploy_repo/fig" \
+  "$deploy_repo/FontStyle" \
+  "$deploy_repo/SRC" \
   "$deploy_repo/chapters" \
-  "$deploy_repo/config" \
   "$deploy_repo/bibliography" \
   "$deploy_repo/figures" \
   "$deploy_repo/tables" \
@@ -75,16 +83,15 @@ rsync -a \
   "$project_root/.gitignore" \
   "$project_root/main.tex" \
   "$project_root/latexmkrc" \
-  "$project_root/fduthesis.cls" \
-  "$project_root/fduthesis-en.cls" \
-  "$project_root/fduthesis.def" \
-  "$project_root/fudan-emblem.pdf" \
-  "$project_root/fudan-emblem-new.pdf" \
-  "$project_root/fudan-name.pdf" \
+  "$project_root/Makefile" \
+  "$project_root/FDSDSthesis.cls" \
+  "$project_root/macros.tex" \
   "$deploy_repo/"
+rsync -a "$project_root/FontStyle/" "$deploy_repo/FontStyle/"
+rsync -a "$project_root/fig/" "$deploy_repo/fig/"
+rsync -a --include='*.tex' --exclude='*' "$project_root/SRC/" "$deploy_repo/SRC/"
 rsync -a --include='*.tex' --exclude='*' "$project_root/chapters/" "$deploy_repo/chapters/"
-rsync -a --include='*.tex' --exclude='*' "$project_root/config/" "$deploy_repo/config/"
-rsync -a "$project_root/bibliography/references.bib" "$deploy_repo/bibliography/"
+rsync -a --include='*.bib' --include='*.bst' --exclude='*' "$project_root/bibliography/" "$deploy_repo/bibliography/"
 rsync -a "$project_root/figures/" "$deploy_repo/figures/"
 rsync -a "$project_root/tables/" "$deploy_repo/tables/"
 rsync -a "$project_root/scripts/run_bibtex.sh" "$deploy_repo/scripts/"

@@ -238,6 +238,76 @@ def run_independent_task(options: RunOptions, task_code: str, source_root: Path)
     dense=DenseDataset(dataset_path(options.data_root,task),"test",task.label_shift if options.scenario=="class" else 0); score=evaluate(model,DataLoader(dense,batch_size=options.batch_size),dense.patient_info,options.device,task_id,_classes(options.scenario,task)); dense.close(); train.close(); summary={"score":score["benchmark_mean"],"per_class":score["per_class"],"runtime_seconds":time.monotonic()-started}; _json(run_dir/"summary.json",summary); manifest.update(status="complete",validity="valid_final_backbone_reference",summary=summary,last_checkpoint_sha256=file_sha256(run_dir/"last.pt")); _json(run_dir/"run_manifest.json",manifest); return manifest
 
 
+def run_dense_first_task_gate(options: RunOptions, source_root: Path) -> dict:
+    """Train exactly task 1 with dense labels; select only by validation Dice."""
+    if options.method != "dense_ft":
+        raise ValueError("dense first-task gate requires dense_ft")
+    tasks = tasks_for(options.scenario); task = tasks[0]; seed_all(options.seed)
+    run_id = options.run_id or f"medseg_{options.scenario}_dense_first_task_seed{options.seed}"
+    run_dir = options.runs_root / "dense_first_task" / options.scenario / run_id
+    run_dir.mkdir(parents=True, exist_ok=False); controller = CheckpointController(run_dir)
+    manifest = _manifest(options, run_id, (task,), source_root)
+    manifest.update(reference_type="dense_first_task_gate", selection_metric="validation_foreground_patient_mean", test_for_selection=False)
+    _json(run_dir / "run_manifest.json", manifest)
+    train = DenseDataset(dataset_path(options.data_root, task), "train", task.label_shift if options.scenario == "class" else 0)
+    val = DenseDataset(dataset_path(options.data_root, task), "val", task.label_shift if options.scenario == "class" else 0)
+    test = DenseDataset(dataset_path(options.data_root, task), "test", task.label_shift if options.scenario == "class" else 0)
+    model = build_model(options.scenario).to(options.device); _activate(model, 0); task_id = 0 if options.scenario == "organ" else None
+    optimizer = _optimizer(model, options); scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=options.lr_decay_epoch, gamma=options.lr_decay_rate)
+    best_score, best_epoch, started = -float("inf"), None, time.monotonic(); rows=[]; last20=run_dir/"last_20"; last20.mkdir()
+    for epoch in range(options.epochs):
+        model.train(); total=known=0; generator=torch.Generator().manual_seed(options.seed+epoch); loader=DataLoader(train,batch_size=options.batch_size,shuffle=True,generator=generator,num_workers=0)
+        for images, labels in loader:
+            images,labels=images.to(options.device),labels.to(options.device); optimizer.zero_grad(set_to_none=True); loss=supervision_loss("dense",model(images,task_id),labels)
+            if not torch.isfinite(loss): raise FloatingPointError("non-finite dense first-task loss")
+            loss.backward(); optimizer.step(); total += float(loss.detach()) * int(labels.numel()); known += int(labels.numel())
+        scheduler.step(); validation=evaluate(model,DataLoader(val,batch_size=options.batch_size),val.patient_info,options.device,task_id,_classes(options.scenario,task))
+        row={"epoch":epoch,"loss":total/known,"lr":optimizer.param_groups[0]["lr"],"validation":validation,"selection_metric":validation["benchmark_mean"],"finite":True}; rows.append(row); _append(run_dir/"train.jsonl",{"epoch":epoch,"loss":row["loss"],"lr":row["lr"],"finite":True}); _append(run_dir/"validation.jsonl",row)
+        controller.save(model,optimizer,scheduler,0,epoch,rows,stage_complete=False)
+        if epoch >= options.epochs-20: shutil.copyfile(run_dir/"last.pt",last20/f"epoch_{epoch:03d}.pt")
+        if validation["benchmark_mean"] > best_score:
+            best_score,best_epoch=validation["benchmark_mean"],epoch; shutil.copyfile(run_dir/"last.pt",run_dir/"best.pt")
+        if controller.should_stop():
+            manifest.update(status="stopped_after_checkpoint",last_complete_epoch=epoch,checkpoint_sha256=file_sha256(run_dir/"last.pt")); _json(run_dir/"run_manifest.json",manifest); train.close(); val.close(); test.close(); return manifest
+    best=torch.load(run_dir/"best.pt",map_location="cpu",weights_only=False); model.load_state_dict(best["model"])
+    test_score=evaluate(model,DataLoader(test,batch_size=options.batch_size),test.patient_info,options.device,task_id,_classes(options.scenario,task))
+    nonempty = test_score["prediction_fg_fraction"] > 0.0
+    summary={"scenario":options.scenario,"task":task.code,"selection_metric":"validation_foreground_patient_mean","best_epoch":best_epoch,"best_validation_foreground_patient_mean":best_score,"test_foreground_patient_mean":test_score["benchmark_mean"],"test_per_class":test_score["per_class"],"test_prediction_fg_fraction":test_score["prediction_fg_fraction"],"foreground_prediction_nonempty":nonempty,"gate_threshold":.60,"gate":"PASS" if test_score["benchmark_mean"]>=.60 and nonempty else "FAIL","runtime_seconds":time.monotonic()-started,"peak_gpu_bytes":torch.cuda.max_memory_allocated(options.device) if torch.cuda.is_available() and str(options.device).startswith("cuda") else 0}
+    _json(run_dir/"summary.json",summary); manifest.update(status="complete",validity="dense_first_task_gate",summary=summary,last_checkpoint_sha256=file_sha256(run_dir/"last.pt"),best_checkpoint_sha256=file_sha256(run_dir/"best.pt")); _json(run_dir/"run_manifest.json",manifest)
+    train.close(); val.close(); test.close(); return manifest
+
+
+def _balanced_batches(annotations, classes, batch_size, seed):
+    positive=np.flatnonzero(np.isin(annotations,classes).any(axis=(1,2))); negative=np.flatnonzero(~np.isin(annotations,classes).any(axis=(1,2)))
+    if not len(positive) or not len(negative): raise RuntimeError("balanced sampler requires positive and negative slices")
+    rng=np.random.default_rng(seed); count=int(np.ceil(len(annotations)/batch_size)); left=batch_size//2; right=batch_size-left
+    return [np.concatenate((rng.choice(positive,left,replace=len(positive)<left),rng.choice(negative,right,replace=len(negative)<right))).tolist() for _ in range(count)]
+
+
+def run_pce_rescue_diagnostic(options: RunOptions, source_root: Path, variant: str) -> dict:
+    """Pre-registered 20-epoch first-task PCE diagnostic; validation selects best."""
+    if options.method != "pce_ft" or variant not in {"current_recipe","original_optimizer","balanced_sampler"}: raise ValueError("invalid PCE rescue route")
+    if options.epochs != 20: raise ValueError("PCE rescue diagnostics require exactly 20 epochs")
+    task=tasks_for(options.scenario)[0]; seed_all(options.seed); run_id=options.run_id or f"medseg_{options.scenario}_pce_{variant}_20e_seed{options.seed}"; run_dir=options.runs_root/"pce_rescue"/options.scenario/run_id; run_dir.mkdir(parents=True,exist_ok=False); controller=CheckpointController(run_dir)
+    manifest=_manifest(options,run_id,(task,),source_root); manifest.update(reference_type="pre_registered_pce_rescue_20e",variant=variant,selection_metric="validation_foreground_patient_mean",test_for_selection=False); _json(run_dir/"run_manifest.json",manifest)
+    sparse=SparseDataset(dataset_path(options.data_root,task),_annotation_path(options.sparse_root,options.scenario,task.code,options.seed)); val=DenseDataset(dataset_path(options.data_root,task),"val",task.label_shift if options.scenario=="class" else 0); test=DenseDataset(dataset_path(options.data_root,task),"test",task.label_shift if options.scenario=="class" else 0)
+    model=build_model(options.scenario).to(options.device); _activate(model,0); task_id=0 if options.scenario=="organ" else None
+    batch_size=4 if variant=="original_optimizer" else options.batch_size
+    optimizer=torch.optim.Adam([p for p in model.parameters() if p.requires_grad],lr=1e-4,weight_decay=1e-4) if variant=="original_optimizer" else _optimizer(model,options)
+    scheduler=torch.optim.lr_scheduler.StepLR(optimizer,step_size=options.lr_decay_epoch,gamma=options.lr_decay_rate); best_score=-float("inf"); best_epoch=None; rows=[]; started=time.monotonic()
+    for epoch in range(options.epochs):
+        model.train(); total=known=0
+        if variant=="balanced_sampler": loader=DataLoader(sparse,batch_sampler=_balanced_batches(sparse.annotations,_classes(options.scenario,task),batch_size,options.seed+epoch))
+        else: loader=DataLoader(sparse,batch_size=batch_size,shuffle=True,generator=torch.Generator().manual_seed(options.seed+epoch),num_workers=0)
+        for images,labels in loader:
+            images,labels=images.to(options.device),labels.to(options.device); optimizer.zero_grad(set_to_none=True); loss=supervision_loss("pce",model(images,task_id),labels)
+            if not torch.isfinite(loss): raise FloatingPointError("non-finite PCE rescue loss")
+            loss.backward(); optimizer.step(); count=int((labels!=IGNORE_INDEX).sum()); total+=float(loss.detach())*count; known+=count
+        scheduler.step(); validation=evaluate(model,DataLoader(val,batch_size=batch_size),val.patient_info,options.device,task_id,_classes(options.scenario,task)); row={"epoch":epoch,"loss":total/max(1,known),"lr":optimizer.param_groups[0]["lr"],"validation":validation,"selection_metric":validation["benchmark_mean"],"finite":True}; rows.append(row); _append(run_dir/"train.jsonl",{"epoch":epoch,"loss":row["loss"],"lr":row["lr"],"finite":True}); _append(run_dir/"validation.jsonl",row); controller.save(model,optimizer,scheduler,0,epoch,rows,stage_complete=False)
+        if validation["benchmark_mean"]>best_score: best_score,best_epoch=validation["benchmark_mean"],epoch; shutil.copyfile(run_dir/"last.pt",run_dir/"best.pt")
+    value=torch.load(run_dir/"best.pt",map_location="cpu",weights_only=False); model.load_state_dict(value["model"]); score=evaluate(model,DataLoader(test,batch_size=batch_size),test.patient_info,options.device,task_id,_classes(options.scenario,task)); summary={"scenario":options.scenario,"task":task.code,"variant":variant,"best_epoch":best_epoch,"best_validation_foreground_patient_mean":best_score,"test_foreground_patient_mean":score["benchmark_mean"],"test_per_class":score["per_class"],"test_prediction_fg_fraction":score["prediction_fg_fraction"],"foreground_prediction_nonempty":score["prediction_fg_fraction"]>0,"runtime_seconds":time.monotonic()-started}; _json(run_dir/"summary.json",summary); manifest.update(status="complete",validity="pce_rescue_diagnostic",summary=summary,last_checkpoint_sha256=file_sha256(run_dir/"last.pt"),best_checkpoint_sha256=file_sha256(run_dir/"best.pt")); _json(run_dir/"run_manifest.json",manifest); sparse.close(); val.close(); test.close(); return manifest
+
+
 def run_sequence(options: RunOptions, source_root: Path) -> dict:
     if options.method.startswith("enhanced_"): raise RuntimeError("blocked_by_static_gate")
     if options.seed != 42: raise RuntimeError("seeds_43_44_blocked_until_seed42_complete")

@@ -2,9 +2,8 @@
 
 ## 可以使用
 
-- `fduthesis.cls`、`fduthesis-en.cls`、`fduthesis.def`；
-- 模板所需校徽和校名资源；
-- `\documentclass`、`\fdusetup`、前置/正文/后置部分等排版机制；
+- `FDSDSthesis.cls`、模板所需字体、校徽和校名资源；
+- `\documentclass`、封面元数据、前置/正文/后置部分等排版机制；
 - 通用的“绪论—理论基础—研究章节—总结与展望”组织思想；
 - 学校要求的封面、目录、摘要、图表目录、参考文献和声明页格式。
 
@@ -20,7 +19,7 @@
 
 ## 工程规则
 
-1. 当前根目录中的 `main.tex` 和七个章节文件均为重新创建的空白工程；
+1. 当前根目录中的 `main.tex` 接入本论文的六章正文与附录 A；模板示例文件不参与编译；
 2. Codex 不得把 `sources/reference_thesis/chapter*.tex` 作为写作来源；
 3. 参考论文正文仅允许由 `scripts/reference_overlap_audit.py` 读取，以便发现不应出现的文本重合；
 4. 发现长句重合时，应回到本研究证据重新组织论证，不得只做同义词替换；

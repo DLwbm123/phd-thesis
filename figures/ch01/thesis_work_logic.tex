@@ -1,85 +1,34 @@
+% Top-to-bottom thesis structure with parallel research branches in grayscale.
 \begingroup
-\centering
+\linespread{1}\selectfont
 \begin{tikzpicture}[
-  font=\small,
-  box/.style={
-    rectangle,
-    rounded corners=2pt,
-    draw=black,
-    fill=white,
-    text=black,
-    line width=0.65pt,
-    align=center,
-    inner xsep=7pt,
-    inner ysep=5pt
-  },
-  band/.style={box, fill=black!5, text width=13.8cm, minimum height=1.05cm},
-  widebox/.style={box, text width=13.8cm, minimum height=1.08cm},
-  methodbox/.style={box, text width=4.15cm, minimum height=1.55cm},
-  arrow/.style={-{Latex[length=2.0mm,width=1.3mm]}, draw=black, line width=0.65pt},
-  relation/.style={draw=black, line width=0.65pt},
-  node distance=6.5mm and 6mm
+  font=\thesisfigurefont,
+  box/.style={draw=black!55,rounded corners=2pt,align=center,inner sep=4pt,line width=.6pt},
+  wide/.style={box,minimum width=13.1cm,fill=black!5,minimum height=.8cm},
+  branch/.style={box,text width=3.95cm,minimum height=3.35cm,fill=white},
+  flow/.style={-{Latex[length=2mm]},draw=black!65,line width=.65pt},
+  node distance=5mm
 ]
-
-\node[band] (constraints) {
-  \textbf{现实约束}\\[2pt]
-  \footnotesize 部分监督 \quad｜\quad 历史访问受限 \quad｜\quad 原始数据不可集中 \quad｜\quad 任务与分布持续演化
-};
-
-\node[widebox, below=of constraints] (question) {
-  \textbf{核心问题}\\[2pt]
-  在明确训练信息访问边界的条件下，持续积累医学影像分析能力
-};
-
-\node[widebox, below=of question] (benchmark) {
-  \textbf{第 3 章：场景与评价基础}\\[2pt]
-  持续医学图像分割的场景定义、实验协议与综合评价
-};
-
-% 以第 5 章节点为中轴放置三个方法框，使整行严格居中。
-\node[methodbox, below=9mm of benchmark] (scribble) {
-  \textbf{第 5 章：分割}\\[4pt]
-  \footnotesize ScribbleCL
-};
-
-\node[methodbox, left=of scribble] (fed) {
-  \textbf{第 4 章}\\[2pt]
-  无回放联邦持续分类\\[2pt]
-  \footnotesize FedSubMerge
-};
-
-\node[methodbox, right=of scribble] (samcl) {
-  \textbf{第 5 章：配准}\\[2pt]
-  有限回放持续配准\\[2pt]
-  \footnotesize SAMCL
-};
-
-\coordinate (branch) at ($(benchmark.south)+(0,-4mm)$);
-\draw[arrow] (constraints) -- (question);
-\draw[arrow] (question) -- (benchmark);
-\draw[relation] (benchmark.south) -- (branch);
-% 对称的分支横线与三条竖直箭头，避免原布局整体向右偏移。
-\draw[relation] (fed.north |- branch) -- (samcl.north |- branch);
-\draw[arrow] (fed.north |- branch) -- (fed.north);
-\draw[arrow] (scribble.north |- branch) -- (scribble.north);
-\draw[arrow] (samcl.north |- branch) -- (samcl.north);
-
-\coordinate (merge) at ($(scribble.south)+(0,-7mm)$);
-% 对称汇合，保证下方“共同分析主线”位于整图中轴。
-\draw[relation] (fed.south) -- (fed.south |- merge);
-\draw[relation] (scribble.south) -- (scribble.south |- merge);
-\draw[relation] (samcl.south) -- (samcl.south |- merge);
-\draw[relation] (fed.south |- merge) -- (samcl.south |- merge);
-
-\node[band, below=12mm of merge] (goal) {
-  \textbf{共同分析主线}\\[2pt]
-  \footnotesize 在各自任务与访问条件下，分析稳定性、可塑性、泛化及资源开销的取舍
-};
-\draw[arrow] (merge) -- (goal.north);
-
-\node[font=\scriptsize, align=center, text width=13.5cm, below=3.5mm of goal]
-  {箭头表示论文组织和问题承接关系，不表示各章方法构成同一算法链。};
-
+\node[wide] (problem) {\textbf{共同问题：任务持续演化与训练信息受限}};
+\node[wide,below=of problem,minimum height=1.05cm] (framework)
+  {\textbf{第三章：MedCL 医学影像持续学习评测平台}\\任务与基准配置\quad 阶段矩阵\quad 多维评价指标};
+\node[branch,below=1.05cm of framework] (fed)
+  {\textbf{第五章：类别扩展}\\\textbf{联邦持续分类}\\[5pt]无原始样本回放\\子空间融合与梯度保护};
+\node[branch,left=5mm of fed] (seg)
+  {\textbf{第四章：持续分割}\\\textbf{方法评测与弱监督分割}\\[5pt]密集监督评测\par $\downarrow$\par 涂鸦监督\\监督增强与特征一致性};
+\node[branch,right=5mm of fed] (reg)
+  {\textbf{第六章：任务增量}\\\textbf{持续医学图像配准}\\[5pt]有限图像对回放\\元学习与锐度感知优化};
+\node[wide,below=6mm of fed,minimum height=1.05cm,fill=black!8] (evaluation)
+  {\textbf{共同评价：任务性能与持续学习能力}\\阶段矩阵\quad BWTR\quad RMA\quad MPE\quad DRR};
+\node[wide,below=of evaluation] (future)
+  {\textbf{第七章：总结与展望}\qquad 多模态持续学习};
+\draw[flow] (problem) -- (framework);
+\draw[flow] (framework.south -| seg.north) -- node[right,align=left] {场景定义与\\评价指标} (seg.north);
+\draw[flow] (framework.south) -- node[right] {阶段矩阵与指标} (fed.north);
+\draw[flow] (framework.south -| reg.north) -- (reg.north);
+\draw[flow] (seg.south) -- (evaluation.north -| seg.south);
+\draw[flow] (fed.south) -- (evaluation.north);
+\draw[flow] (reg.south) -- (evaluation.north -| reg.south);
+\draw[flow] (evaluation) -- (future);
 \end{tikzpicture}
-\par
 \endgroup

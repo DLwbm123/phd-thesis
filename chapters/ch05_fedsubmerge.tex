@@ -1,0 +1,778 @@
+\chapter{基于子空间聚合的无回放联邦医学影像持续分类}
+\label{chap:fedsubmerge}
+\setlength{\emergencystretch}{1em}
+
+\section{引言}
+\label{sec:fedsubmerge-introduction}
+
+第四章通过有限图像--涂鸦回放保留旧任务能力。本章转向另一种训练条件：医学分类数据分布在多个客户端，类别按批次到达，后续阶段不能回放历史原始样本。评价仍沿用第三章 MedCL 的阶段矩阵，但以任务准确率代替分割 Dice，用 ACC 与 BWTR 分析最终表现和历史保持，用任务矩阵的对角条目观察初学表现，并结合 MPE、DRR 及通信记录分析资源开销。
+
+本章将每批新增类别组织为一个任务，对应第三章任务身份已知的多头分类设置。测试时，模型使用样本所属任务的分类头，候选类别限于对应类别批次。类别批次沿时间扩展，客户端之间同时存在类别比例、类别覆盖和图像来源差异，因而评价需要同时关注新任务学习、旧任务保持与联邦异质性。
+
+联邦模型既要保留本地旧任务知识，也要保留从其他客户端获得的知识。客户端只用当前数据更新时，单独保存的历史信息无法覆盖其他中心的经历；服务器若将所有历史方向都用于约束每个客户端，又可能压缩新任务的学习空间。本章因此研究如何融合跨客户端历史信息，以及如何减少不相关方向对当前学习的限制。
+
+针对上述问题，本文提出联邦子空间融合方法 FedSubMerge。每个客户端在当前阶段结束时利用样本级梯度与服务器此前返回的历史摘要，递归构建低秩主梯度子空间（principal gradient subspace，PGS）；服务器对客户端上传的子空间基和奇异值进行融合，形成覆盖跨客户端历史方向的共享保护空间；后续本地训练将共享特征提取器的梯度投影至该空间的正交补，以降低更新对旧任务损失的一阶干扰。FedSubMerge-AD 进一步按网络层计算子空间距离，为目标客户端选择相关客户端并构建个性化保护空间，从而在历史覆盖与当前可塑性之间形成不同侧重。
+
+常规联邦轮次仍交换完整模型，额外的子空间基与奇异值在阶段结束后上传和返回。本章的无回放指不再读取历史原始样本，保留的模型参数和子空间摘要仍参与后续学习。
+
+本章先说明研究动机与问题建模，再介绍 FedSubMerge、FedSubMerge-AD 及其局部理论分析。实验涵盖七个联邦设置，主比较报告 ACC、BWTR、MPE 和 DRR，并通过异质性、参与率和消融实验分析方法表现。最后结合 MedCL 的记录方式讨论阶段全局模型、客户端分布与资源开销。
+
+\section{方法动机与问题建模}
+\subsection{方法动机}
+\label{sec:fedsubmerge-motivation}
+
+已有联邦持续学习方法采用不同形式的历史信息。例如，Ke 等的 TPPR 结合视觉提示、任务感知的提示梯度投影和提示回放，研究参数高效的联邦类别增量学习\cite{ke2025tppr}。其保护对象是预训练模型中的少量可训练参数，本章则考察如何保存和融合样本级梯度子空间。
+
+本章的训练信息限制来自两个方面：不同机构只能在本地使用原始图像，服务器仅接收模型参数或其他允许传输的信息；进入新任务后，客户端也不能再读取旧任务原始样本。常规联邦学习侧重同一阶段的跨客户端聚合，单机持续学习侧重一个模型的顺序更新。两者结合时，当前本地梯度无法完整反映模型此前从其他机构获得的知识。
+
+具体到本地 PGS，客户端可以记录自身旧任务中对损失影响较大的梯度方向，并在后续训练中避开这些方向。该策略能够保护本地历史，却不能保护只由其他客户端观察过的类别。若某一罕见病种此前只出现在少数中心，未观察该病种的客户端不会在自己的 PGS 中形成相应方向。当这些客户端在新任务上产生较大更新时，其梯度仍可能干扰服务器模型中与该病种相关的参数。服务器端需要汇集跨客户端保护信息，才能把局部任务历史扩展为联邦范围的历史知识摘要。
+
+另一方面，保护范围并非越大越好。共享子空间包含的方向越多，梯度投影去除的当前任务分量也越多。客户端之间的任务历史和数据分布差异较大时，某些方向只对少数中心有用，却会同时限制所有客户端。该现象对应稳定性与可塑性的权衡：较大的保护空间通常覆盖更多旧任务方向，但可能降低当前任务的有效梯度能量；较小的保护空间保留更多优化自由度，却可能遗漏需要保持的历史方向。因此，服务器不仅需要融合，还需要判断哪些客户端方向与目标客户端的某一网络层更相关。
+
+据此，图\ref{fig:fedsubmerge-overview}概括了本章方法。客户端先进行常规轮次联邦训练，并在每个任务结束时构建逐层 PGS。FedSubMerge 将全部客户端 PGS 融合为同一个共享子空间；FedSubMerge-AD 则依据逐层子空间距离选择相关客户端，为每个目标客户端返回个性化 PGS。下一任务中，客户端先接收该 PGS，再投影本地梯度；任务结束后，将返回的历史摘要与当前任务梯度共同压缩为新的客户端 PGS，并上传服务器。该循环使历史信息以递归低秩摘要而非原始样本的形式跨任务传递。
+
+\begin{figure}[htbp]
+\centering
+\thesisgraphic{ch05/fedsubmerge_overview.pdf}
+\caption[FedSubMerge 与 FedSubMerge-AD 的整体流程]{FedSubMerge 与 FedSubMerge-AD 的整体流程。（a）联邦任务流与客户端主梯度子空间构建；（b）服务器端统一融合或按层选择相关客户端后进行自适应融合；（c）将后续本地梯度投影到保护空间的正交补，并在任务结束时更新客户端子空间。}
+\label{fig:fedsubmerge-overview}
+\end{figure}
+
+图中划去的历史影像表示后续任务不再回放历史原始样本；原始影像不直接上传至服务器。
+
+\subsection{问题建模}
+\label{sec:fedsubmerge-formulation}
+
+设联邦系统包含 $K$ 个客户端，集合为
+$\mathcal{C}=\{C_1,\ldots,C_K\}$，并由中心服务器协调训练。系统按时间接收 $T$ 个任务
+$\{\mathcal{T}^{(1)},\ldots,\mathcal{T}^{(T)}\}$。在任务 $\mathcal{T}^{(t)}$ 上，客户端 $C_c$ 拥有私有数据集
+\begin{equation}
+\mathcal{D}^{(t)}_c
+=
+\left\{\left(x^{(t)}_{c,i},y^{(t)}_{c,i}\right)\right\}_{i=1}^{N^{(t)}_c},
+\label{eq:fedsubmerge-local-dataset}
+\end{equation}
+其中 $x^{(t)}_{c,i}$ 为医学图像，$y^{(t)}_{c,i}$ 为类别标签，$N^{(t)}_c$ 为样本数。数据集始终位于对应客户端；本章实验通过公开数据划分模拟这一条件。任务 $t$ 训练期间只能访问 $\mathcal{D}^{(t)}_c$，不能重新调用任务 $1$ 至 $t-1$ 的原始训练样本。
+
+每个阶段引入新的疾病或医学语义类别批次，累计类别集合随阶段扩展。设第 $t$ 批类别为 $\mathcal{Y}_t$，已见类别集合为 $\bigcup_{\tau=1}^{t}\mathcal{Y}_{\tau}$。测试任务 $j$ 的身份已知，模型使用对应 $\mathcal{Y}_j$ 的任务特定分类头，而非固定使用最近阶段的头。PGS 投影作用于共享特征提取器中可训练的卷积层和全连接权重层，分类头及其他未选参数按常规方式更新。
+
+在训练流程上，每个任务执行 $R$ 个通信轮次，每轮客户端进行 $E$ 个本地训练周期。令 $W^{(t,r)}$ 表示任务 $t$ 第 $r$ 轮后的服务器模型，且对 $t>1$ 有 $W^{(t,0)}=W^{(t-1)}$，任务结束模型记为 $W^{(t)}=W^{(t,R)}$。客户端从 $W^{(t,r-1)}$ 出发完成本地更新后上传 $W_c^{(t,r)}$，服务器按照当前任务样本数执行
+\begin{equation}
+W^{(t,r)}
+=
+\sum_{c\in\mathcal{S}^{(t,r)}}
+\alpha_c^{(t,r)}W_c^{(t,r)},
+\qquad
+\alpha_c^{(t,r)}
+=
+\frac{N_c^{(t)}}{\sum_{j\in\mathcal{S}^{(t,r)}}N_j^{(t)}},
+\label{eq:fedsubmerge-fedavg}
+\end{equation}
+其中 $\mathcal{S}^{(t,r)}$ 为当前轮参与集合。若所有客户端均参与，则该集合为 $\mathcal{C}$。某客户端在任务 $t$ 没有数据时，不参与该任务的模型聚合和 PGS 上传，其已保存 PGS 保持不变。
+
+完成前 $t$ 个任务后，若全部历史数据仍可访问，理想目标可写为
+\begin{equation}
+\min_W
+\sum_{\tau=1}^{t}
+\sum_{c\in\mathcal{C}_{\tau}}
+\alpha_c^{(\tau)}
+\mathbb{E}_{(x,y)\sim\mathcal{D}^{(\tau)}_c}
+\left[\ell\!\left(f_W(x),y\right)\right],
+\label{eq:fedsubmerge-objective}
+\end{equation}
+其中 $\mathcal{C}_{\tau}$ 为任务 $\tau$ 上存在数据的客户端集合。无回放约束使后续阶段无法直接优化式\eqref{eq:fedsubmerge-objective}中的全部历史项。本章的实际目标是在只使用当前任务样本训练的同时，通过紧凑历史方向降低新更新对旧任务的干扰。
+
+该建模保留了常规 FedAvg 的轮次模型通信。PGS 不是每轮传输的替代模型，而是在每个任务结束后增加的一次上传和返回。因此，本章方法改变的是历史知识的表示和本地梯度更新方式，而不是用低秩子空间替代完整全局模型。
+
+\section{FedSubMerge 方法}
+\label{sec:fedsubmerge-method}
+
+\label{subsec:fedsubmerge-overview}
+
+FedSubMerge 的核心对象是逐层 PGS。客户端用少量当前任务样本构造样本级梯度矩阵，通过奇异值分解提取主要方向；服务器接收各客户端的子空间基和奇异值，并再次执行拼接与压缩。统一版本向所有客户端返回同一个 PGS，强调跨机构历史覆盖。自适应版本按目标客户端和网络层选择相似客户端，返回客户端特定 PGS，强调在异质性下保留优化自由度。
+
+任务 $t$ 开始前，客户端接收服务器在任务 $t-1$ 后返回的共享或个性化 PGS，并在本地训练时将共享特征提取器的梯度投影到其正交补。任务结束后，客户端将此前返回的加权基与当前任务梯度共同压缩为新的 PGS。服务器再进行统一或自适应融合，为下一任务提供保护空间。首个任务没有历史 PGS，采用常规本地更新。
+
+\subsection{客户端主梯度子空间构建}
+\label{subsec:fedsubmerge-client-pgs}
+
+对旧任务 $\tau<t$，设当前模型为 $W$，一次小更新为 $\Delta W$。旧任务损失的局部一阶展开为
+\begin{equation}
+\mathcal{L}^{(\tau)}(W+\Delta W)
+-
+\mathcal{L}^{(\tau)}(W)
+\approx
+\left\langle
+\nabla_W\mathcal{L}^{(\tau)}(W),\Delta W
+\right\rangle.
+\label{eq:fedsubmerge-first-order}
+\end{equation}
+若后续更新避开旧任务梯度的主要方向，式\eqref{eq:fedsubmerge-first-order}中的一阶内积会减小。PGS 因此用于近似旧任务损失敏感的参数方向，而不是存储旧图像或重建完整历史分布。
+
+任务 $t$ 最后一轮聚合后，客户端使用最终模型 $W^{(t)}$ 从当前任务训练集中采样 $n_s$ 个样本。对某个向量化维度为 $d$ 的受保护层，样本级梯度矩阵写为
+\begin{equation}
+G_c^{(t)}
+=
+\left[
+ g_{c,1}^{(t)}\mid\cdots\mid g_{c,n_s}^{(t)}
+\right]
+\in\mathbb{R}^{d\times n_s},
+\qquad
+ g_{c,i}^{(t)}
+=
+\operatorname{vec}\!\left(
+\nabla_W\ell\!\left(f_{W^{(t)}}(x_{c,i}^{(t)}),y_{c,i}^{(t)}\right)
+\right).
+\label{eq:fedsubmerge-gradient-matrix}
+\end{equation}
+每一列对应一个样本对该层权重的梯度。相比激活子空间，梯度方向直接描述参数变化对训练损失的局部影响。
+
+设任意输入矩阵 $G$ 的薄奇异值分解为
+$G=\widehat U\widehat\Sigma\widehat V^{\top}$，奇异值满足
+$\widehat\sigma_1\geq\widehat\sigma_2\geq\cdots\geq0$。给定能量阈值 $\rho\in(0,1]$，保留满足下式的最小秩：
+\begin{equation}
+k(G,\rho)
+=
+\min\left\{k:
+\frac{\sum_{i=1}^{k}\widehat\sigma_i^2}
+     {\sum_i\widehat\sigma_i^2}
+\geq\rho
+\right\}.
+\label{eq:fedsubmerge-energy-rule}
+\end{equation}
+记
+\begin{equation}
+\operatorname{PGS}(G;\rho)=(U_G,\Sigma_G),
+\label{eq:fedsubmerge-pgs-operator}
+\end{equation}
+其中 $U_G$ 和 $\Sigma_G$ 分别包含前 $k(G,\rho)$ 个左奇异向量及其奇异值。若 $G$ 为零矩阵，则返回空子空间。客户端更新阈值记为 $\epsilon_{\mathrm{th}}$，服务器融合阈值记为 $\gamma$。奇异值在后续融合中保留不同方向的相对强度。
+
+\subsection{服务器端跨客户端子空间融合}
+\label{subsec:fedsubmerge-server-merge}
+
+任务 $t$ 结束后，服务器为每个客户端保存最近一次有效上传的 PGS。客户端 $c$ 的记录记为
+$(U_c^{(t)},\Sigma_c^{(t)})$。FedSubMerge 对每个受保护层构造
+\begin{equation}
+M_{\mathrm{all}}^{(t)}
+=
+\left[
+U_1^{(t)}\Sigma_1^{(t)}
+\mid\cdots\mid
+U_K^{(t)}\Sigma_K^{(t)}
+\right],
+\qquad
+(\bar U_{\mathrm{all}}^{(t)},\bar\Sigma_{\mathrm{all}}^{(t)})
+=
+\operatorname{PGS}\!\left(M_{\mathrm{all}}^{(t)};\gamma\right).
+\label{eq:fedsubmerge-uniform-merge}
+\end{equation}
+服务器随后令
+$(\bar U_c^{(t)},\bar\Sigma_c^{(t)})=(\bar U_{\mathrm{all}}^{(t)},\bar\Sigma_{\mathrm{all}}^{(t)})$，并向全部客户端返回同一个共享 PGS。
+
+式\eqref{eq:fedsubmerge-uniform-merge}拼接的是 $U_c\Sigma_c$ 而不是只有 $U_c$。若不同方向的奇异值差异较大，只拼接正交基会把所有保留方向视为同等重要；加入奇异值后，服务器端协方差能够反映各方向在客户端递归代理中的相对能量。再次执行 SVD 还可以融合多个客户端间相近的方向，并通过 $\gamma$ 限制任务增长时的秩膨胀。较大的 $\gamma$ 保留更多历史能量，通常增强保护范围，但也可能增加对当前任务更新的约束。
+
+\subsection{基于正交补投影的本地训练}
+\label{subsec:fedsubmerge-local-projection}
+
+对任务 $t\geq2$，客户端 $C_c$ 接收任务 $t-1$ 后返回的 PGS。对某个受保护层的批次梯度 $g_c$，计算
+\begin{equation}
+\widetilde g_c
+=
+P_{\bar U_c^{(t-1)}}^{\perp}g_c
+=
+\left(I-\bar U_c^{(t-1)}(\bar U_c^{(t-1)})^{\top}\right)g_c.
+\label{eq:fedsubmerge-projected-gradient}
+\end{equation}
+投影后的 $\widetilde g_c$ 替代原梯度进入优化器。FedSubMerge 中所有客户端使用相同的 $\bar U_{\mathrm{all}}^{(t-1)}$；FedSubMerge-AD 中不同客户端可使用不同的 $\bar U_c^{(t-1)}$。该操作只约束共享特征提取器中选定的卷积层和全连接权重层，任务特定分类头及其他未投影参数正常更新。
+
+不过，正交补投影去除的是返回 PGS 张成空间中的梯度分量。若该空间覆盖旧任务的重要梯度方向，则被保留的更新对旧任务损失的一阶影响较小。但式\eqref{eq:fedsubmerge-projected-gradient}并不保证旧任务性能完全不变。PGS 是有限样本、有限秩和历史模型位置下的近似，未投影参数、二阶项以及优化器残差仍可能引起干扰。
+
+\subsection{自适应客户端选择与保护子空间}
+\label{subsec:fedsubmerge-personalized-subspace}
+\label{subsec:fedsubmerge-adaptive-selection}
+
+统一融合能够扩大历史覆盖范围，但可能把与目标客户端无关的方向加入保护空间。FedSubMerge-AD 对每个目标客户端和每个受保护层分别选择相关客户端。设客户端 $C_c$ 和 $C_{c'}$ 在某层的 PGS 秩为 $k_c^{(t)}$ 和 $k_{c'}^{(t)}$，两子空间的主角由
+\begin{equation}
+\cos\theta_{c,c',i}^{(t)}
+=
+\sigma_i\!\left((U_c^{(t)})^{\top}U_{c'}^{(t)}\right),
+\qquad
+ i=1,\ldots,\min(k_c^{(t)},k_{c'}^{(t)})
+\label{eq:fedsubmerge-principal-angle}
+\end{equation}
+确定。对应投影距离定义为
+\begin{align}
+D_{c,c'}^{(t)}
+&=
+\frac{1}{\sqrt{2}}
+\left\|P_{U_c^{(t)}}-P_{U_{c'}^{(t)}}\right\|_F
+\notag\\
+&=
+\left[
+\sum_{i=1}^{\min(k_c^{(t)},k_{c'}^{(t)})}
+\sin^2\theta_{c,c',i}^{(t)}
++
+\frac{1}{2}\left|k_c^{(t)}-k_{c'}^{(t)}\right|
+\right]^{1/2}.
+\label{eq:fedsubmerge-subspace-distance}
+\end{align}
+由定义可见，该距离同时考虑方向夹角和秩差异，因而可比较维度不同的 PGS。距离较小表示两个客户端在该层保留的梯度方向更接近。它衡量的是子空间几何关系，不直接等同于疾病语义、数据分布或临床相关性。
+
+对目标客户端 $C_c$，服务器选择距离最小的 $n$ 个其他客户端，记为 $\mathcal{P}_c^{(t)}$，并令
+\begin{equation}
+\mathcal{P}_c^{(t)}
+=
+\operatorname*{arg\,min}_{
+\substack{\mathcal{P}\subseteq\{1,\ldots,K\}\setminus\{c\}\\|\mathcal{P}|=n}}
+\sum_{j\in\mathcal{P}}D_{c,j}^{(t)},
+\qquad
+\mathcal{N}_c^{(t)}=\{c\}\cup\mathcal{P}_c^{(t)}.
+\label{eq:fedsubmerge-neighbor-set}
+\end{equation}
+相关客户端选择在各网络层独立执行，因为浅层和深层的子空间相似性可能不同。
+
+
+基于逐层相关客户端集合，FedSubMerge-AD 构造
+\begin{equation}
+M_c^{(t)}
+=
+\left[
+U_j^{(t)}\Sigma_j^{(t)}\mid j\in\mathcal{N}_c^{(t)}
+\right],
+\qquad
+(\bar U_c^{(t)},\bar\Sigma_c^{(t)})
+=
+\operatorname{PGS}\!\left(M_c^{(t)};\gamma\right).
+\label{eq:fedsubmerge-personalized-merge}
+\end{equation}
+该过程与统一融合使用相同的奇异值加权、拼接和重新压缩，只改变参与融合的客户端集合。目标客户端自身始终包含在 $\mathcal{N}_c^{(t)}$ 中，因此个性化 PGS 至少利用其本地历史摘要。
+
+因此，相关客户端数 $n$ 控制跨客户端共享程度。当 $n=0$ 时，只使用目标客户端的 PGS；当 $n=K-1$ 时，所有客户端均被选中，方法退化为 FedSubMerge。中间值排除距离较大的方向，为当前任务保留更多更新空间。该选择不能保证每层最终返回的 PGS 秩一定更低，因为服务器重新压缩后的秩还取决于奇异值谱和 $\gamma$。
+
+\subsection{算法流程与实现细节}
+\label{subsec:fedsubmerge-algorithm}
+
+任务结束时的客户端 PGS 更新不是只由当前任务梯度构成。客户端把服务器上一任务返回的加权基与当前梯度矩阵拼接：
+\begin{equation}
+(U_c^{(t)},\Sigma_c^{(t)})
+=
+\operatorname{PGS}\!\left(
+\left[
+\bar U_c^{(t-1)}\bar\Sigma_c^{(t-1)}
+\mid
+G_c^{(t)}
+\right];
+\epsilon_{\mathrm{th}}
+\right),
+\qquad
+(\bar U_c^{(0)},\bar\Sigma_c^{(0)})=(\varnothing,\varnothing).
+\label{eq:fedsubmerge-client-pgs-update}
+\end{equation}
+因此，客户端保存的是递归压缩的历史代理。FedSubMerge 使用前一任务的共享 PGS；FedSubMerge-AD 使用该客户端收到的个性化 PGS。式\eqref{eq:fedsubmerge-client-pgs-update}使跨客户端历史能够进入下一轮客户端摘要，也意味着其权重结构不同于把所有原始历史梯度各拼接一次。
+
+算法\ref{alg:fedsubmerge}给出完整流程。常规通信轮只上传和下载模型；PGS 在每个任务结束后构建、上传和返回一次。
+
+\begin{algorithm}[htbp]
+\DontPrintSemicolon
+\KwIn{客户端 $\{C_c\}_{c=1}^{K}$，任务序列 $\{\mathcal{T}^{(t)}\}_{t=1}^{T}$，通信轮数 $R$，本地周期数 $E$，服务器阈值 $\gamma$，客户端阈值 $\epsilon_{\mathrm{th}}$，相关客户端数 $n$}
+\KwOut{最终全局模型 $W^{(T)}$ 与每个任务结束后返回的 PGS}
+初始化 $W^{(0)}$，并将全部客户端 PGS 置为空\;
+\For{$t=1,\ldots,T$}{
+  令 $W^{(t,0)}\leftarrow W^{(t-1)}$\;
+  \For{$r=1,\ldots,R$}{
+    客户端从 $W^{(t,r-1)}$ 出发训练 $E$ 个本地周期；若 $t\geq2$，按式\eqref{eq:fedsubmerge-projected-gradient}投影选定层的梯度\;
+    客户端上传 $W_c^{(t,r)}$，服务器按式\eqref{eq:fedsubmerge-fedavg}聚合得到 $W^{(t,r)}$\;
+  }
+  令 $W^{(t)}\leftarrow W^{(t,R)}$ 并发送给客户端\;
+  客户端构造 $G_c^{(t)}$，按式\eqref{eq:fedsubmerge-client-pgs-update}更新并上传 PGS\;
+  \eIf{$n=K-1$}{
+    服务器按式\eqref{eq:fedsubmerge-uniform-merge}构建共享 PGS，并返回全部客户端\;
+  }{
+    服务器按式\eqref{eq:fedsubmerge-subspace-distance}--\eqref{eq:fedsubmerge-neighbor-set}逐层选择相关客户端，并按式\eqref{eq:fedsubmerge-personalized-merge}返回个性化 PGS\;
+  }
+}
+\caption{FedSubMerge 与 FedSubMerge-AD}
+\label{alg:fedsubmerge}
+\end{algorithm}
+
+在本章实验中，PGS 只为共享特征提取器的可训练卷积层和全连接权重层构建。没有当前任务数据的客户端不参与该任务的 PGS 上传，服务器保留其最近摘要。该处理使方法能够支持部分客户端缺少某一任务数据，但本章仍假设各客户端的任务切换时机和整体任务流均同步给定。
+
+\section{理论分析}
+\label{sec:fedsubmerge-theory}
+
+本节在单个受保护权重层上分析 PGS 对旧任务损失和当前任务梯度的影响。将该层参数向量记为 $w\in\mathbb{R}^{d}$。多层情形可通过堆叠参数并使用分块对角投影表示。以下结论依赖局部光滑性和有效更新确实由投影梯度形成的条件，用于解释作用机制，不直接给出分类准确率或全局收敛保证。
+
+\subsection{共享与个性化 PGS 下的旧任务损失}
+\label{subsec:fedsubmerge-theory-loss}
+
+对旧任务 $\tau$，定义联邦损失及其梯度为
+\begin{equation}
+\mathcal{L}_{\mathrm g}^{(\tau)}(w)
+=
+\sum_{c\in\mathcal{C}_{\tau}}
+\alpha_c^{(\tau)}
+\mathbb{E}_{(x,y)\sim\mathcal{D}_c^{(\tau)}}
+\left[\ell(f_w(x),y)\right],
+\qquad
+h_{\tau}(w)=\nabla\mathcal{L}_{\mathrm g}^{(\tau)}(w).
+\label{eq:fedsubmerge-old-task-loss}
+\end{equation}
+对正交基 $U$，记 $P_U=UU^{\top}$、$P_U^{\perp}=I-UU^{\top}$，并定义旧任务梯度未被覆盖的残差
+\begin{equation}
+\varepsilon_{\tau}(w;U)
+=
+\left\|P_U^{\perp}h_{\tau}(w)\right\|.
+\label{eq:fedsubmerge-coverage-residual}
+\end{equation}
+若 $\mathcal{L}_{\mathrm g}^{(\tau)}$ 在分析路径附近为 $L_{\tau}$-光滑函数，并且 FedSubMerge 中每个参与客户端的完整有效更新满足
+$\Delta w_c=P_U^{\perp}z_c$，则 FedAvg 聚合后有
+\begin{equation}
+\Delta w
+=
+\sum_c\alpha_c\Delta w_c
+=
+P_U^{\perp}\sum_c\alpha_c z_c,
+\qquad
+U^{\top}\Delta w=0.
+\label{eq:fedsubmerge-shared-orthogonality}
+\end{equation}
+由光滑性可得
+\begin{equation}
+\mathcal{L}_{\mathrm g}^{(\tau)}(w+\Delta w)
+-
+\mathcal{L}_{\mathrm g}^{(\tau)}(w)
+\leq
+\varepsilon_{\tau}(w;U)\|\Delta w\|
++
+\frac{L_{\tau}}{2}\|\Delta w\|^2.
+\label{eq:fedsubmerge-shared-loss-bound}
+\end{equation}
+式\eqref{eq:fedsubmerge-shared-orthogonality}表明，在共享 PGS 和精确有效投影条件下，聚合不会重新引入沿保护子空间的分量。式\eqref{eq:fedsubmerge-shared-loss-bound}中的一阶项由 PGS 未覆盖的旧任务梯度决定；当 $h_{\tau}(w)$ 完全位于 $\operatorname{span}(U)$ 中时，该项为零，仍保留二阶项。
+
+FedSubMerge-AD 中不同客户端使用 $U_c$，聚合更新不必正交于某个统一子空间。若 $\Delta w_c=P_{U_c}^{\perp}z_c$，则
+\begin{equation}
+\mathcal{L}_{\mathrm g}^{(\tau)}(w+\Delta w)
+-
+\mathcal{L}_{\mathrm g}^{(\tau)}(w)
+\leq
+\sum_c\alpha_c
+\left\|P_{U_c}^{\perp}h_{\tau}(w)\right\|
+\|\Delta w_c\|
++
+\frac{L_{\tau}}{2}\|\Delta w\|^2.
+\label{eq:fedsubmerge-personalized-loss-bound}
+\end{equation}
+个性化方法的一阶保护由各客户端 PGS 对联邦旧任务梯度的覆盖共同决定。该表达允许不同客户端保留不同方向，但不产生与统一方法相同的全局正交性。
+
+上述结果只覆盖被投影的共享权重块。若完整模型写为 $W=(w,q)$，其中 $q$ 表示分类头或其他未投影参数，则旧任务损失变化还包含未投影项
+\[
+\left\|\nabla_q\mathcal{L}_{\mathrm g}^{(\tau)}(W)\right\|\,
+\left\|\Delta q\right\|.
+\]
+若动量、解耦权重衰减或其他优化器项产生未投影残差 $r_c$，有效更新可写为
+$\Delta w_c=P_U^{\perp}z_c+r_c$，相应上界还需加入由聚合残差引起的一阶项。因此，精确正交性不能被外推到全部模型参数和任意优化器实现。
+
+\subsection{递归历史代理与两阶段截断}
+\label{subsec:fedsubmerge-theory-compression}
+
+客户端在任务结束时形成的矩阵可记为
+\begin{equation}
+B_c^{(t)}
+=
+\left[
+\bar U_c^{(t-1)}\bar\Sigma_c^{(t-1)}
+\mid
+G_c^{(t)}
+\right],
+\label{eq:fedsubmerge-recursive-proxy}
+\end{equation}
+并对其执行能量截断。$B_c^{(t)}$ 是递归客户端历史代理，不是所有原始历史梯度矩阵的直接拼接。对客户端集合 $\mathcal{A}$，记
+$B_{\mathcal{A}}=[B_j\mid j\in\mathcal{A}]$ 和
+$M_{\mathcal{A}}=[U_j\Sigma_j\mid j\in\mathcal{A}]$。若每个客户端上传其代理的完整约化 SVD
+$B_j=U_j\Sigma_jV_j^{\top}$，则
+\begin{equation}
+B_{\mathcal{A}}B_{\mathcal{A}}^{\top}
+=
+M_{\mathcal{A}}M_{\mathcal{A}}^{\top}.
+\label{eq:fedsubmerge-covariance-equivalence}
+\end{equation}
+因此，在客户端不截断的理想条件下，服务器通过奇异值加权基可恢复合并后的递归代理矩阵的左主子空间，而无需接收代理矩阵本身。这一协方差恒等式与分布式 SVD 和联邦主成分分析中的汇总思想一致\cite{iwen2016distributedSVD,grammenos2020federatedPCA}。
+
+不过，式\eqref{eq:fedsubmerge-covariance-equivalence}不等价于对全部未压缩历史梯度执行一次全局 SVD。统一融合时，每个客户端都接收同一个上一任务共享摘要，因而该摘要会在多个 $B_c^{(t)}$ 中重复出现。该递归结构强化已融合历史方向的影响，但其权重不能解释为每个原始历史梯度只出现一次。
+
+实际算法包含客户端阈值 $\epsilon_{\mathrm{th}}$ 和服务器阈值 $\gamma$ 两次截断。设客户端残差为 $R_j$，服务器重新压缩残差为 $R_{\mathrm{srv}}$，则最终摘要的协方差误差具有正半定分解
+\begin{align}
+E_{\mathcal{A}}
+&=
+B_{\mathcal{A}}B_{\mathcal{A}}^{\top}
+-
+\bar U_{\mathcal{A}}\bar\Sigma_{\mathcal{A}}^2
+\bar U_{\mathcal{A}}^{\top}
+\notag\\
+&=
+\sum_{j\in\mathcal{A}}R_jR_j^{\top}
++
+R_{\mathrm{srv}}R_{\mathrm{srv}}^{\top}
+\succeq0,
+\label{eq:fedsubmerge-two-stage-error}
+\end{align}
+并满足
+\begin{equation}
+\|E_{\mathcal{A}}\|_2
+\leq
+\operatorname{tr}(E_{\mathcal{A}})
+\leq
+(1-\epsilon_{\mathrm{th}})
+\sum_{j\in\mathcal{A}}\|B_j\|_F^2
++
+(1-\gamma)\|M_{\mathcal{A}}\|_F^2.
+\label{eq:fedsubmerge-two-stage-bound}
+\end{equation}
+式\eqref{eq:fedsubmerge-two-stage-bound}分别刻画客户端压缩和服务器重新压缩造成的能量损失。阈值提高会减小截断误差，但也会增加返回 PGS 的秩和投影约束。
+
+PGS 在构建模型位置附近覆盖旧梯度，不意味着后续模型移动后仍保持相同覆盖。对固定 $U$，光滑性给出
+\begin{equation}
+\varepsilon_{\tau}(w;U)
+\leq
+\varepsilon_{\tau}(w_0;U)
++
+L_{\tau}\|w-w_0\|.
+\label{eq:fedsubmerge-model-drift}
+\end{equation}
+该关系说明，模型漂移可能增加历史梯度未覆盖部分，也是本节结论应解释为局部机制而非全局准确率保证的原因。
+
+\subsection{稳定性--可塑性与相关客户端选择依据}
+\label{subsec:fedsubmerge-theory-plasticity}
+
+在某个任务结束时及相应受保护层上，记统一融合候选矩阵为
+$M_{\mathrm{all}}=[U_1\Sigma_1\mid\cdots\mid U_K\Sigma_K]$，目标客户端的自适应候选矩阵为
+$M_c=[U_j\Sigma_j\mid j\in\mathcal{N}_c]$。服务器重新压缩前，其列空间满足
+$\mathcal{V}_c\subseteq\mathcal{V}_{\mathrm{all}}$。定义向量 $v$ 经过子空间投影后保留的能量为
+$\mathcal{R}(\mathcal{V};v)=\|P_{\mathcal{V}}^{\perp}v\|^2$，则
+\begin{equation}
+\mathcal{R}(\mathcal{V}_c;v)
+-
+\mathcal{R}(\mathcal{V}_{\mathrm{all}};v)
+=
+\left\|P_{\mathcal{V}_{\mathrm{all}}\ominus\mathcal{V}_c}v\right\|^2
+\geq0.
+\label{eq:fedsubmerge-nested-tradeoff}
+\end{equation}
+对当前任务梯度 $g_c$，式\eqref{eq:fedsubmerge-nested-tradeoff}说明自适应候选空间至少保留与统一候选空间相同的梯度能量；对旧任务梯度，统一候选空间的未覆盖能量不大于自适应候选空间。两项方向相反的关系形式化了理想化的稳定性--可塑性折中。
+
+该排序只对服务器重新压缩前的候选列空间严格成立。使用 $\gamma<1$ 后，统一和自适应候选矩阵会依据各自奇异值谱截断，最终返回子空间不一定保持嵌套。因此，理论不要求任意任务、任意层或任意数据设置下 FedSubMerge 的 BWT 必然更高，也不要求 FedSubMerge-AD 的 ACC 必然更高。
+
+投影距离还可与待合并方向中落在目标子空间之外的能量联系起来。设候选客户端 $C_j$ 相对目标 $C_c$ 的加权外部能量为
+$E_{j\mid c}=\|P_{U_c}^{\perp}U_j\Sigma_j\|_F^2$，则
+\begin{equation}
+E_{j\mid c}
+\leq
+\|\Sigma_j\|_2^2
+\left(
+D_{c,j}^2+\frac{k_j-k_c}{2}
+\right).
+\label{eq:fedsubmerge-peer-energy-bound}
+\end{equation}
+当候选客户端的保留秩和谱权重相同时，选择最小投影距离的 $n$ 个客户端能够最小化该上界；谱权重在有限范围内变化时，距离选择可视为受控的无权近似。该结果解释了客户端选择准则为何能够减少与目标子空间差异较大的方向，但不保证服务器截断后的最终秩或当前任务能量排序。
+
+\subsection{通信与存储开销}
+\label{subsec:fedsubmerge-theory-communication}
+
+设一个标量占用 $b$ 字节，完整模型包含 $P$ 个传输参数，客户端 $C_c$ 在一个任务内参与 $R_c$ 个通信轮次，则模型下载与上传开销为
+\begin{equation}
+C_{\mathrm{model},c}=2bPR_c.
+\label{eq:fedsubmerge-model-communication}
+\end{equation}
+设 $\mathcal{L}_{\mathrm{PGS}}$ 为受保护层集合，第 $\ell$ 层向量化维度为 $d_{\ell}$，客户端上传秩和服务器返回秩分别为 $k_{c,\ell}$ 与 $\bar k_{c,\ell}$。忽略少量元数据后，每个任务结束后的 PGS 通信量及其相对开销为
+\begin{equation}
+C_{\mathrm{PGS},c}
+=
+b\sum_{\ell\in\mathcal{L}_{\mathrm{PGS}}}
+(d_{\ell}+1)(k_{c,\ell}+\bar k_{c,\ell}),
+\qquad
+\Omega_c
+=
+\frac{C_{\mathrm{PGS},c}}{2bPR_c}.
+\label{eq:fedsubmerge-pgs-communication}
+\end{equation}
+该开销依赖 $\epsilon_{\mathrm{th}}$ 和 $\gamma$ 实际产生的逐层秩，不能用固定秩假设替代。常规轮次中 FedSubMerge 与 FedAvg 传输相同的完整模型，额外通信只在每个任务结束后发生。参与率下降时，轮次模型通信随参与客户端数减少，而任务结束后的 PGS 通信在相对比例中的占比可能上升。
+
+服务器持久存储每个客户端最近上传的 PGS 基和奇异值，其大小为
+\begin{equation}
+S_{\mathrm{server}}
+=
+b\sum_{c=1}^{K}
+\sum_{\ell\in\mathcal{L}_{\mathrm{PGS}}}
+(d_{\ell}+1)k_{c,\ell}.
+\label{eq:fedsubmerge-server-storage}
+\end{equation}
+这些摘要不包含原始图像、标签、未归一化输出（logits）、生成样本或回放样本集合。该存储形式支持无原始样本回放，但不能据此推导形式化隐私性质。
+
+\section{实验设计与结果分析}
+\label{sec:fedsubmerge-experiments}
+
+\subsection{实验设置}
+\label{subsec:fedsubmerge-experimental-setup}
+
+本章在 PathMNIST、OrganAMNIST、Hyper-Kvasir 和由四个来源数据集构成的多来源皮肤病变基准上评价方法\cite{yang2023medmnist,borgli2020hyperkvasir,tschandl2018ham10000,kawahara2019derm7pt,combalia2019bcn20000,ballerini2013dermofit}。表\ref{tab:fedsubmerge-setup}给出七个联邦设置。PathMNIST 和 Hyper-Kvasir 分别在 $\alpha=0.1$ 与 $0.3$ 的 Dirichlet 划分下形成四个分布偏斜设置；OrganAMNIST 和 Hyper-Kvasir 形成两个标签数量偏斜设置；四个皮肤病变数据源共同构成一个四客户端特征偏斜设置。
+
+\begin{table}[htbp]
+\centering
+\caption{FedSubMerge 实验数据、联邦划分与任务流设置。}
+\label{tab:fedsubmerge-setup}
+\thesistablefont
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}p{1.4cm}p{2.55cm}cp{3.1cm}p{1.85cm}cr@{}}
+\toprule
+场景 & 数据集 & 类别数 & 联邦划分 & 任务划分 & 客户端数 & 样本数 \\
+\midrule
+\multicolumn{7}{l}{标签偏斜} \\
+\multirow{2}{1.4cm}{分布偏斜} & PathMNIST & 9 & Dirichlet $\alpha\in\{0.1,0.3\}$ & $[2,2,2,3]$ & 10 & 107180 \\
+& Hyper-Kvasir & 20 & Dirichlet $\alpha\in\{0.1,0.3\}$ & $[2]\times10$ & 10 & 10662 \\
+\multirow{2}{1.4cm}{标签数量偏斜} & OrganAMNIST & 11 & 每客户端随机两类子集 & $[3,4,4]$ & 10 & 58830 \\
+& Hyper-Kvasir & 20 & 每客户端随机 $50\%$ 类别子集 & $[4,4,4,4,4]$ & 10 & 10662 \\
+\midrule
+\multicolumn{7}{l}{特征偏斜} \\
+\multirow{4}{1.4cm}{多来源皮肤病变} & HAM10000 & \multirow{4}{*}{6} & \multirow{4}{3.1cm}{每个来源数据集对应一个客户端} & \multirow{4}{*}{$[2,2,2]$} & \multirow{4}{*}{4} & 9041 \\
+& Derm7pt & & & & & 1926 \\
+& BCN20000 & & & & & 12148 \\
+& DMF & & & & & 1065 \\
+\bottomrule
+\end{tabular}%
+
+\end{table}
+
+分布偏斜（distribution-based label skew）指客户端具有相同的候选类别集合，但各类别的样本比例不同，本章采用 Dirichlet 划分构造该设置\cite{hsu2019dirichlet}。标签数量偏斜（quantity-based label skew）在本章中特指不同客户端只拥有部分类别；各客户端可见的类别子集见表\ref{tab:fedsubmerge-setup}。多来源皮肤病变实验将 HAM10000、Derm7pt、BCN20000 和 DMF 分别作为一个客户端，保留六个共享类别，用于考察来源间的图像分布差异。
+
+在数据划分方面，PathMNIST 和 OrganAMNIST 使用官方训练集进行模型训练、官方验证集进行超参数选择、官方测试集进行全局测试。Hyper-Kvasir 按 $70\%/10\%/20\%$ 划分训练、全局验证和全局测试数据。每个皮肤病变中心在本地按相同比例划分，并将各中心验证子集和测试子集分别合并为全局验证集与测试集。测试集不参与超参数选择。
+
+在统一训练配置下，所有方法使用相同任务顺序、数据划分、ResNet-18 主干和评价时点\cite{he2016resnet}。模型从头初始化，采用 SGD，批次大小为 64。PathMNIST 与 OrganAMNIST 输入分辨率为 $128\times128$，Hyper-Kvasir 与皮肤病变图像调整为 $256\times256$。每个任务训练 20 个通信轮次，每轮执行 3 个本地周期；初始学习率为 $10^{-2}$，在任务训练进度的 $50\%$ 和 $75\%$ 处分别衰减为原来的十分之一。每个客户端在任务结束时采样 $n_s=256$ 个当前任务样本。客户端阈值为 $\epsilon_{\mathrm{th}}=0.99$，服务器阈值为 $\gamma=0.97$。
+
+FedSubMerge-AD 的相关客户端数在每个设置的全局验证集上一次性选择，不针对单个客户端或单个任务单独调参。PathMNIST、Hyper-Kvasir 分布偏斜、OrganAMNIST、Hyper-Kvasir 标签数量偏斜和多来源皮肤病变分别采用 $n=4,5,3,6,2$。实验使用 PyTorch 1.13，在单张 NVIDIA A100 GPU 上完成。
+
+比较方法包括三类。通用联邦学习方法为 FedAvg、FedProx 和 SCAFFOLD\cite{mcmahan2017fedavg,li2020fedprox,karimireddy2020scaffold}；适配到联邦环境的持续学习方法为 Fed-EWC、Fed-SI、Fed-GPM 和 Fed-DER\cite{kirkpatrick2017ewc,method_regu_si,saha2021gpm,method_replay_der}；联邦持续学习方法为 FOT、GLFC、Re-Fed、TARGET 和 DDDR\cite{bakman2024fot,dong2022glfc,li2024Refed,zhang2023target,liang2024dddr}。FedAvg、FedProx、SCAFFOLD、Fed-EWC、Fed-SI、Fed-GPM 与 FOT 不使用历史样本回放。Fed-DER、GLFC 和 Re-Fed 使用大小为 256 的历史回放集合；TARGET 与 DDDR 生成旧任务样本。为统一原实验的任务身份已知与任务特定头评价设置，GLFC、TARGET、DDDR 和 Re-Fed 在推理时采用相同的任务特定分类头。
+
+令 $a_{t,\tau}$ 表示完成任务 $t$ 后在任务 $\tau$ 测试集上的准确率。最终任务 $T$ 后的平均准确率（average accuracy，ACC）和后向迁移（backward transfer，BWT）为\cite{method_replay_gem}
+\begin{equation}
+\mathrm{ACC}
+=
+\frac{1}{T}\sum_{\tau=1}^{T}a_{T,\tau},
+\qquad
+\mathrm{BWT}
+=
+\frac{1}{T-1}\sum_{\tau=1}^{T-1}
+\left(a_{T,\tau}-a_{\tau,\tau}\right).
+\label{eq:fedsubmerge-acc-bwt}
+\end{equation}
+ACC 衡量最终模型在各已见任务上的平均准确率；BWT 表示旧任务准确率从初学完成到最终阶段的平均绝对变化。ACC 以百分数报告，BWT 以百分点报告，二者均越高越好。异质性、客户端规模和设计消融采用 ACC 与 BWT 观察具体设置下的变化。
+
+第三章 MedCL 的 BWTR 与 RMA 分别评价历史保持与当前任务学习。在分类任务中，二者以准确率作为基础指标。令 $a_{\tau}^{NC}$ 表示任务 $\tau$ 独立训练参照的准确率，在式\eqref{eq:benchmark-bwtr}和式\eqref{eq:benchmark-rma}中以准确率作为任务指标，得到
+\begin{equation}
+\mathrm{BWTR}
+=
+\frac{1}{T-1}\sum_{\tau=1}^{T-1}
+\frac{a_{T,\tau}-a_{\tau,\tau}}{a_{\tau,\tau}},
+\qquad
+\mathrm{RMA}
+=
+\frac{1}{T-1}\sum_{\tau=2}^{T}
+\frac{a_{\tau,\tau}}{a_{\tau}^{NC}}.
+\label{eq:fedsubmerge-bwtr-rma}
+\end{equation}
+BWTR 衡量旧任务相对于初学性能的变化，RMA 衡量顺序约束下新任务的初学表现相对于独立训练参照的水平，两者均越高越好。本章主结果表中的 BWTR 以百分数表示，即将式\eqref{eq:fedsubmerge-bwtr-rma}的比值乘以 $100\%$；其百分数显示与异质性、参与率和消融表中以准确率百分点表示的 BWT 不同。本章以 ACC 与 BWTR 进行总体性能比较，任务初学表现通过准确率矩阵的对角条目分析。MPE 与 DRR 分别沿用式\eqref{eq:benchmark-mpe}和式\eqref{eq:benchmark-drr}，记录模型参数扩展和历史信息构建、复用所涉及的数据比例。FedSubMerge 以梯度子空间摘要保留历史信息，后续阶段通过摘要约束更新。
+
+\subsection{总体性能}
+\label{subsec:fedsubmerge-main-results}
+
+表\ref{tab:fedsubmerge-main-distribution}报告 PathMNIST 和 Hyper-Kvasir 的分布偏斜结果，表\ref{tab:fedsubmerge-main-other}报告标签数量偏斜结果，表\ref{tab:fedsubmerge-main-feature}报告多来源皮肤病变特征偏斜结果。三表覆盖七个联邦设置，以 ACC 评价最终分类性能，以 MedCL 的 BWTR 评价历史保持，同时列示 MPE 与 DRR。空白或破折号表示相应资源记录缺失，不视为零值；当前任务学习结合任务准确率矩阵另行分析。
+
+\input{tables/FedCL}
+
+在七个设置中，FedSubMerge 或 FedSubMerge-AD 均取得无原始样本回放方法中的最高 ACC。与各设置中最强的无回放比较方法相比，两种方法中较高的 ACC 提升为 $1.61$--$8.61$ 个百分点。纳入回放方法后，所提方法在五个设置中取得最高 ACC；PathMNIST $\alpha=0.1$ 下，FedSubMerge-AD 的 $79.40\%$ 低于 Re-Fed 的 $80.72\%$；Hyper-Kvasir $\alpha=0.1$ 下，FedSubMerge 的 $76.64\%$ 低于 DDDR 的 $77.24\%$。所提方法在这两个设置中取得第二高 ACC。
+
+FedSubMerge-AD 在七个设置中的五个取得高于 FedSubMerge 的 ACC，但统一融合的 BWTR 在七个设置中均更高。在所比较的无原始样本回放方法中，FedSubMerge 在七个设置中均取得最高 BWTR；纳入回放方法后，其 BWTR 在五个设置中仍为最高，Hyper-Kvasir $\alpha=0.1$ 和 OrganAMNIST 标签数量偏斜中的最高值则由 DDDR 取得。这说明自适应融合较常获得更高最终准确率，统一融合则具有更充分的平均相对历史保持，两者在最终性能与历史保持之间呈现不同取舍。
+
+PathMNIST $\alpha=0.3$ 下，FedSubMerge 与 FedSubMerge-AD 的 ACC 分别为 $90.97\%$ 和 $93.42\%$，BWTR 分别为 $-0.94\%$ 和 $-3.51\%$。自适应融合的 ACC 高 $2.45$ 个百分点，统一融合的 BWTR 高 $2.57$ 个百分点。与 FOT 的 $86.20\%$ ACC 和 $-6.93\%$ BWTR 相比，两种融合方式均改善了最终性能与历史保持；Fed-DER 的 ACC 为 $81.70\%$、BWTR 为 $-14.24\%$，并不具有更小的相对历史下降。异质性增强至 $\alpha=0.1$ 后，两种方法的 ACC 分别降至 $77.50\%$ 和 $79.40\%$，BWTR 分别为 $-16.21\%$ 和 $-18.31\%$，历史退化明显加重。
+
+Hyper-Kvasir $\alpha=0.3$ 下，FedSubMerge 的 ACC 和 BWTR 分别为 $78.64\%$ 和 $-7.75\%$，均高于 FedSubMerge-AD 的 $78.12\%$ 和 $-12.45\%$。与 FOT 相比，统一融合的 ACC 和 BWTR 分别提高 $8.61$ 和 $6.34$ 个百分点；与 ACC 最高的回放基线 DDDR 相比，ACC 提高 $3.37$ 个百分点。$\alpha=0.1$ 下，统一融合仍优于自适应融合，但其 ACC 和 BWTR 分别低于 DDDR $0.60$ 和 $0.34$ 个百分点。这些结果说明，相关客户端选择在 Hyper-Kvasir 的两个分布偏斜设置中没有优于统一融合。
+
+标签数量偏斜下，OrganAMNIST 上 FedSubMerge-AD 的 ACC 为 $74.42\%$，比 FedSubMerge 的 $70.17\%$ 高 $4.25$ 个百分点，也高于 DDDR 的 $69.35\%$。但二者的 BWTR 分别为 $-18.72\%$ 和 $-18.34\%$，均低于 DDDR 的 $-15.34\%$，说明较高最终 ACC 不等于较小相对遗忘。Hyper-Kvasir 上，自适应与统一融合的 ACC 分别为 $70.97\%$ 和 $70.76\%$；统一融合的 BWTR 为 $0.10\%$，高于自适应融合的 $-2.04\%$。这一接近零的正值表示旧任务平均相对表现略有改善，不能推断每个旧任务都没有性能下降。
+
+多来源皮肤病变特征偏斜下，FedSubMerge 与 FedSubMerge-AD 的 ACC 分别为 $85.53\%$ 和 $85.75\%$，均高于回放基线中的最高值 DDDR 的 $84.43\%$。二者的 BWTR 分别为 $-5.10\%$ 和 $-5.83\%$，也均高于表中其他方法。这一设置再次体现自适应融合在最终 ACC 上略高、统一融合在平均相对历史保持上更好的取舍。
+
+资源方面，三张主表中给出的 MPE 值均为 $0.0000$，表明相应配置不依赖模型参数扩展。OrganAMNIST 及部分基线的资源项缺失，因此资源比较仅覆盖有记录的配置。
+
+PathMNIST 的 $\alpha=0.3$ 和 $\alpha=0.1$ 设置中，FedSubMerge 与 FedSubMerge-AD 的 DRR 分别为 $0.1169$ 和 $0.0956$，均高于相应 Fed-GPM 的 $0.0049$ 和 $0.0039$。Hyper-Kvasir 两个分布偏斜设置中，两种融合方法的 DRR 分别为 $0.9477$ 和 $0.8638$，也高于 Fed-GPM 的 $0.2393$ 和 $0.1735$。在两个 $\alpha=0.3$ 设置中，它们的 DRR 均低于 FOT 的 $1.0000$；PathMNIST 上则高于 Fed-DER 的 $0.0749$，Hyper-Kvasir 上高于 Fed-DER 的 $0.4473$。因此，无原始样本回放不意味着用于构建历史表示的数据比例最低。
+
+Hyper-Kvasir 标签数量偏斜中，两种融合方法的 DRR 均为 $1.0000$，Fed-GPM 为 $0.0868$；多来源皮肤病变中，两种融合方法均为 $0.2485$，Fed-GPM 为 $0.0096$。相同设置下，两种融合方式的 DRR 相同，但服务器返回的子空间及其实际秩可能不同。按照第三章定义，DRR 计入构造历史表示所涉及的数据，并不等同于后续回放原始图像的比例，也不能直接表示摘要字节量、SVD 计算或通信量。这些开销在后文分别分析。
+
+综合各设置，ACC 与 BWTR 分别刻画最终分类表现和相对历史变化，不总是给出相同排序。任务矩阵的对角条目进一步反映初学表现。所有分类结果均在表\ref{tab:fedsubmerge-setup}规定的类别批次和测试任务身份已知的条件下获得。
+
+\subsection{异质性、客户端规模与参与率}
+\label{subsec:fedsubmerge-robustness}
+
+表\ref{tab:fedsubmerge-heterogeneity}考察 PathMNIST 上不同 Dirichlet 参数。$\alpha$ 越小，客户端类别比例越不均衡。四种方法的 ACC 均随异质性增强而下降。BWT 的总体趋势相似，但并非逐点单调：FedSubMerge 在 $\alpha=0.5$ 时为 $-1.05$，在 $\alpha=0.3$ 时为 $-0.86$ 个百分点。在所比较的 $\alpha$ 和 IID 设置下，FedSubMerge-AD 的 ACC 最高，FedSubMerge 的 BWT 最高。例如，$\alpha=0.05$ 时，前者的 ACC 为 $75.20\%$，后者的 BWT 为 $-19.30$ 个百分点。
+
+\begin{table}[htbp]
+\centering
+\caption{PathMNIST 不同分布异质性下的结果。ACC 以百分数、BWT 以百分点报告，二者均越高越好。红色粗体表示列最优值。}
+\label{tab:fedsubmerge-heterogeneity}
+\thesistablefont
+\setlength{\tabcolsep}{2.4pt}
+\renewcommand{\arraystretch}{1.10}
+\begin{tabular}{@{}lrrrrrrrrrr@{}}
+\toprule
+& \multicolumn{2}{c}{$\alpha=0.05$} & \multicolumn{2}{c}{$\alpha=0.1$} & \multicolumn{2}{c}{$\alpha=0.3$} & \multicolumn{2}{c}{$\alpha=0.5$} & \multicolumn{2}{c}{IID} \\
+方法 & ACC & BWT & ACC & BWT & ACC & BWT & ACC & BWT & ACC & BWT \\
+\midrule
+FedAvg & 54.65 & -41.20 & 57.35 & -35.18 & 67.23 & -25.70 & 75.05 & -19.45 & 82.10 & -13.05 \\
+GLFC & 67.40 & -25.05 & 75.30 & -17.80 & 84.05 & -13.06 & 85.65 & -10.25 & 87.30 & -8.10 \\
+FedSubMerge & 73.10 & \best{-19.30} & 77.50 & \best{-14.30} & 90.97 & \best{-0.86} & 91.10 & \best{-1.05} & 91.95 & \best{-0.62} \\
+FedSubMerge-AD & \best{75.20} & -21.95 & \best{79.40} & -16.85 & \best{93.42} & -3.37 & \best{93.65} & -2.45 & \best{93.95} & -1.80 \\
+\bottomrule
+\end{tabular}%
+
+\end{table}
+
+表\ref{tab:fedsubmerge-scalability}在 PathMNIST $\alpha=0.3$、$n=4$ 下改变客户端总数和参与率。参与率由 1.00 降至 0.30 时，三个客户端规模的 ACC 与 BWT 均下降。以 $K=40$ 为例，ACC 从 $90.20\%$ 降至 $84.85\%$，BWT 从 $-6.95$ 变为 $-12.40$ 个百分点。由于相关客户端数 $n$ 固定，该比较同时涉及客户端规模、参与率和相关客户端所占比例的变化。
+
+\begin{table}[htbp]
+\centering
+\caption{PathMNIST（$\alpha=0.3$，$n=4$）上 FedSubMerge-AD 的客户端规模与参与率实验。ACC 以百分数、BWT 以百分点报告。额外开销为每个任务结束后的 PGS 总通信量相对于 20 个 FedAvg 轮次模型通信量的比例。}
+\label{tab:fedsubmerge-scalability}
+\thesistablefont
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.12}
+\begin{tabular}{crrrrrrrrr}
+\toprule
+& \multicolumn{3}{c}{$K=10$} & \multicolumn{3}{c}{$K=20$} & \multicolumn{3}{c}{$K=40$} \\
+\cmidrule(lr){2-4}\cmidrule(lr){5-7}\cmidrule(lr){8-10}
+参与率 & ACC & BWT & 开销 & ACC & BWT & 开销 & ACC & BWT & 开销 \\
+\midrule
+1.00 & 93.42 & -3.37 & $3.0\%$ & 92.65 & -4.20 & $3.1\%$ & 90.20 & -6.95 & $3.5\%$ \\
+0.50 & 91.55 & -5.80 & $5.9\%$ & 90.40 & -7.05 & $6.1\%$ & 88.10 & -9.05 & $6.4\%$ \\
+0.30 & 88.20 & -8.25 & $11.8\%$ & 87.42 & -8.17 & $12.0\%$ & 84.85 & -12.40 & $12.3\%$ \\
+\bottomrule
+\end{tabular}%
+
+\end{table}
+
+完全参与时，PGS 额外通信约占 20 个模型通信轮次的 $3.0\%$--$3.5\%$；参与率为 $0.50$ 时，该比例为 $5.9\%$--$6.4\%$，降至 $0.30$ 时为 $11.8\%$--$12.3\%$。该比例以相应设置下的模型通信量为分母，表示任务结束时的额外子空间通信，不是每个常规轮次新增的传输比例。
+
+\subsection{消融、参数敏感性与任务级结果}
+\label{subsec:fedsubmerge-ablation}
+
+表\ref{tab:fedsubmerge-ablation}比较 PathMNIST $\alpha=0.3$ 上的主要设计。加入本地 PGS 后，ACC 从 FedAvg 的 $67.23\%$ 提高到 $82.05\%$，BWT 从 $-25.70$ 变为 $-17.60$ 个百分点。进一步采用跨客户端融合，FedSubMerge 和 FedSubMerge-AD 的 ACC 分别为 $90.97\%$ 和 $93.42\%$，均高于仅使用本地 PGS 的结果。
+
+\begin{table}[htbp]
+\centering
+\caption{PathMNIST（$\alpha=0.3$）上的设计消融。ACC 以百分数、BWT 以百分点报告；$\Delta$ 表示相对 FedSubMerge-AD（$n=4$）的有符号差值，单位为百分点。红色粗体表示 ACC 与 BWT 的列最优值。}
+\label{tab:fedsubmerge-ablation}
+\thesistablefont
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{lrrrr}
+\toprule
+配置 & ACC & $\Delta$ ACC & BWT & $\Delta$ BWT \\
+\midrule
+无 PGS 投影（FedAvg） & 67.23 & -26.19 & -25.70 & -22.33 \\
+仅本地 PGS（$n=0$） & 82.05 & -11.37 & -17.60 & -14.23 \\
+统一 PGS 融合（$n=K-1$） & 90.97 & -2.45 & \best{-0.86} & +2.51 \\
+基于激活的子空间 & 87.80 & -5.62 & -7.23 & -3.86 \\
+随机选择客户端 & 88.55 & -4.87 & -3.24 & +0.13 \\
+不使用奇异值加权 & 89.60 & -3.82 & -4.97 & -1.60 \\
+FedSubMerge-AD（$n=4$） & \best{93.42} & 0.00 & -3.37 & 0.00 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+完整 FedSubMerge-AD 相较基于激活的子空间配置，ACC 高 $5.62$ 个百分点，BWT 高 $3.86$ 个百分点。相较随机选择，按子空间相似性选择客户端使最终 ACC 提高 $4.87$ 个百分点，但 BWT 低 $0.13$ 个百分点，两项指标呈现不同变化方向。去除奇异值加权后，ACC 和 BWT 均下降，说明加权融合在这一设置下有利于最终性能和历史保持。统一融合相较自适应融合，BWT 高 2.51 个百分点，ACC 低 2.45 个百分点。
+
+图\ref{fig:fedsubmerge-hyperparameter}给出多来源皮肤病变设置上的相关客户端数和服务器能量阈值敏感性。$K=4$ 时，$n=0$ 仅使用目标客户端 PGS，跨机构共享不足；$n=3$ 使用全部客户端，与统一融合对应，BWT 略有改善但 ACC 下降；$n=2$ 在两项指标之间取得本实验采用的平衡。提高 $\gamma$ 通常保留更多旧方向并改善 BWT，也会增加投影约束。$\gamma=0.97$ 获得最高 ACC，因而与 $n=2$ 共同作为默认配置。该默认配置根据本实验的验证设置确定。
+
+\begin{figure}[htbp]
+\centering
+\thesisgraphic{ch05/fedsubmerge_hyperparameter.pdf}
+\caption{多来源皮肤病变特征偏斜设置上的 FedSubMerge-AD 参数敏感性。（a）相关客户端数 $n$；当 $K=4$ 时，$n=0$ 只使用目标客户端 PGS，$n=3$ 使用全部其他客户端。（b）服务器能量阈值 $\gamma$。ACC 以百分数、BWT 以百分点报告。星号表示默认配置 $n=2$、$\gamma=0.97$。}
+\label{fig:fedsubmerge-hyperparameter}
+\end{figure}
+
+图\ref{fig:fedsubmerge-accuracy-matrix}展示 Hyper-Kvasir $\alpha=0.3$ 上两种方法的任务准确率矩阵。FedSubMerge 与 FedSubMerge-AD 的十个对角条目平均值分别为 $84.56\%$ 和 $87.95\%$，最终 ACC 分别为 $78.64\%$ 和 $78.12\%$。自适应融合具有更高的平均初学准确率，统一融合具有更高的最终平均准确率。按照 MedCL 的阶段矩阵组织结果，可以将任务初学表现与后续更新后的历史任务表现分别展开。
+
+\begin{figure}[htbp]
+\centering
+\thesisgraphic{ch05/fedsubmerge_accuracy_matrix.pdf}
+\caption{Hyper-Kvasir（$\alpha=0.3$）上 FedSubMerge 与 FedSubMerge-AD 的任务准确率矩阵。单元格表示完成任务 $t$ 后在任务 $\tau$ 上的准确率；对角线刻画新任务刚学习后的性能，对角线到最终行的变化刻画随后任务训练造成的旧任务下降。}
+\label{fig:fedsubmerge-accuracy-matrix}
+\end{figure}
+
+\subsection{计算、存储与通信开销}
+\label{subsec:fedsubmerge-efficiency}
+
+FedSubMerge 和 FedSubMerge-AD 在每个常规通信轮中仍执行完整模型下发、本地训练和完整模型上传，因此轮次模型通信量与相同参与集合下的 FedAvg 相同。额外操作包括任务结束时的样本级梯度计算、逐层 SVD、PGS 上传、服务器融合以及 PGS 返回。表\ref{tab:fedsubmerge-scalability}中的开销按照实际逐层秩计算，而不是假设所有层具有固定秩。
+
+PGS 构建与融合主要在任务结束后执行：各受保护层使用 $n_s=256$ 个当前任务样本构造梯度矩阵并进行截断 SVD，服务器拼接加权基并重新压缩。FedSubMerge-AD 额外计算客户端两两投影距离并逐层选择相关客户端。这些阶段末操作随客户端数、层维度和实际 PGS 秩增加；本地梯度投影仍在训练更新中执行。
+
+持久化存储保留客户端最近 PGS 及服务器返回 PGS 的基与奇异值，不保存回放图像或生成样本。摘要大小由各层维度和保留秩决定；随着任务增加，奇异值谱和保留秩可能变化，因此存储量不一定保持不变。逐层秩、构建时间和通信量共同反映摘要压缩与历史覆盖的资源代价。
+
+
+\subsection{平台评价与方法讨论}
+\label{sec:fedsubmerge-discussion}
+\label{sec:fedsubmerge-engineering}
+\label{sec:fedsubmerge-platform-integration}
+
+图\ref{fig:fedsubmerge-engineering}说明联邦训练与 MedCL 评价的衔接。客户端更新、模型聚合和阶段末子空间融合由训练程序完成，平台接收各类别阶段结束后的全局模型或分类预测。任务配置保存数据来源、类别批次、顺序、阶段和分类头映射；模型接口读取 ResNet-18 权重，预测接口读取与测试样本对应的类别概率或标签。
+
+阶段 $t$ 的全局模型在任务 $j$ 上测试时，使用任务 $j$ 的分类头和类别映射，得到 $a_{t,j}$。这些条目按式\eqref{eq:fedsubmerge-acc-bwt}和式\eqref{eq:fedsubmerge-bwtr-rma}计算 ACC、BWT 与 BWTR；具备独立训练参照时，还可计算 RMA。模型参数、历史信息使用及模型和 PGS 传输记录分别补充资源分析。
+
+\begin{figure}[htbp]
+\centering
+\resizebox{\thesisfigurewidth}{!}{\input{figures/ch05/fedsubmerge_engineering.tex}}
+\caption[联邦持续分类与 MedCL 的评价流程]{联邦持续分类与 MedCL 的评价流程。训练程序生成阶段全局模型，任务适配器按测试任务选择分类头，阶段矩阵用于汇总 ACC 与 BWTR，独立训练参照齐备时可进一步计算 RMA，训练配置用于记录 MPE、DRR 与通信开销。}
+\label{fig:fedsubmerge-engineering}
+\end{figure}
+
+本章以全局测试集上的任务准确率评价共享模型，客户端异质性通过分布偏斜、标签数量偏斜和来源特征偏斜三类设置体现。每个设置固定测试划分和任务顺序，比较不同阶段全局模型的表现，形成与第三章式\eqref{eq:medcl-evaluation-matrix}对应的阶段--任务矩阵。
+
+MedCL 的客户端维度以式\eqref{eq:medcl-federated-cube}中的 $R_{t,c,j}$ 表示，在固定客户端测试分组下记录同一阶段全局模型的表现。客户端宏平均与样本加权准确率分别按式\eqref{eq:medcl-client-aggregation}计算，同时保留各分组的样本量和类别分布。阶段维度描述学习与保持，客户端维度描述同一模型在不同分布中的表现，两者使用共同的任务与样本标识。
+
+表\ref{tab:fedsubmerge-system-boundary}概括本章与 MedCL 评价的对应关系。主结果表将任务特定的 ACC 与平台共用的 BWTR 并列组织，以 MPE 与 DRR 分别分析模型扩展和历史信息使用；异质性、参与率和设计消融进一步提供 BWT 与通信开销分析。性能矩阵、历史任务曲线和类别混淆结果用于解释各项汇总指标。
+
+\begin{table}[htbp]
+\centering
+\caption{联邦持续分类与 MedCL 评价内容的对应关系}
+\label{tab:fedsubmerge-system-boundary}
+\thesistablefont
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.16}
+\begin{tabularx}{\textwidth}{@{}p{2.4cm}XX@{}}
+\toprule
+评价对象 & 本章实验组织 & MedCL 对应内容 \\
+\midrule
+任务与阶段 & 类别批次依次到达、阶段全局模型 & 任务标识、分类头映射与阶段矩阵 \\
+最终性能 & 全局模型在各已见任务上的准确率 & 逐任务准确率与 ACC \\
+保持与学习 & 历史任务与初学性能；独立训练参照用于 RMA & BWTR 与阶段矩阵；具备独立训练参照时计算 RMA \\
+客户端分布 & 分布、标签数量与来源特征偏斜 & 联邦设置、样本分组与分布记录 \\
+资源使用 & 参数、历史摘要及模型与 PGS 传输 & MPE、DRR 和通信开销 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+
+从方法效果看，仅使用本地 PGS 与完整方法的消融比较表明，加入其他客户端的历史方向有助于提高最终准确率。子空间基与奇异值因而能够在不保留历史原始图像的条件下，为后续更新提供历史约束。
+
+统一融合与自适应融合的取舍随数据设置变化。PathMNIST $\alpha=0.3$ 上，自适应融合具有更高的 ACC，统一融合的 BWTR 更高；Hyper-Kvasir $\alpha=0.3$ 上，统一融合的 ACC 与 BWTR 均更高。这一差异说明客户端相关性、历史方向覆盖和当前任务学习需要联合分析，而不能由单一指标决定融合方式。
+
+实验涵盖病理图像、腹部 CT、消化道内镜和多来源皮肤病变图像，采用同步类别批次、预先给定的阶段划分、已知测试任务身份及从头训练的 ResNet-18。客户端由公开数据按照固定划分构造，分别模拟类别分布、类别覆盖和图像来源差异。
+
+理论分析描述局部更新对旧任务损失的影响。有限样本估计、模型漂移、两阶段截断和未投影参数均可能造成历史方向遗漏；动量与权重衰减也可能引入投影之外的更新。因此，实际 ACC 与 BWT 仍取决于训练过程和子空间覆盖情况。
+
+服务器在本章中被假设能够接收客户端 PGS 并执行融合。PGS 由梯度衍生，因此传输低秩基和奇异值本身不提供形式化隐私保证。
+
+\section{本章小结}
+\label{sec:fedsubmerge-summary}
+
+本章提出 FedSubMerge，通过奇异值加权融合客户端主梯度子空间，并在后续本地训练中采用正交补梯度投影。FedSubMerge-AD 进一步按层选择相关客户端，构建客户端特定保护空间。理论分析解释了历史方向保护、递归融合和子空间截断的局部作用。
+
+在七个联邦设置中，FedSubMerge 与 FedSubMerge-AD 中表现较好的版本均取得无回放比较方法中的最高 ACC。MedCL 指标进一步揭示最终性能与历史保持的不同取舍：PathMNIST $\alpha=0.3$ 上，FedSubMerge-AD 的 ACC 和 BWTR 分别为 $93.42\%$ 和 $-3.51\%$，统一融合的 ACC 为 $90.97\%$、BWTR 为 $-0.94\%$；Hyper-Kvasir $\alpha=0.3$ 上，FedSubMerge 的 ACC 和 BWTR 分别为 $78.64\%$ 和 $-7.75\%$，均高于自适应版本。在七个设置中，统一融合的 BWTR 均高于自适应融合，而自适应融合在五个设置中具有更高 ACC。完全参与时，阶段末额外 PGS 通信约占 20 个模型通信轮次的 $3.0\%$--$3.5\%$。下一章沿用平台评价，研究有限图像对回放下的持续配准。

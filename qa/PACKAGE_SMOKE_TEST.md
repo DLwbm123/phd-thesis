@@ -1,9 +1,9 @@
 # 启动包烟雾测试
 
-- 干净模板：XeLaTeX + latexmk 编译成功；
-- 七章文件：全部可被 `main.tex` 正确包含；
-- 字体设置：使用 Latin Modern 与 Fandol，避免依赖参考作者本机字体；
-- 参考文献：空工程默认关闭输出，第一条真实引用写入后由 Codex 开启；
+- 干净模板：FDSDSthesis v1.1 使用 XeLaTeX + BibTeX 编译成功；
+- 六章与附录 A：全部可被 `main.tex` 正确包含；
+- 字体设置：使用 ctex/TeX Live 提供的 CJK 字体，不随工程分发字体文件；
+- 参考文献：`bibliography/references.bib` 由 `plainurl` BibTeX 样式输出；
 - Python QA 脚本：语法检查通过；
 - 作者表达基线：空章节未命中预设套话规则；
 - 文本重合基线：打包时使用用户提供的参考论文源码测试，未发现达到 28 个归一化字符的长文本精确重合。

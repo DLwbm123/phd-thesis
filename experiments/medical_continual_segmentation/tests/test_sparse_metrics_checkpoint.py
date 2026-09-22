@@ -3,7 +3,7 @@ import random
 import numpy as np
 import torch
 
-from medcl.data.sparse import generate
+from medcl.data.sparse import generate, generate_wsl_style_from_baseline, scale_existing
 from medcl.metrics.matrix import matrix_summary
 from medcl.utils import CheckpointController, file_sha256
 
@@ -11,6 +11,38 @@ from medcl.utils import CheckpointController, file_sha256
 def test_v2_s2_label_contract_and_determinism():
     labels=np.zeros((2,64,64),dtype=np.int16); labels[0,20:44,20:44]=1; labels[1,15:50,28:36]=2
     a,stats=generate(labels,3,42); b,_=generate(labels,3,42); assert np.array_equal(a,b); assert set(np.unique(a))<={-100,0,4,5}; assert stats.foreground_pixels>0 and stats.background_pixels>0 and stats.unknown_pixels>0
+
+
+def test_area_scaled_annotations_expand_without_label_leakage():
+    labels=np.zeros((2,48,48),dtype=np.int16); labels[:,10:38,10:38]=1
+    base,_=generate(labels,0,42); scaled,_=generate(labels,0,42,foreground_area_multiplier=8,background_area_multiplier=10)
+    assert (scaled==1).sum() >= (base==1).sum()
+    assert (scaled==0).sum() >= (base==0).sum()
+    assert not np.any((scaled==1) & (labels!=1))
+
+
+def test_persisted_baseline_controls_requested_area_multiplier():
+    labels=np.zeros((1,48,48),dtype=np.int16); labels[:,10:38,10:38]=1
+    base,_=generate(labels,0,42); scaled,_=scale_existing(labels,base,0,8,10)
+    assert (scaled==1).sum() == min((base==1).sum()*8,(labels==1).sum())
+    assert (scaled==0).sum() == min((base==0).sum()*10,(labels==0).sum())
+
+
+def test_scaled_noncontiguous_h5_layout_keeps_exact_target_count():
+    source=np.zeros((64,64,2),dtype=np.int16); source[16:48,16:48,:]=1
+    labels=source.transpose(2,0,1)  # Matches the H5 transpose used in generation.
+    base,_=generate(labels,0,42); scaled,_=scale_existing(labels,base,0,8,10)
+    assert (scaled==1).sum() == min((base==1).sum()*8,(labels==1).sum())
+    assert not np.any((scaled==0) & (labels>0))
+
+
+def test_wsl_style_respects_baseline_area_and_semantics():
+    labels=np.zeros((2,64,64),dtype=np.int16); labels[:,12:52,14:50]=1
+    base,_=generate(labels,0,42); styled,_=generate_wsl_style_from_baseline(labels,base,0,42,5,7)
+    assert (styled==1).sum() == min((base==1).sum()*5,(labels==1).sum())
+    assert (styled==0).sum() == min((base==0).sum()*7,(labels==0).sum())
+    assert not np.any((styled==1) & (labels!=1))
+    assert not np.any((styled==0) & (labels>0))
 
 
 def test_matrix_metrics_and_domain_only_efwt():

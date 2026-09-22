@@ -1,0 +1,753 @@
+\chapter{医学影像持续分割方法评测与弱监督持续分割}
+\label{chap:scribblecl}
+\label{chap:segmentation}
+\setlength{\emergencystretch}{1em}
+
+\section{引言}
+\label{sec:scribblecl-introduction}
+
+第三章已经确定 MedCL 的任务组织、分割数据划分和评价规则。本章在此基础上比较持续分割方法，先考察密集监督下的跨中心适应、类别扩展与跨器官知识保持，再将三类场景的训练标签替换为固定模拟涂鸦，分析标注不足与顺序遗忘同时存在时的学习问题。
+
+密集监督评测采用相同网络和训练预算，比较正则化、回放、参数隔离及类别增量专项方法\cite{wang2026benchmark}。实验不仅关注最终 Dice，还通过阶段结果区分当前任务学习、旧任务保持和未来域泛化，并考察任务顺序与回放容量的影响。数据划分、输出头和测试条件沿用第三章的分割基准配置。
+
+完整分割掩膜需要较高标注投入，涂鸦只在少量位置提供类别信息，未标注区域仍需从图像和结构关系中获得训练约束\cite{tajbakhsh2020imperfect,can2018scribble,zhang2026zscribbleseg}。后续任务更新又可能破坏已学表征。为同时处理这两个问题，本章在 ZScribbleSeg 的监督增强基础上提出 ZSDerpp，将全局一致性、空间先验、有限图像--涂鸦回放与参考特征约束结合，并在类别增量中采用 MiB 处理背景语义变化。
+
+下面先说明分割问题、对比方法与训练设置，再报告密集监督结果，随后给出弱监督方法及实验。弱监督训练只读取固定涂鸦，验证与测试保留密集标注，分别用于模型选择和性能评价。
+
+\section{持续分割问题与实验设置}
+\label{sec:benchmark-instance}
+
+图\ref{fig:benchmark-overview}给出持续分割基准的整体构成。三类任务沿用第三章的数据划分与输出配置，按固定顺序比较正则化、回放和参数隔离等方法，并从最终表现、历史保持、当前学习及资源使用等方面评价。图中的 Organ-CL 对应本文的跨器官任务增量实例。
+
+\begin{figure}[htbp]
+\centering
+\thesisgraphic{ch04/benchmark_overview_new.pdf}
+\caption[持续医学图像分割基准的整体构成]{持续医学图像分割基准的整体构成。左侧为域增量、类别增量和跨器官任务增量场景，中间为统一顺序训练设置，右侧为任务性能、持续学习能力与资源评价。图中的 Organ-CL 对应本文的跨器官任务增量实例。}
+\label{fig:benchmark-overview}
+\end{figure}
+
+
+\subsection{问题定义与对比方法}
+\label{sec:benchmark-problem-definition}
+
+\phantomsection\label{sec:benchmark-related-work}
+已有持续学习综述分别梳理了通用方法、持续语义分割和医学影像中的应用\cite{wang2024continualsurvey,yuan2024continualseg,kumari2025medicalcl}。针对医学分割，域特定归一化、形状与语义正则化以及器官类别扩展等方法采用了不同的数据、网络和历史信息条件\cite{karani2018lifelong,zhang2023s3r,zhang2023continualorgan}。比较这些方法时，需要固定任务、测试集和资源条件，区分方法差异与实验设置差异。
+
+Lifelong nnU-Net 在前列腺、海马与心脏的域变化中比较持续分割方法，并分析任务顺序、输出头和训练时间\cite{gonzalez2023lifelong}；Gonzalez 等还比较了持续方法与独立分割器组合的收益\cite{whatwrong}。表\ref{tab:benchmark-related-work}列出这些工作与本文分割评测的覆盖范围。Lifelong nnU-Net 的任务训练后 FWT 反映新任务适应，独立模型跨域测试反映直接泛化，二者与本文 E-FWT 的计算方式不同。表中的“实验”“讨论”和“--”分别表示包含对应评价、仅作概念讨论和未列出该项内容。
+
+\begin{table}[htbp]
+\centering
+\caption{持续医学图像分割相关综述与评测基准的覆盖范围比较}
+\label{tab:benchmark-related-work}
+\thesistablefont
+\renewcommand{\arraystretch}{1.12}
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}p{2.4cm}p{2.0cm}*{2}{>{\centering\arraybackslash}p{0.8cm}}>{\centering\arraybackslash}p{1.05cm}*{5}{>{\centering\arraybackslash}p{0.8cm}}>{\centering\arraybackslash}p{1.0cm}@{}}
+\toprule
+\multirow{2}{*}{工作} & \multirow{2}{*}{类型} & \multicolumn{3}{c}{场景} & \multicolumn{5}{c}{评价维度} & \multirow{2}{1.0cm}{统一设置} \\
+\cmidrule(lr){3-5}\cmidrule(lr){6-10}
+ & & \shortstack{域\\增量} & \shortstack{类别\\增量} & \shortstack{任务\\增量} & \shortstack{稳定\\性} & \shortstack{可塑\\性} & \shortstack{前向\\泛化} & 参数 & 回放 & \\
+\midrule
+Yuan 等\cite{yuan2024continualseg} & 自然图像综述 & 讨论 & 讨论 & -- & -- & -- & -- & -- & -- & -- \\
+Kumari 等\cite{kumari2025medicalcl} & 医学影像综述 & 讨论 & 讨论 & 讨论 & -- & -- & -- & -- & -- & -- \\
+Lifelong nnU-Net\cite{gonzalez2023lifelong} & 评测框架 & 实验 & -- & -- & 实验 & 实验 & 实验 & -- & -- & 实验 \\
+Gonzalez 等\cite{whatwrong} & 基准研究 & 实验 & -- & -- & 实验 & -- & -- & -- & -- & 实验 \\
+本文分割评测 & 综合基准 & 实验 & 实验 & 实验 & 实验 & 实验 & 实验 & 实验 & 实验 & 实验 \\
+\bottomrule
+\end{tabular}%
+
+\end{table}
+
+
+设第 $t$ 阶段获得密集标注训练集 $\mathcal D_t$，图像与标签来自分布 $\mathbb D_t$：
+\begin{equation}
+\mathcal{D}_t=\{(x_i^t,y_i^t)\}_{i=1}^{N_t},
+\qquad
+(x_i^t,y_i^t)\overset{\mathrm{i.i.d.}}{\sim}\mathbb{D}_t.
+\label{eq:benchmark-task-distribution}
+\end{equation}
+其中，$x_i^t$ 为医学图像，$y_i^t$ 为分割标签，$N_t$ 为当前训练样本数。模型从上一阶段参数 $\theta_{t-1}$ 更新至 $\theta_t$，仅能使用当前数据及方法允许保留的历史信息。三类任务的标签映射与输出头沿用第\ref{sec:medcl-data-config}节；测试时按已知任务选择相应输出，本章不讨论任务切换检测或任务身份推断。
+
+本章在相同数据、主干和训练预算下比较不同的历史信息保存方式。正则化保留参数重要性或旧模型响应，回放及梯度约束使用有限样本或历史表示，参数隔离为任务保留独立容量；类别增量另设 MiB 和 PLOP 以处理背景语义变化\cite{cermelli2020mib,douillard2021plop}。各方法的基本原理已在第二章介绍，表\ref{tab:benchmark-methods}汇总本章的比较对象及访问条件。
+
+\begin{table}[htbp]
+\centering
+\caption{基准中比较的方法类别及其主要历史信息使用方式}
+\label{tab:benchmark-methods}
+\thesistablefont
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{p{2.0cm}p{4.0cm}p{4.0cm}p{3.6cm}}
+\toprule
+类别 & 代表方法 & 历史知识形式或约束方式 & 主要附加代价 \\
+\midrule
+正则化 &
+Regu-EWC、Regu-SI、Regu-LwF &
+参数重要性、路径积分或旧模型输出 &
+不保存原始样本，固定参数规模；保护过强可能限制当前任务学习 \\
+\addlinespace
+回放 &
+Repl-ER、GSS、GEM、GPM、AGEM、DER、DER++、FDR &
+原始样本、梯度约束、旧模型输出或低维子空间 &
+回放存储、历史统计和附加优化开销；不同方法的回放对象不同 \\
+\addlinespace
+参数隔离 &
+ParIso-PNN、ParIso-DAN &
+任务特定网络分支或适配参数 &
+遗忘较小，但模型参数随任务增加 \\
+\addlinespace
+类别增量专项 &
+ClassCL-PLOP、ClassCL-MiB &
+背景修正、蒸馏和伪标签 &
+依赖 Class-CL 标签设定，不能直接外推至其他场景 \\
+\addlinespace
+参照 &
+Non-CL、JointTrain &
+无专门保护；完整联合访问 &
+JointTrain 使用完整历史数据，访问条件不同 \\
+\bottomrule
+\end{tabular}
+
+\end{table}
+
+Non-CL 按任务顺序直接训练，不使用专门的抗遗忘机制；JointTrain 可以同时访问全部任务数据，只作为集中训练对照，不与历史访问受限的方法视为同条件比较。用于 RMA 的单任务独立训练对照另行记录，与这两种训练方案区分。
+
+\subsection{网络与训练配置}
+\label{sec:benchmark-protocol}
+
+为减少基础网络差异对比较的影响，所有方法采用 ResUNet32 主干。Domain-CL 使用二通道输出头，Class-CL 使用统一八通道输出头，Organ-CL 为每个任务配置二通道输出头。每个任务训练 150 个 epoch，优化器为随机梯度下降，初始学习率为 0.008，在第 80 个 epoch 后乘以 0.5，批大小为 8。Domain-CL 和 Organ-CL 使用交叉熵损失；Class-CL 使用 MiB 中用于缓解背景语义变化的无偏交叉熵。
+
+回放方法的默认容量为 32，回放批大小为 8，并采用水库采样更新回放集合；Class-CL 中的回放方法按阶段标签空间进行适配。各对比方法的方法特定配置汇总于表~\ref{tab:benchmark-baseline-config}。
+
+\begin{table}[htbp]
+\centering
+\caption{持续分割对比方法的实现配置与超参数}
+\label{tab:benchmark-baseline-config}
+\thesistablefont
+\renewcommand{\arraystretch}{1.06}
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{p{2.45cm}p{8.70cm}p{2.20cm}}
+\toprule
+方法 & 实现配置与方法特定超参数 & 适用范围 \\
+\midrule
+Non-CL、JointTrain & 无额外持续学习超参数，沿用统一的 ResUNet32、优化器、学习率、训练轮数和批大小；JointTrain 可联合访问全部任务数据。 & 三类场景 \\
+Regu-EWC & 正则权重 $\lambda=1$，历史重要性衰减系数 $\gamma=0.1$。 & 三类场景 \\
+Regu-SI & 路径积分代理损失权重 $c=5$，数值稳定项 $\xi=1.0$。 & 三类场景 \\
+Regu-LwF & 蒸馏惩罚权重为 3，softmax 温度为 2，权重衰减为 $0.0005$。 & 三类场景 \\
+Repl-ER & 回放容量为 32，回放批大小为 8，采用水库采样。 & 三类场景 \\
+Repl-GSS & 用于梯度比较的批大小为 8；其余回放设置沿用默认配置。 & 三类场景 \\
+Repl-GEM & 梯度约束的 margin 参数 $\gamma=0.5$；其余回放设置沿用默认配置。 & 三类场景 \\
+Repl-GPM & 构建梯度子空间的能量阈值为 $0.97$。 & 三类场景 \\
+Repl-AGEM & 回放容量为 32，回放批大小为 8，采用水库采样。 & 三类场景 \\
+Repl-DER & 历史输出蒸馏损失的惩罚权重为 $0.4$；其余回放设置沿用默认配置。 & 三类场景 \\
+Repl-DER++ & 采用 DER++ 目标，回放容量为 32，回放批大小为 8，并采用水库采样。 & 三类场景 \\
+Repl-FDR & 函数空间正则的惩罚权重为 $0.5$；其余回放设置沿用默认配置。 & 三类场景 \\
+ParIso-PNN & 不引入额外方法超参数，按任务扩展网络分支。 & 三类场景 \\
+ParIso-DAN & 采用线性组合完成任务适配。 & 三类场景 \\
+ClassCL-PLOP & 池化输出蒸馏权重为 $0.01$，类别不确定性阈值为 $0.001$。 & Class-CL \\
+ClassCL-MiB & 知识蒸馏损失权重为 10，无偏知识蒸馏中的真值标签权重为 $\alpha=1.0$。 & Class-CL \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Class-CL 回放方法按照阶段标签空间处理回放监督，相关结果基于本章采用的数据划分、标签设定和实现配置。
+
+方法实现分别采用 EWC、SI 和 LwF 的正则化策略\cite{kirkpatrick2017ewc,method_regu_si,li2018lwf}，ER、GSS、GEM、AGEM、GPM、DER、DER++ 与 FDR 的历史信息约束\cite{method_replay_er,method_replay_gss,method_replay_gem,method_replay_agem,saha2021gpm,method_replay_der,method_replay_xder,method_replay_fdr}，以及 PNN 和 DAN 的参数隔离结构\cite{method_dyn_pnn,method_dyn_dan}。这些方法共享基础训练预算，附加损失、子空间阈值或模型扩展按表中的配置执行。
+
+\subsection{分割评价与资源记录}
+\label{subsec:segmentation-benchmark-evaluation}
+
+令 $d_{t,i}$ 为阶段 $t$ 模型在任务 $i$ 测试集上的平均 Dice，它对应第三章式\eqref{eq:medcl-evaluation-matrix}中以 Dice 为指标的条目。最终平均 Dice（average Dice，A-Dice）为
+\begin{equation}
+\mathrm{A\mbox{-}Dice}
+=
+\frac{1}{T}\sum_{i=1}^{T}d_{T,i}.
+\label{eq:benchmark-adice}
+\end{equation}
+A-Dice 对最终阶段的各任务成绩等权平均。BWTR 和 RMA 分别按式\eqref{eq:benchmark-bwtr}与式\eqref{eq:benchmark-rma}计算，计算时同时记录独立训练对照的数据、监督条件、主干和训练预算。
+
+Domain-CL 对所有未学习中心使用相同前列腺与背景输出，按式\eqref{eq:benchmark-efwt}计算 E-FWT。Class-CL 在最终统一输出中评价全部心脏结构，以全类别 Dice（whole-class Dice，WCD）表示：
+\begin{equation}
+\mathrm{WCD}=d_{\mathrm{all}}.
+\label{eq:benchmark-wcd}
+\end{equation}
+其中，$d_{\mathrm{all}}$ 是最终模型对全部已见类别的分割结果。WCD 的汇总对象为统一输出中的类别，A-Dice 的汇总对象为阶段任务，两者不能相互替代。Organ-CL 的器官输出语义不同，不计算上述 E-FWT。
+
+MPE 与 DRR 按第三章式\eqref{eq:benchmark-mpe}和式\eqref{eq:benchmark-drr}记录。结果表中带星号的 DRR 表示回放原始图像，不带星号的非零值可表示构造或使用其他历史表示；具体保存对象结合方法配置解释。
+
+\section{密集监督持续分割方法评测}
+\label{sec:benchmark-results}
+
+\subsection{域增量分割结果}
+
+表\ref{tab:benchmark-domain-results}给出了六中心前列腺分割序列上的综合结果。JointTrain 的 A-Dice 为 $0.830\pm0.040$，高于所有持续学习方法，但该参照可以访问全部中心数据，不能视为相同历史访问条件下的比较结果。参数隔离方法 ParIso-PNN 和 ParIso-DAN 的 A-Dice 分别为 $0.789\pm0.002$ 和 $0.786\pm0.008$，BWTR 均为 0，表示旧域相对性能变化的均值为零。其代价体现在 MPE：PNN 为 1.112，DAN 为 0.111。
+
+在固定参数规模的方法中，Repl-ER 的 A-Dice 为 $0.750\pm0.021$，是表中回放类方法的较高结果；Repl-AGEM 为 $0.740\pm0.015$，其 BWTR 为 $-0.093\pm0.023$。正则化方法 EWC 和 SI 的 RMA 均高于 1，说明当前任务性能可以达到或超过独立训练参考，但其 BWTR 分别为 $-0.242\pm0.039$ 和 $-0.236\pm0.042$。这一组合表明，当前任务学习较强并不自动意味着历史知识保持良好。相反，Regu-LwF 的 BWTR 退化较小，但 RMA 仅为 $0.894\pm0.021$，说明较强的旧模型约束可能影响当前域学习。
+
+E-FWT 进一步揭示前向泛化表现。Non-CL 的 E-FWT 为 $0.260\pm0.151$，多数正则化和回放方法位于 0.212 至 0.259 之间，没有形成稳定一致的提升。ParIso-DAN 的 E-FWT 为 $0.312\pm0.210$，是表内较高结果，但标准差也较大；ParIso-PNN 的 E-FWT 为 $0.235\pm0.148$。因此，在该中心序列中，降低遗忘与提高前向泛化不是同一目标。
+
+\begin{table}[htbp]
+\centering
+\caption{Domain-CL 场景下不同持续学习方法的综合结果}
+\label{tab:benchmark-domain-results}
+\thesistablefont
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.12}
+\begin{tabular}{lcccccc}
+\toprule
+方法 & A-Dice & BWTR & RMA & E-FWT & MPE & DRR \\
+\midrule
+\multicolumn{7}{l}{\textit{正则化方法}} \\
+Regu-EWC & $.672\pm.021$ & $-.242\pm.039$ & $\best{1.086\pm.014}$ & $.255\pm.152$ & $0$ & $0$ \\
+Regu-SI & $.676\pm.024$ & $-.236\pm.042$ & $1.084\pm.008$ & $.259\pm.151$ & $0$ & $0$ \\
+Regu-LwF & $.663\pm.029$ & $-.090\pm.027$ & $.894\pm.021$ & $.224\pm.153$ & $0$ & $0$ \\
+\addlinespace[2pt]
+\multicolumn{7}{l}{\textit{回放方法}} \\
+Repl-ER & $.750\pm.021$ & $-.100\pm.027$ & $1.054\pm.014$ & $.256\pm.150$ & $0$ & $.027^{*}$ \\
+Repl-GSS & $.726\pm.026$ & $-.140\pm.040$ & $1.059\pm.010$ & $.255\pm.150$ & $0$ & $.036^{*}$ \\
+Repl-GEM & $.718\pm.018$ & $-.095\pm.022$ & $.994\pm.024$ & $.251\pm.154$ & $0$ & $.042^{*}$ \\
+Repl-GPM & $.661\pm.010$ & $-.188\pm.010$ & $1.013\pm.022$ & $.212\pm.080$ & $0$ & $.113$ \\
+Repl-AGEM & $.740\pm.015$ & $-.093\pm.023$ & $1.023\pm.027$ & $.253\pm.155$ & $0$ & $.042^{*}$ \\
+Repl-DER & $.715\pm.011$ & $-.126\pm.015$ & $1.018\pm.016$ & $.249\pm.148$ & $0$ & $.027^{*}$ \\
+Repl-DER++ & $.725\pm.013$ & $-.105\pm.018$ & $1.012\pm.013$ & $.251\pm.149$ & $0$ & $.027^{*}$ \\
+Repl-FDR & $.728\pm.015$ & $-.111\pm.028$ & $1.025\pm.033$ & $.252\pm.136$ & $0$ & $.042^{*}$ \\
+\addlinespace[2pt]
+\multicolumn{7}{l}{\textit{参数隔离方法}} \\
+ParIso-PNN & $\best{.789\pm.002}$ & $\best{0\pm0}$ & $1.003\pm.014$ & $.235\pm.148$ & $1.112$ & $0$ \\
+ParIso-DAN & $.786\pm.008$ & $\best{0\pm0}$ & $1.016\pm.021$ & $\best{.312\pm.210}$ & $.111$ & $0$ \\
+\addlinespace[2pt]
+\multicolumn{7}{l}{\textit{参照方法}} \\
+Non-CL & $.676\pm.021$ & $-.237\pm.038$ & $1.086\pm.008$ & $.260\pm.151$ & $0$ & $0$ \\
+JointTrain & $.830\pm.040$ & -- & -- & -- & $0$ & $0$ \\
+\bottomrule
+\end{tabular}%
+
+\vspace{2pt}
+\begin{minipage}{0.98\textwidth}
+\footnotesize 注：红色粗体表示持续学习方法中的列最高均值，不含参照方法；MPE 与 DRR 为资源条件，不参与性能排名。数值为均值$\pm$标准差；DRR 中带“$^{*}$”的数值表示回放原始图像。
+\end{minipage}
+\end{table}
+
+\subsection{类别增量分割结果}
+
+表\ref{tab:benchmark-class-results}展示了心脏结构逐步扩展时的结果。JointTrain 的 A-Dice 为 $0.810\pm0.023$。ParIso-PNN 的 A-Dice 为 $0.770\pm0.012$，BWTR 为 0，但 MPE 达到 1.056。ParIso-DAN 同样实现零 BWTR，其 A-Dice 为 $0.729\pm0.009$，MPE 为 0.111。两种参数隔离方法的平均历史变化均为零，但最终性能和参数扩展量不同。
+
+面向背景语义变化的专项方法表现出与通用方法不同的取舍。ClassCL-MiB 的 A-Dice 为 $0.751\pm0.008$，BWTR 为 $-0.039\pm0.003$，是固定参数方法中遗忘较小的结果；ClassCL-PLOP 的 WCD 为 $0.707\pm0.009$，高于 MiB 的 $0.697\pm0.008$，但其 A-Dice 和 BWTR 分别为 $0.708\pm0.025$ 和 $-0.104\pm0.026$。WCD 与 A-Dice 的排序差异说明，最终全类别输出与逐阶段任务平均不能相互替代。
+
+通用回放方法中，Repl-GEM 的 A-Dice 为 $0.684\pm0.036$，Repl-FDR 为 $0.666\pm0.012$。后者 BWTR 为 $-0.146\pm0.046$，优于多数回放基线，但 RMA 为 $0.917\pm0.035$。Repl-ER 的 RMA 为 $1.015\pm0.029$，说明当前任务学习接近独立训练，但 BWTR 仍为 $-0.243\pm0.068$。类别增量结果再次表明，RMA、BWTR 和 WCD 分别刻画不同能力，单一数值不能形成完整排序。
+
+\begin{table}[htbp]
+\centering
+\caption{Class-CL 场景下不同持续学习方法的综合结果}
+\label{tab:benchmark-class-results}
+\thesistablefont
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.12}
+\begin{tabular}{lcccccc}
+\toprule
+方法 & A-Dice & BWTR & RMA & WCD & MPE & DRR \\
+\midrule
+\multicolumn{7}{l}{\textit{正则化方法}} \\
+Regu-EWC & $.487\pm.020$ & $-.552\pm.042$ & $.999\pm.022$ & $.513\pm.022$ & $0$ & $0$ \\
+Regu-SI & $.469\pm.007$ & $-.602\pm.016$ & $1.018\pm.028$ & $.570\pm.020$ & $0$ & $0$ \\
+Regu-LwF & $.384\pm.022$ & $-.575\pm.013$ & $.782\pm.046$ & $.602\pm.002$ & $0$ & $0$ \\
+\addlinespace[2pt]
+\multicolumn{7}{l}{\textit{回放方法}} \\
+Repl-ER & $.654\pm.034$ & $-.243\pm.068$ & $1.015\pm.029$ & $.596\pm.019$ & $0$ & $.011^{*}$ \\
+Repl-GSS & $.456\pm.003$ & $-.611\pm.016$ & $.991\pm.038$ & $.600\pm.006$ & $0$ & $.018^{*}$ \\
+Repl-GEM & $.684\pm.036$ & $-.304\pm.038$ & $1.014\pm.031$ & $.622\pm.031$ & $0$ & $.010^{*}$ \\
+Repl-GPM & $.575\pm.023$ & $-.219\pm.033$ & $.892\pm.014$ & $.513\pm.014$ & $0$ & $.068$ \\
+Repl-AGEM & $.595\pm.017$ & $-.370\pm.032$ & $\best{1.020\pm.019}$ & $.562\pm.026$ & $0$ & $.010^{*}$ \\
+Repl-DER & $.628\pm.027$ & $-.219\pm.070$ & $.913\pm.029$ & $.622\pm.029$ & $0$ & $.011^{*}$ \\
+Repl-DER++ & $.638\pm.036$ & $-.208\pm.056$ & $.932\pm.034$ & $.633\pm.043$ & $0$ & $.011^{*}$ \\
+Repl-FDR & $.666\pm.012$ & $-.146\pm.046$ & $.917\pm.035$ & $.627\pm.015$ & $0$ & $.010^{*}$ \\
+\addlinespace[2pt]
+\multicolumn{7}{l}{\textit{参数隔离方法}} \\
+ParIso-PNN & $\best{.770\pm.012}$ & $\best{0\pm0}$ & $.976\pm.021$ & $.620\pm.020$ & $1.056$ & $0$ \\
+ParIso-DAN & $.729\pm.009$ & $\best{0\pm0}$ & $.897\pm.022$ & $.543\pm.127$ & $.111$ & $0$ \\
+\addlinespace[2pt]
+\multicolumn{7}{l}{\textit{类别增量专项方法}} \\
+ClassCL-PLOP & $.708\pm.025$ & $-.104\pm.026$ & $.986\pm.038$ & $\best{.707\pm.009}$ & $0$ & $0$ \\
+ClassCL-MiB & $.751\pm.008$ & $-.039\pm.003$ & $1.004\pm.018$ & $.697\pm.008$ & $0$ & $0$ \\
+\addlinespace[2pt]
+\multicolumn{7}{l}{\textit{参照方法}} \\
+Non-CL & $.471\pm.012$ & $-.598\pm.015$ & $1.014\pm.028$ & $.572\pm.023$ & $0$ & $0$ \\
+JointTrain & $.810\pm.023$ & -- & -- & -- & $0$ & $0$ \\
+\bottomrule
+\end{tabular}%
+
+\vspace{2pt}
+\begin{minipage}{0.98\textwidth}
+\footnotesize 注：红色粗体表示持续学习方法中的列最高均值，不含参照方法；MPE 与 DRR 为资源条件，不参与性能排名。数值为均值$\pm$标准差；DRR 中带“$^{*}$”的数值表示回放原始图像。
+\end{minipage}
+\end{table}
+
+\subsection{任务增量分割结果}
+
+表\ref{tab:benchmark-organ-results}给出了跨器官和跨模态任务序列的结果。JointTrain 的 A-Dice 为 $0.881\pm0.010$。ParIso-PNN 与 ParIso-DAN 的 A-Dice 分别为 $0.839\pm0.004$ 和 $0.824\pm0.005$，BWTR 均为 0，MPE 分别为 1.074 和 0.166。多头和任务特定参数可以隔离器官任务，但其容量增长随具体结构设计而不同。
+
+在回放方法中，Repl-ER 的 A-Dice 为 $0.729\pm0.009$，RMA 为 $0.996\pm0.011$；Repl-DER 的 A-Dice 为 $0.717\pm0.005$，BWTR 为 $-0.157\pm0.022$。两者均使用较低原始样本回放率。Repl-GSS 的 A-Dice 同为 $0.717\pm0.005$，但 BWTR 为 $-0.276\pm0.055$。这说明即使最终平均性能接近，历史任务退化过程也可能不同。
+
+正则化方法的 A-Dice 位于 0.594 至 0.621 之间，BWTR 均为负。Regu-EWC 和 Regu-SI 的 RMA 接近 1，表明它们能够学习当前器官，但旧任务性能在后续训练中下降。Non-CL 也呈现相似现象，其 RMA 为 $1.006\pm0.008$，A-Dice 仅为 $0.603\pm0.008$。对于标签集合与输入分布共同变化的任务序列，当前任务学习和历史保持之间的差异更为明显。
+
+\begin{table}[htbp]
+\centering
+\caption{跨器官任务增量（原 Organ-CL）下不同方法的综合结果}
+\label{tab:benchmark-organ-results}
+\thesistablefont
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.12}
+\begin{tabular}{lccccc}
+\toprule
+方法 & A-Dice & BWTR & RMA & MPE & DRR \\
+\midrule
+\multicolumn{6}{l}{\textit{正则化方法}} \\
+Regu-EWC & $.601\pm.008$ & $-.371\pm.014$ & $\best{1.004\pm.012}$ & $0$ & $0$ \\
+Regu-SI & $.621\pm.024$ & $-.343\pm.025$ & $1.003\pm.009$ & $0$ & $0$ \\
+Regu-LwF & $.594\pm.018$ & $-.308\pm.044$ & $.916\pm.004$ & $0$ & $0$ \\
+\addlinespace[2pt]
+\multicolumn{6}{l}{\textit{回放方法}} \\
+Repl-ER & $.729\pm.009$ & $-.178\pm.021$ & $.996\pm.011$ & $0$ & $.012^{*}$ \\
+Repl-GSS & $.717\pm.005$ & $-.276\pm.055$ & $.995\pm.009$ & $0$ & $.023^{*}$ \\
+Repl-GEM & $.599\pm.007$ & $-.182\pm.068$ & $.806\pm.059$ & $0$ & $.023^{*}$ \\
+Repl-GPM & $.605\pm.009$ & $-.329\pm.034$ & $.960\pm.027$ & $0$ & $.068$ \\
+Repl-AGEM & $.635\pm.013$ & $-.193\pm.069$ & $.873\pm.052$ & $0$ & $.023^{*}$ \\
+Repl-DER & $.717\pm.005$ & $-.157\pm.022$ & $.953\pm.013$ & $0$ & $.012^{*}$ \\
+Repl-FDR & $.631\pm.008$ & $-.217\pm.008$ & $.885\pm.013$ & $0$ & $.023^{*}$ \\
+\addlinespace[2pt]
+\multicolumn{6}{l}{\textit{参数隔离方法}} \\
+ParIso-PNN & $\best{.839\pm.004}$ & $\best{0\pm0}$ & $1.001\pm.006$ & $1.074$ & $0$ \\
+ParIso-DAN & $.824\pm.005$ & $\best{0\pm0}$ & $.972\pm.016$ & $.166$ & $0$ \\
+\addlinespace[2pt]
+\multicolumn{6}{l}{\textit{参照方法}} \\
+Non-CL & $.603\pm.008$ & $-.369\pm.005$ & $1.006\pm.008$ & $0$ & $0$ \\
+JointTrain & $.881\pm.010$ & -- & -- & $0$ & $0$ \\
+\bottomrule
+\end{tabular}
+\vspace{2pt}
+\begin{minipage}{0.98\textwidth}
+\footnotesize 注：红色粗体表示持续学习方法中的列最高均值，不含参照方法；MPE 与 DRR 为资源条件，不参与性能排名。数值为均值$\pm$标准差；DRR 中带“$^{*}$”的数值表示回放原始图像。
+\end{minipage}
+\end{table}
+
+\subsection{任务顺序与回放容量分析}
+
+持续学习结果还可能受到任务排列影响。图\ref{fig:benchmark-order-adice}和图\ref{fig:benchmark-order-bwtr}展示了十种 Domain-CL 任务顺序下的 A-Dice 与 BWTR。不同顺序会改变各方法的最终表现，说明固定单一任务序列不足以完全描述方法鲁棒性。Repl-GSS 在十种顺序下的 A-Dice 和 BWTR 标准差分别为 0.0134 和 0.0123，整体波动较小。这些结果反映了方法对中心到达顺序的敏感程度。
+
+\begin{figure}[htbp]
+\centering
+\thesisgraphic{ch04/task_robustness_adice.pdf}
+\caption{十种随机 Domain-CL 任务顺序下各方法的 A-Dice。图中汇总不同任务排列的结果，并以标准差反映方法对任务顺序的敏感性。}
+\label{fig:benchmark-order-adice}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\thesisgraphic{ch04/task_robustness_bwt_from_bottom.pdf}
+\caption{十种随机 Domain-CL 任务顺序下各方法的 BWTR。图中标准差反映历史知识保持对任务排列变化的敏感性。}
+\label{fig:benchmark-order-bwtr}
+\end{figure}
+
+除任务顺序外，回放容量决定历史样本对训练的覆盖程度，也改变存储成本。图\ref{fig:benchmark-memory}给出了多种回放方法随回放容量变化的 Domain-CL A-Dice。ER、FDR、GEM、DER 和 GSS 的性能整体随回放容量增加而提高，随后呈现趋于饱和的趋势。这一结果说明更大的回放容量可以改善历史分布近似，但不能据此确定跨数据集通用的最优回放容量。回放容量的选择仍需结合性能与存储开销。
+
+\begin{figure}[htbp]
+\centering
+\thesisgraphic{ch04/domain_memory_size_adice.pdf}
+\caption{Domain-CL 中回放容量与 A-Dice 的关系。不同方法的性能随容量增加总体提高，并逐渐趋于饱和。}
+\label{fig:benchmark-memory}
+\end{figure}
+
+\subsection{基础分割模型的顺序适配}
+\label{sec:benchmark-extensions}
+
+\phantomsection\label{subsec:benchmark-foundation-model}
+前述方法在 Domain-CL 中对未来域的直接泛化仍然有限。为考察大规模预训练和参数高效适配的影响，本章在六中心序列上补充比较 Segment Anything Model（SAM）\cite{kirillov2023sam} 的两种顺序适配方式。这里的 SAM 指基础分割模型，与第六章使用的锐度感知最小化不同。
+
+第一种方式从相同的 SAM 初始化出发，按照任务 1 至任务 6 的顺序更新编码器和解码器；第二种方式冻结编码器主体，仅顺序更新低秩适配模块和解码器。低秩适配通过在预训练网络中引入可训练的低秩增量矩阵，减少需要改变的参数范围\cite{hu2022lora,ding2023peft}。该分析不把基础模型视为新的主表基线，而是用于观察强预训练表征和参数高效适配是否会改变阶段--任务性能矩阵的结构。
+
+图\ref{fig:benchmark-sam-lora}给出了两种适配方式的任务性能矩阵。每一行表示完成对应任务训练后的模型，每一列表示测试域；主对角线反映当前域适应，左下三角反映历史域保持，右上三角反映对未来域的直接前向泛化。完整微调在多个主对角线位置获得较高 Dice，说明模型能够适应当前中心，但非对角条目波动较大，且完成后续任务后部分历史域性能明显下降。换言之，基础模型的预训练表示并不会自动消除顺序更新造成的覆盖。
+
+采用 LoRA 后，矩阵整体平均 Dice 由 0.747 提高到 0.823，非对角条目的平均 Dice 由 0.719 提高到 0.808。部分历史域和未来域条目均有改善，表明限制编码器更新范围在这一设置下有利于保留跨域表现。由于历史保持和前向泛化均包含在非对角条目中，两者仍需结合矩阵中的具体位置分别分析。
+
+\begin{figure}[htbp]
+\centering
+\thesisgraphic{ch04/SAM_confusion_matrix.pdf}
+\caption[基础分割模型在 Domain-CL 中的阶段--任务 Dice 矩阵]{基础分割模型在 Domain-CL 中的阶段--任务 Dice 矩阵。左图为编码器和解码器均参与更新的顺序 SAM 微调，右图为冻结编码器主体、仅更新 LoRA 模块和解码器的顺序适配。行表示完成相应任务后的模型，列表示测试任务；对角线、左下三角和右上三角分别对应当前任务适应、历史任务保持和未来域前向泛化。}
+\label{fig:benchmark-sam-lora}
+\end{figure}
+
+\subsection{评测结果讨论与弱监督动机}
+\label{sec:benchmark-findings-limitations}
+
+三类基准中，没有一种方法在性能和资源开销上始终占优。参数隔离在多个场景中取得零 BWTR 和较高 A-Dice，但需要增加模型参数；回放方法通常优于单纯正则化，其效果却受到回放对象、容量和任务顺序的影响。正则化方法保持固定参数量且不回放历史样本，在域或器官变化较大时仍会出现明显遗忘。MiB 和 PLOP 用于处理 Class-CL 的背景语义变化，本章未将二者用于 Organ-CL 比较。
+
+当前学习、历史保持和前向泛化也不总是同步改善。EWC、SI 和 Non-CL 在部分场景中具有接近或超过 1 的 RMA，却伴随较负的 BWTR；参数隔离取得零 BWTR 时，未来域 E-FWT 不一定更高。Class-CL 中 A-Dice 与 WCD 的排序差异还说明，逐任务平均性能不能替代最终统一输出的评价。因此，方法比较需要结合阶段--任务矩阵和具体资源条件。
+
+上述结论来自公开数据、预先划分的任务、固定主干与训练预算。跨中心变化、心脏结构类别扩展和跨器官任务对应不同输出语义，方法排序需要结合数据分布与训练条件解释。SAM 与 LoRA 的补充分析仅在六中心设置中考察基础分割模型的顺序适配，不代表其他基础模型和更长序列的结果。
+
+\phantomsection\label{subsec:benchmark-related-paradigms}
+持续分割还可能同时面对多中心数据分散、测试分布变化和更少标注。图\ref{fig:benchmark-related-paradigms}概括持续学习与相关学习范式的联系。联邦持续学习同时处理客户端差异和任务随时间变化\cite{yang2024fclsurvey,yoon2021fedweit}；持续测试时适应利用无标签测试流更新模型\cite{wang2021tent,hu2021fullytta}；少样本、无监督与新类发现则改变训练时可用的标注或类别信息。它们与本章密集监督基准具有不同的训练条件，方法结论需要在相应设置下评价，不能直接沿用本章的排序。对于本文接下来关注的涂鸦监督，关键变化是当前任务只能在少量位置获得像素标签。
+
+\begin{figure}[htbp]
+\centering
+\thesisgraphic{ch04/plots_for_benchmark.pdf}
+\caption[持续学习与相关机器学习范式的联系]{持续学习与相关机器学习范式的联系。联邦持续学习、持续测试时适应、少样本持续学习、无监督持续学习和持续新类发现等方向，分别改变数据分布方式、标注可用性或类别开放程度。图示概括不同训练信息条件与持续学习研究的联系。}
+\label{fig:benchmark-related-paradigms}
+\end{figure}
+
+
+密集监督下的直接顺序训练仍会遗忘旧任务，而仅约束历史参数又不能补足当前图像缺少的标签。下一节因此在相同域增量、类别增量与跨器官任务数据上，用固定模拟涂鸦替代完整训练掩膜，同时研究监督增强和历史知识保持。
+
+\section{弱监督持续分割方法}
+\label{sec:scribblecl}
+
+\subsection{问题定义}
+\label{sec:scribblecl-formulation}
+
+在第\ref{sec:benchmark-problem-definition}节的持续分割问题中，将密集训练标签替换为涂鸦。沿用第\ref{chap:foundations}章的分割记号，设医学图像为
+$\mathbf{I}:\Omega\rightarrow\mathbb{R}^{C}$，共享分割模型
+$f_{\theta}$ 在位置 $\mathbf{u}\in\Omega$ 输出固定标签语义集合
+$\mathcal{C}$ 上的类别概率 $\mathbf{p}_{\theta}(\mathbf{u})$。在涂鸦监督条件下，只有位置集合
+$\Omega_L\subset\Omega$ 具有类别标签，未标注集合为
+$\Omega_U=\Omega\setminus\Omega_L$。式\eqref{eq:foundations-partial-ce}给出的部分交叉熵只在 $\Omega_L$ 上产生直接监督，避免把未知像素简单视为背景；当 $|\Omega_L|\ll|\Omega|$ 时，完整区域、轮廓和连通关系仍需由图像表征与附加约束推断。
+
+静态涂鸦监督学习在固定分布上优化单一模型。其训练集记为
+\[
+\mathcal{D}^{\mathrm{scr}}
+=
+\bigl\{(\mathbf{I}_i,\mathbf{Y}^{\mathrm{scr}}_i)\bigr\}_{i=1}^{N},
+\]
+其中 $\mathbf{Y}^{\mathrm{scr}}_i$ 只在 $\Omega_{L,i}$ 上定义，其一般目标可写为
+\begin{equation}
+\widehat{\theta}
+=
+\operatorname*{arg\,min}_{\theta}
+\frac{1}{N}\sum_{i=1}^{N}
+\left[
+\mathcal{L}_{\mathrm{PCE}}^{(i)}(\theta)
++
+\mathcal{R}_{\mathrm{scr}}^{(i)}(\theta)
+\right],
+\label{eq:scribble-static-objective}
+\end{equation}
+其中，$\mathcal{R}_{\mathrm{scr}}$ 表示从输入变换、预测一致性或空间结构中获得的附加约束。其作用是为未标注区域提供受条件限制的训练信号，而不是把全部未知像素补写为无噪声硬标签。
+
+在域增量设置下，弱监督持续分割进一步考虑中心数据按阶段到达。设域序列为
+$\mathcal{T}=\{1,\ldots,T\}$，第 $t$ 个阶段获得涂鸦训练集
+$\mathcal{D}^{\mathrm{scr}}_t$，各阶段的医学分析目标、前列腺/背景标签语义和共享输出头保持不变，输入分布则因中心与采集条件变化。完成第 $t$ 个阶段后，模型参数记为 $\theta_t$。令
+$d_{t,j}$ 表示模型 $\theta_t$ 在域 $j$ 密集测试集上的平均 Dice，则
+$\mathbf{D}^{\mathrm{scr}}=[d_{t,j}]$ 沿用第三章定义的阶段--任务性能矩阵。主对角线同时受到当前域适应与涂鸦监督不足影响；旧域条目反映后续更新后的能力保持；尚未训练域上的条目用于观察前向泛化。因此，只报告最终平均 Dice 无法判断性能损失来自当前域未学好，还是后续阶段遗忘。
+
+在历史访问方面，本章不允许后续阶段完整读取全部旧任务训练集，但 ZSDerpp 可以从容量受限的回放集合读取少量历史图像--涂鸦对及其参考特征。当前任务的监督增强、历史样本的弱监督优化和参考特征约束共同参与更新。类别增量设置进一步令已见类别集合随阶段扩展，使用共享八通道输出头，并按照第\ref{subsec:medcl-benchmark-config}节的阶段标签设定处理背景。其阶段--任务矩阵仍以密集测试标签计算，最终阶段同时评价全类别输出。
+
+
+ZSDerpp 由当前域监督增强和历史特征保持两部分构成。当前图像只使用涂鸦标签，部分交叉熵提供局部监督，全局一致性与空间先验补充未标注区域约束\cite{zhang2026zscribbleseg}。历史域通过有限图像--涂鸦回放参与后续优化，并利用进入记忆时保存的参考特征限制表征漂移。下面先给出域增量方法，再说明其对类别扩展和跨器官任务的输出适配\cite{cermelli2020mib}。
+
+\subsection{涂鸦监督下的全局一致性与空间先验}
+\label{subsec:prior-scribble-foundation}
+
+设医学图像为 $X:\Omega\rightarrow\mathbb{R}^{C}$，涂鸦标签为 $Y^{\mathrm{scr}}$，具有有效标签的位置集合为 $\Omega_L$。部分交叉熵只在涂鸦位置产生直接监督：
+\begin{equation}
+\mathcal{L}_{\mathrm{PCE}}
+=
+-\frac{1}{|\Omega_L|}
+\sum_{i\in\Omega_L}
+\sum_{k=0}^{K-1}
+y_{ik}\log p_{\theta,k}(x_i),
+\label{eq:scribblecl-pce}
+\end{equation}
+其中，$K$ 为类别数，$y_{ik}$ 为像素 $x_i$ 的涂鸦标签，$p_{\theta,k}(x_i)$ 为模型预测概率。该损失不把未标注像素直接视为背景，但仅依赖少量涂鸦位置时，仍难以约束完整区域和轮廓。
+
+全局一致性要求图像变换与预测变换具有相容结果\cite{zhang2026zscribbleseg}。设 $(X_1,X_2)$ 为同一批次中的两个输入，$\mathcal{A}(\cdot,\cdot)$ 表示对两幅图像或两组预测执行相同参数的混合与遮挡变换，定义
+\begin{equation}
+\begin{aligned}
+u_{12}&=\mathcal{A}\!\left(f_{\theta}(X_1),f_{\theta}(X_2)\right),
+&v_{12}&=f_{\theta}\!\left(\mathcal{A}(X_1,X_2)\right),\\
+u_{21}&=\mathcal{A}\!\left(f_{\theta}(X_2),f_{\theta}(X_1)\right),
+&v_{21}&=f_{\theta}\!\left(\mathcal{A}(X_2,X_1)\right).
+\end{aligned}
+\label{eq:scribblecl-global-pairs}
+\end{equation}
+令
+$\ell_{\cos}(u,v)=-\langle u,v\rangle/(\|u\|_2\|v\|_2)$，则
+\begin{equation}
+\mathcal{L}_{\mathrm{global}}
+=
+\frac{1}{2}
+\left[
+\ell_{\cos}(u_{12},v_{12})
++
+\ell_{\cos}(u_{21},v_{21})
+\right].
+\label{eq:scribblecl-global-loss}
+\end{equation}
+该项约束“先预测后变换”和“先变换后预测”的输出关系，使未标注区域能够通过增强前后的整体响应获得附加约束，而不被写成确定伪标签\cite{zhang2026zscribbleseg}。
+
+除全局一致性外，空间先验根据局部位置、图像外观和当前预测，从未标注区域中筛选相对可信的类别负集合。令 $\overline{\Omega}_k$ 表示对前景类别 $k$ 得到的负候选位置，将除 $k$ 外的类别合并为 $\overline c_k$，则空间损失写为
+\begin{equation}
+\mathcal{L}_{\mathrm{spatial}}
+=
+-
+\sum_{k=1}^{K-1}
+\sum_{x_i\in\overline{\Omega}_k}
+\log p_{\theta}(\overline c_k\mid x_i).
+\label{eq:scribblecl-spatial-loss}
+\end{equation}
+该项利用筛选出的候选非目标位置，抑制不符合局部结构的类别预测。候选正区域不直接作为确定标签参与监督\cite{zhang2026zscribbleseg}。
+
+当前任务损失由部分交叉熵及上述两项约束组成：
+\begin{equation}
+\mathcal{L}_{\mathrm{cur}}^{(t)}
+=
+\mathcal{L}_{\mathrm{PCE}}^{(t)}
++
+\lambda_{g}\mathcal{L}_{\mathrm{global}}^{(t)}
++
+\lambda_{s}\mathcal{L}_{\mathrm{spatial}}^{(t)},
+\label{eq:scribblecl-current-loss}
+\end{equation}
+其中，$\lambda_g$ 和 $\lambda_s$ 分别控制全局一致性与空间先验的强度\cite{zhang2026zscribbleseg}。
+
+\subsection{有限回放、特征一致性与输出适配}
+\label{subsec:scribblecl-methods}
+
+在历史信息组织上，设第 $t$ 个阶段的涂鸦训练集为 $\mathcal{D}^{\mathrm{scr}}_t$，历史回放集合为 $\mathcal{M}_{t-1}$，其容量固定为 64 幅图像，即 $|\mathcal{M}_{t-1}|\leq 64$。回放集合采用水库采样在线更新，使顺序到达的历史样本具有被保留的机会。每个回放条目包含历史图像、对应涂鸦标签、样本进入回放集合时保存的参考特征以及任务标识，可写为
+$(X_m,Y_m^{\mathrm{scr}},\widetilde{\mathbf h}_m,\tau_m)$。任务标识用于在 Organ-CL 中选择对应输出头，在 Class-CL 中解释样本所处阶段的标签空间。
+
+令 $\mathbf h_{\theta}(X)$ 表示实现中选定的中间特征，历史特征保持损失为
+\begin{equation}
+\mathcal{L}_{\mathrm{feature}}
+=
+\frac{1}{|\mathcal{B}_t|}
+\sum_{m\in\mathcal{B}_t}
+\left\|
+\mathbf h_{\theta}(X_m)-\widetilde{\mathbf h}_m
+\right\|_2^2,
+\label{eq:scribblecl-feature-loss}
+\end{equation}
+其中，$\mathcal{B}_t\subseteq\mathcal{M}_{t-1}$ 为当前更新采样的历史小批次，回放批大小固定为 8，即 $|\mathcal{B}_t|=8$。该项限制历史样本的表征漂移；回放样本的涂鸦标签仍用于重新计算部分交叉熵、全局一致性和空间先验。历史回放同时利用参考特征和稀疏涂鸦标签，以约束旧任务表征并重新优化回放样本。
+
+按照本章实验实现，回放损失固定为
+\begin{equation}
+\mathcal{L}_{\mathrm{replay}}^{(t)}
+=
+0.5\,\mathcal{L}_{\mathrm{feature}}^{(t)}
++
+0.5\,\mathcal{L}_{\mathrm{PCE}}^{\mathrm{replay},(t)}
++
+1.0\,\mathcal{L}_{\mathrm{global}}^{\mathrm{replay},(t)}
++
+0.1\,\mathcal{L}_{\mathrm{spatial}}^{\mathrm{replay},(t)}.
+\label{eq:scribblecl-replay-loss}
+\end{equation}
+由此，ZSDerpp 的统一训练目标为
+\begin{equation}
+\mathcal{L}_{\mathrm{ZSDerpp}}^{(t)}
+=
+\mathcal{L}_{\mathrm{cur}}^{(t)}
++
+\mathbb{I}[t>1]\mathcal{L}_{\mathrm{replay}}^{(t)},
+\label{eq:scribblecl-zsderpp-total}
+\end{equation}
+其中，第一阶段回放集合为空，历史损失取零。式\eqref{eq:scribblecl-replay-loss}把历史表征保持与回放样本上的稀疏监督重新优化置于同一目标中：特征项保持历史响应，部分交叉熵保留已标注像素的类别信息，全局一致性与空间先验则继续约束历史样本的未标注区域。
+
+输出适配需要区分不同的持续学习场景。在 Domain-CL 中，标签语义和共享输出头不变，回放样本通过同一输出头计算式\eqref{eq:scribblecl-replay-loss}。在 Class-CL 中，ZSDerpp 与 MiB 结合处理阶段间的类别扩展和背景变化。对于 Organ-CL，可为各任务保留独立输出头，并按历史条目的任务标识选择输出头，共享编码器继续接受特征保持和弱监督回放约束。
+
+类别增量的输出适配采用以下形式。设第 $t$ 阶段新增类别集合为 $\mathcal{C}_t$，截至该阶段的已见前景类别为 $\mathcal{C}_{1:t}=\bigcup_{\tau=1}^{t}\mathcal{C}_{\tau}$，$b$ 表示背景。Class-CL 在统一八通道输出中逐步增加已见类别，当前标签中的背景还可能包含旧类别。为避免把未标注旧类别强制压入背景，当前阶段背景标签的监督概率定义为\cite{cermelli2020mib}
+\begin{equation}
+\overline{p}_{t}(y\mid\mathbf{u})
+=
+\begin{cases}
+p_t(y\mid\mathbf{u}), & y\in\mathcal{C}_t,\\[1mm]
+p_t(b\mid\mathbf{u})+
+\displaystyle\sum_{c\in\mathcal{C}_{1:t-1}}p_t(c\mid\mathbf{u}), & y=b
+\end{cases},
+\label{eq:scribblecl-background-aware-probability}
+\end{equation}
+并以 $\overline p_t$ 计算背景感知的部分交叉熵
+\begin{equation}
+\mathcal{L}_{\mathrm{uPCE}}^{(t)}
+=
+-\frac{1}{|\Omega_L^{(t)}|}
+\sum_{\mathbf{u}\in\Omega_L^{(t)}}
+\log \overline p_t\!\left(y_{\mathbf{u}}^{(t)}\mid\mathbf{u}\right).
+\label{eq:scribblecl-background-aware-pce}
+\end{equation}
+旧模型提供历史类别的函数约束。对旧类别保持逐类匹配，并将旧模型背景概率与当前模型的背景及新增类别概率之和对应：
+\begin{equation}
+\widetilde p_t(c\mid\mathbf{u})
+=
+\begin{cases}
+p_t(c\mid\mathbf{u}), & c\in\mathcal{C}_{1:t-1},\\[1mm]
+p_t(b\mid\mathbf{u})+
+\displaystyle\sum_{k\in\mathcal{C}_t}p_t(k\mid\mathbf{u}), & c=b
+\end{cases}.
+\label{eq:scribblecl-background-aware-distillation-probability}
+\end{equation}
+相应的背景语义保持项为
+\begin{equation}
+\mathcal{L}_{\mathrm{bg}}^{(t)}
+=
+-\frac{1}{|\Omega|}
+\sum_{\mathbf{u}\in\Omega}
+\sum_{c\in\mathcal{C}_{1:t-1}\cup\{b\}}
+p_{t-1}(c\mid\mathbf{u})
+\log \widetilde p_t(c\mid\mathbf{u}).
+\label{eq:scribblecl-background-aware-distillation}
+\end{equation}
+在 Class-CL 中，式\eqref{eq:scribblecl-current-loss}的部分交叉熵由 $\mathcal{L}_{\mathrm{uPCE}}^{(t)}$ 替代，并加入 $\lambda_{\mathrm{bg}}\mathcal{L}_{\mathrm{bg}}^{(t)}$；回放监督在统一标签空间中采用相同的背景语义解释。该形式说明背景语义随类别扩展时需要调整的监督约束，与六中心域增量中固定标签语义的主方法分别解释。
+
+\begin{table}[htbp]
+\centering
+\caption{弱监督持续分割比较方法及其历史信息访问条件}
+\label{tab:scribblecl-methods}
+\thesistablefont
+\renewcommand{\arraystretch}{1.15}
+\setlength{\tabcolsep}{3pt}
+\begin{tabularx}{\textwidth}{@{}p{2.8cm}Xp{4.1cm}X@{}}
+\toprule
+方法 & 当前阶段监督 & 历史知识处理 & 本章用途 \\
+\midrule
+Dense-Sequential & 密集标签 & 无 & 密集监督顺序训练参照 \\
+PCE-Sequential & 涂鸦与部分交叉熵 & 无 & 基础弱监督参照 \\
+ZS-Sequential & 涂鸦、全局一致性与空间先验 & 无 & 增强弱监督顺序参照 \\
+ZS-EWC & 与 ZS-Sequential 相同 & 参数重要性正则 & 无原始样本回放比较 \\
+ZS-GPM & 与 ZS-Sequential 相同 & 梯度子空间投影 & 无原始样本回放比较 \\
+ZS-ER & 与 ZS-Sequential 相同 & 历史图像--涂鸦经验回放 & 类别增量与跨器官比较 \\
+ZS-DER & 与 ZS-Sequential 相同 & 历史图像回放与旧输出约束 & 类别增量比较 \\
+ZSDerpp & 与 ZS-Sequential 相同 & 64 幅图像；水库采样；回放批大小为 8；保存涂鸦与参考特征 & 三类实验；类别增量采用 MiB 背景语义适配 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+
+\section{弱监督实验与综合分析}
+\label{sec:scribblecl-experiments}
+
+\subsection{实验设定}
+\label{subsec:scribblecl-experimental-settings}
+
+\phantomsection\label{subsubsec:scribblecl-datasets}
+六中心 Domain-CL、三阶段 Class-CL 与四任务 Organ-CL 沿用第三章表\ref{tab:medcl-cross-chapter-data}的病例、任务顺序、输出头和预处理，不重新抽样。训练/验证/测试划分保持不变，只有训练监督改为固定模拟涂鸦；本节重点说明涂鸦生成及弱监督特有的训练参数。
+
+\phantomsection\label{subsubsec:scribblecl-reference-standard}
+训练集密集掩膜仅用于离线生成涂鸦，并供 Dense-Sequential 对照使用。其他方法只读取固定涂鸦及其忽略区域，不把完整训练掩膜加入损失；验证和测试继续使用第三章登记的密集标注。所有比较方法使用同一份涂鸦文件，避免随机生成差异影响结果。
+
+\phantomsection\label{subsubsec:scribblecl-scribble-construction}
+训练集涂鸦采用 WSL4MIS 开源实现中的 \texttt{scribbles\_generator.py} 构建\cite{luo2022scribble}\footnote{\url{https://github.com/HiLab-git/WSL4MIS/blob/main/code/scribbles_generator.py}}。对每个类别，先从阶段可访问的密集标签中得到二值掩膜，再逐轴位切片生成骨架。面积较大的区域先进行随机腐蚀，随后使用 Lee 骨架化获得中心线。前景骨架经过连通区域筛选和随机分支裁剪，并进行一次形态学膨胀。对面积超过 1000 像素的目标，脚本在原类别区域内施加 $[-6,6]$ 像素的随机平移和不超过 $15^\circ$ 的随机旋转，以增加涂鸦形态变化。
+
+生成结果保留前景类别和背景涂鸦，其他位置写为 255，并在部分交叉熵中作为忽略位置。若训练代码内部使用其他 \texttt{ignore\_index}，只在数据读取阶段执行确定性映射，不改变磁盘中涂鸦的含义。所有比较方法共享同一份固定涂鸦文件，避免重新随机生成标注造成额外差异。
+
+图\ref{fig:scribblecl-annotation-sequences}展示不同持续分割场景中的涂鸦形式及任务顺序。Domain-CL 保持前列腺分割语义不变并依次改变数据中心，Organ-CL 依次改变器官与成像模态，Class-CL 则分阶段扩展心脏结构类别。
+
+\begin{figure}[htbp]
+\centering
+\thesisgraphic{ch04/scribble_annotation_fig.pdf}
+\caption{三类弱监督持续分割场景的涂鸦标注与任务序列。每一行对应一种持续分割设定，箭头表示任务到达顺序；蓝色曲线表示背景涂鸦，其他彩色曲线表示当前阶段可访问的前景类别涂鸦，未被涂鸦覆盖的像素在弱监督训练中设为忽略位置。图中“器官增量”对应本文的跨器官任务增量。Domain-CL、Class-CL 和 Organ-CL 分别对应本章的六中心、三任务类别增量和四任务跨器官实验。}
+\label{fig:scribblecl-annotation-sequences}
+\end{figure}
+
+在 Class-CL 实验中，先按照当前阶段的标签空间完成类别重映射，再调用涂鸦生成代码。当前不可访问的旧类别和未来类别按该阶段的背景语义处理。完整密集标签只用于生成模拟涂鸦、验证、测试和 Dense-Sequential；其他方法的当前任务损失与历史回放均只使用涂鸦标签，回放条目还保存由当时模型计算的参考特征。
+
+\phantomsection\label{subsubsec:scribblecl-training-evaluation}
+网络、优化器和基础训练预算沿用第\ref{sec:benchmark-protocol}节的 ResUNet32 配置。Dense-Sequential、PCE-Sequential、ZS-Sequential、ZS-EWC、ZS-GPM 和 ZSDerpp 使用相同的数据划分、任务顺序、网络与训练预算。当前任务损失中的权重设置为 $\lambda_g=0.05$ 和 $\lambda_s=1$；前 15 个 epoch 不启用空间先验，自第 16 个 epoch 起加入 $\mathcal{L}_{\mathrm{spatial}}$。上述设置在所有使用全局一致性与空间先验的比较方法中保持一致\cite{zhang2026zscribbleseg}。
+
+ZS-EWC 和 ZS-GPM 的持续学习参数沿用表\ref{tab:benchmark-baseline-config}中的相应基线设置\cite{kirkpatrick2017ewc,saha2021gpm}。ZSDerpp 的回放容量为 64 幅图像，保留图像--涂鸦对及参考特征，采用水库采样更新。回放批大小为 8，随机种子固定为 42。回放损失采用式\eqref{eq:scribblecl-replay-loss}中的 $0.5/0.5/1.0/0.1$ 系数。
+
+三类实验使用第\ref{subsec:segmentation-benchmark-evaluation}节的分割评价设置。RMA 随结果记录独立训练对照的监督形式与训练预算，MPE 与 DRR 根据模型参数和历史信息记录汇总。
+
+
+\subsection{实验结果与分析}
+\label{sec:scribblecl-platform-integration}
+\label{sec:scribblecl-platform}
+\label{sec:scribblecl-benchmark-connection}
+
+完成阶段 $t$ 后，保存模型在固定测试任务上的 Dice $d_{t,j}$。Domain-CL 测试全部中心以记录历史保持和未来域表现；Class-CL 按已见类别评分，并在最终阶段记录统一输出的 WCD；Organ-CL 在各任务对应的二通道输出上评分，记录跨器官的性能保持。评价指标沿用第\ref{subsec:segmentation-benchmark-evaluation}节，训练涂鸦和回放标签不参与测试评分。
+
+图\ref{fig:zsderpp-domain-qualitative}、图\ref{fig:zsderpp-class-qualitative}和图\ref{fig:zsderpp-organ-qualitative}分别展示域增量、类别增量和跨器官任务增量的分割样例。同一行中的各方法使用相同图像，彩色叠加显示分割区域，预测图中的白色虚线标出真实标注轮廓。图中“密集监督”、PCE 和 ZS 分别对应表中的 Dense-Sequential、PCE-Sequential 和 ZS-Sequential；类别增量中的 ZSDerpp 采用前述 MiB 背景语义适配。图中 Dice 为所展示样例的结果，不等同于全测试集的 A-Dice 或类别增量的 WCD。
+
+\label{subsec:scribblecl-results}
+\label{subsec:scribblecl-experimental-analysis}
+
+表\ref{tab:scribblecl-domain-results}给出六中心前列腺 MRI 序列上的 Domain-CL 结果，表\ref{tab:scribblecl-class-results}给出三任务心脏结构序列上的 Class-CL 结果，表\ref{tab:scribblecl-organ-results}给出四任务跨器官序列上的 Organ-CL 结果。三表共同报告 A-Dice、BWTR 和 RMA，分别评价最终性能、历史保持和当前任务学习。Domain-CL 进一步报告 E-FWT，Class-CL 进一步报告 WCD；Organ-CL 的任务输出语义不同，不计算这两项跨域或统一类别指标。模型扩展和历史信息使用结合 MPE、DRR 及训练配置进行分析。
+
+\input{tables/ScribbleCL}
+
+在六中心域增量实验中，Dense-Sequential 的 A-Dice、BWTR、RMA 和 E-FWT 分别为 $0.6760$、$-0.2370$、$1.0860$ 和 $0.2600$。其 RMA 与 E-FWT 为表中最高值，表明密集监督顺序训练在当前域相对建模与未来域泛化方面具有优势；负 BWTR 则说明密集标签本身不能消除顺序更新中的旧域性能下降。
+
+PCE-Sequential 只在涂鸦位置计算部分交叉熵。与其相比，ZS-Sequential 的 A-Dice 提高 $0.2620$，BWTR 提高 $0.2210$，E-FWT 提高 $0.1010$，RMA 降低 $0.0440$。在相同涂鸦、骨干和训练预算下，全局一致性与空间先验提高了最终多域性能、旧域保持和前向泛化表现，而当前任务相对于独立训练参照的建模能力呈现不同变化。
+
+加入持续学习约束后，ZS-EWC 相较 ZS-Sequential 将 A-Dice、BWTR 和 RMA 分别提高 $0.0330$、$0.0260$ 和 $0.0290$，E-FWT 降低 $0.0180$。ZS-GPM 的 A-Dice 为 $0.6576$，相较 ZS-Sequential 提高 $0.1476$，其 BWTR、RMA 和 E-FWT 分别提高 $0.1180$、$0.0760$ 和 $0.0070$。在无原始样本回放的弱监督方法中，ZS-GPM 在上述四项指标上均取得最高值。
+
+ZSDerpp 的 A-Dice 和 BWTR 分别为 $0.7687$ 和 $-0.1520$，为表中最高值。相较 ZS-Sequential，A-Dice、BWTR 和 RMA 分别提高 $0.2587$、$0.1720$ 和 $0.1670$；相较 ZS-GPM，分别提高 $0.1111$、$0.0540$ 和 $0.0910$。ZSDerpp 的 E-FWT 为 $0.2250$，低于 ZS-Sequential 的 $0.2340$ 和 ZS-GPM 的 $0.2410$。这些指标表明，有限图像--涂鸦回放与参考特征约束主要改善最终性能和历史保持，未来域泛化呈现不同取舍。
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{ch04/zsderpp_domain_qualitative.pdf}
+\caption[六中心域增量弱监督分割可视化]{六中心域增量弱监督分割可视化。各行依次为域 A--F 的前列腺 MRI 样例，各列为原始图像、真实标注及不同方法的预测。红色叠加表示前列腺区域，预测图中的白色虚线表示真实标注轮廓；各预测下方给出对应样例的 Dice。PCE 和 ZS 分别对应 PCE-Sequential 和 ZS-Sequential。}
+\label{fig:zsderpp-domain-qualitative}
+\end{figure}
+
+相较 Dense-Sequential，ZSDerpp 的 A-Dice 和 BWTR 分别提高 $0.0927$ 和 $0.0850$，RMA 与 E-FWT 分别低 $0.1870$ 和 $0.0350$。前者采用密集监督且无历史约束，后者结合涂鸦监督、有限回放与特征保持，差异不能仅归因于标注形式。
+
+图\ref{fig:zsderpp-domain-qualitative}进一步展示六个中心的前列腺分割结果。域 A、B 的 PCE 与 ZS 预测包含较明显的目标外区域，域 C、E 则出现目标覆盖不足。ZSDerpp 在这些样例中减少了过分割或漏分割，预测轮廓与标注更为接近，其在域 A--F 上的样例 Dice 依次为 $0.912$、$0.943$、$0.876$、$0.905$、$0.877$ 和 $0.922$。其中五个样例的 Dice 高于图中其他方法，域 D 的 $0.905$ 略低于 ZS-GPM 的 $0.910$。这些结果与表\ref{tab:scribblecl-domain-results}中较高的 A-Dice 相呼应，但不能据此认为该方法在每个中心或每个病例上均最优。
+
+\FloatBarrier
+
+在三任务类别增量实验中，ZSDerpp 采用 MiB 进行背景语义适配，其 A-Dice、BWTR、RMA 和 WCD 分别为 $0.7677$、$0.0031$、$0.9845$ 和 $0.7067$。其中，A-Dice、BWTR 和 WCD 均为表中最高值。BWTR 为接近零的正值，表示旧任务从初学到最终阶段的平均相对表现略有提高，但不意味着每个旧任务都没有遗忘；RMA 接近 1，表明新增任务的初学表现平均接近独立训练参照。
+
+相较 ZS-Sequential，ZSDerpp 的 A-Dice 提高 $0.3067$，BWTR 提高 $0.6451$，WCD 提高 $0.4004$，而 RMA 低 $0.0593$。相较 Dense-Sequential，其 A-Dice 和 WCD 分别提高 $0.2833$ 和 $0.3758$，BWTR 从 $-0.6785$ 提高到 $0.0031$；Dense-Sequential 的 RMA 为 $1.1391$，仍是表中最高值。因此，ZSDerpp 的主要优势体现在旧类别保持与最终统一输出，而不是所有评价指标都最优。该比较同时改变了监督形式和历史信息使用，不能将结果差异仅归因于涂鸦或某一个损失项。
+
+类别增量中的 ZS-ER 和 ZS-DER 分别取得 $0.3616$ 和 $0.4141$ 的 A-Dice，均低于 ZS-Sequential 的 $0.4610$；两者 BWTR 分别为 $-0.5948$ 和 $-0.5875$，虽高于 ZS-Sequential 的 $-0.6420$，仍伴随明显历史退化。有限回放本身因此不能保证最终全类别表现改善。ZSDerpp 利用历史涂鸦和参考特征保留已有结构，并处理旧类别与新增类别之间的背景语义变化；当前结果支持这一完整方案的效果，但尚不能单独量化背景适配与特征约束各自的贡献。
+
+图\ref{fig:zsderpp-class-qualitative}按 $C_1$--$C_3$、$C_1$--$C_5$ 和 $C_1$--$C_7$ 展示三阶段心脏结构分割。随着已见类别增加，若干对比方法在图示样例中仍能预测部分新增结构，却漏分先前学习的结构，第二、三阶段尤为明显。ZSDerpp 在第二阶段仍能覆盖多个旧类别区域，在第三阶段保留了较完整的多类别预测，其三个样例的 Dice 分别为 $0.823$、$0.799$ 和 $0.678$，高于对应密集监督顺序训练的 $0.797$、$0.377$ 和 $0.227$。这种旧类别区域保留的改善，与表\ref{tab:scribblecl-class-results}中较高的 WCD 和接近零的 BWTR 所反映的趋势一致。不过，第三阶段仍存在局部结构漏分和轮廓偏差，说明类别扩展后的多结构分割仍有改进空间。
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{ch04/zsderpp_class_qualitative.pdf}
+\caption[三阶段类别增量弱监督分割可视化]{三阶段类别增量弱监督分割可视化。三行分别对应已见类别集合 $C_1$--$C_3$、$C_1$--$C_5$ 和 $C_1$--$C_7$；不同颜色表示不同心脏结构，预测图中的白色虚线表示真实标注轮廓。图中“密集监督”为 Dense-Sequential；ZSDerpp 在该场景中采用 MiB 进行背景语义适配。各预测下方为对应样例的 Dice。}
+\label{fig:zsderpp-class-qualitative}
+\end{figure}
+\FloatBarrier
+
+四任务跨器官实验中，ZSDerpp 的 A-Dice 为 $0.8481$，BWTR 为 $-0.0252$，均为表中最高值；RMA 为 $1.0138$，接近独立训练水平，但低于 Dense-Sequential 的 $1.0757$。相较 ZS-Sequential，ZSDerpp 的 A-Dice 和 BWTR 分别提高 $0.2610$ 和 $0.3800$；相较 A-Dice 最高的无原始样本回放弱监督方法 ZS-GPM，分别提高 $0.2280$ 和 $0.3145$。这表明，在器官与模态共同变化的序列中，有限历史样本和参考特征约束能够改善最终分割表现并减轻旧任务退化。
+
+与同样回放原始图像的 ZS-ER 相比，ZSDerpp 的 A-Dice、BWTR 和 RMA 分别提高 $0.0636$、$0.0912$ 和 $0.0065$。不过，监督增强的效果并非在所有场景中一致：Organ-CL 中 ZS-Sequential 的 A-Dice 为 $0.5871$，低于 PCE-Sequential 的 $0.6141$，BWTR 也由 $-0.2895$ 降至 $-0.4052$。这一结果与域增量中的改善形成对照，说明全局一致性和空间先验的收益受任务语义与输入分布影响，不能由单一场景直接推广。
+
+图\ref{fig:zsderpp-organ-qualitative}依次给出左心房、前列腺、肝脏与脑肿瘤样例。左心房样例中，PCE 出现较大范围的目标外预测，ZS、ZS-EWC 和 ZS-GPM 仍有局部外溢，ZSDerpp 的预测则更接近真实区域。前列腺样例中，ZS-EWC 与 ZS-GPM 分别出现明显漏分和不连续预测，对应 Dice 为 $0.313$ 和 $0.331$，而 ZSDerpp 为 $0.793$。ZSDerpp 在四个样例上的 Dice 分别为 $0.828$、$0.793$、$0.905$ 和 $0.932$。相较 Dense-Sequential，左心房和前列腺的提升分别为 $0.084$ 和 $0.246$，大于肝脏与脑肿瘤的 $0.013$ 和 $0.005$。所展示样例的改善因此主要体现在序列中较早的任务，与表\ref{tab:scribblecl-organ-results}中较高的 BWTR 所反映的历史保持趋势一致。
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{ch04/zsderpp_organ_qualitative.pdf}
+\caption[四任务跨器官弱监督分割可视化]{四任务跨器官弱监督分割可视化。各行依次为左心房、前列腺、肝脏和脑肿瘤，分别对应 Organ-CL 的任务 1--4。红色叠加显示当前任务的目标区域，预测图中的白色虚线标出真实标注轮廓。图中“密集监督”、PCE 和 ZS 分别对应 Dense-Sequential、PCE-Sequential 和 ZS-Sequential；各预测下方给出对应样例的 Dice。}
+\label{fig:zsderpp-organ-qualitative}
+\end{figure}
+\FloatBarrier
+
+资源方面，Class-CL 表中各方法的 MPE 均为 $0.0000$，不依赖模型参数扩展。PCE-Sequential、Dense-Sequential、ZS-Sequential 和 ZS-EWC 的 DRR 均为 $0.0000$；ZS-GPM 的 DRR 为 $0.0107$，对应历史子空间信息；ZSDerpp、ZS-ER 和 ZS-DER 的 DRR 分别为 $0.0313$、$0.0333$ 和 $0.0317$，均涉及历史原始图像回放。前者在较接近的数据使用比例下取得更高 A-Dice 与 WCD，但 DRR 不能替代回放对象的字节开销和附加计算统计。
+
+Organ-CL 表中各方法的 MPE 均为 $5.20\times10^{-6}$，对应极小但非零的参数扩展。ZS-GPM 的 DRR 为 $0.0536$，ZS-ER 为 $0.1101$；ZSDerpp 的 DRR 为 NA，因此不参与该设置的历史数据使用比例比较。Domain-CL 的信息访问条件如表\ref{tab:scribblecl-methods}所示：顺序训练与 ZS-EWC 不回放原始图像，ZS-GPM 保留历史子空间，ZSDerpp 保留容量为 64 幅图像的图像--涂鸦回放集及参考特征。
+
+
+\subsection{方法讨论}
+\label{subsec:scribblecl-discussion}
+\label{sec:segmentation-discussion}
+
+密集监督与弱监督实验共享六中心前列腺、三阶段心脏结构和四任务跨器官序列的病例划分、任务顺序、预处理及测试标注，使监督条件变化前后的结果具有明确对应关系。密集监督基准用于比较正则化、回放和参数隔离的历史保持特点，弱监督实验则进一步区分当前标签不足与后续任务遗忘。PCE-Sequential 与 ZS-Sequential 的比较考察全局一致性和空间先验的整体作用，ZS-Sequential、ZS-EWC、ZS-GPM 与 ZSDerpp 的比较考察不同历史知识保持方式。
+
+两组研究的训练条件仍需分别解释：密集监督基准中回放方法的默认容量为 32，而 ZSDerpp 使用 64 幅图像，并保存涂鸦和参考特征。密集监督主表报告均值与标准差，弱监督结果采用其固定实验配置。不同监督与资源条件共同影响实验结果，跨表差异不能单独归因于某一损失项或标注形式。
+
+全局一致性利用增强前后的预测关系约束未标注区域，空间先验利用候选非目标位置抑制不合理预测\cite{zhang2026zscribbleseg}。有限图像--涂鸦回放使旧任务样本继续参与优化，参考特征约束则限制其表征漂移。六中心结果表明，这些机制结合后提高了最终平均分割性能并减轻历史退化，但 E-FWT 没有同步提高，与密集监督基准中历史保持和未来域泛化并不一致的观察相呼应。
+
+域增量保持前景语义不变，重点考察中心适应和旧域保持；类别增量持续扩展心脏结构，需要同时处理已见类别与阶段背景语义；跨器官任务增量改变目标器官、模态与任务输出语义。ZSDerpp 在类别增量中采用 MiB 进行背景概率适配，Organ-CL 则使用已知任务对应的二通道输出头。A-Dice、BWTR、RMA 以及适用场景下的 E-FWT 或 WCD 分别反映不同能力，不能由单一结果替代。
+
+弱监督实验使用从密集训练掩膜生成的固定模拟涂鸦，并依赖密集验证标签选择模型。真实涂鸦的标注习惯、位置与误差可能改变监督条件；当前结果说明的是固定模拟标注下的方法表现。
+
+本章用图像--涂鸦对及参考特征保存部分历史信息，适用于允许有限回放的条件。下一章转向不能回放历史原始样本的联邦分类，用梯度子空间保存跨客户端的历史方向；第六章再研究允许保存少量历史图像对的持续配准。各任务的信息来源不同，但都通过第三章的阶段矩阵比较新旧任务表现。
+
+\section{本章小结}
+\label{sec:scribblecl-summary}
+
+本章沿用第三章的分割基准，在域增量、类别增量和跨器官任务增量中比较正则化、回放、参数隔离及类别增量专项方法。结果表明，最终分割性能、历史保持、当前学习和前向泛化具有不同变化，方法比较还需结合任务顺序、参数增长与历史信息使用。
+
+在相同的数据划分与测试标注下，本章将三类场景的训练标签改为模拟涂鸦，提出结合监督增强、有限回放与参考特征约束的 ZSDerpp。六中心域增量中，其 A-Dice 为 $0.7687$、BWTR 为 $-0.1520$。三任务类别增量中，ZSDerpp 采用 MiB 进行背景语义适配，A-Dice、BWTR、RMA 和 WCD 分别为 $0.7677$、$0.0031$、$0.9845$ 和 $0.7067$。四任务跨器官中，ZSDerpp 的 A-Dice 为 $0.8481$、BWTR 为 $-0.0252$、RMA 为 $1.0138$。三类结果均显示最终性能与历史保持得到改善，但前向泛化、当前学习和资源指标并非同步最优。下一章转向无原始样本回放的联邦持续分类。
