@@ -9,7 +9,7 @@
 \node[wide,fill=black!3] (train) {\textbf{联邦持续分类训练}\par 客户端本地更新与子空间构建\quad 服务器模型聚合与子空间融合\par 每个类别阶段结束后得到全局模型};
 \node[wide,below=of train] (submit) {\textbf{提交模型或预测}\par 选择任务顺序、完成阶段及测试分类头选择方式\par 阶段全局模型与分类预测按任务和样本标识对应};
 \node[wide,below=of submit] (test) {\textbf{MedCL：任务与阶段评价}\par 同一阶段全局模型\quad 按测试任务选择分类头\quad 以准确率构建阶段--任务矩阵};
-\node[wide,below=of test,fill=green!4] (view) {\textbf{任务性能、持续学习能力与资源}\par ACC\quad BWTR\quad MPE\quad DRR\par 客户端分布与参与率\quad 模型和子空间通信开销};
+\node[wide,below=of test,fill=green!4] (view) {\textbf{任务性能、持续学习能力与资源}\par ACC\quad BWTR\quad 阶段--任务矩阵\par 客户端分布与参与率\quad 模型和子空间通信开销};
 \draw[flow] (train) -- (submit);
 \draw[flow] (submit) -- (test);
 \draw[flow] (test) -- (view);

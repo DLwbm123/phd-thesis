@@ -3,23 +3,23 @@
 \caption[SAMCL 四任务顺序实验的任务性能与持续学习指标]{SAMCL 四任务顺序实验的任务性能与 MedCL 持续学习指标。最终性能和后向变化采用文献\cite{wang2024samcl}的实验结果；BWTR 与 RMA 由表中三位小数的任务指标按第\ref{sec:benchmark-metrics}节定义近似计算，保留四位小数。NLST 的 TRE 及 TRE-BWT 单位为 mm。红色粗体表示 EWC、SI、GPM、MER 和 SAMCL 中的任务指标最优值；下划线表示该值劣于 SAMCL，星号表示与 SAMCL 的配对 $t$ 检验达到 $p<0.05$。}
 \label{tab:samcl-main-results}
 \linespread{1}\selectfont
-\fontsize{9.5bp}{13bp}\selectfont
+\fontsize{10.0bp}{13bp}\selectfont
 \renewcommand{\arraystretch}{1.18}
 \setlength{\tabcolsep}{3pt}
-\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lcccccccc@{}}
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lcccccc@{}}
 \toprule
-\multicolumn{9}{c}{（a）最终性能 $R_{T,j}$、受限建模能力与资源条件} \\
-方法 & \shortstack{OASIS\\Dice $\uparrow$} & \shortstack{CTCT\\Dice $\uparrow$} & \shortstack{NLST\\TRE $\downarrow$} & \shortstack{MRCT\\Dice $\uparrow$} & \shortstack{Dice\\RMA$\uparrow$} & \shortstack{TRE\\RMA$\uparrow$} & MPE$\downarrow$ & DRR$\downarrow$ \\
+\multicolumn{7}{c}{（a）最终性能 $R_{T,j}$ 与受限建模能力} \\
+方法 & \shortstack{OASIS\\Dice $\uparrow$} & \shortstack{CTCT\\Dice $\uparrow$} & \shortstack{NLST\\TRE $\downarrow$} & \shortstack{MRCT\\Dice $\uparrow$} & \shortstack{Dice\\RMA$\uparrow$} & \shortstack{TRE\\RMA$\uparrow$} \\
 \midrule
-未配准 & $\underline{0.598}^{*}$ & $\underline{0.311}^{*}$ & $\underline{7.932}^{*}$ & $\underline{0.353}^{*}$ & \textemdash & \textemdash & \textemdash & \textemdash \\
-独立训练 & $0.738^{*}$ & $\underline{0.335}^{*}$ & $3.259^{*}$ & $\underline{0.550}$ & \textemdash & \textemdash & \textemdash & \textemdash \\
-集中式多任务 & $0.743^{*}$ & 0.358 & $2.662^{*}$ & $\underline{0.506}$ & \textemdash & \textemdash & \textemdash & \textemdash \\
-直接顺序训练 & $\underline{0.348}^{*}$ & $\underline{0.270}$ & $\underline{6.922}^{*}$ & 0.568 & $1.1119$ & $0.9546$ & $0.0000$ & $0.0000$ \\
-EWC & $\underline{0.659}^{*}$ & $\best{0.364^{*}}$ & 3.836 & $\underline{0.506}$ & $1.0197$ & $0.9446$ & $0.0000$ & $0.0000$ \\
-SI & $\underline{0.461}^{*}$ & $\underline{0.303}^{*}$ & $\underline{8.186}^{*}$ & $\underline{0.555}$ & $1.0822$ & $0.9309$ & $0.0000$ & $0.0000$ \\
-GPM & $\underline{0.458}^{*}$ & $\underline{0.290}^{*}$ & $\underline{7.095}^{*}$ & $\underline{0.556}$ & $1.0652$ & $0.9256$ & $0.0000$ & $0.4987$ \\
-MER & \best{0.698} & $\underline{0.331}^{*}$ & $\best{3.611^{*}}$ & $\underline{0.532}$ & $1.0374$ & $0.9222$ & $0.0000$ & $0.2020$ \\
-SAMCL & 0.697 & 0.352 & 3.855 & \best{0.563} & $1.0954$ & $0.9183$ & $0.0000$ & $0.1806$ \\
+未配准 & $\underline{0.598}^{*}$ & $\underline{0.311}^{*}$ & $\underline{7.932}^{*}$ & $\underline{0.353}^{*}$ & \textemdash & \textemdash \\
+独立训练 & $0.738^{*}$ & $\underline{0.335}^{*}$ & $3.259^{*}$ & $\underline{0.550}$ & \textemdash & \textemdash \\
+集中式多任务 & $0.743^{*}$ & 0.358 & $2.662^{*}$ & $\underline{0.506}$ & \textemdash & \textemdash \\
+直接顺序训练 & $\underline{0.348}^{*}$ & $\underline{0.270}$ & $\underline{6.922}^{*}$ & 0.568 & $1.1119$ & $0.9546$ \\
+EWC & $\underline{0.659}^{*}$ & $\best{0.364^{*}}$ & 3.836 & $\underline{0.506}$ & $1.0197$ & $0.9446$ \\
+SI & $\underline{0.461}^{*}$ & $\underline{0.303}^{*}$ & $\underline{8.186}^{*}$ & $\underline{0.555}$ & $1.0822$ & $0.9309$ \\
+GPM & $\underline{0.458}^{*}$ & $\underline{0.290}^{*}$ & $\underline{7.095}^{*}$ & $\underline{0.556}$ & $1.0652$ & $0.9256$ \\
+MER & \best{0.698} & $\underline{0.331}^{*}$ & $\best{3.611^{*}}$ & $\underline{0.532}$ & $1.0374$ & $0.9222$ \\
+SAMCL & 0.697 & 0.352 & 3.855 & \best{0.563} & $1.0954$ & $0.9183$ \\
 \bottomrule
 \end{tabular*}
 

@@ -1,5 +1,5 @@
 section_id,title,status,artifact
-1,绪论,figure_fonts_verified_20260921,chapters/ch01_introduction.tex
+1,绪论,author_zip_verified_20260922,chapters/ch01_introduction.tex
 1.1,背景与意义,screenshots_build_verified_20260912,chapters/ch01_introduction.tex
 1.2,医学影像持续学习进展,screenshots_build_verified_20260912,chapters/ch01_introduction.tex
 1.3,关键科学与工程问题,screenshots_build_verified_20260912,chapters/ch01_introduction.tex
@@ -26,21 +26,21 @@ section_id,title,status,artifact
 4.4,弱监督持续分割方法,screenshots_build_verified_20260912,chapters/ch04_scribble.tex
 4.5,弱监督实验与综合分析,sections_merged_abstract_preserved_20260912,chapters/ch04_scribble.tex
 4.6,本章小结,screenshots_build_verified_20260912,chapters/ch04_scribble.tex
-5,基于子空间聚合的无回放联邦医学影像持续分类,figure_readability_verified_20260922,chapters/ch05_fedsubmerge.tex
+5,基于子空间聚合的无回放联邦医学影像持续分类,author_zip_verified_20260922,chapters/ch05_fedsubmerge.tex
 5.1,引言,screenshots_build_verified_20260912,chapters/ch05_fedsubmerge.tex
 5.2,方法动机与问题建模,screenshots_build_verified_20260912,chapters/ch05_fedsubmerge.tex
 5.3,FedSubMerge 方法,screenshots_build_verified_20260912,chapters/ch05_fedsubmerge.tex
 5.4,理论分析,screenshots_build_verified_20260912,chapters/ch05_fedsubmerge.tex
 5.5,实验设计与结果分析,screenshots_build_verified_20260912,chapters/ch05_fedsubmerge.tex
 5.6,本章小结,screenshots_build_verified_20260912,chapters/ch05_fedsubmerge.tex
-6,基于锐度感知元经验回放的医学影像持续配准,figure_readability_verified_20260922,chapters/ch06_registration.tex
+6,基于锐度感知元经验回放的医学影像持续配准,author_zip_verified_20260922,chapters/ch06_registration.tex
 6.1,引言,screenshots_build_verified_20260912,chapters/ch06_registration.tex
 6.2,任务增量持续医学图像配准的问题定义,screenshots_build_verified_20260912,chapters/ch06_registration.tex
 6.3,锐度感知元持续医学图像配准方法,screenshots_build_verified_20260912,chapters/ch06_registration.tex
 6.4,实验设计与结果分析,screenshots_build_verified_20260912,chapters/ch06_registration.tex
 6.5,平台评价与方法讨论,screenshots_build_verified_20260912,chapters/ch06_registration.tex
 6.6,本章小结,screenshots_build_verified_20260912,chapters/ch06_registration.tex
-7,总结与展望,figure_fonts_verified_20260921,chapters/ch07_conclusion.tex
+7,总结与展望,author_zip_verified_20260922,chapters/ch07_conclusion.tex
 7.1,全文工作总结,screenshots_build_verified_20260912,chapters/ch07_conclusion.tex
 7.2,工作局限,screenshots_build_verified_20260912,chapters/ch07_conclusion.tex
 7.3,未来工作展望,screenshots_build_verified_20260912,chapters/ch07_conclusion.tex
